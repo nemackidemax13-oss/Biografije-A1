@@ -827,6 +827,17 @@ header{position:relative !important;top:auto !important}
  }
 }
 
+
+/* Blago veci font tri pitanja pri pisanju, prevod bez broja. */
+@media(max-width:799px){
+ body.mobile-writing .task-paired .sentence-de{font-size:12.3px!important;line-height:1.2!important}
+ body.mobile-writing .task-paired .sentence-sr{font-size:11.5px!important;line-height:1.2!important}
+ body.mobile-writing.keyboard-tight .task-paired .sentence-de{font-size:11.7px!important;line-height:1.14!important}
+ body.mobile-writing.keyboard-tight .task-paired .sentence-sr{font-size:11px!important;line-height:1.13!important}
+ body.mobile-writing.keyboard-micro .task-paired .sentence-de{font-size:11px!important;line-height:1.1!important}
+ body.mobile-writing.keyboard-micro .task-paired .sentence-sr{font-size:10.5px!important;line-height:1.1!important}
+}
+
 </style>
 </head>
 <body>
@@ -991,7 +1002,7 @@ function render(){
   [(d.to==='die E-Mail'?'Antworten Sie auf die E-Mail.':`Antworten Sie ${d.to}.`) + ' Schreiben Sie circa 30 Wörter.', 'Odgovori na mejl. Napiši oko 30 reči.']
  ]);
  setSentencePairs('pairs-questions-intro',[['• Beantworten Sie alle Fragen:','• Odgovori na sva pitanja:']]);
- setSentencePairs('pairs-qs',d.q.map((q,i)=>[(i+1)+'. '+q,(i+1)+'. '+PRECISE_QUESTION_TRANSLATIONS[current][i]]));
+ setSentencePairs('pairs-qs',d.q.map((q,i)=>[(i+1)+'. '+q,PRECISE_QUESTION_TRANSLATIONS[current][i]]));
  setSentencePairs('pairs-signoff',[['• Schreiben Sie am Ende einen Gruß.','• Na kraju napiši pozdrav.']]);
  $('answer').value=saved.drafts[current]||'';
  $('pick').value=String(current);
