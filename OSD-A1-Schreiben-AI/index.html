@@ -559,13 +559,48 @@ header{position:relative !important;top:auto !important}
   body.mobile-writing .answer .editorarea textarea{min-height:60px!important}
 }
 
+
+/* Mobilni prikaz 4: jedna prirodna stranica, bez skrol traka unutar postavke i pisanja. */
+.pick-mobile{display:none}
+.mail-picker-dialog{border:0;border-radius:15px;padding:0;width:min(95vw,560px);max-height:86dvh;box-shadow:0 25px 65px #051a4680;background:#fff;color:#102b52}
+.mail-picker-dialog::backdrop{background:#091b41a6}
+.picker-top{display:flex;justify-content:space-between;align-items:center;gap:12px;background:#103c83;color:white;padding:12px 14px;position:sticky;top:0;z-index:1}
+.picker-top strong{font-size:16px}
+.picker-top button{background:#fff;border:0;border-radius:9px;color:#123d81;padding:6px 10px;font-size:18px;font-weight:850}
+.picker-list{overflow-y:auto;max-height:calc(86dvh - 52px);overscroll-behavior:contain;padding:5px}
+.picker-list button{display:block;width:100%;padding:11px 12px;text-align:left;background:#fff;color:#14345e;border:none;border-bottom:1px solid #e5ebf4;font-size:13px;line-height:1.35;cursor:pointer}
+.picker-list button[aria-current="true"]{background:#e8f1ff;color:#0b3a87;font-weight:850;border-radius:8px}
+.picker-list button:active{background:#dce9ff}
+@media(max-width:799px){
+ .headnav select{display:none!important}
+ .headnav .pick-mobile{display:block!important;min-width:0;max-width:100%;width:100%;height:35px!important;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:left;padding:0 11px!important;font-size:12.5px!important;font-weight:800!important;background:#f6f9ff!important;color:#113a7f!important;border:1px solid #b3cafa!important}
+ .prompt .panel-title #mobileStartTop{display:none!important}
+ .taskscroll,.prompt .taskscroll,.prompt .bilingual,.prompt .paired-card{height:auto!important;max-height:none!important;overflow:visible!important}
+ .prompt .taskscroll{display:block!important;padding-bottom:3px!important}
+ .start-writing-wrap{padding:8px 10px 20px!important}
+ .start-writing-wrap button{min-height:48px!important}
+ body.mobile-writing{position:static!important;inset:auto!important;width:auto!important;height:auto!important;min-height:100dvh!important;overflow:visible!important;overscroll-behavior:auto!important}
+ body.mobile-writing .app{display:block!important;height:auto!important;min-height:100dvh!important;overflow:visible!important}
+ body.mobile-writing .workspace{display:block!important;height:auto!important;min-height:0!important;overflow:visible!important}
+ body.mobile-writing #answerPanel{display:block!important;height:auto!important;min-height:0!important;overflow:visible!important}
+ body.mobile-writing .answer .editorarea,body.mobile-writing .answer.has-result .editorarea{display:flex!important;flex:none!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;gap:9px!important;padding:10px 12px 14px!important}
+ body.mobile-writing .editorarea .task-paired{display:block!important;order:0!important;flex:none!important;min-height:0!important;max-height:none!important;height:auto!important;overflow:visible!important;padding:9px 10px!important}
+ body.mobile-writing .task-paired #pairs-qs{display:flex!important;flex-direction:column!important;gap:5px!important}
+ body.mobile-writing .task-paired .sentence-pair{overflow:visible!important}
+ body.mobile-writing .answer .editorarea textarea{display:block!important;order:1!important;flex:none!important;height:125px!important;min-height:125px!important;max-height:none!important;overflow:hidden!important;resize:none!important;line-height:1.45!important;font-size:16px!important;background:white!important}
+ body.mobile-writing .editorarea .mini-progress{order:2!important;flex:none!important}
+ body.mobile-writing .editorarea .foot{order:3!important;flex:none!important;min-height:45px!important}
+ body.mobile-review .resultwrap,body.mobile-review .answer .resultwrap{overflow:visible!important;max-height:none!important;height:auto!important}
+ .mail-picker-dialog{width:94vw}
+}
+
 </style>
 </head>
 <body>
 <div class="app">
 <header>
   <div class="head-top"><div class="brand">De-Max Tutin</div><div class="headtag">ÖSD A1 • <span id="total">35</span> MEJLOVA</div></div>
-  <div class="headnav"><button id="prev" title="Prethodni mejl">‹</button><select id="pick" aria-label="Izaberi mejl"></select><button id="next" title="Sledeći mejl">›</button></div>
+  <div class="headnav"><button id="prev" title="Prethodni mejl">‹</button><select id="pick" aria-label="Izaberi mejl"></select><button id="pickMobile" type="button" class="pick-mobile" aria-label="Izaberi mejl" aria-haspopup="dialog">1. mejl — Baštenska zabava</button><button id="next" title="Sledeći mejl">›</button></div>
 </header>
 <main class="workspace">
   <section class="panel prompt" aria-label="Postavka zadatka">
@@ -599,6 +634,10 @@ header{position:relative !important;top:auto !important}
   </section>
 </main>
 </div>
+<dialog id="mailPickerDialog" class="mail-picker-dialog" aria-label="Izaberi mejl">
+ <div class="picker-top"><strong>Izaberi mejl</strong><button id="closeMailPicker" type="button" aria-label="Zatvori izbor">✕</button></div>
+ <div id="mailPickerList" class="picker-list"></div>
+</dialog>
 
 
 <script src="./config.js"></script>
@@ -723,13 +762,14 @@ function render(){
  setSentencePairs('pairs-signoff',[['• Schreiben Sie am Ende einen Gruß.','• Na kraju napiši pozdrav.']]);
  $('answer').value=saved.drafts[current]||'';
  $('pick').value=String(current);
+ $('pickMobile').textContent=`${current+1}. mejl — ${FULL_TRANSLATIONS[current].subject}`;
  $('prev').disabled=current===0;
  $('next').disabled=current===MAILS.length-1;
  $('promptScroll').scrollTop=0;
  $('answerPanel').classList.remove('has-result');
  $('result').innerHTML='';
  if(saved.results[current]&&saved.results[current].text===$('answer').value)renderResult(saved.results[current].data);
- updateCount();persist();
+ updateCount();growMailEditor();persist();
 }
 for(let i=0;i<MAILS.length;i++){const el=document.createElement('option');el.value=i;el.textContent=`${i+1}. mejl — ${FULL_TRANSLATIONS[i].subject}`;$('pick').appendChild(el)}
 $('total').textContent=MAILS.length;
@@ -772,6 +812,38 @@ $('answer').addEventListener('focus',()=>{
 $('answer').addEventListener('blur',()=>document.body.classList.remove('is-typing'));
 
 
+
+/* Mobilni izbor bez 'Done': dodir na stavku odmah otvara odabranu postavku. */
+const pickerDialog=$('mailPickerDialog');
+for(let i=0;i<MAILS.length;i++){
+ const item=document.createElement('button');
+ item.type='button';
+ item.textContent=(i+1)+'. mejl — '+FULL_TRANSLATIONS[i].subject;
+ item.dataset.mailIndex=String(i);
+ item.onclick=()=>{pickerDialog.close();jump(i)};
+ $('mailPickerList').appendChild(item);
+}
+$('pickMobile').addEventListener('click',()=>{
+ if(!pickerDialog.showModal)return;
+ for(const b of $('mailPickerList').querySelectorAll('button[data-mail-index]'))
+  b.setAttribute('aria-current',String(Number(b.dataset.mailIndex)===current));
+ pickerDialog.showModal();
+ const selected=$('mailPickerList').querySelector('button[aria-current="true"]');
+ selected?.scrollIntoView({block:'nearest'});
+});
+$('closeMailPicker').onclick=()=>pickerDialog.close();
+pickerDialog.addEventListener('click',(event)=>{if(event.target===pickerDialog)pickerDialog.close()});
+/* Bez unutrasnjeg skrola u editoru; visina raste zajedno sa unosom. */
+function growMailEditor(){
+ const field=$('answer');
+ if(!field)return;
+ field.style.setProperty('height','125px','important');
+ if(window.matchMedia('(max-width:799px)').matches && document.body.classList.contains('mobile-writing')){
+  field.style.setProperty('height',Math.max(125,Math.ceil(field.scrollHeight+3))+'px','important');
+ }
+}
+$('answer').addEventListener('input',growMailEditor);
+
 /* Mobilni rezim: pisanje sa vidljivim pitanjima i iznad virtualne tastature. */
 function setMobileVisibleHeight(){
  if(!document.body.classList.contains('mobile-writing'))return;
@@ -786,6 +858,7 @@ function openMobileWriting(){
  document.body.classList.add('mobile-writing');
  $('writeHeading').textContent='NAPIŠI SVOJ ODGOVOR';
  setMobileVisibleHeight();
+ growMailEditor();
  window.scrollTo(0,0);
 }
 function closeMobileWriting(toResult=false){
