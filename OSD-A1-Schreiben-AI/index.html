@@ -686,6 +686,115 @@ header{position:relative !important;top:auto !important}
  body.mobile-writing .answer .editorarea .checkbtn{padding:9px 8px!important;font-size:12px!important}
 }
 
+
+/* Rezim pisanja na Android/iOS: pitanja, editor i dugme staju u vidljivi deo iznad tastature. */
+@media(max-width:799px) {
+ html:has(body.mobile-writing){height:100%!important;overflow:hidden!important}
+ body.mobile-writing{
+  position:fixed!important;inset:auto!important;
+  left:0!important;right:0!important;top:var(--mobile-visible-top,0px)!important;
+  width:100%!important;height:var(--mobile-visible-height,100dvh)!important;
+  min-height:0!important;max-height:var(--mobile-visible-height,100dvh)!important;
+  overflow:hidden!important;background:#fff!important;
+ }
+ body.mobile-writing .app{
+  display:flex!important;flex-direction:column!important;
+  height:100%!important;max-height:100%!important;min-height:0!important;
+  overflow:hidden!important;
+ }
+ body.mobile-writing header,body.mobile-writing .prompt{display:none!important}
+ body.mobile-writing .workspace{
+  display:flex!important;flex-direction:column!important;flex:1 1 auto!important;
+  min-height:0!important;height:100%!important;max-height:100%!important;
+  overflow:hidden!important;
+ }
+ body.mobile-writing #answerPanel{
+  display:flex!important;flex-direction:column!important;flex:1 1 auto!important;
+  min-height:0!important;height:100%!important;max-height:100%!important;
+  overflow:hidden!important;
+ }
+ body.mobile-writing #answerPanel .panel-title{
+  display:flex!important;flex:0 0 32px!important;min-height:32px!important;
+  max-height:32px!important;padding:3px 9px!important;gap:5px!important;
+  overflow:hidden!important;
+ }
+ body.mobile-writing #writeHeading{font-size:11.7px!important;white-space:nowrap!important}
+ body.mobile-writing #mobileBackToMail{
+  min-height:26px!important;max-height:27px!important;padding:3px 8px!important;
+  font-size:10.7px!important;
+ }
+ body.mobile-writing .answer .editorarea,
+ body.mobile-writing .answer.has-result .editorarea{
+  display:flex!important;flex:1 1 0!important;flex-direction:column!important;
+  height:0!important;min-height:0!important;max-height:none!important;
+  padding:5px 8px 6px!important;margin:0!important;gap:4px!important;
+  overflow:hidden!important;border:0!important;border-radius:0!important;
+  box-shadow:none!important;
+ }
+ body.mobile-writing .editorarea .editor-top,body.mobile-writing .editorarea .mode,
+ body.mobile-writing .task-paired #pairs-instruction,
+ body.mobile-writing .task-paired #pairs-questions-intro,
+ body.mobile-writing .task-paired #pairs-signoff{display:none!important}
+ body.mobile-writing .answer .editorarea .task-paired{
+  display:block!important;order:0!important;flex:0 0 auto!important;
+  height:auto!important;min-height:0!important;max-height:none!important;
+  overflow:visible!important;padding:6px 8px!important;margin:0!important;
+  background:#f3f7ff!important;border:1px solid #cbdcf0!important;
+  border-radius:8px!important;box-shadow:none!important;
+ }
+ body.mobile-writing .task-paired .paired-heading{
+  font-size:10px!important;line-height:1.15!important;margin:0 0 4px!important;
+ }
+ body.mobile-writing .task-paired #pairs-qs{display:flex!important;flex-direction:column!important;gap:3px!important;margin:0!important}
+ body.mobile-writing .task-paired .sentence-pair{padding:0 0 2px!important;margin:0!important}
+ body.mobile-writing .task-paired .sentence-de{font-size:11.9px!important;line-height:1.2!important;font-weight:740!important}
+ body.mobile-writing .task-paired .sentence-sr{font-size:11px!important;line-height:1.2!important;padding:0!important;margin:0!important}
+ body.mobile-writing .answer .editorarea textarea{
+  display:block!important;order:1!important;flex:1 1 auto!important;
+  height:0!important;min-height:65px!important;max-height:none!important;
+  width:100%!important;margin:0!important;padding:7px 9px!important;
+  font-size:16px!important;line-height:1.32!important;
+  overflow-y:auto!important;resize:none!important;
+  border:2px solid #8eacdb!important;border-radius:9px!important;box-shadow:none!important;
+ }
+ body.mobile-writing .answer .editorarea .mini-progress{
+  display:block!important;order:2!important;flex:0 0 3px!important;
+  height:3px!important;margin:0!important;
+ }
+ body.mobile-writing .answer .editorarea .foot{
+  position:static!important;order:3!important;
+  left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;
+  display:flex!important;flex:0 0 47px!important;width:100%!important;
+  height:47px!important;min-height:47px!important;max-height:47px!important;
+  margin:0!important;padding:2px 1px!important;
+  border:0!important;border-radius:0!important;box-shadow:none!important;
+  background:white!important;justify-content:space-between!important;
+  align-items:center!important;gap:5px!important;z-index:auto!important;
+ }
+ body.mobile-writing .answer .editorarea .counter{
+  display:block!important;flex:1 1 auto!important;min-width:0!important;
+  font-size:11px!important;line-height:1.2!important;
+ }
+ body.mobile-writing .answer .editorarea .checkbtn{
+  flex:0 0 auto!important;min-height:39px!important;
+  font-size:12px!important;padding:8px 10px!important;
+ }
+ body.mobile-writing .resultwrap{display:none!important}
+ body.mobile-writing.keyboard-tight .task-paired .paired-heading{margin-bottom:2px!important;font-size:9px!important}
+ body.mobile-writing.keyboard-tight .task-paired .sentence-de{font-size:11.3px!important;line-height:1.14!important}
+ body.mobile-writing.keyboard-tight .task-paired .sentence-sr{font-size:10.5px!important;line-height:1.13!important}
+ body.mobile-writing.keyboard-tight .task-paired #pairs-qs{gap:1px!important}
+ body.mobile-writing.keyboard-tight .answer .editorarea .task-paired{padding:4px 7px!important}
+ body.mobile-writing.keyboard-tight .answer .editorarea,
+ body.mobile-writing.keyboard-tight .answer.has-result .editorarea{gap:3px!important;padding:3px 7px 4px!important}
+ body.mobile-writing.keyboard-micro #answerPanel .panel-title{flex-basis:28px!important;min-height:28px!important;max-height:28px!important}
+ body.mobile-writing.keyboard-micro .task-paired .paired-heading{display:none!important}
+ body.mobile-writing.keyboard-micro .task-paired .sentence-de{font-size:10.8px!important;line-height:1.1!important}
+ body.mobile-writing.keyboard-micro .task-paired .sentence-sr{font-size:10.2px!important;line-height:1.1!important}
+ body.mobile-writing.keyboard-micro .answer .editorarea textarea{min-height:53px!important}
+ body.mobile-writing.keyboard-micro .answer .editorarea .foot{flex-basis:42px!important;height:42px!important;min-height:42px!important;max-height:42px!important}
+}
+
 </style>
 </head>
 <body>
@@ -936,27 +1045,22 @@ pickerDialog.addEventListener('click',(event)=>{if(event.target===pickerDialog)p
 function growMailEditor(){
  const field=$('answer');
  if(!field)return;
- if(!window.matchMedia('(max-width:799px)').matches || !document.body.classList.contains('mobile-writing')){
-  field.style.removeProperty('height');
-  return;
- }
- field.style.setProperty('height','125px','important');
- field.style.setProperty('height',Math.max(125,Math.ceil(field.scrollHeight+3))+'px','important');
+ // Visinu pisanja određuje raspoloživi prostor iznad tastature;
+ // tekst polja ostaje čitljiv, a broj reči i dugme vidljivi.
+ field.style.removeProperty('height');
 }
 $('answer').addEventListener('input',growMailEditor);
 
 /* Mobilni rezim: pisanje sa vidljivim pitanjima i iznad virtualne tastature. */
 function setMobileVisibleHeight(){
  if(!document.body.classList.contains('mobile-writing'))return;
- const viewport=window.visualViewport;
- const height=Math.floor(viewport?.height||window.innerHeight);
+ const vp=window.visualViewport;
+ const height=Math.floor(vp?.height||window.innerHeight);
+ const offset=Math.max(0,Math.floor(vp?.offsetTop||0));
  document.documentElement.style.setProperty('--mobile-visible-height',height+'px');
- const toolbar=$('answerPanel').querySelector('.foot');
- // visualViewport meri vidljivi deo iznad Android/iOS tastature.
- // Top odgovara koordinatama pozicije fixed u layout viewportu.
- const visibleBottom=(viewport?.offsetTop||0)+height;
- const toolbarHeight=Math.ceil(toolbar.getBoundingClientRect().height||60);
- document.documentElement.style.setProperty('--mobile-dock-top',Math.max(0,Math.floor(visibleBottom-toolbarHeight))+'px');
+ document.documentElement.style.setProperty('--mobile-visible-top',offset+'px');
+ document.body.classList.toggle('keyboard-tight',height<410);
+ document.body.classList.toggle('keyboard-micro',height<310);
 }
 function openMobileWriting(){
  if(!window.matchMedia('(max-width:799px)').matches){document.getElementById('answerPanel').scrollIntoView({behavior:'smooth'});return}
@@ -971,7 +1075,7 @@ function openMobileWriting(){
 }
 function closeMobileWriting(toResult=false){
  $('answer').blur();
- document.body.classList.remove('mobile-writing','is-typing');
+ document.body.classList.remove('mobile-writing','is-typing','keyboard-tight','keyboard-micro');
  document.body.classList.toggle('mobile-review',toResult);
  $('writeHeading').textContent=toResult?'REZULTAT PROVERE':'2. NAPIŠI SVOJ ODGOVOR';
  growMailEditor();
