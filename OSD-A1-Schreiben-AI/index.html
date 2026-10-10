@@ -843,17 +843,67 @@ header{position:relative !important;top:auto !important}
 #pairs-qs .sentence-sr{padding-left:1.45em !important;padding-top:1px !important;box-sizing:border-box;}
 @media(max-width:799px){#pairs-qs .sentence-sr{padding-left:1.45em !important;}}
 
+
+/* Novi početni ekran DE-MAX: izbor 35 mejlova bez stare gornje trake. */
+body.view-home header,body.view-home .workspace,body.view-mail header{display:none!important}
+body.view-mail #mailHome{display:none!important}
+body.view-home{background:#f6f9fe!important;overflow-x:hidden!important}
+#mailHome{min-height:100dvh;background:#f6f9fe;color:#17385d}
+.mail-home-hero{background:linear-gradient(115deg,#0b3c87,#155dbf 60%,#2681e9);text-align:center;color:white;padding:16px 12px 26px;position:relative;overflow:hidden}
+.mail-home-hero:after{content:"";position:absolute;width:360px;height:360px;right:-160px;top:-170px;border-radius:50%;background:#fff;opacity:.04;pointer-events:none}
+.mail-home-eyebrow{font-size:11px;letter-spacing:1.5px;font-weight:900;opacity:.94}
+.mail-home-logo{width:90px;height:90px;border:4px solid #fff;outline:2px solid #e5be76;border-radius:50%;background:linear-gradient(145deg,#fff,#f3f3f5);margin:10px auto;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 5px 15px #051d5270}
+.mail-home-logo b{font-weight:1000;font-size:19px;color:#c91f34;letter-spacing:-1px;text-shadow:1px 1px #eec15b}
+.mail-home-logo small{font-size:10px;font-weight:900;color:#173d65;letter-spacing:1px}
+.mail-home-hero h1{font-size:26px;font-weight:950;line-height:1.1;margin:6px 0}
+.mail-home-hero p{font-size:13px;opacity:.9;margin:0}
+.mail-home-summary{max-width:1080px;padding:18px 14px 9px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:14px;font-weight:900;color:#183c69}
+.mail-home-summary span:last-child{font-weight:750;font-size:12px;color:#56749c}
+.mail-home-grid{max-width:1080px;margin:auto;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:13px;padding:6px 14px 36px}
+.mail-card{min-width:0;min-height:137px;border:1.5px solid #d3e2f0;background:#fff;color:#173e6a;border-radius:17px;box-shadow:0 4px 13px #1a518614;padding:10px 5px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;cursor:pointer;font-family:inherit;text-align:center;transition:transform .12s,border-color .12s}
+.mail-card:active{transform:scale(.97)}
+.mail-card:hover{border-color:#79a8e6}
+.mail-card:focus-visible{outline:3px solid #226dd2;outline-offset:2px}
+.mail-card-icon{display:grid;place-items:center;width:46px;height:46px;border-radius:13px;background:#edf6ff;font-size:27px;line-height:1}
+.mail-card-title{font-size:18px;font-weight:950;line-height:1.2}
+.mail-card-progress{font-size:12px;font-weight:800;background:#edf6ff;color:#286394;padding:4px 8px;border-radius:8px;line-height:1.2}
+.mail-card.is-done .mail-card-progress,.mail-card.is-done .mail-card-icon{background:#e7f7eb;color:#137447}
+#backToGrid{margin-right:8px;background:#c7233b;color:#fff;border:0;border-radius:9px;padding:7px 10px;font-size:12px;line-height:1.1;font-weight:850;white-space:nowrap;cursor:pointer}
+body.view-mail .prompt .panel-title strong#mailNumberText{font-size:16px!important;font-weight:950}
+@media(max-width:799px){
+ .mail-home-hero{padding:13px 10px 19px}
+ .mail-home-logo{height:77px;width:77px;margin:7px auto}
+ .mail-home-logo b{font-size:16px}
+ .mail-home-hero h1{font-size:23px}
+ .mail-home-summary{padding:13px 12px 8px;font-size:12px}
+ .mail-home-summary span:last-child{font-size:11px}
+ .mail-home-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:5px 9px 28px}
+ .mail-card{border-radius:14px;min-height:113px;padding:9px 3px;gap:5px}
+ .mail-card-icon{width:36px;height:36px;font-size:23px;border-radius:11px}
+ .mail-card-title{font-size:15px}
+ .mail-card-progress{font-size:10px;padding:4px 5px}
+ body.view-mail .prompt .panel-title{display:flex!important;gap:6px!important;min-height:39px!important;padding:5px 9px!important}
+ #backToGrid{margin-right:1px;font-size:11.3px!important;padding:6px 9px!important}
+ body.view-mail .prompt .panel-title strong#mailNumberText{font-size:14px!important}
+}
+@media(max-width:359px){.mail-home-grid{gap:7px;padding-inline:6px}.mail-card-title{font-size:14px}.mail-card-progress{font-size:9px}}
+
 </style>
 </head>
-<body>
+<body class="view-home">
 <div class="app">
+<section id="mailHome" aria-label="Izbor mejla">
+ <div class="mail-home-hero"><div class="mail-home-eyebrow">DE-MAX TUTIN · ÖSD A1</div><div class="mail-home-logo" aria-label="De-Max Tutin"><b>DE-MAX</b><small>TUTIN</small></div><div class="mail-home-eyebrow">35 MEJLOVA · A1 VEŽBANJE</div><h1>Izaberi mejl</h1><p>Odaberi zadatak i napiši odgovor na nemačkom</p></div>
+ <div class="mail-home-summary"><span>MEJLOVI ZA VEŽBANJE</span><span id="homeProgress">0 / 35 provereno</span></div>
+ <div id="mailHomeGrid" class="mail-home-grid" aria-label="35 mejlova"></div>
+</section>
 <header>
   <div class="head-top"><div class="brand">De-Max Tutin</div><div class="headtag">ÖSD A1 • <span id="total">35</span> MEJLOVA</div></div>
   <div class="headnav"><button id="prev" title="Prethodni mejl">‹</button><select id="pick" aria-label="Izaberi mejl"></select><button id="pickMobile" type="button" class="pick-mobile" aria-label="Izaberi mejl" aria-haspopup="dialog">1. mejl — Baštenska zabava</button><button id="next" title="Sledeći mejl">›</button></div>
 </header>
 <main class="workspace">
   <section class="panel prompt" aria-label="Postavka zadatka">
-    <div class="panel-title"><strong>1. POSTAVKA MEJLA</strong><button class="mobile-jump" id="mobileStartTop" type="button">✎ Piši mejl</button><div class="prompt-actions"><button class="smallbutton readbutton" id="readMode" aria-pressed="false">⤢ Cela postavka</button></div></div>
+    <div class="panel-title"><button id="backToGrid" type="button">← Svi mejlovi</button><strong id="mailNumberText">1. mejl</strong><button class="mobile-jump" id="mobileStartTop" type="button">✎ Piši mejl</button><div class="prompt-actions"><button class="smallbutton readbutton" id="readMode" aria-pressed="false">⤢ Cela postavka</button></div></div>
     <div class="taskscroll" id="promptScroll">
       <div class="bilingual" aria-label="Nemačka postavka sa prevodom ispod svake rečenice">
         <div class="paired-card">
@@ -872,7 +922,7 @@ header{position:relative !important;top:auto !important}
     <div class="panel-title"><strong id="writeHeading">2. NAPIŠI SVOJ ODGOVOR</strong><button class="mobile-jump" id="mobileBackToMail" type="button">← Postavka</button><button class="mobile-edit" id="mobileEditAgain" type="button">✎ Izmeni odgovor</button><span class="limit-note">A1 • oko 30 reči • do 10 bodova</span></div>
     <div class="editorarea"><div class="editor-top"><span class="save-flag">Čuva se automatski</span></div><textarea id="answer" spellcheck="true" lang="de" placeholder="Napiši odgovor na sva tri pitanja.&#10;&#10;Liebe Grüße&#10;…" aria-label="Ovde upiši mejl na nemačkom"></textarea>
       <div class="paired-card task-paired" aria-label="Pitanja i uputstvo za mejl">
-        <div class="paired-heading"><span>PITANJA NA KOJA ODGOVARAŠ</span><button id="mobileBackInline" type="button" aria-label="Vrati se na postavku mejla">← Postavka</button></div>
+        <div class="paired-heading"><span id="questionsHead">PITANJA • 1. MEJL</span><button id="mobileBackInline" type="button" aria-label="Vrati se na postavku mejla">← Postavka</button></div>
         <div id="pairs-instruction" class="paired-lines"></div>
         <div id="pairs-questions-intro" class="paired-lines"></div>
         <div id="pairs-qs" class="paired-lines question-lines"></div>
@@ -1012,6 +1062,8 @@ function render(){
  $('answer').value=saved.drafts[current]||'';
  $('pick').value=String(current);
  $('pickMobile').textContent=`${current+1}. mejl — ${FULL_TRANSLATIONS[current].subject}`;
+ $('mailNumberText').textContent=(current+1)+'. mejl';
+ $('questionsHead').textContent='PITANJA • '+(current+1)+'. MEJL';
  $('prev').disabled=current===0;
  $('next').disabled=current===MAILS.length-1;
  $('promptScroll').scrollTop=0;
@@ -1141,7 +1193,52 @@ window.addEventListener('resize',()=>{
  else setMobileVisibleHeight();
 });
 
+
+/* Izbor svih mejlova: otvaranje, povratak na pregled i čuvanje napretka. */
+function renderMailGrid(){
+ const grid=$('mailHomeGrid');grid.replaceChildren();
+ let finished=0;
+ for(let i=0;i<MAILS.length;i++){
+  const draft=String(saved.drafts[i]||'');
+  const count=words(draft);
+  const checked=Boolean(saved.results[i]&&saved.results[i].text===draft);
+  if(checked)finished++;
+  const button=document.createElement('button');button.type='button';
+  button.className='mail-card'+(checked?' is-done':'');
+  button.setAttribute('aria-label','Otvori '+(i+1)+'. mejl');
+  const ico=document.createElement('span');ico.className='mail-card-icon';ico.textContent=checked?'✅':'✉️';ico.setAttribute('aria-hidden','true');
+  const title=document.createElement('span');title.className='mail-card-title';title.textContent=(i+1)+'. mejl';
+  const progress=document.createElement('span');progress.className='mail-card-progress';progress.textContent=checked?'Proveren':count+' / 30 reči';
+  button.append(ico,title,progress);button.addEventListener('click',()=>openMailFromGrid(i));grid.appendChild(button);
+ }
+ $('homeProgress').textContent=finished+' / '+MAILS.length+' provereno';
+}
+function openMailFromGrid(index,addHistory=true){
+ const n=Math.max(0,Math.min(MAILS.length-1,Number(index)||0));
+ if(document.body.classList.contains('mobile-writing')||document.body.classList.contains('mobile-review'))closeMobileWriting(false);
+ document.body.classList.remove('view-home');document.body.classList.add('view-mail');
+ current=n;render();
+ if(addHistory)history.pushState({demaxMail:n},'','#mejl-'+(n+1));
+ window.scrollTo({top:0,behavior:'instant'});
+}
+function returnToMailGrid(updateHistory=true){
+ if(document.body.classList.contains('mobile-writing')||document.body.classList.contains('mobile-review'))closeMobileWriting(false);
+ document.body.classList.remove('view-mail');document.body.classList.add('view-home');
+ renderMailGrid();
+ if(updateHistory)history.replaceState({demaxHome:true},'',location.pathname+location.search);
+ window.scrollTo({top:0,behavior:'instant'});
+}
+$('backToGrid').addEventListener('click',()=>returnToMailGrid());
+window.addEventListener('popstate',()=>{
+ const match=location.hash.match(/^#mejl-(\\d+)$/);
+ if(match&&Number(match[1])>=1&&Number(match[1])<=MAILS.length)openMailFromGrid(Number(match[1])-1,false);
+ else returnToMailGrid(false);
+});
+
 render();
+const initialMail=location.hash.match(/^#mejl-(\d+)$/);
+if(initialMail&&Number(initialMail[1])>=1&&Number(initialMail[1])<=MAILS.length)openMailFromGrid(Number(initialMail[1])-1,false);
+else renderMailGrid();
 </script>
 </body>
 </html>
