@@ -1230,7 +1230,7 @@ function returnToMailGrid(updateHistory=true){
 }
 $('backToGrid').addEventListener('click',()=>returnToMailGrid());
 window.addEventListener('popstate',()=>{
- const match=location.hash.match(/^#mejl-(\\d+)$/);
+ const match=location.hash.match(/^#mejl-(\d+)$/);
  if(match&&Number(match[1])>=1&&Number(match[1])<=MAILS.length)openMailFromGrid(Number(match[1])-1,false);
  else returnToMailGrid(false);
 });
