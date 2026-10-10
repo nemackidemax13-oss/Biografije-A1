@@ -1,0 +1,387 @@
+[
+  {
+    "subject": "Baštenska zabava poslednjeg dana kursa",
+    "situation": "In einer Woche ist Ihr Deutschkurs zu Ende. Von Ihrem Kollegen Metin bekommen Sie folgende E-Mail:",
+    "originalEmail": "Hallo!\n\nIn einer Woche ist unser Deutschkurs zu Ende. Wir können am letzten Kurstag eine Party mit Picknick im Garten unserer Schule machen. Und vielleicht geben wir unserer Lehrerin ein Geschenk.\n\nWas kannst du zum Essen und Trinken mitbringen?\n\nLiebe Grüße\nMetin",
+    "questions": [
+      "Was kannst du zum Essen und Trinken mitbringen?",
+      "Was geben wir unserer Lehrerin?",
+      "Was können wir nach dem Essen noch machen?"
+    ],
+    "recipient": "Metin"
+  },
+  {
+    "subject": "Zajednička kupovina",
+    "situation": "Ihre Freundin Magda möchte mit Ihnen einkaufen gehen. Sie bekommen folgendes E-Mail von ihr:",
+    "originalEmail": "Hallo!\n\nIch möchte mir neue Schuhe kaufen. Ich gehe aber nicht so gern alleine einkaufen, möchtest du vielleicht mitkommen?\n\nAn welchem Tag und um wie viel Uhr hast du Zeit? Wo gibt es gute Geschäfte? Leider habe ich kein Auto. Wie können wir einkaufen fahren?\n\nLiebe Grüße\nMagda",
+    "questions": [
+      "An welchem Tag und um wie viel Uhr hast du Zeit?",
+      "Wo gibt es gute Geschäfte?",
+      "Wie können wir einkaufen fahren?"
+    ],
+    "recipient": "Magda"
+  },
+  {
+    "subject": "Venčanje u Berlinu",
+    "situation": "Ihre Freundin Alma heiratet bald in Berlin. Sie und Ihr Freund Herbert sind zum Hochzeitsfest eingeladen. Sie bekommen folgendes E-Mail von Herbert.",
+    "originalEmail": "Hallo!\n\nIch freue mich schon sehr auf Almas Fest. Natürlich brauchen wir ein schönes Geschenk für sie. Hast du eine Idee? Wir können zusammen etwas für sie kaufen. Wann hast du Zeit zum Einkaufen? Und noch etwas: Wie kommen wir nach Berlin?\n\nLiebe Grüße\nHerbert",
+    "questions": [
+      "Was kaufen wir für Alma?",
+      "Wann hast du Zeit?",
+      "Wie kommen wir nach Berlin?"
+    ],
+    "recipient": "Herbert"
+  },
+  {
+    "subject": "Gradski festival",
+    "situation": "Ihre Freundin Helena will mit Ihnen zum Stadtfest gehen. Sie bekommen folgendes E-Mail:",
+    "originalEmail": "Hallo!\n\nNächste Woche ist von Freitag bis Sonntag ein großes Fest in unserer Stadt. Es dauert immer von 10 bis 15 Uhr. Ich möchte gerne mit dir zusammen hingehen.\n\nBitte schreib mir: An welchem Tag kannst du zum Fest gehen? Wen möchtest du mitbringen? Und was willst du danach machen?\n\nLiebe Grüße\nHelena",
+    "questions": [
+      "An welchem Tag kannst du zum Fest gehen?",
+      "Wen möchtest du mitbringen?",
+      "Was willst du danach machen?"
+    ],
+    "recipient": "Helena"
+  },
+  {
+    "subject": "Kurs nemačkog jezika",
+    "situation": "Du möchtest deinem Freund / deiner Freundin vorschlagen, zusammen einen Deutschkurs zu besuchen. Du schreibst ihm / ihr folgende E-Mail:",
+    "originalEmail": "Hallo,\n\nmöchtest du mit mir in einen Deutschkurs gehen? Ich kann jeden Tag lernen, aber am Wochenende (Samstag und Sonntag) kann ich nicht.\n\nWo kann ich ein Deutschbuch kaufen?\nWas können wir nach dem Lernen machen?\nWas können wir nachdem lernen machen?\n\nLiebe Grüße\nDein Freund / Deine Freundin",
+    "questions": [
+      "Möchtest du mit mir in einen Deutschkurs gehen?",
+      "Wo kann ich ein Deutschbuch kaufen?",
+      "Was können wir nach dem Lernen machen?"
+    ],
+    "recipient": "die E-Mail"
+  },
+  {
+    "subject": "Kupovina poklona",
+    "situation": "Ihre Freundin Anna möchte ein Geschenk für ihr Baby kaufen und bittet Sie um Hilfe. Sie hat Ihnen folgende E-Mail geschrieben:",
+    "originalEmail": "Hallo!\nMeine kleine Tochter feiert am Wochenende Geburtstag. Ich möchte etwas für sie kaufen, aber ich weiß nicht, wo ich ein Geschenk kaufen kann. Kannst du mir bitte helfen?\nIch habe nur am Mittwoch keine Zeit, aber an den anderen Tagen können wir uns treffen.\n\nBitte schreib mir:\nWo können wir ein Geschenk für mein Baby kaufen?\nAn welchem Tag und um wie viel Uhr hast du Zeit?\nWo treffen wir uns?\n\nLiebe Grüße\nAnna",
+    "questions": [
+      "Wo können wir ein Geschenk für mein Baby kaufen?",
+      "An welchem Tag und um wie viel Uhr hast du Zeit?",
+      "Wo treffen wir uns?"
+    ],
+    "recipient": "Anna"
+  },
+  {
+    "subject": "Odlazak na jelo",
+    "situation": "Du bekommst eine E-Mail von Susanne und antwortest ihr auf ihre Einladung, am Samstag ins Restaurant zu gehen.",
+    "originalEmail": "Hallo,\n\nich möchte am nächsten Samstag mit einer Freundin in ein neues Restaurant essen gehen. Das Essen soll dort sehr lecker sein. Vielleicht gehen wir danach noch in die Stadt shoppen oder ins Kino. Hast du Lust mitzukommen? Du kannst auch jemanden mitbringen.\n\nUm wie viel Uhr kannst du kommen?\nWas isst du gerne?\nWer kommt noch mit?\n\nLiebe Grüße\nSusanne",
+    "questions": [
+      "Um wie viel Uhr kannst du kommen?",
+      "Was isst du gerne?",
+      "Wer kommt noch mit?"
+    ],
+    "recipient": "die E-Mail"
+  },
+  {
+    "subject": "Izlet u planine",
+    "situation": "Du bekommst eine E-Mail von Melanie. Sie möchte mit dir in die Berge gehen. Sie fragt dich: Kannst du mitkommen und bringst du etwas zum Essen mit?",
+    "originalEmail": "Hallo!\n\nHeute haben wir endlich schönes Wetter. Ich mache deshalb einen Ausflug mit meiner Freundin in den Bergen. Möchtest du auch mitkommen?\n\nP.S.: Wir haben Getränke dabei, aber wir brauchen noch etwas zum Essen. Kannst du etwas mitbringen?\n\n• Möchtest du heute mitkommen?\n• Was bringst du zum Essen mit?\n• Wer kommt noch mit?\n\nLiebe Grüße\nMelanie",
+    "questions": [
+      "Möchtest du heute mitkommen?",
+      "Was bringst du zum Essen mit?",
+      "Wer kommt noch mit?"
+    ],
+    "recipient": "die E-Mail"
+  },
+  {
+    "subject": "Pohađanje kursa kuvanja",
+    "situation": "Du bekommst eine E-Mail von Frank. Er möchte einen Kochkurs besuchen und stellt dir Fragen.",
+    "originalEmail": "Hallo!\n\nIch habe nächste Woche Urlaub und möchte in dieser Zeit kochen lernen, vielleicht in einem Kochkurs. Hast du vielleicht auch Lust? Ich habe leider keinen Wagen und brauche jemanden, der mich fährt.\n\nWann hast du nächste Woche Zeit?\nWas möchtest du kochen lernen?\nWie fahren wir zum Kursort?\n\nLiebe Grüße\nFrank",
+    "questions": [
+      "Wann hast du nächste Woche Zeit?",
+      "Was möchtest du kochen lernen?",
+      "Wie fahren wir zum Kursort?"
+    ],
+    "recipient": "die E-Mail"
+  },
+  {
+    "subject": "Planiranje izleta",
+    "situation": "Du bekommst eine E-Mail von Andrea. Sie möchte einen Ausflug organisieren und stellt dir Fragen.",
+    "originalEmail": "Hallo!\n\nIch möchte für unsere Kursgruppe einen kleinen Ausflug organisieren, vielleicht in den Bergen oder im Wald. Möchtest du vielleicht mitkommen? Jeder wird etwas zum Essen und Trinken mitbringen. Kannst du das auch?\n\nAn welchem Tag hast du Zeit für einen Ausflug?\nWas bringst du zum Essen und Trinken mit?\nKommst du alleine?\n\nLiebe Grüße\nAndrea",
+    "questions": [
+      "An welchem Tag hast du Zeit für einen Ausflug?",
+      "Was bringst du zum Essen und Trinken mit?",
+      "Kommst du alleine?"
+    ],
+    "recipient": "die E-Mail"
+  },
+  {
+    "subject": "Poziv na rođendan",
+    "situation": "Du bekommst eine E-Mail von Manuel. Er spricht über eine Geburtstagsparty und stellt dir Fragen.",
+    "originalEmail": "Hallo!\n\nVielen Dank für deine Einladung zum Geburtstag. Ich komme sehr gerne am Sonntag und freue mich, dich zu sehen. Hast du auch viele Gäste eingeladen? Ich komme vielleicht mit einem Freund, falls es dich nicht stört.\n\nUm wie viel Uhr beginnt die Party am Sonntag?\nWen möchtest du einladen?\nWas willst du zum Essen anbieten?\n\nLiebe Grüße\nManuel",
+    "questions": [
+      "Um wie viel Uhr beginnt die Party am Sonntag?",
+      "Wen möchtest du einladen?",
+      "Was willst du zum Essen anbieten?"
+    ],
+    "recipient": "die E-Mail"
+  },
+  {
+    "subject": "Tvoje putovanje u Minhen",
+    "situation": "Du bekommst eine E-Mail von Anna. Sie freut sich auf deinen Besuch in München und stellt dir einige Fragen.",
+    "originalEmail": "Hallo,\n\ndu schreibst, du möchtest am Samstag zu mir nach München kommen. Ich freue mich sehr! Mich interessiert, wann du ankommst. Ich möchte dir etwas Leckeres kochen, vielleicht Gemüsesuppe oder Makkaroni.\n\nUm wie viel Uhr kommst du am Samstag?\nWie lange möchtest du bleiben?\nWas isst du gerne?\n\nBis bald und liebe Grüße\nAnna",
+    "questions": [
+      "Um wie viel Uhr kommst du am Samstag?",
+      "Wie lange möchtest du bleiben?",
+      "Was isst du gerne?"
+    ],
+    "recipient": "die E-Mail"
+  },
+  {
+    "subject": "Organizovanje rođendanske proslave",
+    "situation": "Du bekommst eine E-Mail von Sven. Er möchte eine Geburtstagsfeier für seinen Sohn organisieren und stellt dir Fragen.",
+    "originalEmail": "Hallo,\n\nich möchte für meinen kleinen Sohn eine Geburtstagsfeier organisieren. Er hat am Sonntag Geburtstag. Ich weiß nur nicht, wo wir die Feier organisieren könnten. Meine Wohnung ist leider zu klein. Ich brauche auch eine Geburtstagstorte für die Feier aber habe leider kein Auto. Kannst du mir vielleicht helfen?\n\nAn welchem Tag hast du Zeit, mich zu fahren?\nWas können wir meinem Sohn zum Geburtstag kaufen?\nWo kann man tolle Torten kaufen?\n\nLiebe Grüße\nSven",
+    "questions": [
+      "An welchem Tag hast du Zeit, mich zu fahren?",
+      "Was können wir meinem Sohn zum Geburtstag kaufen?",
+      "Wo kann man tolle Torten kaufen?"
+    ],
+    "recipient": "die E-Mail"
+  },
+  {
+    "subject": "Planiranje izleta",
+    "situation": "Du bekommst eine E-Mail von Frank. Er möchte einen Ausflug planen und stellt dir Fragen.",
+    "originalEmail": "Hallo,\n\nich habe nächste Woche Urlaub und möchte meine Freunde auf einen Ausflug einladen. Ich liebe die Natur und möchte in einem Wald wandern gehen. Hast du vielleicht Zeit? Du kannst auch jemanden von deinen Freunden mitbringen.\n\nMit wem kommst du mit?\nWas bringst du zum Essen mit?\nAn welchem Tag hast du Zeit?\n\nLiebe Grüße\nFrank",
+    "questions": [
+      "Mit wem kommst du mit?",
+      "Was bringst du zum Essen mit?",
+      "An welchem Tag hast du Zeit?"
+    ],
+    "recipient": "die E-Mail"
+  },
+  {
+    "subject": "Kurs kuvanja",
+    "situation": "Du bekommst eine E-Mail von Andreas. Er möchte einen Kochkurs besuchen und stellt dir Fragen.",
+    "originalEmail": "Hallo,\n\nich möchte nächste Woche einen Kochkurs besuchen. Ich möchte gerne Spaghetti kochen lernen oder wie man einen Kuchen backt. Ich gehe nicht so gerne alleine und würde mich freuen, wenn du auch Zeit hast. Ich habe kein Auto.\n\nAn welchem Tag hast du nächste Woche Zeit?\nWas möchtest du gerne kochen lernen?\nWie fahren wir dort hin?\n\nLiebe Grüße\nAndreas",
+    "questions": [
+      "An welchem Tag hast du nächste Woche Zeit?",
+      "Was möchtest du gerne kochen lernen?",
+      "Wie fahren wir dort hin?"
+    ],
+    "recipient": "die E-Mail"
+  },
+  {
+    "subject": "Planiranje putovanja",
+    "situation": "Du bekommst eine E-Mail von Lena. Sie möchte etwas unternehmen und stellt dir Fragen.",
+    "originalEmail": "Hallo,\n\nich habe im nächsten Monat ein paar Tage frei und möchte gerne etwas unternehmen. Vielleicht mache ich einen Ausflug oder besuche meine Familie. Hast du vielleicht Zeit, mich zu begleiten? Wir können auch ein anderes Land besuchen.\n\nHast du im nächsten Monat Zeit?\nWie können wir reisen?\nWelches Land können wir besuchen?\n\nLiebe Grüße\nLena",
+    "questions": [
+      "Hast du im nächsten Monat Zeit?",
+      "Wie können wir reisen?",
+      "Welches Land können wir besuchen?"
+    ],
+    "recipient": "die E-Mail"
+  },
+  {
+    "subject": "Odlazak u bioskop",
+    "situation": "Du bekommst eine E-Mail von Matthias. Er möchte mit dir ins Kino gehen und stellt dir einige Fragen.",
+    "originalEmail": "Hallo,\n\nam Freitagabend ist ein neuer Film im Kino und ich möchte ihn gerne ansehen. Ich möchte dich einladen. Hast du Zeit? Du kannst auch jemanden mitbringen. Wir können uns vor dem Kino treffen.\n\nUm wie viel Uhr hast du Zeit?\nWo sollen wir uns treffen?\nWen bringst du mit?\n\nLiebe Grüße\nMatthias",
+    "questions": [
+      "Um wie viel Uhr hast du Zeit?",
+      "Wo sollen wir uns treffen?",
+      "Wen bringst du mit?"
+    ],
+    "recipient": "die E-Mail"
+  },
+  {
+    "subject": "Putovanje u stranu zemlju",
+    "situation": "Du bekommst eine E-Mail von Max. Er möchte eine Reise machen und stellt dir Fragen.",
+    "originalEmail": "Hallo!\n\nIch möchte gerne eine kleine Reise machen. Ich werde ein fremdes Land besuchen und es würde mich freuen, wenn ich Gesellschaft hätte. Hast du Lust und Zeit mitzukommen? Welches Land findest du interessant? Du kannst auch jemanden von deinen Freunden oder deiner Familie mitbringen.\n\nWann hast du Zeit für eine Reise?\nWelches Land findest du interessant?\nWas machst du am Wochenende?\n\nLiebe Grüße!\nMax",
+    "questions": [
+      "Wann hast du Zeit für eine Reise?",
+      "Welches Land findest du interessant?",
+      "Was machst du am Wochenende?"
+    ],
+    "recipient": "die E-Mail"
+  },
+  {
+    "subject": "Jelo i kupovina",
+    "situation": "Du bekommst eine E-Mail von Sandra. Sie möchte einkaufen gehen und etwas essen. Sie stellt dir Fragen.",
+    "originalEmail": "Hallo!\n\nich plane morgen eine Einkaufstour und würde mich freuen, wenn du mich begleitest. Vielleicht können wir auch etwas essen, zum Beispiel in einer Sushi-Bar oder in einem Restaurant. Ich brauche auch ein neues Handy und brauche deine Hilfe.\n\nUm wie viel Uhr hast du morgen Zeit?\nWo kann ich ein neues Handy kaufen?\nWas möchtest du gerne essen?\n\nLiebe Grüße\nSandra",
+    "questions": [
+      "Um wie viel Uhr hast du morgen Zeit?",
+      "Wo kann ich ein neues Handy kaufen?",
+      "Was möchtest du gerne essen?"
+    ],
+    "recipient": "die E-Mail"
+  },
+  {
+    "subject": "Zabava za polaznike kursa",
+    "situation": "Du bekommst eine E-Mail von Maria. Sie organisiert eine kleine Feier für den Deutschkurs. Sie stellt dir Fragen.",
+    "originalEmail": "Hallo!\n\nWir haben am nächsten Samstag unsere letzte Kursstunde. Ich möchte alle Teilnehmer zu einer kleinen Feier bei mir zu Hause einladen. Wir werden im Garten grillen und jeder bringt etwas zum Essen mit. Du kannst auch jemanden mitbringen.\n\nWann kannst du am Samstag kommen?\nKannst du etwas zum Essen mitbringen?\nWen möchtest du einladen?\n\nLiebe Grüße\nMaria",
+    "questions": [
+      "Wann kannst du am Samstag kommen?",
+      "Kannst du etwas zum Essen mitbringen?",
+      "Wen möchtest du einladen?"
+    ],
+    "recipient": "die E-Mail"
+  },
+  {
+    "subject": "Odlazak na izlet",
+    "situation": "Du bekommst eine E-Mail von Peter. Er möchte am Wochenende einen Ausflug machen. Er stellt dir Fragen.",
+    "originalEmail": "Hallo!\n\nIch möchte am kommenden Wochenende einen kleinen Ausflug machen. Ich möchte im Wald etwas unternehmen, zum Beispiel Rad fahren oder wandern. Hast du Lust mitzukommen? Du kannst auch jemanden mitbringen.\n\nAn welchem Tag und um wie viel Uhr hast du Zeit?\nWas können wir gemeinsam unternehmen?\nWen bringst du mit?\n\nLiebe Grüße\nPeter",
+    "questions": [
+      "An welchem Tag und um wie viel Uhr hast du Zeit?",
+      "Was können wir gemeinsam unternehmen?",
+      "Wen bringst du mit?"
+    ],
+    "recipient": "die E-Mail"
+  },
+  {
+    "subject": "Kupovina odeće",
+    "situation": "Ihre Freundin Petra möchte sich neue Kleidung kaufen. Sie bekommen folgende E-Mail von ihr. Sie stellen ihr Fragen.",
+    "originalEmail": "Hallo!\n\nbald ist Sommer und ich möchte mir neue Sommerkleidung kaufen. Ich kenne keine guten Geschäfte in meiner Stadt. Hast du vielleicht eine Idee, wo ich meine Kleidung kaufen könnte? Möchtest du dir auch etwas kaufen? Du kannst mich begleiten.\n\nWann kannst du mich treffen?\nMöchtest du dir auch etwas kaufen?\nWo können wir neue Sommerkleidung kaufen?\n\nLiebe Grüße\nPetra",
+    "questions": [
+      "Wann kannst du mich treffen?",
+      "Möchtest du dir auch etwas kaufen?",
+      "Wo können wir neue Sommerkleidung kaufen?"
+    ],
+    "recipient": "die E-Mail"
+  },
+  {
+    "subject": "Aktivnosti u slobodno vreme",
+    "situation": "Du bekommst eine E-Mail von Luisa. Sie hat am Wochenende frei und möchte etwas unternehmen. Sie stellt dir Fragen.",
+    "originalEmail": "Hallo!\n\nich habe am Wochenende frei und möchte gerne mit Freunden etwas unternehmen. Vielleicht können wir ins Kino gehen, im Park spazieren oder Sport machen. Hast du Lust mitzukommen? Wir können auch andere Freunde einladen.\n\nAn welchem Tag und um wie viel Uhr hast du Zeit für mich?\nWas können wir am Wochenende machen?\nWen fragen wir noch?\n\nLiebe Grüße\nLuisa",
+    "questions": [
+      "An welchem Tag und um wie viel Uhr hast du Zeit für mich?",
+      "Was können wir am Wochenende machen?",
+      "Wen fragen wir noch?"
+    ],
+    "recipient": "die E-Mail"
+  },
+  {
+    "subject": "Kupovina nameštaja",
+    "situation": "Ihr Freund Christian möchte neue Möbel für seine Wohnung kaufen. Sie bekommen folgende E-Mail von ihm. Sie stellen ihm Fragen.",
+    "originalEmail": "Hallo!\n\nich bin vor kurzem umgezogen und habe eine neue Wohnung. Ich muss noch Möbel kaufen, aber ich weiß nicht, wo ich sie kaufen kann. Kannst du mir helfen? Ich möchte auch meine alten Möbel verkaufen.\n\nWo kann ich neue Möbel kaufen?\nWann kannst du mich treffen?\nWer möchte meine alten Möbel kaufen?\n\nLiebe Grüße\nChristian",
+    "questions": [
+      "Wo kann ich neue Möbel kaufen?",
+      "Wann kannst du mich treffen?",
+      "Wer möchte meine alten Möbel kaufen?"
+    ],
+    "recipient": "die E-Mail"
+  },
+  {
+    "subject": "Poseta tvom gradu",
+    "situation": "Du bekommst eine E-Mail von Sabine. Sie kommt in deine Stadt und möchte dich treffen. Sie stellt dir Fragen.",
+    "originalEmail": "Hallo!\n\nWir haben uns lange nicht gesehen. Ich komme nächsten Montag in deine Stadt und möchte dich unbedingt treffen. Ich bleibe drei Tage. Hast du Zeit?\n\nWann hast du Zeit?\nWo können wir uns treffen?\nWas können wir machen?\n\nLiebe Grüße\nSabine",
+    "questions": [
+      "Wann hast du Zeit?",
+      "Wo können wir uns treffen?",
+      "Was können wir machen?"
+    ],
+    "recipient": "die E-Mail"
+  },
+  {
+    "subject": "Venčanje moje sestre",
+    "situation": "Du bekommst eine E-Mail von Lena. Ihre Schwester hat am Samstag Hochzeit. Sie stellt dir Fragen.",
+    "originalEmail": "Hallo!\n\nmeine Schwester Monika heiratet nächsten Samstag. Die Hochzeit ist in einem großen Saal und beginnt um 18 Uhr. Es werden bestimmt viele Gäste kommen. Ich würde mich freuen, wenn du mitkommen kannst. Ich habe kein Auto.\n\nWann hast du am Samstag Zeit?\nWas wirst du anziehen?\nWie fahren wir zur Hochzeit?\n\nLiebe Grüße\nLena",
+    "questions": [
+      "Wann hast du am Samstag Zeit?",
+      "Was wirst du anziehen?",
+      "Wie fahren wir zur Hochzeit?"
+    ],
+    "recipient": "die E-Mail"
+  },
+  {
+    "subject": "Kupovina poklona",
+    "situation": "Du bekommst eine E-Mail von Steffie. Ihre Freundin hat Geburtstag. Sie stellt dir Fragen.",
+    "originalEmail": "Hallo!\n\nIch brauche deine Hilfe. Meine Freundin Claudia hat Geburtstag und ich weiß nicht, was ich ihr kaufen soll. Kannst du mit mir ein Geschenk kaufen gehen?\n\nWas soll ich ihr kaufen?\nWo kann ich ein Geschenk kaufen?\nWo und wann treffen wir uns?\n\nLiebe Grüße\nSteffie",
+    "questions": [
+      "Was soll ich ihr kaufen?",
+      "Wo kann ich ein Geschenk kaufen?",
+      "Wo und wann treffen wir uns?"
+    ],
+    "recipient": "die E-Mail"
+  },
+  {
+    "subject": "Bavljenje sportom",
+    "situation": "Du bekommst eine E-Mail von Verena. Sie möchte Sport machen. Sie stellt dir Fragen.",
+    "originalEmail": "Hallo!\n\nIch habe nächste Woche Urlaub und möchte gerne Sport machen, vielleicht Joggen oder Rad fahren. Möchtest du mit mir gemeinsam Sport machen? Hast du Zeit dafür?\n\nWelche Sportart möchtest du gerne machen?\nWas brauchen wir?\nAn welchem Tag hast du Zeit?\n\nLiebe Grüße\nVerena",
+    "questions": [
+      "Welche Sportart möchtest du gerne machen?",
+      "Was brauchen wir?",
+      "An welchem Tag hast du Zeit?"
+    ],
+    "recipient": "die E-Mail"
+  },
+  {
+    "subject": "Kupovina odeće",
+    "situation": "Du bekommst eine E-Mail von Laura. Sie möchte Kleidung kaufen. Sie stellt dir Fragen.",
+    "originalEmail": "Hallo!\n\nBald ist Winter! Ich habe leider für die kommende Winterzeit keine geeignete Kleidung. Deswegen brauche ich deine Hilfe bei der Auswahl neuer Kleider. Kannst du mir bitte helfen?\n\nSchreib mir bitte:\nWann hast du Zeit für einen Kleiderkauf?\nWo treffen wir uns?\nMöchtest du auch etwas kaufen?\n\nLiebe Grüße\nLaura",
+    "questions": [
+      "Wann hast du Zeit für einen Kleiderkauf?",
+      "Wo treffen wir uns?",
+      "Möchtest du auch etwas kaufen?"
+    ],
+    "recipient": "die E-Mail"
+  },
+  {
+    "subject": "Da radimo nešto zajedno",
+    "situation": "Du bekommst eine E-Mail von Patricia. Sie hat am Wochenende frei. Sie stellt dir Fragen.",
+    "originalEmail": "Hallo!\n\nIch habe am Wochenende frei und würde gerne etwas unternehmen. Hast du Zeit? Vielleicht könnten wir einen Ausflug machen oder einfach ins Café gehen?\n\nSchreib mir bitte:\nHast du am Wochenende Zeit?\nWas machst du gerne in deiner Freizeit?\nWo können wir uns treffen?\n\nLiebe Grüße\nPatricia",
+    "questions": [
+      "Hast du am Wochenende Zeit?",
+      "Was machst du gerne in deiner Freizeit?",
+      "Wo können wir uns treffen?"
+    ],
+    "recipient": "die E-Mail"
+  },
+  {
+    "subject": "Rođendanska proslava",
+    "situation": "Du bekommst eine E-Mail von Andrea. Sie hat am Samstag Geburtstag und organisiert eine Feier. Sie stellt dir Fragen.",
+    "originalEmail": "Hallo!\n\nIch habe am nächsten Samstag Geburtstag und möchte eine kleine Feier organisieren. Ich würde mich freuen, wenn du auch kommen könntest. Zieh aber bitte eine Jacke oder einen Pullover an, weil die Party im Garten stattfinden wird. Du kannst auch jemanden von deiner Familie oder Freunden mitbringen.\n\nSchreib mir bitte:\nWann kannst du am Samstag kommen?\nWer kommt noch mit?\nWas möchtest du anziehen?\n\nLiebe Grüße\nAndrea",
+    "questions": [
+      "Wann kannst du am Samstag kommen?",
+      "Wer kommt noch mit?",
+      "Was möchtest du anziehen?"
+    ],
+    "recipient": "die E-Mail"
+  },
+  {
+    "subject": "Tvoje putovanje u Hamburg",
+    "situation": "Du bekommst eine E-Mail von Max. Er erwartet deinen Besuch in Hamburg. Er stellt dir Fragen.",
+    "originalEmail": "Hallo!\n\nDu schreibst, dass du bald zu mir nach Hamburg kommst. Ich freue mich schon sehr auf deinen Besuch. Du kannst auch jemanden von deiner Familie oder Freunde mitbringen.\n\nSchreib mir bitte:\nAn welchem Tag kommst du? Und um wie viel Uhr?\nWie lange möchtest du bleiben?\nWen bringst du mit?\n\nLiebe Grüße\nMax",
+    "questions": [
+      "An welchem Tag kommst du? Und um wie viel Uhr?",
+      "Wie lange möchtest du bleiben?",
+      "Wen bringst du mit?"
+    ],
+    "recipient": "die E-Mail"
+  },
+  {
+    "subject": "Poseta gradu",
+    "situation": "Du bekommst eine E-Mail von Andrea. Eine Freundin kommt zu Besuch. Sie stellt dir Fragen.",
+    "originalEmail": "Hallo!\n\nUnsere gute Freundin Maria aus Berlin kommt mich bald besuchen. Ich möchte ihr die Stadt zeigen und vielleicht mit ihr in ein gutes Restaurant gehen. Ich würde mich sehr freuen, wenn du mitkommen könntest.\n\nSag mir bitte:\nAn welchem Tag kannst du mit uns in die Stadt gehen?\nWelches Restaurant findest du gut?\nWas können wir nach dem Essen noch machen?\n\nBis bald!\nAndrea",
+    "questions": [
+      "An welchem Tag kannst du mit uns in die Stadt gehen?",
+      "Welches Restaurant findest du gut?",
+      "Was können wir nach dem Essen noch machen?"
+    ],
+    "recipient": "die E-Mail"
+  },
+  {
+    "subject": "Planiranje rođendanske proslave",
+    "situation": "Du bekommst eine E-Mail von Stefan. Ein Freund aus dem Deutschkurs hat Geburtstag. Er stellt dir Fragen.",
+    "originalEmail": "Hallo!\n\nNächste Woche hat unser Freund aus dem Deutschkurs Geburtstag. Wir möchten ihm eine kleine Party organisieren. Meine Wohnung ist leider zu klein. Wir müssen ihm auch ein Geschenk kaufen, vielleicht Kleidung oder ein tolles Buch. Möchtest du gerne kommen?\n\nSchreib mir bitte:\nWo sollen wir seine Geburtstagsfeier organisieren?\nWas können wir ihm kaufen?\nWen laden wir ein?\n\nLiebe Grüße\nStefan",
+    "questions": [
+      "Wo sollen wir seine Geburtstagsfeier organisieren?",
+      "Was können wir ihm kaufen?",
+      "Wen laden wir ein?"
+    ],
+    "recipient": "die E-Mail"
+  },
+  {
+    "subject": "Tvoje putovanje u Minhen",
+    "situation": "Du bekommst eine E-Mail von Anika. Sie freut sich auf deinen Besuch in München. Sie stellt dir Fragen.",
+    "originalEmail": "Hallo!\n\nDu schreibst, du möchtest mich bald in München besuchen. Ich freue mich schon sehr! Du kannst auch gerne jemanden von deiner Familie oder Freunde mitbringen.\n\nIch möchte gerne etwas für euch kochen. Was ist dein Lieblingsessen?\n\nSchreib mir bitte:\nAn welchem Tag und um wie viel Uhr kommst du?\nWie lange möchtest du bleiben?\nWas möchtest du gerne essen?\n\nLiebe Grüße\nAnika",
+    "questions": [
+      "An welchem Tag und um wie viel Uhr kommst du?",
+      "Wie lange möchtest du bleiben?",
+      "Was möchtest du gerne essen?"
+    ],
+    "recipient": "die E-Mail"
+  }
+]
