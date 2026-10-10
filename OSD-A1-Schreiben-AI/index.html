@@ -435,6 +435,78 @@ header{position:relative !important;top:auto !important}
   .answer .task-paired .paired-heading{font-size:12px}
 }
 
+/* DE-MAX: mobilni pregled 2026-10. Kompaktno, citljivo, jedan prirodni skrol. */
+.mobile-jump{display:none}
+@media(max-width:799px){
+  html{-webkit-text-size-adjust:100%}
+  html,body{overflow-x:clip !important}
+  body{background:#f4f7fd !important}
+  .app{width:100% !important;max-width:100% !important;box-shadow:none !important}
+  .head-top{height:40px !important;min-height:40px !important;padding:5px 75px !important}
+  .brand{font-size:20px !important;letter-spacing:.1px}
+  .headnav{max-width:none !important;grid-template-columns:37px minmax(0,1fr) 37px !important;gap:6px !important;padding:0 8px 6px !important}
+  .headnav button,.headnav select{height:35px !important;border-radius:9px !important}
+  .headnav select{font-size:11.5px !important;padding:4px 6px !important}
+  .headnav button{font-size:22px !important}
+  .workspace{display:block !important;grid-template-columns:none !important;min-width:0 !important}
+  .workspace>.panel{width:100% !important;min-width:0 !important;overflow:visible !important}
+  .panel-title{min-height:35px !important;padding:7px 10px !important;gap:6px !important}
+  .panel-title strong{font-size:12px !important;line-height:1.3}
+  .answer .limit-note{font-size:9.5px !important;max-width:100%;white-space:normal}
+  .prompt{border-bottom:2px solid #c7d8f2 !important}
+  .taskscroll{padding:8px 8px 10px !important;overflow:visible !important}
+  .bilingual{width:100% !important;max-width:none !important}
+  .paired-card{padding:9px 10px !important;margin:0 0 7px !important;border-radius:9px !important;box-shadow:0 1px 3px #20477a09 !important}
+  .paired-heading{font-size:10.5px !important;margin-bottom:5px !important;letter-spacing:.45px}
+  .paired-lines{gap:5px !important}
+  .sentence-pair{padding:0 0 5px !important;margin:0 !important;border-bottom-color:#edf1f7 !important}
+  .sentence-pair:last-child{padding-bottom:0 !important}
+  .sentence-de{font-size:12.6px !important;line-height:1.36 !important;font-weight:650 !important;letter-spacing:0}
+  .sentence-sr{font-size:12.1px !important;line-height:1.36 !important;padding-top:1px !important;margin:0 !important;font-weight:600 !important}
+  .bilingual .mail-meta{padding-bottom:6px !important;margin-bottom:8px !important;gap:3px !important;font-size:11.5px !important}
+  .mail-meta>div{grid-template-columns:58px minmax(0,1fr) !important;gap:4px !important}
+  .mobile-jump{display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;text-decoration:none;color:#fff;background:#ca263d;font-size:10.5px;font-weight:850;border-radius:8px;padding:5px 9px;min-height:28px}
+  .mobile-jump:focus-visible{outline:2px solid #2e65af;outline-offset:2px}
+  .answer .editorarea,.answer.has-result .editorarea{margin:7px 8px 0 !important;padding:10px !important;gap:7px !important;border-radius:10px !important}
+  .editor-top strong{font-size:12.5px !important}
+  .save-flag{font-size:9px !important}
+  .answer .editorarea textarea{height:172px !important;min-height:150px !important;max-height:none !important;font-size:16px !important;line-height:1.43 !important;padding:10px 11px !important;border-width:1.5px !important;border-radius:10px !important}
+  .answer .editorarea .task-paired{padding:9px 10px !important;margin:3px 0 !important;border-radius:9px !important;background:#f5f8ff !important}
+  .answer .task-paired .paired-heading{font-size:11px !important;margin-bottom:6px !important}
+  .answer .task-paired .paired-lines{gap:4px !important}
+  .answer .task-paired .sentence-pair{padding-bottom:4px !important}
+  .answer .task-paired .sentence-de{font-size:12.5px !important;line-height:1.34 !important}
+  .answer .task-paired .sentence-sr{font-size:12px !important;line-height:1.32 !important}
+  .answer .task-paired #pairs-instruction{margin-bottom:6px !important}
+  .answer .task-paired #pairs-questions-intro{margin-bottom:6px !important}
+  .answer .task-paired #pairs-qs{margin-bottom:6px !important}
+  .answer .task-paired #pairs-signoff{padding-top:6px !important}
+  .answer .mini-progress{margin:1px 0 !important;height:4px}
+  .answer .foot{margin-top:2px !important;gap:7px !important}
+  .counter{font-size:10.5px !important}
+  .checkbtn{padding:10px 12px !important;min-height:40px;font-size:12px !important;border-radius:9px !important}
+  .mode{font-size:9.4px !important;line-height:1.28 !important;margin:0 !important}
+  .answer .resultwrap,.answer.has-result .resultwrap{margin:8px 8px 18px !important;padding:11px 10px !important;border-radius:10px !important}
+  .result-title{font-size:12px !important;margin-bottom:8px !important}
+  .scorebox{padding:9px 10px !important;margin-bottom:9px !important}
+  .score{font-size:31px !important}
+  .rubric{gap:5px !important;margin-bottom:10px !important}
+  .rubric span{font-size:10px !important;padding:6px !important}
+  .corrected{font-size:13.5px !important;line-height:1.5 !important;padding:10px !important}
+  .feedback{font-size:11px !important}
+}
+@media(max-width:359px){
+  .head-top{padding:5px 62px !important}
+  .brand{font-size:19px !important}
+  .headnav{grid-template-columns:34px minmax(0,1fr) 34px !important;gap:5px !important}
+  .taskscroll{padding:6px !important}
+  .paired-card{padding:8px 9px !important}
+  .sentence-de{font-size:12.3px !important}
+  .sentence-sr{font-size:11.8px !important}
+  .answer .task-paired .sentence-de{font-size:12.2px !important}
+  .answer .task-paired .sentence-sr{font-size:11.7px !important}
+  .answer .editorarea,.answer.has-result .editorarea{margin:6px 6px 0 !important;padding:9px !important}
+}
 </style>
 </head>
 <body>
@@ -445,7 +517,7 @@ header{position:relative !important;top:auto !important}
 </header>
 <main class="workspace">
   <section class="panel prompt" aria-label="Postavka zadatka">
-    <div class="panel-title"><strong>1. POSTAVKA MEJLA</strong><div class="prompt-actions"><button class="smallbutton readbutton" id="readMode" aria-pressed="false">⤢ Cela postavka</button></div></div>
+    <div class="panel-title"><strong>1. POSTAVKA MEJLA</strong><a class="mobile-jump" href="#answerPanel">Piši mejl ↓</a><div class="prompt-actions"><button class="smallbutton readbutton" id="readMode" aria-pressed="false">⤢ Cela postavka</button></div></div>
     <div class="taskscroll" id="promptScroll">
       <div class="bilingual" aria-label="Nemačka postavka sa prevodom ispod svake rečenice">
         <div class="paired-card">
@@ -461,7 +533,7 @@ header{position:relative !important;top:auto !important}
     </div>
   </section>
   <section class="panel answer" id="answerPanel" aria-label="Pisanje odgovora">
-    <div class="panel-title"><strong>2. NAPIŠI SVOJ ODGOVOR</strong><span class="limit-note">A1 • oko 30 reči • do 10 bodova</span></div>
+    <div class="panel-title"><strong>2. NAPIŠI SVOJ ODGOVOR</strong><a class="mobile-jump" href="#promptScroll">↑ Postavka</a><span class="limit-note">A1 • oko 30 reči • do 10 bodova</span></div>
     <div class="editorarea"><div class="editor-top"><strong>Tvoj mejl na nemačkom</strong><span class="save-flag">Čuva se automatski</span></div><textarea id="answer" spellcheck="true" lang="de" placeholder="Hallo,&#10;&#10;Napiši odgovor na sva tri pitanja.&#10;&#10;Liebe Grüße&#10;…" aria-label="Ovde upiši mejl na nemačkom"></textarea>
       <div class="paired-card task-paired" aria-label="Pitanja i uputstvo za mejl">
         <div class="paired-heading">PITANJA NA KOJA ODGOVARAŠ</div>
