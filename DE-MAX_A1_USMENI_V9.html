@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b4db3">
 <meta name="description" content="DE-MAX A1: 18 tema u dve kolone. Svi ponuđeni odgovori su zasebne uzastopne vežbe, uz izgovor i prevod.">
-<title>DE-MAX A1 | V8 – Jednostavne kontrole</title>
+<title>DE-MAX A1 | V10 – Pitanje i odgovor na jednom ekranu</title>
 <style>
 :root{--navy:#102c54;--blue:#1264d4;--pale:#edf5ff;--sub:#607699;--line:#dce8f8;--red:#c82f49;--green:#12846b;--shadow:0 8px 24px #1b599010}
 *{box-sizing:border-box} html,body{height:100%;margin:0}body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--navy);background:#e6eef8;-webkit-tap-highlight-color:transparent}button,input,select{font:inherit}button{cursor:pointer;touch-action:manipulation}button:disabled{opacity:.38;cursor:default}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #ffbe47;outline-offset:2px}
@@ -233,6 +233,85 @@
    padding:7px 4px !important;
  }
 }
+
+/* V10: Stalni prikaz jednog pitanja i jednog odgovora – bez vertikalnog skrolovanja. */
+.app:has(.practice:not([hidden])) .bar{padding:6px 12px 7px!important}
+.app:has(.practice:not([hidden])) .brandline{gap:6px}
+.app:has(.practice:not([hidden])) .brandline .org strong{font-size:13px;line-height:1.05}
+.app:has(.practice:not([hidden])) .brandline .org small{font-size:10px;margin-top:1px}
+.practice{overflow:hidden}
+.practice .practice-top{padding:6px 10px 6px}
+.practice .topichead{gap:7px}
+.practice .back{width:34px;height:34px;border-radius:10px}
+.practice .smalltotal{padding:6px 7px;font-size:10px}
+.practice .secondrow{margin-top:5px;gap:7px}
+.practice .jump{padding:5px 8px;font-size:10px}
+.practice .studybody{
+ display:grid!important;
+ grid-template-rows:minmax(0,1fr) minmax(0,1fr);
+ gap:8px;
+ overflow:hidden!important;
+ overscroll-behavior:none;
+ touch-action:manipulation;
+ padding:9px 10px;
+ min-height:0;
+ align-content:center;
+}
+.practice .studybody .studyhead,.practice .studybody .smallhint{display:none!important}
+.practice .speech-card{
+ height:100%; min-height:0!important; margin:0!important;
+ overflow:hidden; padding:10px 12px; border-radius:17px;
+ display:flex; flex-direction:column; justify-content:center;
+}
+.practice .speech-card .cardtop{flex:none;margin:0 0 7px}
+.practice .speech-card .letter{width:24px;height:24px;border-radius:7px}
+.practice .speech-card .flaglabel{font-size:10px;gap:6px;letter-spacing:.2px;white-space:nowrap}
+.practice .speech-card .listen{min-height:31px;flex:none;padding:4px 8px;font-size:11px}
+.practice .speech-card .german{
+ font-size:var(--fit-german,20px)!important;
+ line-height:1.23!important;letter-spacing:-.2px!important;
+ margin:0 0 5px!important; overflow-wrap:anywhere;
+}
+.practice .speech-card .translation{
+ font-size:var(--fit-translation,12px)!important;
+ line-height:1.24!important;
+}
+.practice .speech-card #answerVisible{flex:none;min-height:0}
+.practice .controls{flex:none;padding:6px 10px calc(7px + env(safe-area-inset-bottom))}
+.practice .controlrow{margin:0 0 5px;gap:5px}
+.practice .controls .controlrow #prev,.practice .controls .controlrow #next{
+ min-height:35px!important;border-radius:10px!important;padding:4px!important;
+ font-size:clamp(11px,2.95vw,13px)!important;box-shadow:0 2px 5px #a3183620!important;
+}
+.practice .navmark{flex:.78;font-size:clamp(10px,2.7vw,12px);padding:2px 0}
+.practice .actionrow #autoPlay{min-height:34px!important;max-width:none!important;font-size:12px!important;border-radius:9px!important;padding:5px 8px}
+.practice .settingrow{margin-top:5px;justify-content:center;gap:12px}
+.practice .settingrow label{font-size:11px;white-space:nowrap}
+.practice .settingrow select{min-width:128px;max-width:160px;padding:5px 10px;font-size:12px}
+/* Status is announced to screen readers, without taking reading space from the two cards. */
+.practice .line-status{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important;border:0!important}
+@media(max-width:350px){
+ .practice .practice-top{padding:4px 8px}
+ .practice .studybody{gap:5px;padding:5px 7px}
+ .practice .speech-card{padding:6px 8px;border-radius:12px}
+ .practice .speech-card .cardtop{margin-bottom:4px}
+ .practice .speech-card .flaglabel{font-size:9px}
+ .practice .speech-card .listen{font-size:10px;min-height:27px;padding:3px 6px}
+ .practice .controls{padding:4px 7px calc(4px + env(safe-area-inset-bottom))}
+ .practice .controls .controlrow #prev,.practice .controls .controlrow #next{min-height:32px!important;font-size:11px!important}
+ .practice .actionrow #autoPlay{min-height:31px!important;font-size:11px!important}
+ .practice .settingrow{margin-top:4px}
+}
+@media(max-height:650px){
+ .app:has(.practice:not([hidden])) .bar{padding-top:4px!important;padding-bottom:4px!important}
+ .practice .practice-top{padding-top:4px;padding-bottom:4px}
+ .practice .studybody{padding-top:4px;padding-bottom:4px;gap:5px}
+ .practice .speech-card{padding-top:6px;padding-bottom:6px}
+ .practice .controls{padding-top:3px;padding-bottom:calc(4px + env(safe-area-inset-bottom))}
+ .practice .controls .controlrow #prev,.practice .controls .controlrow #next{min-height:32px!important}
+ .practice .actionrow #autoPlay{min-height:31px!important}
+ .practice .settingrow{margin-top:4px}
+}
 </style>
 </head>
 <body>
@@ -257,7 +336,7 @@
   <div class="controls">
    <div class="controlrow"><button type="button" class="nav" id="prev">‹ Prethodno</button><button type="button" class="navmark" id="mark">○ Uvežbano</button><button type="button" class="nav" id="next">Sledeće ›</button></div>
    <div class="actionrow"><button type="button" class="act primary" id="autoPlay">▶ Auto čitanje Q + A</button></div>
-   <div class="settingrow"><label for="speed">Brzina izgovora</label><select id="speed"><option value="0.70">🐢 Sporo</option><option value="0.85">Polako</option><option value="1">Normalno</option><option value="1.15">Brzo</option></select><button type="button" class="autostate" id="autoToggle">✓ Ručno menjanje pitanja</button></div>
+   <div class="settingrow"><label for="speed">Brzina izgovora</label><select id="speed"><option value="0.70">🐢 Sporo</option><option value="0.85">Polako</option><option value="1">Normalno</option><option value="1.15">Brzo</option></select></div>
    <div class="line-status" id="status" role="status" aria-live="polite">Izaberite slušanje</div>
   </div>
  </div>
@@ -1988,11 +2067,11 @@ function safeSave(){try{localStorage.setItem(PS,JSON.stringify(state.progress))}
 function globalCount(){let n=0;TOPICS.forEach((t,ti)=>t.items.forEach((x,j)=>{if(state.progress[key(ti,j)])n++}));return n}
 function updateHomeProgress(){$('globalProgress').textContent=globalCount()+' / '+TOTAL+' uvežbano'}
 function homeList(){const input=$('search').value.trim().toLocaleLowerCase('sr');const target=$('topicsList');target.replaceChildren();TOPICS.forEach((t,i)=>{if(!(t.title.toLocaleLowerCase('sr')+' '+(i+1)).includes(input))return;let done=t.items.reduce((n,x,j)=>n+(!!state.progress[key(i,j)]),0);const btn=document.createElement('button');btn.type='button';btn.className='topic';btn.innerHTML=`<span class="emoji">${t.icon}</span><span class="text"><strong>${i+1}. ${t.title.split(' · ')[0]}</strong><small>${t.title.split(' · ')[1]||''}</small></span><span class="right"><span class="counter">${done} / ${t.items.length} pitanja</span></span>`;btn.onclick=()=>chooseTopic(i);target.append(btn)});if(!target.children.length){const p=document.createElement('p');p.textContent='Nema tema za ovu pretragu.';p.style.padding='20px';target.append(p)}updateHomeProgress()}
-function scrollTopStudy(){$('studybody').scrollTop=0}
+function scrollTopStudy(){/* Prikaz nema skrolovanja. */}
 function updateBadge(label,on=false){$('liveBadge').textContent=label;$('liveBadge').classList.toggle('on',on)}
 function status(s){$('status').textContent=s}
 function resetCards(){$('qCard').classList.remove('talking');$('aCard').classList.remove('talking')}
-function updateAutoToggle(){$('autoToggle').textContent='✓ Ručno menjanje pitanja';$('autoPlay').textContent=state.playing?'♫ Čitam Q + A…':'▶ Auto čitanje Q + A'}
+function updateAutoToggle(){$('autoPlay').textContent=state.playing?'♫ Čitam Q + A…':'▶ Auto čitanje Q + A'}
 function render(){
  const t=TOPICS[state.topic],it=t.items[state.index];
  $('topicIndex').textContent=(state.topic+1)+' / '+TOPICS.length;
@@ -2010,7 +2089,43 @@ function render(){
  $('mark').textContent=done?'✓ Uvežbano':'○ Označi uvežbano';
  $('mark').classList.toggle('checked',done);
  updateAutoToggle();resetCards();
+ requestAnimationFrame(fitPracticeCards);
 }
+
+function fitPracticeCards(){
+ if($('practice').hidden) return;
+ const body=$('studybody'),q=$('qCard'),a=$('aCard');
+ if(!body.clientHeight || !body.clientWidth)return;
+ const cs=getComputedStyle(body);
+ const available=body.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom)-parseFloat(cs.rowGap||cs.gap||0)-2;
+ // Compute the real content height, including the always-visible translations.
+ function required(card){
+   const comp=getComputedStyle(card);
+   const top=card.querySelector('.cardtop');
+   const german=card.querySelector('.german');
+   const translation=card.querySelector('.translation');
+   const space=parseFloat(comp.paddingTop)+parseFloat(comp.paddingBottom)+parseFloat(comp.borderTopWidth)+parseFloat(comp.borderBottomWidth);
+   const topstyle=getComputedStyle(top);
+   const gs=getComputedStyle(german);
+   return space+top.getBoundingClientRect().height+parseFloat(topstyle.marginBottom)
+        +german.getBoundingClientRect().height+parseFloat(gs.marginBottom)
+        +translation.getBoundingClientRect().height+2;
+ }
+ let reqQ,reqA;
+ for(let size=21;size>=10;size-=.5){
+   const tr=Math.max(9,Math.min(13,size*.61));
+   body.style.setProperty('--fit-german',size+'px');
+   body.style.setProperty('--fit-translation',tr+'px');
+   // First distribute rows so the content can be measured at the actual card width.
+   reqQ=required(q);reqA=required(a);
+   if(reqQ+reqA<=available+1)break;
+ }
+ const space=Math.max(0,available-reqQ-reqA);
+ const qheight=reqQ+space/2, aheight=reqA+space/2;
+ body.style.gridTemplateRows=`minmax(0,${Math.max(0,qheight)}fr) minmax(0,${Math.max(0,aheight)}fr)`;
+}
+window.addEventListener('resize',()=>requestAnimationFrame(fitPracticeCards));
+if(window.visualViewport)window.visualViewport.addEventListener('resize',()=>requestAnimationFrame(fitPracticeCards));
 function cancel(announce=true){state.run++;state.playing=false;if(state.currentFinish){const f=state.currentFinish;state.currentFinish=null;f(false)}if(state.pendingDelay){clearTimeout(state.pendingDelay.id);state.pendingDelay.resolve(false);state.pendingDelay=null}clearTimeout(state.speechTimer);try{if('speechSynthesis' in window)speechSynthesis.cancel()}catch(e){}resetCards();updateAutoToggle();if(announce){updateBadge('● Pauza');status('Zaustavljeno. Učenik sam bira sledeće ili prethodno pitanje.')}}
 function voice(){if(!('speechSynthesis' in window))return null;const vs=speechSynthesis.getVoices();return vs.find(v=>/^de/i.test(v.lang)&&/Google Deutsch|Microsoft|Katja|Anna|Hedda|German/i.test(v.name))||vs.find(v=>/^de/i.test(v.lang))||null}
 if('speechSynthesis' in window){state.voice=voice();speechSynthesis.addEventListener?.('voiceschanged',()=>{state.voice=voice()})}
@@ -2025,7 +2140,7 @@ async function playPair(){cancel(false);state.playing=true;updateAutoToggle();co
 function startAuto(){playPair()}
 function showQuestionList(){cancel(false);const root=$('questionList');root.replaceChildren();TOPICS[state.topic].items.forEach((it,i)=>{const b=document.createElement('button');b.type='button';b.className='jumpitem'+(state.index===i?' selected':'');const span1=document.createElement('span');span1.className='num';span1.textContent=(i+1)+'.';const span2=document.createElement('span');span2.className='questionpreview';const q=document.createElement('strong');q.textContent=it.q;const a=document.createElement('small');a.textContent=it.a;span2.append(q,a);b.append(span1,span2);b.onclick=()=>{closeQuestionList();setItem(i)};root.append(b)});$('questionModal').classList.add('open')}
 function closeQuestionList(){$('questionModal').classList.remove('open')}
-$('search').addEventListener('input',homeList);$('back').onclick=backHome;$('prev').onclick=()=>setItem(state.index-1);$('next').onclick=()=>setItem(state.index+1);$('mark').onclick=()=>{const k=key(state.topic,state.index);state.progress[k]=!state.progress[k];safeSave();const yes=state.progress[k];$('mark').textContent=yes?'✓ Uvežbano':'○ Označi uvežbano';$('mark').classList.toggle('checked',yes);updateHomeProgress()};$('sayQ').onclick=()=>listen('q');$('sayA').onclick=()=>listen('a');$('autoPlay').onclick=startAuto;$('autoToggle').onclick=()=>status('Auto čitanje ne prelazi samo na sledeće pitanje. Učenik koristi „Prethodno” i „Sledeće”.');$('speed').onchange=()=>{try{localStorage.setItem(SS,$('speed').value)}catch(e){}status('Brzina je sačuvana. Važi za sledeće slušanje.')};$('showQuestions').onclick=showQuestionList;$('closeModal').onclick=closeQuestionList;$('questionModal').onclick=e=>{if(e.target===$('questionModal'))closeQuestionList()};window.addEventListener('keydown',e=>{if(e.key==='Escape'){if($('questionModal').classList.contains('open'))closeQuestionList();else if(!$('practice').hidden)backHome()}});window.addEventListener('pagehide',()=>cancel(false));
+$('search').addEventListener('input',homeList);$('back').onclick=backHome;$('prev').onclick=()=>setItem(state.index-1);$('next').onclick=()=>setItem(state.index+1);$('mark').onclick=()=>{const k=key(state.topic,state.index);state.progress[k]=!state.progress[k];safeSave();const yes=state.progress[k];$('mark').textContent=yes?'✓ Uvežbano':'○ Označi uvežbano';$('mark').classList.toggle('checked',yes);updateHomeProgress()};$('sayQ').onclick=()=>listen('q');$('sayA').onclick=()=>listen('a');$('autoPlay').onclick=startAuto;$('speed').onchange=()=>{try{localStorage.setItem(SS,$('speed').value)}catch(e){}status('Brzina je sačuvana. Važi za sledeće slušanje.')};$('showQuestions').onclick=showQuestionList;$('closeModal').onclick=closeQuestionList;$('questionModal').onclick=e=>{if(e.target===$('questionModal'))closeQuestionList()};window.addEventListener('keydown',e=>{if(e.key==='Escape'){if($('questionModal').classList.contains('open'))closeQuestionList();else if(!$('practice').hidden)backHome()}});window.addEventListener('pagehide',()=>cancel(false));
 homeList();updateAutoToggle();if(!('speechSynthesis' in window))$('globalProgress').textContent='Izgovor nije podržan u ovom pregledaču.';
 </script>
 </body></html>
