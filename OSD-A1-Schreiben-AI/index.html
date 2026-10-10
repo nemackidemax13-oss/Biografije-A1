@@ -888,6 +888,153 @@ body.view-mail .prompt .panel-title strong#mailNumberText{font-size:16px!importa
 }
 @media(max-width:359px){.mail-home-grid{gap:7px;padding-inline:6px}.mail-card-title{font-size:14px}.mail-card-progress{font-size:9px}}
 
+
+/* DE-MAX mobilni pisac — isti raspored kao na prvoj Replit slici (16:04).
+   Pitanja ostaju iznad, veliko polje za odgovor popunjava visinu,
+   brojac i Proveri mejl su odmah iznad tastature. */
+@media (max-width:799px) {
+  body.mobile-writing #answerPanel,
+  body.mobile-writing .answer .editorarea,
+  body.mobile-writing .answer.has-result .editorarea {
+    min-height:0!important;
+  }
+  body.mobile-writing .answer .editorarea,
+  body.mobile-writing .answer.has-result .editorarea {
+    display:flex!important;
+    flex-direction:column!important;
+    gap:5px!important;
+    padding:5px 8px 6px!important;
+  }
+  body.mobile-writing .answer .editorarea .task-paired {
+    order:0!important;
+    flex:0 1 auto!important;
+    width:100%!important;
+    min-height:0!important;
+    max-height:52%!important;
+    overflow-y:auto!important;
+    overscroll-behavior:contain!important;
+    padding:8px 9px!important;
+    margin:0!important;
+    background:#f3f7ff!important;
+    border:1px solid #cbdcf0!important;
+    border-radius:9px!important;
+    scrollbar-width:thin;
+  }
+  body.mobile-writing .task-paired .paired-heading {
+    display:flex!important;
+    margin:0 0 6px!important;
+    align-items:center!important;
+    min-height:25px!important;
+  }
+  body.mobile-writing .task-paired .paired-heading span {
+    font-size:12px!important;
+    letter-spacing:.1px!important;
+  }
+  body.mobile-writing #mobileBackInline {
+    font-size:11px!important;
+    min-height:28px!important;
+    padding:5px 10px!important;
+  }
+  body.mobile-writing .task-paired #pairs-qs {
+    display:flex!important;
+    flex-direction:column!important;
+    gap:5px!important;
+  }
+  body.mobile-writing .task-paired .sentence-pair {
+    margin:0!important;
+    padding:0 0 4px!important;
+  }
+  body.mobile-writing .task-paired .sentence-de {
+    font-size:13.1px!important;
+    line-height:1.25!important;
+    font-weight:740!important;
+  }
+  body.mobile-writing .task-paired .sentence-sr {
+    font-size:12.4px!important;
+    line-height:1.25!important;
+    margin:0!important;
+    padding-top:1px!important;
+  }
+  body.mobile-writing .answer .editorarea textarea {
+    order:1!important;
+    flex:1 1 110px!important;
+    height:0!important;
+    min-height:85px!important;
+    max-height:none!important;
+    margin:0!important;
+    padding:9px 11px!important;
+    font-size:17px!important;
+    line-height:1.42!important;
+    resize:none!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    border:2px solid #8eacdb!important;
+    border-radius:10px!important;
+    background:#fff!important;
+    box-shadow:0 0 0 3px #c7d9f180!important;
+  }
+  body.mobile-writing .editorarea .mini-progress {
+    order:2!important;
+    flex:0 0 3px!important;
+    min-height:3px!important;
+    height:3px!important;
+    margin:0!important;
+  }
+  body.mobile-writing .answer .editorarea .foot {
+    order:3!important;
+    position:static!important;
+    flex:0 0 51px!important;
+    height:51px!important;
+    min-height:51px!important;
+    max-height:51px!important;
+    padding:3px 1px!important;
+    gap:6px!important;
+    background:#fff!important;
+    border:0!important;
+    box-shadow:none!important;
+  }
+  body.mobile-writing .answer .editorarea .counter {
+    font-size:12px!important;
+    font-weight:850!important;
+  }
+  body.mobile-writing .answer .editorarea .checkbtn {
+    flex-shrink:0!important;
+    font-size:12.4px!important;
+    min-height:43px!important;
+    padding:9px 11px!important;
+    border-radius:10px!important;
+  }
+  /* Kada tastatura zauzima skoro ceo ekran, polje za pisanje
+     ostaje dostupno, a sva tri pitanja mogu se pregledati zasebno. */
+  body.mobile-writing.keyboard-tight .answer .editorarea .task-paired {
+    max-height:49%!important;
+    padding:5px 8px!important;
+  }
+  body.mobile-writing.keyboard-tight .task-paired .sentence-de {
+    font-size:12px!important;
+    line-height:1.16!important;
+  }
+  body.mobile-writing.keyboard-tight .task-paired .sentence-sr {
+    font-size:11.5px!important;
+    line-height:1.16!important;
+  }
+  body.mobile-writing.keyboard-tight .task-paired #pairs-qs {
+    gap:2px!important;
+  }
+  body.mobile-writing.keyboard-micro .answer .editorarea .task-paired {
+    max-height:42%!important;
+  }
+  body.mobile-writing.keyboard-micro .answer .editorarea textarea {
+    min-height:65px!important;
+  }
+  body.mobile-writing.keyboard-micro .answer .editorarea .foot {
+    flex-basis:43px!important;
+    height:43px!important;
+    min-height:43px!important;
+    max-height:43px!important;
+  }
+}
+
 </style>
 </head>
 <body class="view-home">
