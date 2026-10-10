@@ -12,8 +12,8 @@
 
   const button = document.createElement('button');
   button.type = 'button';
-  button.textContent = '🔑 Podesi OpenAI';
-  button.setAttribute('aria-label', 'Podesi direktnu OpenAI proveru');
+  button.textContent = '⚙ Podešavanja';
+  button.setAttribute('aria-label', 'Podešavanja provere mejla');
   button.style.cssText = 'border:1px solid #d0dbee;border-radius:8px;background:#fff;color:#12417c;font-weight:800;font-size:11px;padding:6px 9px;margin:4px 0 9px;cursor:pointer;align-self:flex-start';
   modeLabel.insertAdjacentElement('afterend', button);
 
@@ -35,11 +35,12 @@
   document.body.appendChild(dialog);
   const input = dialog.querySelector('#demax-openai-key');
   function refreshMode() {
-    button.textContent = apiKey ? '🔑 OpenAI povezan u ovoj kartici' : '🔑 Podesi OpenAI';
-    if (apiKey) modeLabel.textContent = 'Direktna OpenAI provera na ovom uređaju. Nije zvanična ÖSD ocena.';
+    button.textContent = '⚙ Podešavanja';
+    modeLabel.textContent = 'Ocena za vežbanje; nije zvanična ÖSD ocena.';
   }
   button.addEventListener('click', function () {
-    input.value = apiKey;
+    input.value = '';
+    input.placeholder = apiKey ? 'Ključ je već unet (novi ključ za zamenu)' : 'sk-…';
     dialog.showModal();
   });
   dialog.querySelector('#demax-close-openai').addEventListener('click', function () { dialog.close(); });
@@ -51,8 +52,10 @@
   dialog.querySelector('#demax-save-openai').addEventListener('click', function () {
     const v = input.value.trim();
     if (v && !v.startsWith('sk-')) { alert('Unesi važeći OpenAI API ključ koji počinje sa sk-.'); return; }
-    apiKey = v;
-    try { if (v) sessionStorage.setItem(KEY_SLOT, v); else sessionStorage.removeItem(KEY_SLOT); } catch (_) {}
+    if (v) {
+      apiKey = v;
+      try { sessionStorage.setItem(KEY_SLOT, v); } catch (_) {}
+    }
     input.value = '';
     dialog.close(); updateCount(); refreshMode();
   });
@@ -68,7 +71,7 @@
     if (!wc) return;
     const initial = evaluateLocal(answer, idx);
     checkButton.disabled = true;
-    checkButton.textContent = 'OpenAI proverava…';
+    checkButton.textContent = 'Proveravam…';
     try {
       const controller = new AbortController();
       const timeout = setTimeout(function () { controller.abort(); }, 30000);
