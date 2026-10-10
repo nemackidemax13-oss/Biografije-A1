@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b4db3">
 <meta name="description" content="DE-MAX A1: 18 tema u dve kolone. Svi ponuđeni odgovori su zasebne uzastopne vežbe, uz izgovor i prevod.">
-<title>DE-MAX A1 | V10 – Pitanje i odgovor na jednom ekranu</title>
+<title>DE-MAX A1 | V11 – Pitanje i odgovor</title>
 <style>
 :root{--navy:#102c54;--blue:#1264d4;--pale:#edf5ff;--sub:#607699;--line:#dce8f8;--red:#c82f49;--green:#12846b;--shadow:0 8px 24px #1b599010}
 *{box-sizing:border-box} html,body{height:100%;margin:0}body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--navy);background:#e6eef8;-webkit-tap-highlight-color:transparent}button,input,select{font:inherit}button{cursor:pointer;touch-action:manipulation}button:disabled{opacity:.38;cursor:default}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #ffbe47;outline-offset:2px}
@@ -329,13 +329,13 @@
   <div class="practice-top"><div class="topichead"><button type="button" class="back" id="back" title="Sve teme" aria-label="Sve teme">‹</button><div class="titlebox"><span>TEMA <b id="topicIndex">1 / 18</b></span><strong id="topicTitle">Familie · Porodica</strong></div><div class="smalltotal" id="itemCount">30 pitanja</div></div><div class="secondrow"><div class="position" id="position">1 / 30</div><div class="progress"><div id="progressBar"></div></div><button type="button" class="jump" id="showQuestions">☷ Pitanja</button></div></div>
   <div class="studybody" id="studybody">
    <div class="studyhead"><span id="lessonHint">Pitanja redom iz snimka</span><span class="livebadge" id="liveBadge">● Spremno</span></div>
-   <section class="speech-card" id="qCard"><div class="cardtop"><div class="flaglabel"><span class="letter">Q</span>PITANJE · FRAGE</div><button type="button" class="listen" id="sayQ">🔊 Slušaj</button></div><p class="german" id="qText"></p><p class="translation" id="qTranslate"></p></section>
-   <section class="speech-card answer" id="aCard"><div class="cardtop"><div class="flaglabel"><span class="letter">A</span>ODGOVOR · ANTWORT</div><button type="button" class="listen" id="sayA">🔊 Slušaj</button></div><div id="answerVisible"><p class="german" id="aText"></p><p class="translation" id="aTranslate"></p></div></section>
+   <section class="speech-card" id="qCard"><div class="cardtop"><div class="flaglabel">Pitanje</div><button type="button" class="listen" id="sayQ">🔊 Slušaj</button></div><p class="german" id="qText"></p><p class="translation" id="qTranslate"></p></section>
+   <section class="speech-card answer" id="aCard"><div class="cardtop"><div class="flaglabel">Odgovor</div><button type="button" class="listen" id="sayA">🔊 Slušaj</button></div><div id="answerVisible"><p class="german" id="aText"></p><p class="translation" id="aTranslate"></p></div></section>
    <p class="smallhint">Svaki odgovor je zasebna vežba. Isto pitanje se ponavlja za drugačiji odgovor. Prethodno i sledeće birate sami.</p>
   </div>
   <div class="controls">
    <div class="controlrow"><button type="button" class="nav" id="prev">‹ Prethodno</button><button type="button" class="navmark" id="mark">○ Uvežbano</button><button type="button" class="nav" id="next">Sledeće ›</button></div>
-   <div class="actionrow"><button type="button" class="act primary" id="autoPlay">▶ Auto čitanje Q + A</button></div>
+   <div class="actionrow"><button type="button" class="act primary" id="autoPlay">▶ Auto čitanje pitanja i odgovora</button></div>
    <div class="settingrow"><label for="speed">Brzina izgovora</label><select id="speed"><option value="0.70">🐢 Sporo</option><option value="0.85">Polako</option><option value="1">Normalno</option><option value="1.15">Brzo</option></select></div>
    <div class="line-status" id="status" role="status" aria-live="polite">Izaberite slušanje</div>
   </div>
@@ -2071,7 +2071,7 @@ function scrollTopStudy(){/* Prikaz nema skrolovanja. */}
 function updateBadge(label,on=false){$('liveBadge').textContent=label;$('liveBadge').classList.toggle('on',on)}
 function status(s){$('status').textContent=s}
 function resetCards(){$('qCard').classList.remove('talking');$('aCard').classList.remove('talking')}
-function updateAutoToggle(){$('autoPlay').textContent=state.playing?'♫ Čitam Q + A…':'▶ Auto čitanje Q + A'}
+function updateAutoToggle(){$('autoPlay').textContent=state.playing?'♫ Čitam pitanje i odgovor…':'▶ Auto čitanje pitanja i odgovora'}
 function render(){
  const t=TOPICS[state.topic],it=t.items[state.index];
  $('topicIndex').textContent=(state.topic+1)+' / '+TOPICS.length;
