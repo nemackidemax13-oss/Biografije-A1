@@ -406,6 +406,35 @@ header{position:relative !important;top:auto !important}
  .answer .foot{justify-content:space-between}
 }
 
+
+/* Novo: levo samo primljeni mejl, desno uredjivac pa zadatak i pitanja. */
+.answer .editorarea .task-paired {
+  display:block !important;
+  width:100%;max-width:none !important;
+  margin:5px 0 1px !important;
+  padding:14px 15px !important;
+  background:#f5f9ff;
+  border:1px solid #cbdcf4;
+  border-radius:11px;
+  box-shadow:none;
+}
+.answer .task-paired .paired-heading{font-size:13px;color:#154384;margin-bottom:11px}
+.answer .task-paired .paired-lines{gap:7px}
+.answer .task-paired #pairs-instruction{margin-bottom:9px}
+.answer .task-paired #pairs-questions-intro{margin-bottom:7px}
+.answer .task-paired #pairs-qs{margin-bottom:10px}
+.answer .task-paired #pairs-signoff{padding-top:8px;border-top:1px solid #d7e3f2}
+.answer .task-paired .sentence-pair{padding-bottom:6px}
+.answer .task-paired .sentence-de{font-size:13.7px !important;line-height:1.43 !important}
+.answer .task-paired .sentence-sr{font-size:13px !important;line-height:1.43 !important;color:#bf1d34 !important}
+.answer .editorarea .foot{margin-top:5px !important}
+@media(max-width:799px){
+  .answer .editorarea .task-paired{padding:12px !important;margin:3px 0 !important}
+  .answer .task-paired .sentence-de{font-size:13.4px !important}
+  .answer .task-paired .sentence-sr{font-size:12.8px !important}
+  .answer .task-paired .paired-heading{font-size:12px}
+}
+
 </style>
 </head>
 <body>
@@ -427,18 +456,21 @@ header{position:relative !important;top:auto !important}
           <div class="mail-meta"><div><strong>Von:</strong><span id="de-from"></span></div><div><strong>Betreff:</strong><span id="de-subject"></span></div></div>
           <div id="pairs-email" class="paired-lines"></div>
         </div>
-        <div class="paired-card task-paired">
-          <div id="pairs-instruction" class="paired-lines"></div>
-          <div id="pairs-questions-intro" class="paired-lines"></div>
-          <div id="pairs-qs" class="paired-lines question-lines"></div>
-          <div id="pairs-signoff" class="paired-lines"></div>
-        </div>
+
       </div>
     </div>
   </section>
   <section class="panel answer" id="answerPanel" aria-label="Pisanje odgovora">
     <div class="panel-title"><strong>2. NAPIŠI SVOJ ODGOVOR</strong><span class="limit-note">A1 • oko 30 reči • do 10 bodova</span></div>
-    <div class="editorarea"><div class="editor-top"><strong>Tvoj mejl na nemačkom</strong><span class="save-flag">Čuva se automatski</span></div><textarea id="answer" spellcheck="true" lang="de" placeholder="Hallo,&#10;&#10;Napiši odgovor na sva tri pitanja.&#10;&#10;Liebe Grüße&#10;…" aria-label="Ovde upiši mejl na nemačkom"></textarea><div class="mini-progress" aria-hidden="true"><span id="progress"></span></div><div class="foot"><div class="counter" id="count">0 / 30 reči</div><button id="check" class="checkbtn" disabled>✓ Proveri mejl</button></div><p class="mode" id="checkmode">Groq AI provera: ocena za vežbanje, nije zvanična ÖSD ocena.</p></div>
+    <div class="editorarea"><div class="editor-top"><strong>Tvoj mejl na nemačkom</strong><span class="save-flag">Čuva se automatski</span></div><textarea id="answer" spellcheck="true" lang="de" placeholder="Hallo,&#10;&#10;Napiši odgovor na sva tri pitanja.&#10;&#10;Liebe Grüße&#10;…" aria-label="Ovde upiši mejl na nemačkom"></textarea>
+      <div class="paired-card task-paired" aria-label="Pitanja i uputstvo za mejl">
+        <div class="paired-heading">PITANJA NA KOJA ODGOVARAŠ</div>
+        <div id="pairs-instruction" class="paired-lines"></div>
+        <div id="pairs-questions-intro" class="paired-lines"></div>
+        <div id="pairs-qs" class="paired-lines question-lines"></div>
+        <div id="pairs-signoff" class="paired-lines"></div>
+      </div>
+      <div class="mini-progress" aria-hidden="true"><span id="progress"></span></div><div class="foot"><div class="counter" id="count">0 / 30 reči</div><button id="check" class="checkbtn" disabled>✓ Proveri mejl</button></div><p class="mode" id="checkmode">Groq AI provera: ocena za vežbanje, nije zvanična ÖSD ocena.</p></div>
     <div class="resultwrap" id="result" role="region" tabindex="-1" aria-live="polite" aria-label="Rezultat provere"></div>
   </section>
 </main>
