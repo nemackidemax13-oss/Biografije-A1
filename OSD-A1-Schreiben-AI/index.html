@@ -534,7 +534,7 @@ header{position:relative !important;top:auto !important}
   </section>
   <section class="panel answer" id="answerPanel" aria-label="Pisanje odgovora">
     <div class="panel-title"><strong>2. NAPIŠI SVOJ ODGOVOR</strong><a class="mobile-jump" href="#promptScroll">↑ Postavka</a><span class="limit-note">A1 • oko 30 reči • do 10 bodova</span></div>
-    <div class="editorarea"><div class="editor-top"><strong>Tvoj mejl na nemačkom</strong><span class="save-flag">Čuva se automatski</span></div><textarea id="answer" spellcheck="true" lang="de" placeholder="Hallo,&#10;&#10;Napiši odgovor na sva tri pitanja.&#10;&#10;Liebe Grüße&#10;…" aria-label="Ovde upiši mejl na nemačkom"></textarea>
+    <div class="editorarea"><div class="editor-top"><span class="save-flag">Čuva se automatski</span></div><textarea id="answer" spellcheck="true" lang="de" placeholder="Napiši odgovor na sva tri pitanja.&#10;&#10;Liebe Grüße&#10;…" aria-label="Ovde upiši mejl na nemačkom"></textarea>
       <div class="paired-card task-paired" aria-label="Pitanja i uputstvo za mejl">
         <div class="paired-heading">PITANJA NA KOJA ODGOVARAŠ</div>
         <div id="pairs-instruction" class="paired-lines"></div>
@@ -596,8 +596,12 @@ PAT.time=new RegExp(PAT.day.source+'|'+PAT.clock.source,'i');
 PAT['day-time']=PAT.time;PAT['yes-time']=new RegExp(PAT['yes-no'].source+'|'+PAT.time.source,'i');
 PAT['bring-food']=new RegExp(PAT.food.source+'|'+PAT.drink.source,'i');
 PAT['meeting-time']=new RegExp(PAT['meeting-place'].source+'|'+PAT.time.source,'i');
+function correctSportExpression(text){
+ return String(text??'').replace(/\bSport\s+spielen\b/gi,'Sport machen');
+}
 function correctGerman(text){
  let t=text.replace(/\r\n/g,'\n').replace(/[ \t]{2,}/g,' ');
+ t=correctSportExpression(t);
  const fix=[[/\bich haben\b/gi,'ich habe'],[/\bich bin zeit\b/gi,'ich habe Zeit'],[/\bich habe keine auto\b/gi,'ich habe kein Auto'],[/\bich habe zeit\b/gi,'ich habe Zeit'],[/\bich komme mit bus\b/gi,'ich komme mit dem Bus'],[/\bmit der bus\b/gi,'mit dem Bus'],[/\bmit dem zug\b/gi,'mit dem Zug'],[/\bmit auto\b/gi,'mit dem Auto'],[/\bwir kann\b/gi,'wir können'],[/\bdu kann\b/gi,'du kannst'],[/\bich mocht(e)?\b/gi,'ich möchte'],[/\bich mochte gerne\b/gi,'ich möchte gerne'],[/\bich wolle\b/gi,'ich will'],[/\bwir gehen mit dem auto\b/gi,'wir fahren mit dem Auto'],[/\bich komm\b/gi,'ich komme'],[/\bich hab\b/gi,'ich habe'],[/\bich freue mich auf dich sehen\b/gi,'ich freue mich, dich zu sehen'],[/\bdu und ich kann\b/gi,'du und ich können'],[/\bich gehe nach kino\b/gi,'ich gehe ins Kino']];
  for(const [regex,repl] of fix)t=t.replace(regex,repl);
  const nouns=['Zeit','Tag','Woche','Wochenende','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag','Sonntag','Uhr','Morgen','Abend','Nachmittag','Auto','Bus','Zug','Bahn','Taxi','Fahrrad','Freund','Freundin','Bruder','Schwester','Mutter','Vater','Familie','Buch','Blumen','Geschenk','Lehrerin','Restaurant','Café','Kino','Park','Schule','Stadt','Bahnhof','Markt','Geschäft','Supermarkt','Pizza','Brot','Kuchen','Torte','Wasser','Saft','Kaffee','Essen','Trinken','Kurs','Deutschkurs','Deutschbuch','Garten','Haus','Geburtstag','Party','Hochzeit','Samstagabend','Salat','Fleisch','Salat','Grüße','Gruß','Deutschland','Berlin','München','Hamburg'];
@@ -605,7 +609,7 @@ function correctGerman(text){
  t=t.replace(/(^|[.!?]\s+|\n\s*)([a-zäöü])/g,(m,p,c)=>p+c.toUpperCase());
  return t.trim();
 }
-function evaluateLocal(text,idx){const item=MAILS[idx];const original=text.trim();const count=words(original);const pts=item.types.map(t=>(PAT[t]&&PAT[t].test(original))?2:0);const greetings=/\b(hallo|liebe(?:r|\s|\b)|guten tag|hi|sehr geehrt)/i.test(original);const signoff=/(?:liebe grüße|viele grüße|mit freundlichen grüßen|bis bald|tschüss|dein\w*|freundliche grüße)/i.test(original);const form=(greetings&&signoff)?1:((greetings||signoff)?0.5:0);const fixed=correctGerman(original);const commonMiss=(original.match(/\b(ich haben|wir kann|du kann|ich bin zeit|mit der bus|keine auto|ich moch|ich komm|ich hab)\b/gi)||[]).length;const lowerNouns=(original.match(/\b(?:samstag|sonntag|montag|zeit|schule|freundin|restaurant|geschenk|auto|bus|mittag|deutschkurs)\b/g)||[]).length;const grammar=Math.max(0,2-Math.min(2,commonMiss+(lowerNouns>3?1:0)));const len=count>=15&&count<=30?1:0;const score=Math.min(10,pts.reduce((a,b)=>a+b,0)+grammar+form+len);const missing=pts.map((x,i)=>x===0?item.questions[i]:null).filter(Boolean);return {score,points:pts,grammar,form,length:len,correctedText:fixed,feedback:missing.length?'Proveri da li si jasno odgovorio/la na sledeća pitanja: '+missing.join(' • '):'Prepoznati su odgovori na sva tri pitanja. Proveri smisao i gramatiku rečenica.',mode:'local'}}
+function evaluateLocal(text,idx){const item=MAILS[idx];const original=text.trim();const count=words(original);const pts=item.types.map(t=>(PAT[t]&&PAT[t].test(original))?2:0);const greetings=/\b(hallo|liebe(?:r|\s|\b)|guten tag|hi|sehr geehrt)/i.test(original);const signoff=/(?:liebe grüße|viele grüße|mit freundlichen grüßen|bis bald|tschüss|dein\w*|freundliche grüße)/i.test(original);const form=(greetings&&signoff)?1:((greetings||signoff)?0.5:0);const fixed=correctGerman(original);const commonMiss=(original.match(/\b(ich haben|wir kann|du kann|ich bin zeit|mit der bus|keine auto|ich moch|ich komm|ich hab)\b/gi)||[]).length+( /\bSport\s+spielen\b/i.test(original)?1:0);const lowerNouns=(original.match(/\b(?:samstag|sonntag|montag|zeit|schule|freundin|restaurant|geschenk|auto|bus|mittag|deutschkurs)\b/g)||[]).length;const grammar=Math.max(0,2-Math.min(2,commonMiss+(lowerNouns>3?1:0)));const len=count>=15&&count<=30?1:0;const score=Math.min(10,pts.reduce((a,b)=>a+b,0)+grammar+form+len);const missing=pts.map((x,i)=>x===0?item.questions[i]:null).filter(Boolean);return {score,points:pts,grammar,form,length:len,correctedText:fixed,feedback:missing.length?'Proveri da li si jasno odgovorio/la na sledeća pitanja: '+missing.join(' • '):'Prepoznati su odgovori na sva tri pitanja. Proveri smisao i gramatiku rečenica.',mode:'local'}}
 function renderResult(r){
  const isAI=r.mode==='ai';
  const rawPts=Array.isArray(r.points)?r.points:[0,0,0];
@@ -615,7 +619,9 @@ function renderResult(r){
  const len=Math.max(0,Math.min(1,Number(r.length)||0));
  const score=Math.max(0,Math.min(10,pts.reduce((a,b)=>a+b,0)+grammar+form+len));
  const original=$('answer').value;
- const correction=(r.correctedText||original).trim();
+ const correction=correctSportExpression(r.correctedText||original).trim();
+ const sportTip=/\bSport\s+spielen\b/i.test(original)&&!/\bSport\s+(machen|spielen)\b/i.test(r.feedback||'')?'Izraz „Sport spielen“ ispravlja se u „Sport machen“ (npr. „Ich kann Sport machen“).':'';
+ const feedbackText=[r.feedback||'',sportTip].filter(Boolean).join('\n');
  const changed=correction!==original.trim();
  $('result').innerHTML=`<div class="result-title"><span>REZULTAT PROVERE</span><span class="ai-label">${isAI?'AI provera':'Osnovna automatska provera'}</span></div>
  <div class="scorebox"><div class="score">${score.toLocaleString('sr-RS')}<small> / 10 bodova</small></div><div class="score-caption">Ocena za vežbanje — nije zvanična ÖSD ocena</div></div>
@@ -623,7 +629,7 @@ function renderResult(r){
  <div class="correction-label">✎ ISPRAVLJEN MEJL</div>
  <div class="corrected" lang="de">${escapeHtml(correction)}</div>
  <div class="change-hint">${changed?'Prikazana je automatski ispravljena verzija tvog mejla.':'Tekst je prikazan bez dodatnih automatskih izmena.'}</div>
- <div class="feedback-heading">Komentar provere</div><div class="feedback">${escapeHtml(r.feedback||'')}</div>
+ <div class="feedback-heading">Komentar provere</div><div class="feedback">${escapeHtml(feedbackText)}</div>
  ${isAI?'':'<p class="help">Osnovna provera ne može pouzdano da otkrije sve gramatičke i sadržajne greške. Za potpuniju AI ispravku potreban je povezan serverski servis.</p>'}`;
  $('answerPanel').classList.add('has-result');
 }
