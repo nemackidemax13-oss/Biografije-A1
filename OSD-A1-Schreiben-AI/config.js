@@ -1,3 +1,4 @@
-// AI provera se aktivira kada se postavi Cloudflare Worker i unese njegova javna adresa.
-// Groq API ključ nikada ne sme da se nalazi u ovom fajlu.
+// Javna URL adresa Replit servera bez putanje i bez Groq API kljuca.
+// Primera radi: window.DEMAX_API_URL = "https://tvoj-projekat.replit.app";
+// Kada objavis Replit server, stavi njegov tacan URL ovde.
 window.DEMAX_API_URL = "";
