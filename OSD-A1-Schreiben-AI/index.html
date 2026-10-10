@@ -955,9 +955,11 @@ const VALID_SERVER = /^https:\/\/[a-z0-9.-]+(?::[0-9]+)?$/i.test(SERVER_BASE) ? 
 const WORKER_API_URL = SAME_SERVER ? location.origin + '/api/check-email' : (VALID_SERVER ? VALID_SERVER + '/api/check-email' : '');
 const WORKER_READY=Boolean(WORKER_API_URL);
 const STORAGE='demax_a1_mail_practice_v3';
-let saved={drafts:{},endpoint:'',results:{},current:0};
+let saved={drafts:{},endpoint:'',results:{},completed:{},current:0};
 try{const v=JSON.parse(localStorage.getItem(STORAGE)||'null');if(v&&typeof v==='object')saved={...saved,...v}}catch{}
 if(!saved.drafts)saved.drafts={};if(!saved.results)saved.results={};
+// Stari keširani rezultati nisu dokaz da je zadatak završen.
+if(!saved.completed || typeof saved.completed!=='object')saved.completed={};
 let current=Math.max(0,Math.min(34,Number(saved.current)||0));
 const $=id=>document.getElementById(id);
 function persist(){saved.current=current;try{localStorage.setItem(STORAGE,JSON.stringify(saved))}catch{}}
@@ -1069,19 +1071,19 @@ function render(){
  $('promptScroll').scrollTop=0;
  $('answerPanel').classList.remove('has-result');
  $('result').innerHTML='';
- if(saved.results[current]&&saved.results[current].text===$('answer').value)renderResult(saved.results[current].data);
+ if(saved.completed[current]===$('answer').value && words($('answer').value)>=15 && saved.results[current]&&saved.results[current].text===$('answer').value)renderResult(saved.results[current].data);
  updateCount();growMailEditor();persist();
 }
 for(let i=0;i<MAILS.length;i++){const el=document.createElement('option');el.value=i;el.textContent=`${i+1}. mejl — ${FULL_TRANSLATIONS[i].subject}`;$('pick').appendChild(el)}
 $('total').textContent=MAILS.length;
 function jump(n){if(document.body.classList.contains('mobile-writing')||document.body.classList.contains('mobile-review'))closeMobileWriting(false);current=Math.max(0,Math.min(MAILS.length-1,n));render();window.scrollTo({top:0,behavior:'instant'}); }
 $('prev').onclick=()=>jump(current-1);$('next').onclick=()=>jump(current+1);$('pick').onchange=e=>jump(Number(e.target.value));
-$('answer').addEventListener('input',()=>{saved.drafts[current]=$('answer').value;delete saved.results[current];$('answerPanel').classList.remove('has-result');$('result').innerHTML='';updateCount();persist()});
+$('answer').addEventListener('input',()=>{saved.drafts[current]=$('answer').value;delete saved.results[current];delete saved.completed[current];$('answerPanel').classList.remove('has-result');$('result').innerHTML='';updateCount();persist()});
 $('check').onclick=async()=>{
  const idx=current,text=$('answer').value,wc=words(text);
  if(wc===0)return;
  const initial=evaluateLocal(text,idx);
- if(!WORKER_READY){initial.feedback='AI server još nije povezan. Ovo je osnovna automatska provera.\n'+initial.feedback;saved.results[idx]={text,data:initial};renderResult(initial);persist();return}
+ if(!WORKER_READY){initial.feedback='AI server još nije povezan. Ovo je osnovna automatska provera.\n'+initial.feedback;saved.results[idx]={text,data:initial};if(wc>=15)saved.completed[idx]=text;else delete saved.completed[idx];renderResult(initial);persist();return}
  const button=$('check');button.disabled=true;button.textContent='AI proverava…';
  try {
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),29000);let response;
@@ -1090,9 +1092,9 @@ $('check').onclick=async()=>{
   if(!response.ok)throw Error(payload.error||'AI servis trenutno nije dostupan.');
   if(!Array.isArray(payload.points)||typeof payload.correctedText!=='string')throw Error('Neispravan odgovor servera.');
   const data={...payload,mode:'ai'};
-  if(current===idx&&$('answer').value===text){saved.results[idx]={text,data};renderResult(data);persist()}
+  if(current===idx&&$('answer').value===text){saved.results[idx]={text,data};if(wc>=15)saved.completed[idx]=text;else delete saved.completed[idx];renderResult(data);persist()}
  }catch(err){
-  if(current===idx&&$('answer').value===text){initial.feedback='AI provera nije uspela: '+(err?.message||'Greška')+'. Ovo je samo okvirna lokalna ocena.\n'+initial.feedback;saved.results[idx]={text,data:initial};renderResult(initial);persist()}
+  if(current===idx&&$('answer').value===text){initial.feedback='AI provera nije uspela: '+(err?.message||'Greška')+'. Ovo je samo okvirna lokalna ocena.\n'+initial.feedback;saved.results[idx]={text,data:initial};delete saved.completed[idx];renderResult(initial);persist()}
  }finally{button.textContent='✓ Proveri mejl';updateCount()}
 };
 
@@ -1201,7 +1203,8 @@ function renderMailGrid(){
  for(let i=0;i<MAILS.length;i++){
   const draft=String(saved.drafts[i]||'');
   const count=words(draft);
-  const checked=Boolean(saved.results[i]&&saved.results[i].text===draft);
+  // Status „Proveren” se stiče samo eksplicitnom proverom završenog odgovora.
+  const checked=Boolean(count>=15 && saved.completed[i]===draft && saved.results[i] && saved.results[i].text===draft);
   if(checked)finished++;
   const button=document.createElement('button');button.type='button';
   button.className='mail-card'+(checked?' is-done':'');
