@@ -10,6 +10,21 @@ Mobilni trener za pisanje mejlova, na osnovu korisnikove prezentacije **ÖSD pri
 - `worker.js` — postavljen izvorni kod za Cloudflare AI server; **još nije objavljen kao Worker**.
 - Originalne slike iz PPTX nisu uploadovane u GitHub. Ova online verzija prikazuje njihove teme i pitanja tekstualno.
 
+## Aktivacija preko Replit-a (preporučeno ako već imate Replit nalog)
+
+1. U Replit-u napravite Node.js repl ili preko Replit aplikacije povezane sa ChatGPT-om importujte GitHub repo `nemackidemax13-oss/Biografije-A1`.
+2. U Replit-u kao radni folder koristite `OSD-A1-Schreiben-AI` i kao komandu za pokretanje `cd OSD-A1-Schreiben-AI && npm start` (ili iz tog foldera `npm start`). Potreban je Node.js 20+.
+3. Na https://console.groq.com/keys napravite Groq API ključ. U Replit-ovom meniju **Secrets** dodajte `GROQ_API_KEY` sa vrednošću ključa. Ključ NIKADA ne stavljajte na GitHub ili u HTML aplikaciju.
+4. Pokrenite serversku aplikaciju. Ruta `/health` prikazuje `{"status":"online","groqConfigured":true}` ako je ključ pravilno unet. Ovo je samo potvrda konfiguracije, ne potvrda da je AI ocenjivanje uspešno.
+5. Objavite backend kao Replit Deployment (javna HTTPS adresa sa Replit-a, često `.replit.app`), tako da ostane dostupan učenicima. Trošak hostinga zavisi od plana i izabranog deployment-a; samo postojanje Replit naloga ne garantuje besplatan hosting.
+6. Javnu HTTPS adresu dodajte u `config.js`: `window.DEMAX_API_URL = "https://javni-backend.replit.app";`. Svi učenici onda otvaraju GitHub Pages i mogu da pozovu backend.
+
+`server.mjs` je Node server, a `worker.js` sadrži istu logiku AI ocenjivanja i kompatibilan je sa Replit wrapper-om. Ne morate ništa instalirati iz npm paketa.
+
+**Bezbednost:** Server dozvoljava CORS sa GitHub Pages domena i ima jednostavno ograničenje zahteva po IP adresi, ali to nije potpuna zaštita od zloupotrebe javnog API-ja. Pre šire javne upotrebe preporučeni su ozbiljniji rate limiting, praćenje potrošnje i limiti naloga.
+
+## Alternativa: Cloudflare Worker
+
 ## Kako se aktivira AI bez objavljivanja tajnog ključa
 
 1. Na https://console.groq.com/keys otvorite svoj Groq nalog i izaberite **Create API Key**. Nema potrebe da ključ šaljete u poruci ili objavljujete na GitHub-u.
