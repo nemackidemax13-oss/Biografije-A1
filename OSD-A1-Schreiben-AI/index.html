@@ -507,6 +507,58 @@ header{position:relative !important;top:auto !important}
   .answer .task-paired .sentence-sr{font-size:11.7px !important}
   .answer .editorarea,.answer.has-result .editorarea{margin:6px 6px 0 !important;padding:9px !important}
 }
+
+/* Telefon: odvojeni ekran za pisanje, prilagodjen vidljivoj visini iznad tastature. */
+.start-writing-wrap{display:none}
+.mobile-edit{display:none}
+@media(max-width:799px){
+  .start-writing-wrap{display:block;text-align:center;padding:2px 10px 17px}
+  .start-writing-wrap button{display:block;width:100%;min-height:47px;background:#c9233b;color:#fff;font-weight:850;border:0;border-radius:11px;font-size:15px;box-shadow:0 3px 11px #b7282e24}
+  body:not(.mobile-writing):not(.mobile-review) #answerPanel{display:none!important}
+  body.mobile-writing,body.mobile-writing html{overscroll-behavior:none!important}
+  body.mobile-writing{position:fixed!important;inset:0!important;width:100%;height:var(--mobile-visible-height,100dvh)!important;overflow:hidden!important;background:#fff!important}
+  body.mobile-writing .app{display:flex!important;flex-direction:column!important;height:100%!important;min-height:0!important;overflow:hidden!important;box-shadow:none!important}
+  body.mobile-writing header{display:none!important}
+  body.mobile-writing .workspace{display:flex!important;flex:1 1 auto!important;flex-direction:column!important;height:100%!important;min-height:0!important;overflow:hidden!important;background:white!important}
+  body.mobile-writing .prompt{display:none!important}
+  body.mobile-writing #answerPanel{display:flex!important;flex-direction:column!important;flex:1 1 auto!important;min-height:0!important;height:100%!important;overflow:hidden!important;background:white!important}
+  body.mobile-writing #answerPanel .panel-title{flex:0 0 auto!important;background:#e7effc!important;min-height:43px!important;justify-content:space-between!important;align-items:center!important;padding:6px 11px!important}
+  body.mobile-writing #answerPanel .panel-title strong{font-size:13px!important;color:#103871!important;flex:1 1 auto}
+  body.mobile-writing .answer .limit-note{display:none!important}
+  body.mobile-writing .answer #mobileBackToMail{display:inline-flex!important;align-items:center;min-height:32px!important;padding:6px 9px;font-size:12px!important}
+  body.mobile-writing .answer #mobileEditAgain{display:none!important}
+  body.mobile-writing .answer .editorarea,body.mobile-writing .answer.has-result .editorarea{display:flex!important;flex:1 1 0!important;min-height:0!important;height:0!important;overflow:hidden!important;position:static!important;flex-direction:column!important;margin:0!important;padding:7px 9px 10px!important;gap:5px!important;border:0!important;border-radius:0!important;box-shadow:none!important;background:#fff!important}
+  body.mobile-writing .editorarea .editor-top{display:none!important}
+  body.mobile-writing .editorarea .task-paired{order:0!important;flex:0 1 auto!important;max-height:46%!important;min-height:0!important;margin:0!important;padding:7px 10px!important;overflow-y:auto!important;overscroll-behavior:contain!important;box-shadow:none!important;border-radius:9px!important;background:#f4f8ff!important}
+  body.mobile-writing .task-paired .paired-heading{margin-bottom:5px!important;font-size:11.5px!important}
+  body.mobile-writing .task-paired #pairs-instruction,body.mobile-writing .task-paired #pairs-questions-intro,body.mobile-writing .task-paired #pairs-signoff{display:none!important}
+  body.mobile-writing .task-paired #pairs-qs{margin:0!important;gap:3px!important}
+  body.mobile-writing .task-paired .sentence-pair{padding:0 0 4px!important}
+  body.mobile-writing .task-paired .sentence-de{font-size:12.5px!important;line-height:1.28!important;font-weight:720!important}
+  body.mobile-writing .task-paired .sentence-sr{font-size:11.8px!important;line-height:1.3!important;padding-top:1px!important}
+  body.mobile-writing .answer .editorarea textarea{order:1!important;display:block!important;min-width:0!important;width:100%!important;height:0!important;min-height:70px!important;max-height:none!important;flex:1 1 90px!important;resize:none!important;overflow-y:auto!important;line-height:1.42!important;font-size:16px!important;padding:9px 11px!important;background:#fff!important;border:2px solid #98b5dc!important;border-radius:10px!important;box-shadow:none!important}
+  body.mobile-writing .editorarea .mini-progress{order:2!important;flex:0 0 4px!important;margin:0!important}
+  body.mobile-writing .editorarea .foot{order:3!important;flex:0 0 auto!important;flex-wrap:nowrap!important;gap:7px!important;margin:0!important;min-height:41px}
+  body.mobile-writing .editorarea .counter{font-size:11px!important;line-height:1.25!important;min-width:0!important}
+  body.mobile-writing .editorarea .checkbtn{padding:9px 11px!important;min-height:39px!important;font-size:12px!important;flex-shrink:0!important}
+  body.mobile-writing .editorarea .mode{display:none!important}
+  body.mobile-writing .resultwrap{display:none!important}
+  body.mobile-review .prompt{display:none!important}
+  body.mobile-review #answerPanel{display:block!important;min-height:100dvh!important}
+  body.mobile-review .answer .editorarea{display:none!important}
+  body.mobile-review .answer .resultwrap{display:block!important;margin:7px 10px 22px!important}
+  body.mobile-review .answer .limit-note{display:none!important}
+  body.mobile-review #mobileEditAgain{display:inline-flex!important;align-items:center;justify-content:center;background:#c9233b!important;color:white!important;border:0;border-radius:8px;font-size:11px;font-weight:800;padding:7px 9px;min-height:32px}
+  body.mobile-review #mobileBackToMail{display:inline-flex!important}
+}
+@media(max-width:799px) and (max-height:540px){
+  body.mobile-writing .editorarea .task-paired{max-height:42%!important;padding:5px 8px!important}
+  body.mobile-writing .task-paired .paired-heading{margin-bottom:3px!important}
+  body.mobile-writing .task-paired .sentence-pair{padding-bottom:2px!important}
+  body.mobile-writing .answer .editorarea{padding-top:5px!important;padding-bottom:5px!important;gap:3px!important}
+  body.mobile-writing .answer .editorarea textarea{min-height:60px!important}
+}
+
 </style>
 </head>
 <body>
@@ -517,7 +569,7 @@ header{position:relative !important;top:auto !important}
 </header>
 <main class="workspace">
   <section class="panel prompt" aria-label="Postavka zadatka">
-    <div class="panel-title"><strong>1. POSTAVKA MEJLA</strong><a class="mobile-jump" href="#answerPanel">Piši mejl ↓</a><div class="prompt-actions"><button class="smallbutton readbutton" id="readMode" aria-pressed="false">⤢ Cela postavka</button></div></div>
+    <div class="panel-title"><strong>1. POSTAVKA MEJLA</strong><button class="mobile-jump" id="mobileStartTop" type="button">✎ Piši mejl</button><div class="prompt-actions"><button class="smallbutton readbutton" id="readMode" aria-pressed="false">⤢ Cela postavka</button></div></div>
     <div class="taskscroll" id="promptScroll">
       <div class="bilingual" aria-label="Nemačka postavka sa prevodom ispod svake rečenice">
         <div class="paired-card">
@@ -528,12 +580,12 @@ header{position:relative !important;top:auto !important}
           <div class="mail-meta"><div><strong>Von:</strong><span id="de-from"></span></div><div><strong>Betreff:</strong><span id="de-subject"></span></div></div>
           <div id="pairs-email" class="paired-lines"></div>
         </div>
-
       </div>
+      <div class="start-writing-wrap"><button id="mobileStartBottom" type="button">✎ Piši mejl</button></div>
     </div>
   </section>
   <section class="panel answer" id="answerPanel" aria-label="Pisanje odgovora">
-    <div class="panel-title"><strong>2. NAPIŠI SVOJ ODGOVOR</strong><a class="mobile-jump" href="#promptScroll">↑ Postavka</a><span class="limit-note">A1 • oko 30 reči • do 10 bodova</span></div>
+    <div class="panel-title"><strong id="writeHeading">2. NAPIŠI SVOJ ODGOVOR</strong><button class="mobile-jump" id="mobileBackToMail" type="button">← Postavka</button><button class="mobile-edit" id="mobileEditAgain" type="button">✎ Izmeni odgovor</button><span class="limit-note">A1 • oko 30 reči • do 10 bodova</span></div>
     <div class="editorarea"><div class="editor-top"><span class="save-flag">Čuva se automatski</span></div><textarea id="answer" spellcheck="true" lang="de" placeholder="Napiši odgovor na sva tri pitanja.&#10;&#10;Liebe Grüße&#10;…" aria-label="Ovde upiši mejl na nemačkom"></textarea>
       <div class="paired-card task-paired" aria-label="Pitanja i uputstvo za mejl">
         <div class="paired-heading">PITANJA NA KOJA ODGOVARAŠ</div>
@@ -632,6 +684,7 @@ function renderResult(r){
  <div class="feedback-heading">Komentar provere</div><div class="feedback">${escapeHtml(feedbackText)}</div>
  ${isAI?'':'<p class="help">Osnovna provera ne može pouzdano da otkrije sve gramatičke i sadržajne greške. Za potpuniju AI ispravku potreban je povezan serverski servis.</p>'}`;
  $('answerPanel').classList.add('has-result');
+ if(document.body.classList.contains('mobile-writing'))closeMobileWriting(true);
 }
 function updateCount(){
  let c=words($('answer').value);
@@ -680,7 +733,7 @@ function render(){
 }
 for(let i=0;i<MAILS.length;i++){const el=document.createElement('option');el.value=i;el.textContent=`${i+1}. mejl — ${FULL_TRANSLATIONS[i].subject}`;$('pick').appendChild(el)}
 $('total').textContent=MAILS.length;
-function jump(n){current=Math.max(0,Math.min(MAILS.length-1,n));render();window.scrollTo({top:0,behavior:'instant'}); }
+function jump(n){if(document.body.classList.contains('mobile-writing')||document.body.classList.contains('mobile-review'))closeMobileWriting(false);current=Math.max(0,Math.min(MAILS.length-1,n));render();window.scrollTo({top:0,behavior:'instant'}); }
 $('prev').onclick=()=>jump(current-1);$('next').onclick=()=>jump(current+1);$('pick').onchange=e=>jump(Number(e.target.value));
 $('answer').addEventListener('input',()=>{saved.drafts[current]=$('answer').value;delete saved.results[current];$('answerPanel').classList.remove('has-result');$('result').innerHTML='';updateCount();persist()});
 $('check').onclick=async()=>{
@@ -717,6 +770,41 @@ $('answer').addEventListener('focus',()=>{
  document.body.classList.add('is-typing');
 });
 $('answer').addEventListener('blur',()=>document.body.classList.remove('is-typing'));
+
+
+/* Mobilni rezim: pisanje sa vidljivim pitanjima i iznad virtualne tastature. */
+function setMobileVisibleHeight(){
+ if(!document.body.classList.contains('mobile-writing'))return;
+ const viewport=window.visualViewport;
+ const h=Math.max(285,Math.floor(viewport?.height||window.innerHeight));
+ document.documentElement.style.setProperty('--mobile-visible-height',h+'px');
+}
+function openMobileWriting(){
+ if(!window.matchMedia('(max-width:799px)').matches){document.getElementById('answerPanel').scrollIntoView({behavior:'smooth'});return}
+ $('answer').blur();
+ document.body.classList.remove('reading-mode','mobile-review','is-typing');
+ document.body.classList.add('mobile-writing');
+ $('writeHeading').textContent='NAPIŠI SVOJ ODGOVOR';
+ setMobileVisibleHeight();
+ window.scrollTo(0,0);
+}
+function closeMobileWriting(toResult=false){
+ $('answer').blur();
+ document.body.classList.remove('mobile-writing','is-typing');
+ document.body.classList.toggle('mobile-review',toResult);
+ $('writeHeading').textContent=toResult?'REZULTAT PROVERE':'2. NAPIŠI SVOJ ODGOVOR';
+ window.scrollTo(0,0);
+}
+$('mobileStartTop').addEventListener('click',openMobileWriting);
+$('mobileStartBottom').addEventListener('click',openMobileWriting);
+$('mobileBackToMail').addEventListener('click',()=>closeMobileWriting(false));
+$('mobileEditAgain').addEventListener('click',openMobileWriting);
+window.visualViewport?.addEventListener('resize',setMobileVisibleHeight);
+window.visualViewport?.addEventListener('scroll',setMobileVisibleHeight);
+window.addEventListener('resize',()=>{
+ if(window.innerWidth>799 && (document.body.classList.contains('mobile-writing')||document.body.classList.contains('mobile-review')))closeMobileWriting(false);
+ else setMobileVisibleHeight();
+});
 
 render();
 </script>
