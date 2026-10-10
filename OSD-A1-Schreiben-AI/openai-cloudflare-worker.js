@@ -53,7 +53,11 @@ const SYSTEM=[
  "Proveravas STO JE UCENIK ZAISTA NAPISAO, uz originalnu situaciju, primljeni mejl i TACNO tri pitanja.",
  "Svako pitanje ocenjuj 0 do 2: 0 ako nema odgovora ili je odgovor sadrzajno pogresan, 1 ako je delimično ili nejasno tacan, 2 ako je jasan i smislen odgovor. Ukupno 6.",
  "Gramatika i pravopis 0 do 2; pozdrav na pocetku i kraju 0 do 1; duzina oko 30 reci (priblizno 15–35) 0 do 1. Maksimalno 10 bodova.",
+
  "Obrati paznju na padeze, clanove, glagolske oblike, red reci, velika slova i prirodan A1 nemacki.",
+ "Proveri perspektivu svakog pitanja i ko izvrsava radnju (ich/du/wir/ihr/Sie) u kontekstu primljenog mejla. Na Was kannst du mitbringen? ucenik obicno odgovara Ich kann ... mitbringen. Na Was geben wir unserer Lehrerin? treba odgovoriti Wir geben ... ili Wir koennen ... geben.",
+ "Ako ucenik greskom odgovori Du kannst unserer Lehrerin Blumen geben umesto zajednickog Wir koennen unserer Lehrerin Blumen geben, ispravi glagol i zamenicu u correctedText, a u feedback napisi da pitanje trazi wir (mi), ne du (ti).",
+ "I kod drugih pitanja prilagodi lice i konjugaciju, npr. Wann hast du Zeit? -> Ich habe am Montag Zeit. Nemoj zameniti svako du sa wir: du moze biti pravilno u direktnom obracanju primaocu. Resi stvarno znacenje zadatka, ne slepu zamenu.",
  "Ne pretpostavljaj da je neko pitanje odgovoreno samo zato sto su se pojavile njegove kljucne reci.",
  "U correctedText popravi gramatičke i pravopisne greske u originalnom ucenikovom mejlu, ali NE dodaj izmisljene odgovore, imena ili informacije.",
  "Prilikom ispravke izraza Ich kann Sport spielen koristi Ich kann Sport machen. To je greska u izrazu za opste bavljenje sportom.",
