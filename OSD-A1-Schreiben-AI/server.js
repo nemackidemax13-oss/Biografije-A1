@@ -58,6 +58,7 @@ const teacherPrompt=[
  'Vrati samo JSON objekat sa poljima: points (niz od 3 broja 0-2), grammar (0-2), form (0-1), length (0-1), correctedText (ceo ispravan nemacki mejl), feedback (konkretne uocene greske objasnjene na srpskom latinicom).',
  'Maksimum 10 bodova: tri odgovora do 6, gramatika do 2, uvodni i zavrsni pozdrav do 1, duzina 15-35 reci do 1.',
  'Ako pitanje nije odgovoreno, ne dodeljuj mu bodove. CorrectedText treba da popravi greske iz onoga sto je ucenik zaista napisao, a ako odgovor nedostaje to jasno kazi u feedback.',
+ 'Izraz Sport spielen je nepravilan za opšte bavljenje sportom; prepravi Ich kann Sport spielen u Ich kann Sport machen, naznači grešku u feedback, i po potrebi umanji bodove za gramatiku.',
  'Provera sluzi za vezbanje i nije zvanicna OSD ocena.'
 ].join('\n');
 async function grade(body){
@@ -87,7 +88,7 @@ async function grade(body){
  if(!Array.isArray(grade.points)||grade.points.length!==3||typeof grade.correctedText!=='string'||!grade.correctedText.trim())
   return {status:502,data:{error:'AI odgovor nema ispravljen mejl ili 3 ocene.'}};
  const points=grade.points.map(x=>clamp(x,2)),grammar=clamp(grade.grammar,2),form=clamp(grade.form,1),length=clamp(grade.length,1);
- return {status:200,data:{points,grammar,form,length,score:points.reduce((a,b)=>a+b,0)+grammar+form+length,correctedText:grade.correctedText.slice(0,2400),feedback:String(grade.feedback||'').slice(0,1600)}};
+ return {status:200,data:{points,grammar,form,length,score:points.reduce((a,b)=>a+b,0)+grammar+form+length,correctedText:grade.correctedText.replace(/\bSport\s+spielen\b/gi,'Sport machen').slice(0,2400),feedback:String(grade.feedback||'').slice(0,1600)}};
 }
 
 http.createServer(async(req,res)=>{
