@@ -1,4 +1,5 @@
-// Javna URL adresa Replit servera bez putanje i bez Groq API kljuca.
-// Primera radi: window.DEMAX_API_URL = "https://tvoj-projekat.replit.app";
-// Kada objavis Replit server, stavi njegov tacan URL ovde.
+// DE-MAX A1: javni HTTPS URL Cloudflare Worker servera (OpenAI API).
+// VAZNO: Ovde ide samo javni .workers.dev URL, NIKAD OPENAI_API_KEY!
+// Na primer: window.DEMAX_API_URL = "https://demax-a1-openai.tvoj-nalog.workers.dev";
+// Ostavi prazno dok tvoj Worker nije objavljen.
 window.DEMAX_API_URL = "";
