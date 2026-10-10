@@ -795,6 +795,38 @@ header{position:relative !important;top:auto !important}
  body.mobile-writing.keyboard-micro .answer .editorarea .foot{flex-basis:42px!important;height:42px!important;min-height:42px!important;max-height:42px!important}
 }
 
+
+/* Dodatno mesto za pisanje: nema gornjeg naslova na telefonu, nazad je kraj pitanja. */
+#mobileBackInline{display:none}
+@media(max-width:799px){
+ body.mobile-writing #answerPanel .panel-title{display:none!important}
+ body.mobile-writing #answerPanel .editorarea,
+ body.mobile-writing .answer.has-result .editorarea{padding-top:5px!important}
+ body.mobile-writing .task-paired .paired-heading{
+  display:flex!important;align-items:center!important;justify-content:space-between!important;
+  flex-wrap:nowrap!important;gap:5px!important;margin-bottom:4px!important;
+  min-width:0!important;white-space:nowrap!important;
+ }
+ body.mobile-writing .task-paired .paired-heading span{
+  flex:1 1 auto!important;min-width:0!important;overflow:hidden!important;text-overflow:ellipsis!important;
+  font-size:10.3px!important;
+ }
+ body.mobile-writing #mobileBackInline{
+  display:inline-flex!important;justify-content:center!important;align-items:center!important;
+  flex:0 0 auto!important;min-height:26px!important;max-height:28px!important;
+  padding:4px 8px!important;border:0!important;border-radius:7px!important;
+  background:#c9233b!important;color:#fff!important;font-size:10.8px!important;
+  line-height:1!important;font-weight:850!important;cursor:pointer!important;
+ }
+ body.mobile-writing.keyboard-tight .task-paired .paired-heading{display:flex!important;margin-bottom:2px!important}
+ body.mobile-writing.keyboard-tight .task-paired .paired-heading span{font-size:9.5px!important}
+ body.mobile-writing.keyboard-micro .task-paired .paired-heading{display:flex!important;margin-bottom:2px!important}
+ body.mobile-writing.keyboard-micro .task-paired .paired-heading span{font-size:0!important}
+ body.mobile-writing.keyboard-micro .task-paired .paired-heading span::after{
+  content:"PITANJA";font-size:10px!important;
+ }
+}
+
 </style>
 </head>
 <body>
@@ -824,7 +856,7 @@ header{position:relative !important;top:auto !important}
     <div class="panel-title"><strong id="writeHeading">2. NAPIŠI SVOJ ODGOVOR</strong><button class="mobile-jump" id="mobileBackToMail" type="button">← Postavka</button><button class="mobile-edit" id="mobileEditAgain" type="button">✎ Izmeni odgovor</button><span class="limit-note">A1 • oko 30 reči • do 10 bodova</span></div>
     <div class="editorarea"><div class="editor-top"><span class="save-flag">Čuva se automatski</span></div><textarea id="answer" spellcheck="true" lang="de" placeholder="Napiši odgovor na sva tri pitanja.&#10;&#10;Liebe Grüße&#10;…" aria-label="Ovde upiši mejl na nemačkom"></textarea>
       <div class="paired-card task-paired" aria-label="Pitanja i uputstvo za mejl">
-        <div class="paired-heading">PITANJA NA KOJA ODGOVARAŠ</div>
+        <div class="paired-heading"><span>PITANJA NA KOJA ODGOVARAŠ</span><button id="mobileBackInline" type="button" aria-label="Vrati se na postavku mejla">← Postavka</button></div>
         <div id="pairs-instruction" class="paired-lines"></div>
         <div id="pairs-questions-intro" class="paired-lines"></div>
         <div id="pairs-qs" class="paired-lines question-lines"></div>
@@ -1084,6 +1116,7 @@ function closeMobileWriting(toResult=false){
 $('mobileStartTop').addEventListener('click',openMobileWriting);
 $('mobileStartBottom').addEventListener('click',openMobileWriting);
 $('mobileBackToMail').addEventListener('click',()=>closeMobileWriting(false));
+$('mobileBackInline').addEventListener('click',()=>closeMobileWriting(false));
 $('mobileEditAgain').addEventListener('click',openMobileWriting);
 window.visualViewport?.addEventListener('resize',setMobileVisibleHeight);
 window.visualViewport?.addEventListener('scroll',setMobileVisibleHeight);
