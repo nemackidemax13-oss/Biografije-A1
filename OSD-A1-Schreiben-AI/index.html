@@ -837,10 +837,12 @@ pickerDialog.addEventListener('click',(event)=>{if(event.target===pickerDialog)p
 function growMailEditor(){
  const field=$('answer');
  if(!field)return;
- field.style.setProperty('height','125px','important');
- if(window.matchMedia('(max-width:799px)').matches && document.body.classList.contains('mobile-writing')){
-  field.style.setProperty('height',Math.max(125,Math.ceil(field.scrollHeight+3))+'px','important');
+ if(!window.matchMedia('(max-width:799px)').matches || !document.body.classList.contains('mobile-writing')){
+  field.style.removeProperty('height');
+  return;
  }
+ field.style.setProperty('height','125px','important');
+ field.style.setProperty('height',Math.max(125,Math.ceil(field.scrollHeight+3))+'px','important');
 }
 $('answer').addEventListener('input',growMailEditor);
 
@@ -866,6 +868,7 @@ function closeMobileWriting(toResult=false){
  document.body.classList.remove('mobile-writing','is-typing');
  document.body.classList.toggle('mobile-review',toResult);
  $('writeHeading').textContent=toResult?'REZULTAT PROVERE':'2. NAPIŠI SVOJ ODGOVOR';
+ growMailEditor();
  window.scrollTo(0,0);
 }
 $('mobileStartTop').addEventListener('click',openMobileWriting);
