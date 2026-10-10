@@ -5,7 +5,7 @@ const TASKS={"1":{"id":1,"title":"Gartenparty am letzten Kurstag","sender":"Meti
 const ORIGIN="https://nemackidemax13-oss.github.io";
 const cors={"Access-Control-Allow-Origin":ORIGIN,"Access-Control-Allow-Methods":"POST, OPTIONS","Access-Control-Allow-Headers":"Content-Type","Content-Type":"application/json; charset=utf-8","Cache-Control":"no-store","Vary":"Origin"};
 const json=(obj,status=200)=>new Response(JSON.stringify(obj),{status,headers:cors});
-const words=(s)=>(s.trim().match(/[\\p{L}\\p{N}]+(?:[’'’-][\\p{L}\\p{N}]+)*/gu)||[]).length;
+const words=(s)=>(s.trim().match(/[\p{L}\p{N}]+(?:[’'’-][\p{L}\p{N}]+)*/gu)||[]).length;
 const number=(v,min,max)=>Math.min(max,Math.max(min,Math.round(Number(v)||0)));
 export default {
  async fetch(request,env){
