@@ -1390,5 +1390,6 @@ const initialMail=location.hash.match(/^#mejl-(\d+)$/);
 if(initialMail&&Number(initialMail[1])>=1&&Number(initialMail[1])<=MAILS.length)openMailFromGrid(Number(initialMail[1])-1,false);
 else renderMailGrid();
 </script>
+<script src="./openai-direct.js"></script>
 </body>
 </html>
