@@ -456,7 +456,7 @@ const ORIGINAL_MAILS = [{"s":"In einer Woche ist Ihr Deutschkurs zu Ende. Von Ih
 const SAME_SERVER = /\.replit\.(app|dev)$/.test(location.hostname) || location.hostname==='localhost' || location.hostname==='127.0.0.1';
 // GitHub Pages: backend se podesava jednom u config.js ili javnim ?server=URL parametrom.
 const SERVER_PARAMETER = new URLSearchParams(location.search).get('server');
-const SERVER_BASE = String(SERVER_PARAMETER || window.DEMAX_API_URL || '').trim().replace(/\\/+$/,'');
+const SERVER_BASE = String(SERVER_PARAMETER || window.DEMAX_API_URL || '').trim().replace(/\/+$/,'');
 const VALID_SERVER = /^https:\/\/[a-z0-9.-]+(?::[0-9]+)?$/i.test(SERVER_BASE) ? SERVER_BASE : '';
 const WORKER_API_URL = SAME_SERVER ? location.origin + '/api/check-email' : (VALID_SERVER ? VALID_SERVER + '/api/check-email' : '');
 const WORKER_READY=Boolean(WORKER_API_URL);
