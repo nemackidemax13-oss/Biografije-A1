@@ -301,13 +301,94 @@
  .rafaela-write-now{min-height:37px}
  .rafaela-prompt-note{font-size:9.6px}
 }
+
+/* DE-MAX v41: obe strane mejla bez pomeranja na mobilnom */
+.main.rafaela-prompt-page,
+.main.rafaela-page{display:flex;flex-direction:column;overflow:hidden!important;min-height:0;padding:5px 7px 7px}
+.rafaela-prompt-page .section-bar,
+.rafaela-page .section-bar{flex:0 0 auto;margin:0 0 3px}
+.rafaela-prompt-page .section-bar h1,
+.rafaela-page .section-bar h1{font-size:16px;margin:0}
+.rafaela-prompt-page .section-bar .eyebrow,
+.rafaela-page .section-bar .eyebrow{font-size:8.6px;letter-spacing:.65px;margin:0 0 2px}
+.rafaela-prompt-page>.lead,
+.rafaela-page>.lead{flex:0 0 auto;font-size:10px;line-height:1.2;margin:0 0 4px;color:#3d587b}
+.rafaela-prompt-screen{display:flex;flex:1 1 0;min-height:0;flex-direction:column;gap:4px;overflow:hidden}
+.rafaela-prompt-screen .rafaela-source{flex:1 1 0;min-height:0;overflow:hidden!important;padding:7px 8px;margin:0;border-radius:10px}
+.rafaela-prompt-screen .rafaela-source>p{font-size:clamp(10px,1.65dvh,11.5px);line-height:1.3;margin:0 0 6px}
+.rafaela-prompt-screen .rafaela-meta{font-size:10.4px;line-height:1.22;padding:5px 7px}
+.rafaela-prompt-screen .rafaela-original{font-size:clamp(10.5px,1.74dvh,12.2px);line-height:1.32;padding:7px 8px}
+.rafaela-prompt-screen .rafaela-original p{margin:5px 0}
+.rafaela-prompt-screen .rafaela-write-now{flex:0 0 auto;width:100%;min-height:34px;padding:7px;font-size:12.5px;border-radius:9px}
+.rafaela-write-screen{display:flex;flex:1 1 0;min-height:0;overflow:hidden;gap:0}
+.rafaela-write-screen .card.rafaela-compose{display:flex;flex:1 1 0;min-height:0;overflow:hidden;flex-direction:column;padding:5px 8px 6px;border-radius:10px;margin:0;gap:0}
+.rafaela-write-screen .rafaela-start{flex:0 0 auto;font-size:10px;line-height:1.2;padding:5px 6px;margin:0 0 2px}
+.rafaela-write-screen .rafaela-compose>label{flex:0 0 auto;font-size:10.8px;line-height:1.14;margin:4px 0 2px;color:#1d4777}
+.rafaela-write-screen .rafaela-entry{flex:1 1 0;min-height:26px;height:auto;max-height:42px;min-width:0;padding:4px 7px;border-radius:7px;font-size:13px;line-height:1.18;resize:none;background:#fbfdff}
+.rafaela-write-screen .rafaela-entry:focus{height:auto;min-height:29px;max-height:52px}
+.rafaela-write-screen .rafaela-name{flex:0 0 auto;gap:5px;min-height:27px;margin:5px 0 3px;font-size:10.5px}
+.rafaela-write-screen .rafaela-name input{height:28px;min-height:28px;padding:4px 7px;font-size:12px}
+.rafaela-write-screen .rafaela-draft{flex:0 0 auto;margin:1px 0;padding:4px 7px;font-size:10px;line-height:1.2}
+.rafaela-write-screen .rafaela-draft[open] pre{position:fixed;left:4%;right:4%;bottom:18%;z-index:45;border:1px solid #cfdaee;background:white;border-radius:10px;padding:12px;max-height:50dvh;overflow:auto;box-shadow:0 10px 45px #1c315d66}
+.rafaela-write-screen .rafaela-buttons{flex:0 0 auto;margin-top:4px;gap:5px}
+.rafaela-write-screen .rafaela-buttons button{min-height:29px;padding:5px 4px;font-size:10px;border-radius:7px}
+.rafaela-write-screen .rafaela-status{flex:0 0 auto;margin:3px 0 1px;font-size:9px;line-height:1.15}
+.rafaela-write-screen .rafaela-disclaimer{flex:0 0 auto;margin:1px 0;font-size:8.6px;line-height:1.15}
+.rafaela-write-screen #rafaelaReview{flex:0 0 auto;max-height:75px;overflow:auto}
+.rafaela-write-screen #rafaelaReview:empty{display:none}
+.rafaela-write-screen .rafaela-ai-result{padding:5px;font-size:10px}
+#keyboardNext[hidden]{display:none!important}
+#shell.keyboard-open .main.rafaela-page{display:flex;flex-direction:column;overflow:hidden!important;min-height:0;padding:2px 5px 3px}
+#shell.keyboard-open .main.rafaela-page>.section-bar,
+#shell.keyboard-open .main.rafaela-page>.lead,
+#shell.keyboard-open .rafaela-write-screen .rafaela-start,
+#shell.keyboard-open .rafaela-write-screen .rafaela-draft,
+#shell.keyboard-open .rafaela-write-screen .rafaela-buttons,
+#shell.keyboard-open .rafaela-write-screen .rafaela-status,
+#shell.keyboard-open .rafaela-write-screen .rafaela-disclaimer,
+#shell.keyboard-open .rafaela-write-screen #rafaelaReview{display:none!important}
+#shell.keyboard-open .rafaela-write-screen .card.rafaela-compose{display:flex;flex-direction:column;min-height:0;overflow:hidden;padding:6px 8px}
+#shell.keyboard-open .rafaela-write-screen .rafaela-compose>label{display:none}
+#shell.keyboard-open .rafaela-write-screen .rafaela-compose>label:has(+ .rafaela-entry:focus){display:block;font-size:12px;line-height:1.3;margin:0 0 5px}
+#shell.keyboard-open .rafaela-write-screen .rafaela-entry{display:none;flex:none}
+#shell.keyboard-open .rafaela-write-screen .rafaela-entry:focus{display:block;width:100%;height:clamp(60px,16dvh,130px);min-height:60px;max-height:none;padding:10px;font-size:16px;line-height:1.35;resize:none}
+#shell.keyboard-open .rafaela-write-screen .rafaela-name{display:none}
+#shell.keyboard-open .rafaela-write-screen .rafaela-name:focus-within{display:flex;gap:7px;margin:4px 0}
+#shell.keyboard-open .rafaela-write-screen .rafaela-name input{height:42px;min-height:42px;font-size:16px}
+#shell.keyboard-open .keyboard-toolbar{gap:5px;padding:3px 6px 4px;min-height:35px}
+#shell.keyboard-open .keyboard-toolbar span{flex:1 1 auto;font-size:10.5px;white-space:nowrap}
+#shell.keyboard-open .keyboard-toolbar button{font-size:10.5px;min-height:29px;padding:4px 9px}
+@media(max-height:680px){
+ .rafaela-prompt-page>.lead{font-size:9px;line-height:1.13}
+ .rafaela-prompt-screen .rafaela-source>p{font-size:9.8px;line-height:1.23;margin:0 0 4px}
+ .rafaela-prompt-screen .rafaela-meta{font-size:9.3px;padding:3px 5px}
+ .rafaela-prompt-screen .rafaela-original{font-size:10.2px;line-height:1.21;padding:5px}
+ .rafaela-prompt-screen .rafaela-original p{margin:3px 0}
+ .rafaela-prompt-screen .rafaela-write-now{min-height:30px;padding:4px}
+ .rafaela-page>.lead{font-size:9px;margin-bottom:2px}
+ .rafaela-write-screen .rafaela-compose>label{font-size:10px;margin:2px 0 1px}
+ .rafaela-write-screen .rafaela-entry{min-height:25px;padding:3px 6px}
+ .rafaela-write-screen .rafaela-name{margin:2px 0}
+ .rafaela-write-screen .rafaela-start{font-size:9px;padding:3px 4px}
+ .rafaela-write-screen .rafaela-status{font-size:8px}
+}
+@media(max-height:560px){
+ .rafaela-prompt-page>.lead{font-size:8.5px}
+ .rafaela-prompt-screen .rafaela-source{padding:4px}
+ .rafaela-prompt-screen .rafaela-source>p{font-size:9.2px;line-height:1.15}
+ .rafaela-prompt-screen .rafaela-original{font-size:9.4px;line-height:1.13}
+ .rafaela-prompt-screen .rafaela-original p{margin:2px 0}
+ .rafaela-page>.lead{display:none}
+ .rafaela-write-screen .rafaela-draft,
+ .rafaela-write-screen .rafaela-disclaimer{display:none}
+}
 </style></head>
 <body>
 <div id="shell">
   <header class="top"><div class="identity"><div class="brand"><div class="logo">D•M</div><div><div class="brand-name">DE-MAX TUTIN</div><div class="brand-sub">ÖSD A1 · Ispitna simulacija</div></div></div><div class="top-right"><div class="pg" id="pageLabel">01 / 15</div><small id="sectionLabel">TEST 1</small></div></div><div class="bar"><div class="fill" id="progress"></div></div></header>
   <div class="fixed-audio-dock" id="fixedAudioDock" hidden></div>
   <main class="main" id="main" aria-live="polite"></main>
-  <div class="keyboard-toolbar" id="keyboardToolbar" hidden><span>✎ Unos odgovora</span><button type="button" id="keyboardDone">✓ Potvrdi</button></div>
+  <div class="keyboard-toolbar" id="keyboardToolbar" hidden><span id="keyboardCaption">✎ Unos odgovora</span><button type="button" id="keyboardNext" hidden>Dalje →</button><button type="button" id="keyboardDone">✓ Potvrdi</button></div>
   <footer class="bottom"><button class="btn btn-back" id="back">← Nazad</button><button class="btn btn-next" id="next">Počni →</button></footer>
   <div class="toast" id="toast" role="status"></div>
 </div>
@@ -456,18 +537,17 @@ function rafaelaData(){if(!storage.rafaela)storage.rafaela={one:'',two:'',three:
 function rafaelaText(){const x=rafaelaData();return [RAFAELA_OPENING,x.one.trim(),x.two.trim(),x.three.trim(),'Liebe Grüße',x.name.trim()||storage.name.trim()].filter(Boolean).join('\n');}
 function setRafaela(k,v){if(!['one','two','three','name'].includes(k))return;rafaelaData()[k]=String(v).slice(0,500);storage.email=rafaelaText();storage.emailGrade='';storage.rafaelaReview=null;save();const p=document.getElementById('rafaelaPreview');if(p)p.textContent=rafaelaText();const n=document.getElementById('rafaelaWords');if(n)n.textContent=rafaelaText().split(/\s+/).filter(Boolean).length;const status=document.getElementById('rafaelaStatus');if(status)status.textContent='Odgovori su sačuvani.';const review=document.getElementById('rafaelaReview');if(review)review.textContent='';}
 function mailPrompt(){
- return `${heading('Schreiben · Aufgabe 2','10 dodatnih bodova','Zadatak: Odgovorite Rafaeli na njen mejl. Napišite oko 30 reči, odgovorite na sva pitanja i završite mejl pozdravom. Zatim pritisnite „Piši mejl“.')}
+ return `${heading('Schreiben · Aufgabe 2','10 dodatnih bodova','Odgovorite Rafaeli na mejl. Napišite oko 30 reči, odgovorite na sva pitanja i završite pozdravom.')}
  <section class="rafaela-prompt-screen">
  <div class="card rafaela-source"><p><b>Situacija:</b> Vaša prijateljica Rafaela živi u Berlinu i pozvala vas je u posetu. Želite uskoro da otputujete kod nje i dobili ste sledeći mejl:</p>
  <div class="rafaela-meta">Von: <b>m.rafaela@gmx.net</b><br>Betreff: <b>Deine Reise nach Berlin</b></div>
  <div class="rafaela-original">Hallo!<p>Du schreibst, du möchtest bald zu mir nach Berlin kommen. Ich freue mich schon sehr!</p><p>Du kannst auch gerne jemanden von deiner Familie oder Freunde mitbringen.</p><p>Schreib mir bitte: An welchem Tag und um wie viel Uhr kommst du? Wie lange möchtest du bleiben? Wen bringst du mit?</p>Liebe Grüße<br>Rafaela</div></div>
- <div class="rafaela-prompt-note">Odgovorite na sva tri pitanja. Napišite približno 30 reči i završni pozdrav.</div>
  <button type="button" class="btn btn-next rafaela-write-now" onclick="go(14)">✍ Piši mejl →</button>
  </section>`;
 }
 function mail(){
  const x=rafaelaData();
- return `${heading('Schreiben · Aufgabe 2','10 dodatnih bodova','Odgovorite na tri pitanja. Vaši odgovori se automatski čuvaju.')}
+ return `${heading('Schreiben · Aufgabe 2','10 dodatnih bodova','Odgovorite na tri pitanja i potpišite mejl.')}
  <div class="rafaela-exam rafaela-write-screen">
  <div class="card rafaela-compose"><div class="rafaela-start">Liebe Rafaela,<br>vielen Dank für dein E-Mail. Hier die wichtigsten Informationen zu meiner Berlin-Reise:</div>
  <label for="raf1">1. An welchem Tag und um wie viel Uhr kommst du?</label>
@@ -594,6 +674,8 @@ document.getElementById('back').onclick=()=>go(page-1);document.getElementById('
 /* Keyboard-aware editing for the two written mobile exercises. */
 const keyboardToolbar=document.getElementById('keyboardToolbar');
 const keyboardDone=document.getElementById('keyboardDone');
+const keyboardNext=document.getElementById('keyboardNext');
+const keyboardCaption=document.getElementById('keyboardCaption');
 const shell=document.getElementById('shell');
 const isExamTextInput=el=>el&&el.matches&&el.matches('#main input[type="text"],#main input[type="number"],#main input[type="tel"],#main textarea.rafaela-entry')&&(page===9||page===12||page===14);
 function updateMobileViewport(){
@@ -604,7 +686,7 @@ function updateMobileViewport(){
 }
 function revealFocusedInput(){
  const target=document.activeElement;
- if(!isExamTextInput(target))return;
+ if(!isExamTextInput(target)||page===14)return;
  const box=main.getBoundingClientRect(),rect=target.getBoundingClientRect();
  const high=box.top+17,low=box.bottom-26;
  if(rect.bottom>low)main.scrollTop+=rect.bottom-low;
@@ -614,15 +696,32 @@ function activateKeyboardLayout(){
  if(window.innerWidth>=600)return;
  shell.classList.add('keyboard-open');
  keyboardToolbar.hidden=false;
+ keyboardNext.hidden=page!==14;
+ updateMailKeyboardCaption();
  updateMobileViewport();
  requestAnimationFrame(revealFocusedInput);
  setTimeout(revealFocusedInput,130);
  setTimeout(revealFocusedInput,380);
 }
 function closeKeyboardLayout(){
- shell.classList.remove('keyboard-open');keyboardToolbar.hidden=true;
+ shell.classList.remove('keyboard-open');keyboardToolbar.hidden=true;keyboardNext.hidden=true;
+ keyboardCaption.textContent='✎ Unos odgovora';
  updateMobileViewport();
 }
+function updateMailKeyboardCaption(){
+ if(page!==14){keyboardCaption.textContent='✎ Unos odgovora';return;}
+ const ids=['raf1','raf2','raf3','rafName'];
+ const i=ids.indexOf(document.activeElement?.id);
+ keyboardCaption.textContent=i===3?'✎ Potpis':'✎ Odgovor '+(i>=0?i+1:1)+'/3';
+}
+keyboardNext.addEventListener('pointerdown',e=>e.preventDefault());
+keyboardNext.addEventListener('click',()=>{
+ if(page!==14)return;
+ const ids=['raf1','raf2','raf3','rafName'];
+ const activeIndex=ids.indexOf(document.activeElement?.id);
+ document.getElementById(ids[(activeIndex+1)%ids.length])?.focus();
+ updateMailKeyboardCaption();
+});
 document.addEventListener('focusin',e=>{if(isExamTextInput(e.target))activateKeyboardLayout()});
 document.addEventListener('focusout',()=>setTimeout(()=>{if(!isExamTextInput(document.activeElement))closeKeyboardLayout()},110));
 keyboardDone.addEventListener('click',()=>{if(document.activeElement instanceof HTMLElement)document.activeElement.blur();closeKeyboardLayout()});
