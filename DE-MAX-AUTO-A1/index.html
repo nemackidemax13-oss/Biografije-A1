@@ -184,8 +184,7 @@ async function speakSeries(rows,kind='dialogue'){
     if(token!==speechToken)break;
     if(kind==='dialogue'&&state.page==='dialogues'){
       state.lineIndex=i;
-      if(state.allLines){document.querySelectorAll('.talk-row').forEach((e,k)=>e.classList.toggle('playing',k===i));document.querySelectorAll('.talk-row')[i]?.scrollIntoView({block:'nearest',behavior:'smooth'});}
-      else renderDialogues(false);
+      renderDialogues(true);
     }
     if(kind==='words'&&state.page==='words'){
       state.wordIndex=i;
@@ -201,6 +200,7 @@ function toast(text){const t=document.getElementById('toast');t.textContent=text
 function scrollTop(){MAIN.scrollTop=0;}
 function setPage(page){if(state.page!==page)stopSpeech();state.page=page;render();scrollTop();}
 function render(){
+  MAIN.className='main page-'+state.page+(state.page==='words'?' mode-'+state.wordMode:'')+(state.page==='dialogues'?(state.allLines?' view-full':' view-cards'):'');
   document.querySelectorAll('[data-page]').forEach(x=>x.setAttribute('aria-current',x.getAttribute('data-page')===state.page?'page':'false'));
   if(state.page==='home')renderHome();else if(state.page==='words')renderWords();else if(state.page==='dialogues')renderDialogues();else renderQuiz();
 }
@@ -216,6 +216,7 @@ function renderHome(){
 }
 function matchingWords(){return WORDS.map((w,i)=>({...w,id:i})).filter(w=>(state.search||state.cat===-1||(state.cat===-2?favorites.has(w.id):w.c===state.cat))&&(!state.search||(`${w.de} ${w.sr}`).toLocaleLowerCase('sr').includes(state.search.toLocaleLowerCase('sr'))));}
 function renderWords(keepScroll=false){
+  MAIN.className='main page-words mode-'+state.wordMode;
   let words=matchingWords();state.wordIndex=Math.max(0,Math.min(state.wordIndex,words.length-1));
   const item=words[state.wordIndex];const mode=state.wordMode;
   MAIN.innerHTML=`<h1 class="page-title">📖 Rečnik za radionicu</h1><p class="description">${WORDS.length} reči i izraza · tapni 🔊 za nemački izgovor.</p>
@@ -237,19 +238,24 @@ function renderWordCard(words,item){if(!item)return `<div class="empty">Nema re�
     <button style="margin-top:8px" class="btn wide ghost" data-action="word-play-ten">▶ Slušaj narednih 10 reči</button>`;
 }
 function renderWordList(words){if(!words.length)return `<div class="empty">Nema reči za ovu pretragu.</div>`;
-  const maxP=Math.ceil(words.length/18);state.listPage=Math.min(Math.max(state.listPage,0),maxP-1);
-  const slice=words.slice(state.listPage*18,(state.listPage+1)*18);
+  const pageSize=Math.max(2,Math.min(5,Math.floor((MAIN.clientHeight-200)/70)));
+  const maxP=Math.ceil(words.length/pageSize);state.listPage=Math.min(Math.max(state.listPage,0),maxP-1);
+  const slice=words.slice(state.listPage*pageSize,(state.listPage+1)*pageSize);
   return `<div class="search-list">${slice.map(w=>`<div class="vocab-row"><div class="lines"><strong>${safe(w.de)}</strong><span>${safe(w.sr)}</span></div><button class="sound" data-action="speak-by-id" data-id="${w.id}" aria-label="Izgovori ${safe(w.de)}">🔊</button><button class="sound" data-action="favorite-id" data-id="${w.id}" aria-label="Sačuvaj reč">${favorites.has(w.id)?'★':'☆'}</button></div>`).join('')}</div>
     <div class="filter-foot"><button class="smallbtn" data-action="list-prev" ${state.listPage===0?'disabled':''}>← Prethodna</button><span class="meta">${state.listPage+1} / ${maxP}</span><button class="smallbtn" data-action="list-next" ${state.listPage===maxP-1?'disabled':''}>Sledeća →</button></div>`;
 }
 function renderDialogues(keepScroll=false){
+ MAIN.className='main page-dialogues '+(state.allLines?'view-full':'view-cards');
  const d=DIALOGUES[state.dialogueIndex];const line=d.lines[state.lineIndex];
+ const linesPerPage=Math.max(2,Math.min(3,Math.floor((MAIN.clientHeight-235)/90)));
+ const firstLine=Math.floor(state.lineIndex/linesPerPage)*linesPerPage;
+ const shownLines=d.lines.slice(firstLine,firstLine+linesPerPage);
  MAIN.innerHTML=`<h1 class="page-title">💬 Dijalozi · A1</h1><p class="description">${DIALOGUES.length} razgovora sa prevodom i automatskim izgovorom.</p>
  <div class="course-heading"><span>💬 Dijalog ${state.dialogueIndex+1} / ${DIALOGUES.length}</span><span>${safe(d.name)}</span></div>
- <div class="select-row"><button class="smallbtn" data-action="dialogue-view"><button class="smallbtn" data-action="dialogue-view">${state.allLines?'▣ Kartice':'☷ Ceo dijalog'}</button></div>
+ <div class="select-row"><button class="smallbtn" data-action="dialogue-view">${state.allLines?'▣ Jedna replika':'☷ Više replika'}</button></div>
  <div class="row-between" style="margin:0 2px 10px"><span class="meta">${safe(d.topic)} · ${d.lines.length} replika</span><span class="meta">${state.lineIndex+1} / ${d.lines.length}</span></div>
- <div class="top-tools"><button class="smallbtn" data-action="dialogue-play-all">▶ Slušaj ceo dijalog</button><button class="smallbtn" data-action="dialogue-stop">■ Zaustavi</button><button class="smallbtn" data-action="toggle-translation">${state.showTranslation?'🇷🇸 Sakrij prevod':'🇷🇸 Prikaži prevod'}</button></div>
- ${state.allLines? d.lines.map((l,i)=>`<div class="talk-row" data-line-index="${i}"><div class="row-between"><span class="talk-badge ${l.speaker==='B'?'b':''}">Osoba ${l.speaker}</span><button class="talk-row-btn" data-action="line-speak" data-i="${i}" aria-label="Slušaj repliku">🔊</button></div><p class="de">${safe(l.de)}</p>${state.showTranslation?`<p class="sr">${safe(l.sr)}</p>`:''}</div>`).join(''):
+ <div class="top-tools"><button class="smallbtn" data-action="dialogue-play-all">▶ Ceo dijalog</button><button class="smallbtn" data-action="dialogue-stop">■ Stop</button><button class="smallbtn" data-action="toggle-translation">${state.showTranslation?'🇷🇸 Prevod ✓':'🇷🇸 Prevod +'}</button></div>
+ ${state.allLines? `<div class="dialogue-lines-compact">${shownLines.map((l,i)=>`<div class="talk-row ${firstLine+i===state.lineIndex?'playing':''}" data-line-index="${firstLine+i}"><div class="row-between"><span class="talk-badge ${l.speaker==='B'?'b':''}">Osoba ${l.speaker}</span><button class="talk-row-btn" data-action="line-speak" data-i="${firstLine+i}" aria-label="Slušaj repliku">🔊</button></div><p class="de">${safe(l.de)}</p>${state.showTranslation?`<p class="sr">${safe(l.sr)}</p>`:''}</div>`).join('')}</div><div class="slide-controls"><button class="btn red" data-action="dialogue-page-prev" ${firstLine===0?'disabled':''}>← Prethodne</button><button class="btn green" data-action="dialogue-page-next" ${firstLine+linesPerPage>=d.lines.length?'disabled':''}>Sledeće →</button></div>`:
  `<div class="card dialogue-card"><span class="talk-badge ${line.speaker==='B'?'b':''}">👤 Osoba ${line.speaker}</span><div class="say">${safe(line.de)}</div>${state.showTranslation?`<div class="translation">${safe(line.sr)}</div>`:`<div class="placeholder">Prevod je sakriven. Pokušaj samostalno.</div>`}<div class="talk-actions"><button class="circle-btn prime" data-action="line-speak" data-i="${state.lineIndex}">🔊 Slušaj i ponovi</button></div></div>
  <div class="progress-wrap"><div class="progress-bar" style="width:${(state.lineIndex+1)/d.lines.length*100}%"></div></div>
  <div class="slide-controls"><button class="btn red" data-action="line-prev" ${state.lineIndex===0&&state.dialogueIndex===0?'disabled':''}>${state.lineIndex===0?'← Prethodni dijalog':'← Prethodna'}</button><button class="btn green" data-action="line-next" ${state.lineIndex>=d.lines.length-1&&state.dialogueIndex===DIALOGUES.length-1?'disabled':''}>${state.lineIndex>=d.lines.length-1?'Sledeći dijalog →':'Sledeća →'}</button></div>`}
@@ -273,6 +279,7 @@ function startQuiz(){stopSpeech();
 function quizAnswer(i){const q=state.quiz;if(!q||q.selected!==null)return;q.selected=i;q.answers.push(q.questions[q.index].choices[i]===q.questions[q.index].answer);renderQuiz();}
 function quizNext(){const q=state.quiz;if(!q)return;if(q.index<q.questions.length-1){q.index++;q.selected=null;renderQuiz();scrollTop();}else{const score=q.answers.filter(Boolean).length;bestQuiz=Math.max(bestQuiz,Math.round(score/q.questions.length*100));persist();q.done=true;renderQuiz();scrollTop();}}
 function renderQuiz(){let q=state.quiz;
+  MAIN.className='main page-quiz';
   MAIN.innerHTML=`<h1 class="page-title">✅ A1 kviz</h1><p class="description">Vežbaj stručni rečnik kroz jednostavna pitanja.</p>${!q?
    `<div class="quiz-intro"><div class="emoji">🏆</div><h2>Koliko reči znaš?</h2><p>Reči iz svih oblasti. Odaberi način vežbanja bez padajućih menija.</p>
    <div class="quiz-setting-label">Smer prevođenja</div>
@@ -307,7 +314,8 @@ MAIN.addEventListener('click',e=>{
  else if(a==='word-play-ten'){const words=matchingWords(),from=state.wordIndex,to=Math.min(words.length,from+10);const subset=words.slice(from,to).map(x=>({de:x.de}));if(subset.length){ // speech cards are rendered from the current 10-word subset
       stopSpeech();const token=speechToken;currentlySpeaking=true;(async()=>{for(let k=0;k<subset.length;k++){if(token!==speechToken)break;state.wordIndex=from+k;renderWords(true);await talk(subset[k].de,'A',token);await new Promise(r=>setTimeout(r,130));}if(token===speechToken)currentlySpeaking=false;})();}}
  else if(a==='list-prev'||a==='list-next'){state.listPage+=a==='list-next'?1:-1;renderWords();}
- else if(a==='dialogue-view'){state.allLines=!state.allLines;renderDialogues();}
+ else if(a==='dialogue-view'){stopSpeech();state.allLines=!state.allLines;renderDialogues();}
+ else if(a==='dialogue-page-prev'||a==='dialogue-page-next'){stopSpeech();const step=Math.max(2,Math.min(3,Math.floor((MAIN.clientHeight-235)/90)));state.lineIndex=Math.max(0,Math.min(DIALOGUES[state.dialogueIndex].lines.length-1,(Math.floor(state.lineIndex/step)+(a==='dialogue-page-next'?1:-1))*step));renderDialogues();}
  else if(a==='toggle-translation'){state.showTranslation=!state.showTranslation;renderDialogues(true);}
  else if(a==='line-speak'){state.lineIndex=i;const l=DIALOGUES[state.dialogueIndex].lines[i];speakOnce(l.de,l.speaker);if(!state.allLines)renderDialogues(true);}
  else if(a==='dialogue-play-all'){speakSeries(DIALOGUES[state.dialogueIndex].lines);}
