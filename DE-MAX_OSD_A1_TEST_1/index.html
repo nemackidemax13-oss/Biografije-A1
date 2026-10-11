@@ -163,6 +163,11 @@
 .exam-review-answer b{color:#243b5f;overflow-wrap:anywhere}
 .exam-review-note{font-size:10.5px;line-height:1.45;color:#6a7c96;margin:9px 10px}
 @media(max-width:355px){.exam-review-answer{grid-template-columns:1fr;gap:2px}.exam-review-group summary{font-size:11px}.exam-review-group summary strong{font-size:10px}}
+
+/* Clearly marked German task description, still compact enough for the no-scroll form. */
+.exam-form-prompt{background:#eef5ff;border-left:3px solid #4075af;padding:3px 6px;border-radius:5px;font-size:10.5px}
+.exam-form-prompt-label{font-size:10.5px;font-weight:900;color:#174e8b}
+@media(max-height:710px){.exam-form-prompt{font-size:9.2px;padding:2px 4px}.exam-form-prompt-label{font-size:9.2px}}
 </style></head>
 <body>
 <div id="shell">
@@ -292,7 +297,7 @@ ${heading('Hören · Aufgabe 3','10 bodova','Saslušajte pet osoba i izaberite o
 </section>`;}
 function form(){return `<section class="exam-form-screen">
 ${heading('Schreiben · Aufgabe 1','5 bodova','')}
-<p class="exam-form-prompt" lang="de">Ihr Freund Ricardo Torres will im September mit seiner Freundin Urlaub in der Schweiz machen. Sie fahren mit dem Zug und brauchen ein Zimmer für zwei Personen mit Frühstück. Sie möchten schwimmen und wandern. Die Reise zahlt Ricardo mit Kreditkarte. Er ist am 26. November 1979 geboren. Füllen Sie das Formular aus.</p>
+<p class="exam-form-prompt" lang="de"><strong class="exam-form-prompt-label">Situation:</strong> Ihr Freund Ricardo Torres will im September mit seiner Freundin Urlaub in der Schweiz machen. Sie fahren mit dem Zug und brauchen ein Zimmer für zwei Personen mit Frühstück. Sie möchten schwimmen und wandern. Die Reise zahlt Ricardo mit Kreditkarte. Er ist am 26. November 1979 geboren. <strong>Füllen Sie das Formular aus.</strong></p>
 <div class="card exam-form-card">
 <div class="exam-form-brand"><strong>Reiseangebote · Formular</strong><span>www.auf-und-weg.com</span></div>
 <div class="exam-form-fields">
