@@ -456,9 +456,9 @@ function rafaelaData(){if(!storage.rafaela)storage.rafaela={one:'',two:'',three:
 function rafaelaText(){const x=rafaelaData();return [RAFAELA_OPENING,x.one.trim(),x.two.trim(),x.three.trim(),'Liebe Grüße',x.name.trim()||storage.name.trim()].filter(Boolean).join('\n');}
 function setRafaela(k,v){if(!['one','two','three','name'].includes(k))return;rafaelaData()[k]=String(v).slice(0,500);storage.email=rafaelaText();storage.emailGrade='';storage.rafaelaReview=null;save();const p=document.getElementById('rafaelaPreview');if(p)p.textContent=rafaelaText();const n=document.getElementById('rafaelaWords');if(n)n.textContent=rafaelaText().split(/\s+/).filter(Boolean).length;const status=document.getElementById('rafaelaStatus');if(status)status.textContent='Odgovori su sačuvani.';const review=document.getElementById('rafaelaReview');if(review)review.textContent='';}
 function mailPrompt(){
- return `${heading('Schreiben · Aufgabe 2','10 dodatnih bodova','Pažljivo pročitajte celu postavku, a zatim pritisnite „Piši mejl“.')}
+ return `${heading('Schreiben · Aufgabe 2','10 dodatnih bodova','Zadatak: Odgovorite Rafaeli na njen mejl. Napišite oko 30 reči, odgovorite na sva pitanja i završite mejl pozdravom. Zatim pritisnite „Piši mejl“.')}
  <section class="rafaela-prompt-screen">
- <div class="card rafaela-source"><p><b>Situation:</b> Ihre Freundin Rafaela wohnt in Berlin und hat Sie eingeladen. Sie möchten bald zu ihr fahren und bekommen folgendes E-Mail von ihr:</p>
+ <div class="card rafaela-source"><p><b>Situacija:</b> Vaša prijateljica Rafaela živi u Berlinu i pozvala vas je u posetu. Želite uskoro da otputujete kod nje i dobili ste sledeći mejl:</p>
  <div class="rafaela-meta">Von: <b>m.rafaela@gmx.net</b><br>Betreff: <b>Deine Reise nach Berlin</b></div>
  <div class="rafaela-original">Hallo!<p>Du schreibst, du möchtest bald zu mir nach Berlin kommen. Ich freue mich schon sehr!</p><p>Du kannst auch gerne jemanden von deiner Familie oder Freunde mitbringen.</p><p>Schreib mir bitte: An welchem Tag und um wie viel Uhr kommst du? Wie lange möchtest du bleiben? Wen bringst du mit?</p>Liebe Grüße<br>Rafaela</div></div>
  <div class="rafaela-prompt-note">Odgovorite na sva tri pitanja. Napišite približno 30 reči i završni pozdrav.</div>
