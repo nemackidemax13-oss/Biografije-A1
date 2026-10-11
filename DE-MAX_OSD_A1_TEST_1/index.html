@@ -44,6 +44,15 @@
 /* Only original Lesen 3 texts B and C: continuous lines without wide gaps caused by manual line breaks. */
 .reading-r3-head{display:block;text-align:left;margin-bottom:4px;font-weight:800}
 .reading-r3-flow{display:block;text-align:justify;text-align-last:left;text-justify:inter-word;hyphens:auto;-webkit-hyphens:auto;overflow-wrap:normal}
+
+/* Hören Aufgabe 1: originals above, numbered answer selectors below (same pattern as Lesen 3). */
+.hearing-photo-title{text-align:center;font-size:11px;font-weight:900;color:#234c83;margin:0 0 5px;line-height:1.2}
+.hearing-answer-list{display:grid;grid-template-columns:1fr;gap:7px}
+.hearing-answer-row{display:flex;justify-content:space-between;align-items:center;gap:12px;border:1px solid #dce6f3;border-radius:11px;background:#fbfdff;padding:7px 10px;min-height:49px}
+.hearing-answer-num{font-size:12px;font-weight:900;color:#254975}
+.hearing-answer-select{width:135px;max-width:50%;flex-shrink:0}
+.hearing-answer-select .sel-trigger{min-height:36px;width:100%;font-size:12px}
+.hearing-unmatched-note{font-size:10.5px;line-height:1.35;color:#637894;text-align:center;margin:10px 0 0}
 </style></head>
 <body>
 <div id="shell">
@@ -90,7 +99,7 @@ function openAnswerMenu(button){
     const item=document.createElement('button');
     item.type='button';
     item.className='answer-option'+(activeAnswer.selected===value?' chosen':'');
-    item.textContent=value==='-'?'Preskoči':value;
+    item.textContent=value===''?'Bez broja':value==='-'?'Preskoči':value;
     item.setAttribute('aria-pressed',String(activeAnswer.selected===value));
     item.onclick=()=>{
       if(!activeAnswer)return;
@@ -109,7 +118,25 @@ function closeAnswerMenu(){document.getElementById('answerModal').hidden=true;ac
 function confirmAnswerMenu(){
   if(!activeAnswer)return;
   const {key,button,selected}=activeAnswer;
-  if(selected!==''){
+  if(key.startsWith('h1_')){
+    if(selected!==''&&!['1','2','3','4','5'].includes(selected))return;
+    if(selected!==''){
+      for(let i=0;i<6;i++){
+        const other='h1_'+i;
+        if(other!==key&&String(get(other))===selected){
+          delete storage.answers[other];
+          const otherButton=Array.from(main.querySelectorAll('.hearing-answer-select .sel-trigger')).find(x=>x.dataset.key===other);
+          if(otherButton){otherButton.querySelector('.choice-value').textContent='Odaberi';otherButton.classList.remove('has-answer');}
+        }
+      }
+      storage.answers[key]=selected;
+    }else{
+      delete storage.answers[key];
+    }
+    save();
+    button.querySelector('.choice-value').textContent=selected||'Odaberi';
+    button.classList.toggle('has-answer',selected!=='');
+  }else if(selected!==''){
     set(key,selected);
     const span=button.querySelector('.choice-value');
     if(span)span.textContent=selected==='-'?'—':selected;
@@ -132,7 +159,10 @@ const lesen3txt=[`<b>Liebe Besucherinnen und Besucher!</b><br>Im Krankenhaus ist
 function formatLesen3(t,i){const segments=t.split('<br>');return '<span class="reading-r3-head">'+segments[0]+'</span><span class="reading-r3-flow">'+segments.slice(1).join(i===1?' · ':' ')+'</span>';}
 function r3(){return `${heading('Lesen · Aufgabe 3','10 bodova','Pročitajte pet kratkih tekstova A–E i izaberite odgovarajuću sliku 1–6 za svaki tekst. Jedna slika je višak.')}${originalBtns([4,5])}<div class="card card-quiet"><div class="mini-title">Slike 1–6 · dodirnite sliku za uvećanje</div><div class="image-grid">${[1,2,3,4,5,6].map(i=>`<div class="image-cell">${img(`lesen3-bild-${i}`,`Bild ${i}`)}</div>`).join('')}</div></div><div class="card"><div class="mini-title">Tekstovi A–E · izaberite odgovarajuću sliku</div>${lesen3txt.map((t,i)=>`<div class="reading-situation-card reading-r3"><div class="reading-marker">TEKST ${'ABCDE'[i]}</div><div class="reading-de" lang="de">${(i===1||i===2)?formatLesen3(t,i):t}</div><div class="reading-answer-row"><span>Broj slike</span><div class="reading-select">${selectOpts('r3_'+i,[1,2,3,4,5,6],'Broj slike za tekst '+ 'ABCDE'[i])}</div></div></div>`).join('')}</div>`;}
 function audioPanel(n){return `<div class="audio-panel"><div class="audio-head"><div><strong>♫ Originalni snimak ${n}</strong><br><small>ÖSD A1 · bez skraćivanja</small></div><span class="chip" id="playState" style="background:#ffffff27;color:#fff">Spremno</span></div><div class="audio-actions"><button class="audio-play" onclick="playPause()" id="playButton">▶ Pusti</button><input class="audio-seek" id="audioSeek" aria-label="Pozicija snimka" type="range" min="0" max="1000" value="0" oninput="seekAudio(this.value)"><span class="audio-time" id="audioClock">00:00</span><button class="audio-replay" title="Ponovo slušaj" onclick="replayAudio()">↺</button></div><div class="audio-help" id="audioHint">Snimak kreće automatski pri ulasku. Ako telefon blokira reprodukciju, pritisnite „Pusti“.</div></div>`;}
-function h1(){const photos=[1,2,3,4,5,6];const letters=['A','B','C','D','E','F'];return `${heading('Hören · Aufgabe 1','10 bodova','Pogledajte svih šest slika i za svaku odgovarajuću sliku izaberite broj teksta 1–5.')}${audioPanel(1)}<div class="card card-tight"><div class="hearing-grid">${photos.map((photo,i)=>`<div class="image-cell"><div class="image-caption">Slika ${i+1} (${letters[i]})</div>${img('hoeren1-foto-'+photo,'Slika '+(i+1))}<div class="choose">${selectOpts('h1_'+i,[1,2,3,4,5],'Broj teksta za sliku '+(i+1))}</div></div>`).join('')}</div></div>`;}
+function normalizeHoeren1(){let changed=false;const used=new Set();for(let i=0;i<6;i++){const k='h1_'+i;const v=String(get(k));if(v==='')continue;if(!['1','2','3','4','5'].includes(v)||used.has(v)){delete storage.answers[k];changed=true;}else{used.add(v);}}if(changed)save();}
+function h1(){normalizeHoeren1();const photos=[1,2,3,4,5,6];return `${heading('Hören · Aufgabe 1','10 bodova','Poslušajte tekstove 1–5 i povežite ih sa slikama 1–6. Jedna slika ostaje bez broja.')}${audioPanel(1)}
+<div class="card card-quiet"><div class="mini-title">Slike 1–6 · dodirnite sliku za uvećanje</div><div class="image-grid">${photos.map((photo,i)=>`<div class="image-cell"><div class="hearing-photo-title">Slika ${i+1}</div>${img('hoeren1-foto-'+photo,'Slika '+(i+1))}</div>`).join('')}</div></div>
+<div class="card"><div class="mini-title">Odgovori · odaberite broj teksta 1–5</div><div class="hearing-answer-list">${photos.map((photo,i)=>`<div class="hearing-answer-row"><span class="hearing-answer-num">Slika ${i+1}</span><div class="hearing-answer-select">${selectOpts('h1_'+i,[1,2,3,4,5,''],'Izbor broja teksta za sliku '+(i+1))}</div></div>`).join('')}</div><p class="hearing-unmatched-note">Izaberite pet brojeva. Jedno polje ostaje prazno.</p></div>`;}
 function h2(){return `${heading('Hören · Aufgabe 2','10 bodova','Pročitajte zadatak, saslušajte poruku dva puta i dopunite prazna polja.')}${audioPanel(2)}${originalBtns([7])}<div class="card"><div class="mini-title">✎ Notizen</div><div class="field"><label>Was:</label><span class="task-text">Auto ansehen</span></div><div class="field"><label>Wann: am</label>${freeInput('h2_0','Wochentag')}</div><div class="small">Nachmittag</div><div class="field"><label>Datum (Mai):</label>${freeInput('h2_1','Tag im Mai','inputmode="numeric"')}</div><div class="field"><label>Um:</label>${freeInput('h2_2','Uhrzeit')}</div><div class="field"><label>Wo: in der</label>${freeInput('h2_3','Straßenname')}<span class="small">gasse 12</span></div><div class="field"><label>Tel. 0664/</label>${freeInput('h2_4','Telefonnummer','inputmode="tel"')}</div><div class="result-note">Slušajte originalni snimak od početka. U njemu se poruka ponavlja dva puta.</div></div>`;}
 function h3(){const lands=['Afrika','Amerika','Asien','Europa'];return `${heading('Hören · Aufgabe 3','10 bodova','Saslušajte pet osoba. Za svaku osobu odaberite kontinent koji joj se najviše dopada.')}${audioPanel(3)}${originalBtns([7])}<div class="card card-tight"><div class="image-grid" style="grid-template-columns:repeat(4,minmax(0,1fr));gap:4px">${lands.map((t,i)=>`<div style="min-width:0;text-align:center">${img(`hoeren3-land-${i+1}`,t)}<div style="font-size:10px;font-weight:850;margin-top:4px">${t}</div></div>`).join('')}</div></div><div class="card">${[1,2,3,4,5].map(i=>`<div class="question"><div class="question-title">Text ${i}</div>${answerChoices('h3_'+(i-1),lands,'n4')}</div>`).join('')}</div>`;}
 function form(){return `${heading('Schreiben · Aufgabe 1','5 bodova','Vaš prijatelj Ricardo Torres putuje u septembru sa devojkom na odmor u Švajcarsku. Idu vozom, potrebna im je dvokrevetna soba sa doručkom. Žele da plivaju i planinare. Ricardo plaća kreditnom karticom i rođen je 26. novembra 1979. godine. Popunite formular.')}${originalBtns([8])}<div class="card"><div class="center" style="font-size:16px;font-weight:950;margin:3px 0 12px">Reiseangebote<br><span style="color:#3e689e;font-size:11px">www.auf-und-weg.com</span><br>Formular</div><div class="field"><label>Nachname:</label><b style="font-size:13px">Torres</b></div><div class="field"><label>Vorname:</label>${freeInput('f_name','Vorname')}</div><div class="field"><label>Geburtsdatum:</label>${freeInput('f_birth','TT.MM.JJJJ')}</div><div class="field"><label>Urlaubsland:</label>${freeInput('f_country','Land')}</div><div class="field"><label>Monat:</label>${freeInput('f_month','Monat')}</div><div class="field"><label>Zimmer:</label><div class="form-options">${answerChoices('f_room',['Einzelzimmer','Doppelzimmer'])}</div></div><div class="field"><label>Frühstück:</label><div class="form-options">${answerChoices('f_break',['Ja','Nein'])}</div></div><div class="field"><label>Anreise mit:</label>${freeInput('f_arrive','Verkehrsmittel')}</div><div class="field"><label>Sport:</label><div class="form-options">${['Fußball','Wandern','Radfahren','Schwimmen'].map(x=>`<label class="opt"><input type="checkbox" ${get('f_sport_'+x)?'checked':''} onchange="set('f_sport_${x}',this.checked)">${x}</label>`).join('')}</div></div><div class="field"><label>Bezahlung:</label><div class="form-options">${answerChoices('f_pay',['bar','Kreditkarte'])}</div></div><button class="btn btn-wide btn-plain" id="solutionButton" onclick="toggleSolutions()">${storage.showSolutions?'Sakrij rešenja':'✓ Prikaži rešenja formulara'}</button>${storage.showSolutions?`<div class="solution"><b>Originalna ÖSD rešenja:</b><br>Nachname: Torres<br>Vorname: <b>Ricardo</b><br>Geburtsdatum: <b>26.11.1979</b><br>Urlaubsland: <b>Schweiz</b><br>Monat: <b>September</b><br>Zimmer: <b>Doppelzimmer</b><br>Frühstück: <b>Ja</b><br>Anreise mit: <b>Zug</b><br>Sport: <b>Wandern, Schwimmen</b><br>Bezahlung: <b>Kreditkarte</b><p style="font-size:11px;margin-bottom:0">Formular nosi do 5 bodova. Ocenjuje se 10 odgovora prema zvaničnom ključu.</p></div>`:''}</div>`;}
