@@ -213,6 +213,26 @@
  #shell.keyboard-open .keyboard-toolbar button{min-height:29px;padding:4px 13px}
  #shell.keyboard-open .main.listen-no-scroll,#shell.keyboard-open .main.exam-form-no-scroll{padding-top:6px;padding-bottom:34px}
 }
+
+.main.rafaela-page{overflow-y:auto;padding:8px 9px 14px}
+.rafaela-exam{display:flex;flex-direction:column;gap:9px}.rafaela-exam .card{margin:0;padding:11px;border-radius:12px}
+.rafaela-source{background:#f5f8ff}.rafaela-source>p{font-size:11.2px;line-height:1.4;margin:0 0 8px}
+.rafaela-meta{font-size:11px;padding:7px;background:#e9effa;border:1px solid #d9e3f2;border-radius:8px 8px 0 0}
+.rafaela-original{font-size:11.4px;line-height:1.45;padding:9px;background:#fff;border:1px solid #d9e3f2;border-top:0;border-radius:0 0 8px 8px}
+.rafaela-original p{margin:5px 0}.rafaela-start{font-size:10.6px;line-height:1.4;padding:8px;background:#eff5ff;color:#365779;border-radius:8px;margin-bottom:8px}
+.rafaela-compose>label{display:block;font-weight:800;color:#214b7a;font-size:11.5px;margin:11px 0 5px;line-height:1.3}
+.rafaela-entry{display:block;width:100%;min-height:54px;padding:10px;border:1px solid #c4d4e8;border-radius:10px;font-size:14px;resize:vertical;line-height:1.4}
+.rafaela-entry:focus,.rafaela-name input:focus{outline:2px solid #76a9db}
+.rafaela-name{display:flex;align-items:center;gap:8px;margin:11px 0;font-size:11.5px;font-weight:850}.rafaela-name input{flex:1;min-width:0;border:1px solid #c4d4e8;padding:9px;border-radius:8px;font-size:13px}
+.rafaela-draft{padding:8px;border:1px solid #d9e3f2;border-radius:8px;background:#f8fbff;font-size:11px}.rafaela-draft summary{font-weight:850;cursor:pointer}
+.rafaela-draft pre,.rafaela-ai-result pre{white-space:pre-wrap;overflow-wrap:anywhere;font-family:inherit;line-height:1.5;font-size:11px}
+.rafaela-buttons{display:grid;grid-template-columns:1.15fr 1fr;gap:6px;margin-top:11px}.rafaela-buttons button{min-height:40px;font-size:11px;padding:7px}
+.rafaela-status{font-size:10.5px;color:#617792;line-height:1.5;margin:8px 0}
+.rafaela-disclaimer{font-size:9.5px;color:#75889f}.rafaela-ai-result{background:#e7f6ee;border:1px solid #b4ddc7;border-radius:10px;padding:10px;font-size:11px}
+#shell.keyboard-open .main.rafaela-page{display:block;overflow-y:auto;flex:1 1 0;min-height:0;padding:6px 9px 60px;scroll-padding-bottom:65px}
+#shell.keyboard-open .rafaela-source,#shell.keyboard-open .rafaela-start{display:none}
+#shell.keyboard-open .rafaela-entry{font-size:16px;min-height:78px}
+@media(max-width:355px){.rafaela-buttons{grid-template-columns:1fr}}
 </style></head>
 <body>
 <div id="shell">
@@ -233,6 +253,8 @@ const LESEN3_SHEET='data:image/webp;base64,UklGRhKKAABXRUJQVlA4IAaKAABQTAOdASpgB
 const pages=['Početna','Razumevanje','Razumevanje · 1','Razumevanje · 2 (1/3)','Razumevanje · 2 (2/3)','Razumevanje · 2 (3/3)','Razumevanje · 3','Slušanje','Slušanje · 1','Slušanje · 2','Slušanje · 3','Formular i mejl','Formular','Mejl','Rezultat'];
 const MAIL_URL='https://nemackidemax13-oss.github.io/Biografije-A1/DE-MAX-A1-Ispitni-Mejlovi/?v=10';
 const AI_MAIL_URL='https://e-mail-a-1.replit.app';
+// Public HTTPS Replit API URL only (never put OPENAI_API_KEY here).
+const RAFAELA_CHECK_ENDPOINT='';
 const SOURCES=[{name:'Slušanje 1',file:'slusanje-1.mp3'},{name:'Slušanje 2',file:'slusanje-2.mp3'},{name:'Slušanje 3',file:'slusanje-3.mp3'}];
 const KEYS={r1:[4,6,1,5,2],r2:['NEIN','JA','NEIN','NEIN','NEIN','JA'],r3:[5,4,1,6,3],h1:[5,'-',2,4,1,3],h3:['Asien','Afrika','Europa','Amerika','Afrika']};
 let page=0,storage={answers:{},name:'',email:'',emailGrade:'',autoPlay:true,showSolutions:false},toastTimer=null,playingPage=null;
@@ -358,10 +380,51 @@ ${heading('Schreiben · Aufgabe 1','5 bodova','')}
 <div class="exam-form-row exam-form-sport"><label>Sport:</label><div class="exam-form-sport-options">${['Fußball','Wandern','Radfahren','Schwimmen'].map(x=>`<label class="opt"><input type="checkbox" ${get('f_sport_'+x)?'checked':''} onchange="set('f_sport_${x}',this.checked)">${x}</label>`).join('')}</div></div>
 <div class="exam-form-row"><label>Bezahlung:</label>${answerChoices('f_pay',['bar','Kreditkarte'])}</div>
 </div>
-<button type="button" class="btn btn-wide btn-next exam-form-solution-button" id="solutionButton" onclick="showFullResults()">✓ Prikaži rešenje</button>
+<button type="button" class="btn btn-wide btn-next exam-form-solution-button" id="solutionButton" onclick="go(13)">Dalje · mejl →</button>
 </div></section>`;}
-function mail(){return `${heading('Schreiben · Aufgabe 2','10 dodatnih bodova','Mejl se vežba u De-Max aplikaciji „Ispitni mejlovi“. Otvorite vežbu i nakon toga proverite svoj rezultat.')}
-<div class="card card-green"><div class="center"><div style="font-size:36px;margin:7px 0">✉</div><h2 class="h2">Vežbanje ispitnih mejlova</h2><p class="note">Otvorite postojeću aplikaciju, vežbajte mejlove sa ispita i vratite se na rezultat.</p></div><a class="btn btn-wide btn-next" href="${MAIL_URL}" target="_blank" rel="noopener noreferrer">Otvori vežbanje mejlova ↗</a><div style="height:8px"></div><a class="btn btn-wide btn-plain" href="${AI_MAIL_URL}" target="_blank" rel="noopener noreferrer">Provera napisanog mejla ↗</a></div><div class="card"><div class="mini-title">Moje beleške / napisani mejl</div><textarea class="mail-editor" id="mailDraft" placeholder="Ovde možete napisati i sačuvati svoj tekst..." oninput="storage.email=this.value;save()">${h(storage.email)}</textarea><p class="small">Mejl se čuva samo u ovom pregledaču. Ovaj deo ne ocenjuje automatski gramatiku.</p><label class="mini-title" for="emailGrade">Bodovi za mejl nakon provere (0–10)</label><select class="sel" id="emailGrade" onchange="storage.emailGrade=this.value;save()"><option value="">— još nije ocenjen —</option>${Array.from({length:11},(_,i)=>`<option value="${i}" ${String(storage.emailGrade)===String(i)?'selected':''}>${i} / 10</option>`).join('')}</select></div>`;}
+
+const RAFAELA_OPENING='Liebe Rafaela,\nvielen Dank für dein E-Mail. Hier die wichtigsten Informationen zu meiner Berlin-Reise:';
+function rafaelaData(){if(!storage.rafaela)storage.rafaela={one:'',two:'',three:'',name:''};return storage.rafaela;}
+function rafaelaText(){const x=rafaelaData();return [RAFAELA_OPENING,x.one.trim(),x.two.trim(),x.three.trim(),'Liebe Grüße',x.name.trim()||storage.name.trim()].filter(Boolean).join('\n');}
+function setRafaela(k,v){if(!['one','two','three','name'].includes(k))return;rafaelaData()[k]=String(v).slice(0,500);storage.email=rafaelaText();storage.emailGrade='';storage.rafaelaReview=null;save();const p=document.getElementById('rafaelaPreview');if(p)p.textContent=rafaelaText();const n=document.getElementById('rafaelaWords');if(n)n.textContent=rafaelaText().split(/\s+/).filter(Boolean).length;const status=document.getElementById('rafaelaStatus');if(status)status.textContent='Odgovori su sačuvani.';const review=document.getElementById('rafaelaReview');if(review)review.textContent='';}
+function mail(){
+ const x=rafaelaData();
+ return `${heading('Schreiben · Aufgabe 2','10 dodatnih bodova','Antworten Sie Rafaela. Schreiben Sie circa 30 Wörter. Beantworten Sie alle Fragen. Schreiben Sie am Ende einen Gruß.')}
+ <div class="rafaela-exam">
+ <div class="card rafaela-source"><p><b>Situation:</b> Ihre Freundin Rafaela wohnt in Berlin und hat Sie eingeladen. Sie möchten bald zu ihr fahren und bekommen folgendes E-Mail von ihr:</p>
+ <div class="rafaela-meta">Von: <b>m.rafaela@gmx.net</b><br>Betreff: <b>Deine Reise nach Berlin</b></div>
+ <div class="rafaela-original">Hallo!<p>Du schreibst, du möchtest bald zu mir nach Berlin kommen. Ich freue mich schon sehr!</p><p>Du kannst auch gerne jemanden von deiner Familie oder Freunde mitbringen.</p><p>Schreib mir bitte: An welchem Tag und um wie viel Uhr kommst du? Wie lange möchtest du bleiben? Wen bringst du mit?</p>Liebe Grüße<br>Rafaela</div></div>
+ <div class="card rafaela-compose"><div class="rafaela-start">Liebe Rafaela,<br>vielen Dank für dein E-Mail. Hier die wichtigsten Informationen zu meiner Berlin-Reise:</div>
+ <label for="raf1">1. An welchem Tag und um wie viel Uhr kommst du?</label>
+ <textarea id="raf1" class="rafaela-entry" rows="2" maxlength="500" placeholder="Odgovor na nemačkom" oninput="setRafaela('one',this.value)">${h(x.one)}</textarea>
+ <label for="raf2">2. Wie lange möchtest du bleiben?</label>
+ <textarea id="raf2" class="rafaela-entry" rows="2" maxlength="500" placeholder="Odgovor na nemačkom" oninput="setRafaela('two',this.value)">${h(x.two)}</textarea>
+ <label for="raf3">3. Wen bringst du mit?</label>
+ <textarea id="raf3" class="rafaela-entry" rows="2" maxlength="500" placeholder="Odgovor na nemačkom" oninput="setRafaela('three',this.value)">${h(x.three)}</textarea>
+ <div class="rafaela-name"><label for="rafName">Liebe Grüße</label><input id="rafName" type="text" enterkeyhint="done" value="${h(x.name)}" placeholder="Potpis" oninput="setRafaela('name',this.value)"></div>
+ <details class="rafaela-draft"><summary>Vaš mejl · <span id="rafaelaWords">${rafaelaText().split(/\s+/).filter(Boolean).length}</span> reči</summary><pre id="rafaelaPreview">${h(rafaelaText())}</pre></details>
+ <div class="rafaela-buttons"><button type="button" class="btn btn-next" id="rafAI" onclick="checkRafaela()">✦ OpenAI provera</button><button type="button" class="btn btn-plain" onclick="reviewRafaelaFields()">Proveri 3 odgovora</button></div>
+ <p class="rafaela-status" id="rafaelaStatus">${RAFAELA_CHECK_ENDPOINT?'AI provera je spremna.':'Za OpenAI proveru potrebno je povezati zaštićeni server na Replitu. Uneti odgovori se već čuvaju.'}</p>
+ <div id="rafaelaReview">${storage.rafaelaReview?rafaelaAIResult(storage.rafaelaReview):''}</div>
+ <p class="rafaela-disclaimer">AI bodovi do 10 su vežbovna procena, nisu zvanična ÖSD ocena.</p>
+ </div></div>`;
+}
+function reviewRafaelaFields(){const x=rafaelaData(),missing=[];if(!x.one.trim())missing.push('dan i vreme dolaska');if(!x.two.trim())missing.push('dužina boravka');if(!x.three.trim())missing.push('koga dovodiš');const status=document.getElementById('rafaelaStatus');if(status)status.textContent=missing.length?'Nedostaje: '+missing.join(', ')+'.':'Sva tri pitanja imaju odgovor. Proveri gramatiku, pozdrav i potpis.';}
+function rafaelaAIResult(x){return `<div class="rafaela-ai-result"><b>OpenAI procena: ${h(x.score)}/10</b><p>${h(x.summary||'')}</p>${(x.checks||[]).map((v,i)=>`<p>${i+1}. ${v.answered?'✓':'✕'} ${h(v.feedback||'')}</p>`).join('')}<b>Ispravljen predlog:</b><pre>${h(x.corrected_email||'')}</pre></div>`;}
+async function checkRafaela(){
+ const x=rafaelaData(),status=document.getElementById('rafaelaStatus');
+ if(!x.one.trim()||!x.two.trim()||!x.three.trim()){reviewRafaelaFields();return;}
+ if(!RAFAELA_CHECK_ENDPOINT){if(status)status.textContent='OpenAI API još nije povezan. OPENAI_API_KEY stavi samo na server u Replit Secrets, nikada na GitHub.';return;}
+ const btn=document.getElementById('rafAI');btn.disabled=true;btn.textContent='Proveravam…';
+ try{
+  const response=await fetch(RAFAELA_CHECK_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:rafaelaText(),answers:{arrival:x.one,duration:x.two,companion:x.three,signature:x.name}})});
+  const result=await response.json();if(!response.ok)throw Error(result.error||'Greška servera');
+  if(!Number.isInteger(result.score)||result.score<0||result.score>10||!Array.isArray(result.checks))throw Error('Nepotpun odgovor provere');
+  storage.rafaelaReview=result;storage.emailGrade=String(result.score);save();document.getElementById('rafaelaReview').innerHTML=rafaelaAIResult(result);
+  if(status)status.textContent='Provera završena. Bodovi mejla dodati su u završni rezultat.';
+ }catch(error){if(status)status.textContent='Provera nije uspela: '+(error.message||error)+'. Tekst je sačuvan.';}
+ finally{btn.disabled=false;btn.textContent='✦ OpenAI provera';}
+}
 function norm(s){return String(s??'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[.,\s/\-]/g,'');}
 function countMatches(prefix,keys){return keys.reduce((a,x,i)=>a+(String(get(prefix+'_'+i))===String(x)?1:0),0);}
 function score10Five(n){return Math.max(0,Math.min(10,n*2));}
@@ -437,7 +500,7 @@ function result(){const g=grades();const basePass=g.base>=38&&g.read>=6&&g.hear>
 function cover(){return `<div class="intro cover-compact"><div class="hero"><div class="hero-medallion">A1</div><div class="med">DE-MAX TUTIN · PRIPREMA</div><h1>TEST 1</h1><div style="font-weight:750;font-size:18px">ÖSD Zertifikat A1</div><p style="color:#c8d9f1;font-size:11px;line-height:1.45;margin-top:9px">Kompletna simulacija ispita sa originalnim zadacima, slikama i snimcima.</p><span class="tag">SLUŠAJ · REŠAVAJ · PROVERI REZULTAT</span></div><div class="feature-tiles"><div class="tile"><strong>30</strong><small>Lesen</small></div><div class="tile"><strong>30</strong><small>Hören</small></div><div class="tile"><strong>15</strong><small>Schreiben*</small></div></div><div class="card card-tight" style="margin-bottom:8px"><label class="mini-title" for="candidate">Ime i prezime kandidata</label><input id="candidate" type="text" value="${h(storage.name)}" oninput="storage.name=this.value;save()" placeholder="Unesite ime i prezime" style="width:100%;border:1px solid #cbd8ec;border-radius:10px;padding:11px;background:#f9fbff"></div><p class="small center" style="margin:2px 0">*Formular 5 + mejl 10. Prolaz 38/65 bez mejla.</p></div>`;}
 function intro(which){const reading=which==='read',hearing=which==='hear';let title=reading?'Razumevanje':hearing?'Slušanje':'Formular i mejl';let sub=reading?'LESEN':hearing?'HÖREN':'SCHREIBEN';let pts=reading?30:hearing?30:15;let tasks=reading?['Situationen + Anzeigen (10 bodova)','Anzeigen · JA / NEIN (10 bodova)','Texte + Bilder (10 bodova)']:hearing?['Fotos + 5 Texte (10 bodova)','Nachricht · Notizen (10 bodova)','Wo gefällt es Ihnen? (10 bodova)']:['Formular · Ricardo Torres (5 bodova)','Vežbanje mejlova (10 dodatnih bodova)','Završni rezultat (prag 38 bez mejla)'];return `<div class="intro section-intro intro-compact"><div class="topicicon">${reading?'📖':hearing?'🎧':'✉'}</div><div class="center"><div class="eyebrow">${sub} · ÖSD A1</div><h2>${title}</h2><p class="lead">${reading?'Pročitajte zadatke i odaberite tačne odgovore.':hearing?'Originalni snimci se mogu automatski pustiti ili ručno pokrenuti.':'Popunite originalni formular i pređite na mejlove u postojećoj De-Max aplikaciji.'}</p><div class="points">${pts}<small> bodova</small></div><div class="medals"><span class="medal green">Minimum ${reading||hearing?6:4}</span>${hearing?'<span class="medal">3 originalna MP3</span>':reading?'<span class="medal">25 min na ispitu</span>':'<span class="medal">Mejl +10 posebno</span>'}</div></div><div class="card rules">${tasks.map((t,i)=>`<div class="rule"><span class="n">${i+1}</span><span>${t}</span></div>`).join('')}${hearing?`<div class="rule" style="border:0"><span>Automatsko pokretanje slušanja</span><button class="switch ${storage.autoPlay?'yes':''}" aria-label="Automatski pokreći snimke" onclick="storage.autoPlay=!storage.autoPlay;save();render()"></button></div>`:''}</div></div>`;}
 function render(){if(![8,9,10].includes(page))stopAudio();let html='';switch(page){case 0:html=cover();break;case 1:html=intro('read');break;case 2:html=r1();break;case 3:html=r2(0);break;case 4:html=r2(1);break;case 5:html=r2(2);break;case 6:html=r3();break;case 7:html=intro('hear');break;case 8:html=h1();break;case 9:html=h2();break;case 10:html=h3();break;case 11:html=intro('write');break;case 12:html=form();break;case 13:html=mail();break;case 14:html=result();break;}
-const audioDock=document.getElementById('fixedAudioDock');audioDock.hidden=![8,9,10].includes(page);audioDock.innerHTML=[8,9,10].includes(page)?audioPanel(page-7):'';main.classList.toggle('r2-no-scroll',page>=3&&page<=5);main.classList.toggle('listen-no-scroll',page===9||page===10);main.classList.toggle('exam-form-no-scroll',page===12);main.classList.toggle('exam-form-solutions-open',false);main.innerHTML=html;document.getElementById('pageLabel').textContent=String(page+1).padStart(2,'0')+' / '+pages.length;document.getElementById('sectionLabel').textContent=pages[page].toUpperCase();document.getElementById('progress').style.width=((page+1)/pages.length*100)+'%';document.getElementById('back').disabled=page===0;document.getElementById('back').style.opacity=page===0?.4:1;document.getElementById('next').textContent=page===14?'Početna ↺':page===0?'Počni →':page===13?'Rezultat →':page===12?'Prikaži rešenje ✓':'Sledeća →';if([8,9,10].includes(page))prepareAudio(page-7);}
+const audioDock=document.getElementById('fixedAudioDock');audioDock.hidden=![8,9,10].includes(page);audioDock.innerHTML=[8,9,10].includes(page)?audioPanel(page-7):'';main.classList.toggle('r2-no-scroll',page>=3&&page<=5);main.classList.toggle('listen-no-scroll',page===9||page===10);main.classList.toggle('exam-form-no-scroll',page===12);main.classList.toggle('rafaela-page',page===13);main.classList.toggle('exam-form-solutions-open',false);main.innerHTML=html;document.getElementById('pageLabel').textContent=String(page+1).padStart(2,'0')+' / '+pages.length;document.getElementById('sectionLabel').textContent=pages[page].toUpperCase();document.getElementById('progress').style.width=((page+1)/pages.length*100)+'%';document.getElementById('back').disabled=page===0;document.getElementById('back').style.opacity=page===0?.4:1;document.getElementById('next').textContent=page===14?'Početna ↺':page===0?'Počni →':page===13?'Prikaži rezultat ✓':page===12?'Mejl →':'Sledeća →';if([8,9,10].includes(page))prepareAudio(page-7);}
 function go(p){if(p<0||p>=pages.length)return;page=p;main.scrollTop=0;render();}
 function toggleSolutions(){storage.showSolutions=!storage.showSolutions;save();const pos=main.scrollTop;render();main.scrollTop=pos;}
 function stopAudio(){if(!audio.paused)audio.pause();playingPage=null;}
@@ -450,13 +513,13 @@ function replayAudio(){if(!audio.getAttribute('src'))return playPause();audio.cu
 function seekAudio(x){if(Number.isFinite(audio.duration))audio.currentTime=Number(x)/1000*audio.duration;}
 function mm(t){if(!Number.isFinite(t))t=0;let v=Math.floor(t);return String(Math.floor(v/60)).padStart(2,'0')+':'+String(v%60).padStart(2,'0');}
 function updateAudioUI(){const p=document.getElementById('playButton'),status=document.getElementById('playState'),clock=document.getElementById('audioClock'),seek=document.getElementById('audioSeek');if(!p)return;p.textContent=audio.paused?'▶ Pusti':'❚❚ Pauza';status.textContent=audio.paused?'Pauza':'Reprodukcija';if(clock)clock.textContent=mm(audio.currentTime)+' / '+mm(audio.duration);if(seek)seek.value=Number.isFinite(audio.duration)&&audio.duration?Math.round(1000*audio.currentTime/audio.duration):0;}
-function confirmReset(){if(!window.confirm('Obrisati sve upisane odgovore i ponovo započeti Test 1?'))return;storage={answers:{},name:'',email:'',emailGrade:'',autoPlay:true,showSolutions:false};save();go(0);toast('Novi test je spreman.');}
-document.getElementById('back').onclick=()=>go(page-1);document.getElementById('next').onclick=()=>{if(page===0){storage.answers={};storage.email='';storage.emailGrade='';storage.showSolutions=false;storage.r2Step=0;save();}if(page===12){showFullResults();return;}go(page===14?0:page+1);};document.getElementById('closeModal').onclick=()=>document.getElementById('modal').classList.remove('show');document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')e.currentTarget.classList.remove('show')});document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.getElementById('modal').classList.remove('show');if(!document.getElementById('answerModal').hidden)closeAnswerMenu();}});audio.addEventListener('play',updateAudioUI);audio.addEventListener('pause',updateAudioUI);audio.addEventListener('timeupdate',updateAudioUI);audio.addEventListener('loadedmetadata',updateAudioUI);audio.addEventListener('ended',()=>{updateAudioUI();toast('Snimak je završen. Možete ponovo pustiti ili preći dalje.');});
+function confirmReset(){if(!window.confirm('Obrisati sve upisane odgovore i ponovo započeti Test 1?'))return;storage={answers:{},name:'',email:'',emailGrade:'',rafaela:{one:'',two:'',three:'',name:''},rafaelaReview:null,autoPlay:true,showSolutions:false};save();go(0);toast('Novi test je spreman.');}
+document.getElementById('back').onclick=()=>go(page-1);document.getElementById('next').onclick=()=>{if(page===0){storage.answers={};storage.email='';storage.emailGrade='';storage.rafaela={one:'',two:'',three:'',name:''};storage.rafaelaReview=null;storage.showSolutions=false;storage.r2Step=0;save();}go(page===14?0:page+1);};document.getElementById('closeModal').onclick=()=>document.getElementById('modal').classList.remove('show');document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')e.currentTarget.classList.remove('show')});document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.getElementById('modal').classList.remove('show');if(!document.getElementById('answerModal').hidden)closeAnswerMenu();}});audio.addEventListener('play',updateAudioUI);audio.addEventListener('pause',updateAudioUI);audio.addEventListener('timeupdate',updateAudioUI);audio.addEventListener('loadedmetadata',updateAudioUI);audio.addEventListener('ended',()=>{updateAudioUI();toast('Snimak je završen. Možete ponovo pustiti ili preći dalje.');});
 /* Keyboard-aware editing for the two written mobile exercises. */
 const keyboardToolbar=document.getElementById('keyboardToolbar');
 const keyboardDone=document.getElementById('keyboardDone');
 const shell=document.getElementById('shell');
-const isExamTextInput=el=>el&&el.matches&&el.matches('#main input[type="text"],#main input[type="number"],#main input[type="tel"]')&&(page===9||page===12);
+const isExamTextInput=el=>el&&el.matches&&el.matches('#main input[type="text"],#main input[type="number"],#main input[type="tel"],#main textarea.rafaela-entry')&&(page===9||page===12||page===13);
 function updateMobileViewport(){
  if(window.visualViewport&&window.innerWidth<600){
   document.documentElement.style.setProperty('--app-viewport-height',Math.max(200,Math.round(window.visualViewport.height))+'px');
@@ -488,7 +551,7 @@ document.addEventListener('focusin',e=>{if(isExamTextInput(e.target))activateKey
 document.addEventListener('focusout',()=>setTimeout(()=>{if(!isExamTextInput(document.activeElement))closeKeyboardLayout()},110));
 keyboardDone.addEventListener('click',()=>{if(document.activeElement instanceof HTMLElement)document.activeElement.blur();closeKeyboardLayout()});
 main.addEventListener('keydown',e=>{
- if(e.key!=='Enter'||e.isComposing||!isExamTextInput(e.target))return;
+ if(e.key!=='Enter'||e.isComposing||!isExamTextInput(e.target)||e.target.matches('textarea'))return;
  e.preventDefault();
  const fields=Array.from(main.querySelectorAll('input[type="text"],input[type="number"],input[type="tel"]'));
  const nextField=fields[fields.indexOf(e.target)+1];
