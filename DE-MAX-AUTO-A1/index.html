@@ -118,6 +118,12 @@
     @media (min-width:700px){.shell{margin:18px auto;height:calc(100vh - 36px);height:calc(100dvh - 36px);border-radius:24px;}.hero h1{font-size:27px}.main{padding:17px 20px}}
     @media (max-width:370px){.brand-title{font-size:14px}.brand-sub{font-size:10px}.top{padding:10px}.main{padding:10px}.word-card{min-height:214px}.bigword{font-size:24px}.say{font-size:21px}.btn{padding:9px}.bottom{padding:5px 4px calc(5px + env(safe-area-inset-bottom))}.nav-btn{font-size:10px}}
     @media (prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;animation:none!important}}
+  .course-heading{display:flex;flex-direction:column;gap:3px;background:#eaf2ff;border:1px solid #cbdcf7;border-radius:13px;padding:10px 12px;margin:0 0 8px;font-size:12px;font-weight:800;color:#1b4e99}
+    .course-heading span:last-child{font-size:14px;font-weight:900;color:#163961;line-height:1.25}
+    .select-row .smallbtn{flex:1;min-width:0;white-space:normal}
+    .quiz-setting-label{font-size:13px;font-weight:900;color:#1e3e70;text-align:left;margin:13px 0 7px}
+    .quiz-choice-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .quiz-choice-row .smallbtn[aria-pressed="true"]{background:#1956ba;color:white;border-color:#1956ba}
   </style>
 </head>
 <body>
@@ -150,7 +156,7 @@ let saved={};
 try {saved=JSON.parse(localStorage.getItem(storageKey)||'{}')||{};}catch(e){saved={};}
 let favorites = new Set((saved.favorites||[]).filter(i=>Number.isInteger(i)&&i>=0&&i<WORDS.length));
 let bestQuiz = Number(saved.bestQuiz||0);
-const state={page:'home',cat:0,wordIndex:0,wordMode:'cards',search:'',listPage:0,dialogueIndex:0,lineIndex:0,allLines:false,showTranslation:true,quiz:null,quizCat:-1,quizDirection:'de-sr',quizLength:10,speed:Number(saved.speed||.85)};
+const state={page:'home',cat:-1,wordIndex:0,wordMode:'cards',search:'',listPage:0,dialogueIndex:0,lineIndex:0,allLines:false,showTranslation:true,quiz:null,quizCat:-1,quizDirection:'de-sr',quizLength:10,speed:Number(saved.speed||.85)};
 const safe=(s)=>String(s).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const countLines=DIALOGUES.reduce((n,x)=>n+x.lines.length,0);
 let voices=[],speechToken=0,currentlySpeaking=false,paused=false,toastTimer=null;
@@ -209,12 +215,12 @@ function renderHome(){
     <div class="tip">DE-MAX TUTIN · Uči svojim tempom · Stručne reči uz jednostavne A1 rečenice</div>`;
 }
 function matchingWords(){return WORDS.map((w,i)=>({...w,id:i})).filter(w=>(state.search||state.cat===-1||(state.cat===-2?favorites.has(w.id):w.c===state.cat))&&(!state.search||(`${w.de} ${w.sr}`).toLocaleLowerCase('sr').includes(state.search.toLocaleLowerCase('sr'))));}
-function categorySelect(value,includeAll=true){return `<select class="field" id="category" aria-label="Izaberi oblast">${includeAll?`<option value="-1" ${value===-1?'selected':''}>Sve oblasti · ${WORDS.length} pojmova</option><option value="-2" ${value===-2?'selected':''}>★ Sačuvane reči · ${favorites.size}</option>`:''}${CATS.map((c,i)=>`<option value="${i}" ${value===i?'selected':''}>${safe(c.name)} · ${WORDS.filter(w=>w.c===i).length}</option>`).join('')}</select>`;}
 function renderWords(keepScroll=false){
   let words=matchingWords();state.wordIndex=Math.max(0,Math.min(state.wordIndex,words.length-1));
   const item=words[state.wordIndex];const mode=state.wordMode;
   MAIN.innerHTML=`<h1 class="page-title">📖 Rečnik za radionicu</h1><p class="description">${WORDS.length} reči i izraza · tapni 🔊 za nemački izgovor.</p>
-    <div class="select-row">${categorySelect(state.cat)}<button class="smallbtn" data-action="word-mode">${mode==='cards'?'☷ Spisak':'▣ Kartice'}</button></div>
+    <div class="course-heading"><span>${state.cat===-2?'★ Sačuvane reči':'📚 Sve oblasti redom'}</span><span>${state.cat===-2?(favorites.size+' reči'):(item?safe(CATS[item.c].name):'Sve oblasti')}</span></div>
+    <div class="select-row"><button class="smallbtn" data-action="word-filter">${state.cat===-2?'📚 Sve reči':'★ Sačuvane reči'}</button><button class="smallbtn" data-action="word-mode">${mode==='cards'?'☷ Spisak':'▣ Kartice'}</button></div>
     <div class="controls-row"><input class="field" id="search" type="search" placeholder="Pretraži: git, Farbe, hauba..." value="${safe(state.search)}" autocomplete="off" spellcheck="false" aria-label="Pretraži rečnik"><span class="meta">${words.length} rezultata</span></div>
     ${mode==='cards'?renderWordCard(words,item):renderWordList(words)}
     <div class="hint">Brzina nemačkog izgovora menja se gore desno (0.7× / 0.85× / 1× / 1.15×).</div>`;
@@ -239,13 +245,14 @@ function renderWordList(words){if(!words.length)return `<div class="empty">Nema 
 function renderDialogues(keepScroll=false){
  const d=DIALOGUES[state.dialogueIndex];const line=d.lines[state.lineIndex];
  MAIN.innerHTML=`<h1 class="page-title">💬 Dijalozi · A1</h1><p class="description">${DIALOGUES.length} razgovora sa prevodom i automatskim izgovorom.</p>
- <div class="select-row"><select id="dialogue" class="field" aria-label="Izaberi dijalog">${DIALOGUES.map((x,i)=>`<option value="${i}" ${i===state.dialogueIndex?'selected':''}>${safe(x.name)}</option>`).join('')}</select><button class="smallbtn" data-action="dialogue-view">${state.allLines?'▣ Kartice':'☷ Ceo dijalog'}</button></div>
+ <div class="course-heading"><span>💬 Dijalog ${state.dialogueIndex+1} / ${DIALOGUES.length}</span><span>${safe(d.name)}</span></div>
+ <div class="select-row"><button class="smallbtn" data-action="dialogue-view"><button class="smallbtn" data-action="dialogue-view">${state.allLines?'▣ Kartice':'☷ Ceo dijalog'}</button></div>
  <div class="row-between" style="margin:0 2px 10px"><span class="meta">${safe(d.topic)} · ${d.lines.length} replika</span><span class="meta">${state.lineIndex+1} / ${d.lines.length}</span></div>
  <div class="top-tools"><button class="smallbtn" data-action="dialogue-play-all">▶ Slušaj ceo dijalog</button><button class="smallbtn" data-action="dialogue-stop">■ Zaustavi</button><button class="smallbtn" data-action="toggle-translation">${state.showTranslation?'🇷🇸 Sakrij prevod':'🇷🇸 Prikaži prevod'}</button></div>
  ${state.allLines? d.lines.map((l,i)=>`<div class="talk-row" data-line-index="${i}"><div class="row-between"><span class="talk-badge ${l.speaker==='B'?'b':''}">Osoba ${l.speaker}</span><button class="talk-row-btn" data-action="line-speak" data-i="${i}" aria-label="Slušaj repliku">🔊</button></div><p class="de">${safe(l.de)}</p>${state.showTranslation?`<p class="sr">${safe(l.sr)}</p>`:''}</div>`).join(''):
  `<div class="card dialogue-card"><span class="talk-badge ${line.speaker==='B'?'b':''}">👤 Osoba ${line.speaker}</span><div class="say">${safe(line.de)}</div>${state.showTranslation?`<div class="translation">${safe(line.sr)}</div>`:`<div class="placeholder">Prevod je sakriven. Pokušaj samostalno.</div>`}<div class="talk-actions"><button class="circle-btn prime" data-action="line-speak" data-i="${state.lineIndex}">🔊 Slušaj i ponovi</button></div></div>
  <div class="progress-wrap"><div class="progress-bar" style="width:${(state.lineIndex+1)/d.lines.length*100}%"></div></div>
- <div class="slide-controls"><button class="btn red" data-action="line-prev" ${state.lineIndex===0?'disabled':''}>← Prethodna</button><button class="btn green" data-action="line-next" ${state.lineIndex>=d.lines.length-1?'disabled':''}>Sledeća →</button></div>`}
+ <div class="slide-controls"><button class="btn red" data-action="line-prev" ${state.lineIndex===0&&state.dialogueIndex===0?'disabled':''}>${state.lineIndex===0?'← Prethodni dijalog':'← Prethodna'}</button><button class="btn green" data-action="line-next" ${state.lineIndex>=d.lines.length-1&&state.dialogueIndex===DIALOGUES.length-1?'disabled':''}>${state.lineIndex>=d.lines.length-1?'Sledeći dijalog →':'Sledeća →'}</button></div>`}
  <div class="slide-controls"><button class="btn ghost" data-action="dialogue-prev" ${state.dialogueIndex===0?'disabled':''}>← Prethodni dijalog</button><button class="btn blue" data-action="dialogue-next" ${state.dialogueIndex===DIALOGUES.length-1?'disabled':''}>Sledeći dijalog →</button></div>
  <div class="hint">A i B predstavljaju dve osobe. Dodirni izgovor, slušaj i naglas ponavljaj.</div>`;
  if(!keepScroll)scrollTop();
@@ -267,10 +274,11 @@ function quizAnswer(i){const q=state.quiz;if(!q||q.selected!==null)return;q.sele
 function quizNext(){const q=state.quiz;if(!q)return;if(q.index<q.questions.length-1){q.index++;q.selected=null;renderQuiz();scrollTop();}else{const score=q.answers.filter(Boolean).length;bestQuiz=Math.max(bestQuiz,Math.round(score/q.questions.length*100));persist();q.done=true;renderQuiz();scrollTop();}}
 function renderQuiz(){let q=state.quiz;
   MAIN.innerHTML=`<h1 class="page-title">✅ A1 kviz</h1><p class="description">Vežbaj stručni rečnik kroz jednostavna pitanja.</p>${!q?
-   `<div class="quiz-intro"><div class="emoji">🏆</div><h2>Koliko reči znaš?</h2><p>Izaberi oblast, smer prevođenja i broj pitanja. Odmah dobijaš tačan odgovor.</p>
-   <label for="quizCat">Oblast</label><select class="field" id="quizCat"><option value="-1">Sve oblasti</option>${CATS.map((c,i)=>`<option value="${i}" ${state.quizCat===i?'selected':''}>${safe(c.name)}</option>`).join('')}</select>
-   <label for="quizDir">Smer prevoda</label><select class="field" id="quizDir"><option value="de-sr" ${state.quizDirection==='de-sr'?'selected':''}>🇩🇪 Nemački → 🇷🇸 Srpski</option><option value="sr-de" ${state.quizDirection==='sr-de'?'selected':''}>🇷🇸 Srpski → 🇩🇪 Nemački</option></select>
-   <label for="quizLen">Broj pitanja</label><select class="field" id="quizLen"><option value="10" ${state.quizLength===10?'selected':''}>10 pitanja</option><option value="20" ${state.quizLength===20?'selected':''}>20 pitanja</option></select>
+   `<div class="quiz-intro"><div class="emoji">🏆</div><h2>Koliko reči znaš?</h2><p>Reči iz svih oblasti. Odaberi način vežbanja bez padajućih menija.</p>
+   <div class="quiz-setting-label">Smer prevođenja</div>
+   <div class="quiz-choice-row"><button class="smallbtn" data-action="quiz-dir" data-dir="de-sr" aria-pressed="${state.quizDirection==='de-sr'}">🇩🇪 → 🇷🇸</button><button class="smallbtn" data-action="quiz-dir" data-dir="sr-de" aria-pressed="${state.quizDirection==='sr-de'}">🇷🇸 → 🇩🇪</button></div>
+   <div class="quiz-setting-label">Broj pitanja</div>
+   <div class="quiz-choice-row"><button class="smallbtn" data-action="quiz-len" data-len="10" aria-pressed="${state.quizLength===10}">10 pitanja</button><button class="smallbtn" data-action="quiz-len" data-len="20" aria-pressed="${state.quizLength===20}">20 pitanja</button></div>
    <button class="btn wide blue" data-action="quiz-start" style="margin-top:17px">Započni kviz →</button><div class="tip">Najbolji rezultat: ${bestQuiz}%</div></div>`:
    q.done?`<div class="quiz-result"><div style="font-size:42px">🏅</div><h2>Kviz je završen!</h2><div class="score">${q.answers.filter(Boolean).length} / ${q.questions.length}</div><p>Uspešnost: <b>${Math.round(q.answers.filter(Boolean).length/q.questions.length*100)}%</b><br>Najbolji rezultat: <b>${bestQuiz}%</b></p><button class="btn wide blue" data-action="quiz-restart">Novi kviz ↻</button><button style="margin-top:8px" class="btn wide ghost" data-action="quiz-done">Promeni oblast i opcije</button></div>`:
    renderQuizQuestion(q)}
@@ -291,6 +299,7 @@ MAIN.addEventListener('click',e=>{
  else if(a==='home-dialogues')setPage('dialogues');
  else if(a==='home-quiz')setPage('quiz');
  else if(a==='word-mode'){state.wordMode=state.wordMode==='cards'?'list':'cards';state.listPage=0;stopSpeech();renderWords();}
+ else if(a==='word-filter'){stopSpeech();state.cat=state.cat===-2?-1:-2;state.search='';state.wordIndex=0;state.listPage=0;renderWords();}
  else if(a==='word-speak'){const w=matchingWords()[state.wordIndex];if(w)speakOnce(w.de);}
  else if(a==='speak-by-id'){speakOnce(WORDS[id].de);}
  else if(a==='favorite'||a==='favorite-id'){const w=a==='favorite'?matchingWords()[state.wordIndex]:WORDS[id];if(!w)return;const idx=a==='favorite'?w.id:id;if(favorites.has(idx))favorites.delete(idx);else favorites.add(idx);persist();renderWords(true);}
@@ -303,22 +312,16 @@ MAIN.addEventListener('click',e=>{
  else if(a==='line-speak'){state.lineIndex=i;const l=DIALOGUES[state.dialogueIndex].lines[i];speakOnce(l.de,l.speaker);if(!state.allLines)renderDialogues(true);}
  else if(a==='dialogue-play-all'){speakSeries(DIALOGUES[state.dialogueIndex].lines);}
  else if(a==='dialogue-stop'){stopSpeech();toast('Izgovor je zaustavljen.');}
- else if(a==='line-prev'||a==='line-next'){stopSpeech();state.lineIndex+=a==='line-next'?1:-1;renderDialogues();}
+ else if(a==='line-prev'||a==='line-next'){stopSpeech();const d=DIALOGUES[state.dialogueIndex];if(a==='line-next'){if(state.lineIndex<d.lines.length-1)state.lineIndex++;else if(state.dialogueIndex<DIALOGUES.length-1){state.dialogueIndex++;state.lineIndex=0;}}else{if(state.lineIndex>0)state.lineIndex--;else if(state.dialogueIndex>0){state.dialogueIndex--;state.lineIndex=DIALOGUES[state.dialogueIndex].lines.length-1;}}renderDialogues();}
  else if(a==='dialogue-prev'||a==='dialogue-next'){stopSpeech();state.dialogueIndex+=a==='dialogue-next'?1:-1;state.lineIndex=0;renderDialogues();}
- else if(a==='quiz-start')startQuiz();
+ else if(a==='quiz-dir'){state.quizDirection=b.dataset.dir;renderQuiz();}
+ else if(a==='quiz-len'){state.quizLength=Number(b.dataset.len);renderQuiz();}
+ else if(a==='quiz-start'){state.quizCat=-1;startQuiz();}
  else if(a==='quiz-answer')quizAnswer(i);
  else if(a==='quiz-next')quizNext();
  else if(a==='quiz-speak')speakOnce(state.quiz.questions[state.quiz.index].word.de);
  else if(a==='quiz-restart')startQuiz();
  else if(a==='quiz-done'){state.quiz=null;renderQuiz();}
-});
-MAIN.addEventListener('change',e=>{
- const el=e.target;
- if(el.id==='category'){stopSpeech();state.cat=Number(el.value);state.wordIndex=0;state.listPage=0;renderWords();}
- else if(el.id==='dialogue'){stopSpeech();state.dialogueIndex=Number(el.value);state.lineIndex=0;renderDialogues();}
- else if(el.id==='quizCat'){state.quizCat=Number(el.value);}
- else if(el.id==='quizDir'){state.quizDirection=el.value;}
- else if(el.id==='quizLen'){state.quizLength=Number(el.value);}
 });
 MAIN.addEventListener('input',e=>{
  if(e.target.id==='search'){
