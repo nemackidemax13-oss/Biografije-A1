@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="sr">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=5">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=5, interactive-widget=resizes-content">
 <meta name="theme-color" content="#101f42"><meta name="description" content="DE-MAX Tutin — ÖSD Zertifikat A1, Test 1, kompletna interaktivna simulacija sa originalnim materijalom.">
 <title>DE-MAX Tutin | ÖSD A1 — Test 1</title>
 <style>
@@ -204,13 +204,22 @@
 #shell.keyboard-open .exam-form-row .exam-form-sport-options .opt{min-height:30px}
 #shell.keyboard-open .exam-form-row .exam-form-sport-options{gap:5px}
 @media(min-width:600px){.keyboard-toolbar{display:none!important}}
+
+/* Larger usable typing area on Samsung and other mobile phones.
+   The compact audio player remains available while the keyboard is open. */
+@media(max-width:599px){
+ #shell.keyboard-open .top{display:none!important}
+ #shell.keyboard-open .keyboard-toolbar{padding:3px 9px 4px;min-height:35px}
+ #shell.keyboard-open .keyboard-toolbar button{min-height:29px;padding:4px 13px}
+ #shell.keyboard-open .main.listen-no-scroll,#shell.keyboard-open .main.exam-form-no-scroll{padding-top:6px;padding-bottom:34px}
+}
 </style></head>
 <body>
 <div id="shell">
   <header class="top"><div class="identity"><div class="brand"><div class="logo">D•M</div><div><div class="brand-name">DE-MAX TUTIN</div><div class="brand-sub">ÖSD A1 · Ispitna simulacija</div></div></div><div class="top-right"><div class="pg" id="pageLabel">01 / 15</div><small id="sectionLabel">TEST 1</small></div></div><div class="bar"><div class="fill" id="progress"></div></div></header>
   <div class="fixed-audio-dock" id="fixedAudioDock" hidden></div>
   <main class="main" id="main" aria-live="polite"></main>
-  <div class="keyboard-toolbar" id="keyboardToolbar" hidden><span>✎ Unos odgovora</span><button type="button" id="keyboardDone">✓ Gotovo</button></div>
+  <div class="keyboard-toolbar" id="keyboardToolbar" hidden><span>✎ Unos odgovora</span><button type="button" id="keyboardDone">✓ Potvrdi</button></div>
   <footer class="bottom"><button class="btn btn-back" id="back">← Nazad</button><button class="btn btn-next" id="next">Počni →</button></footer>
   <div class="toast" id="toast" role="status"></div>
 </div>
@@ -299,7 +308,7 @@ function confirmAnswerMenu(){
   closeAnswerMenu();button.focus();
 }
 function answerChoices(k,items,cls='n2'){return `<div class="choice-grid ${cls}">${items.map(x=>`<label class="choice"><input type="radio" name="${k}" value="${h(x)}" ${String(get(k))===String(x)?'checked':''} onchange="set('${k}',this.value)">${h(x)}</label>`).join('')}</div>`;}
-function freeInput(k,placeholder,extra=''){return `<input type="text" placeholder="${h(placeholder)}" value="${h(get(k))}" ${extra} oninput="set('${k}',this.value)">`;}
+function freeInput(k,placeholder,extra=''){const hint=(k==='h2_4'||k==='f_arrive')?'done':'next';return `<input type="text" placeholder="${h(placeholder)}" value="${h(get(k))}" ${extra} enterkeyhint="${hint}" autocomplete="off" autocapitalize="none" spellcheck="false" oninput="set('${k}',this.value)">`;}
 function partTag(n){return `<span class="chip chip-dark">Aufgabe ${n} · 10 Punkte</span>`;}
 function r1(){const txt=['Sie haben viele Freunde in anderen Ländern und möchten billig mit ihnen telefonieren.','Sie sollen für ein Fest etwas zum Essen mitbringen. Sie haben keine Zeit zum Kochen.','Sie suchen einen Job. Sie wollen in einem Büro arbeiten.','Sie haben eine große Wohnung. Sie brauchen Hilfe bei der Hausarbeit.','Sie arbeiten viel am Computer. In Ihrer Freizeit möchten Sie Sport machen.'];return `${heading('Lesen · Aufgabe 1','10 bodova','U novinama tražite različite stvari. Za svaku situaciju A–E pronađite odgovarajući oglas 1–6. Jedan oglas je višak.')}${originalBtns([1,2])}<div class="card card-quiet"><div class="mini-title">Anzeigen 1–6 <span class="small">· dodirnite oglas za uvećanje</span></div><div class="image-grid">${[1,2,3,4,5,6].map(i=>`<div class="image-cell">${img(`lesen1-ad-${i}`,`Anzeige ${i}`)}</div>`).join('')}</div></div><div class="card"><div class="mini-title">Situacije A–E · pronađite odgovarajući oglas</div>${txt.map((x,i)=>`<div class="reading-situation-card"><div class="reading-marker">${'ABCDE'[i]}</div><div class="reading-de" lang="de">${x}</div><div class="reading-answer-row"><span>Broj oglasa</span><div class="reading-select">${selectOpts('r1_'+i,[1,2,3,4,5,6],'Broj oglasa za situaciju '+ 'ABCDE'[i])}</div></div></div>`).join('')}</div>`;}
 const lesen2ads=[['Schönes-Wochenende-Ticket',['Kann man am Freitagabend mit dem Ticket fahren?','Kostet das Ticket beim Kauf am Bahnhof mehr?']],['Lesen im Park',['Darf man die Bücher nur im Park lesen?','Müssen die Kinder Papier und Stifte mitbringen?']],['3-Zimmer-Wohnung',['Kann man telefonisch Informationen bekommen?','Kann man die Wohnung am Vormittag sehen?']]];
@@ -479,7 +488,7 @@ document.addEventListener('focusin',e=>{if(isExamTextInput(e.target))activateKey
 document.addEventListener('focusout',()=>setTimeout(()=>{if(!isExamTextInput(document.activeElement))closeKeyboardLayout()},110));
 keyboardDone.addEventListener('click',()=>{if(document.activeElement instanceof HTMLElement)document.activeElement.blur();closeKeyboardLayout()});
 main.addEventListener('keydown',e=>{
- if(e.key!=='Enter'||!isExamTextInput(e.target))return;
+ if(e.key!=='Enter'||e.isComposing||!isExamTextInput(e.target))return;
  e.preventDefault();
  const fields=Array.from(main.querySelectorAll('input[type="text"],input[type="number"],input[type="tel"]'));
  const nextField=fields[fields.indexOf(e.target)+1];
