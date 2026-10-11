@@ -352,7 +352,7 @@ function renderWordList(words){if(!words.length)return `<div class="empty">Nema 
 function renderDialogues(keepScroll=false){
  MAIN.className='main page-dialogues '+(state.allLines?'view-full':'view-cards');
  const d=DIALOGUES[state.dialogueIndex];const line=d.lines[state.lineIndex];
- const linesPerPage=Math.max(2,Math.min(3,Math.floor((MAIN.clientHeight-235)/90)));
+ const linesPerPage=(MAIN.clientHeight>=690?3:2);
  const firstLine=Math.floor(state.lineIndex/linesPerPage)*linesPerPage;
  const shownLines=d.lines.slice(firstLine,firstLine+linesPerPage);
  MAIN.innerHTML=`<h1 class="page-title">💬 Dijalozi · A1</h1><p class="description">${DIALOGUES.length} razgovora sa prevodom i automatskim izgovorom.</p>
@@ -420,7 +420,7 @@ MAIN.addEventListener('click',e=>{
       stopSpeech();const token=speechToken;currentlySpeaking=true;(async()=>{for(let k=0;k<subset.length;k++){if(token!==speechToken)break;state.wordIndex=from+k;renderWords(true);await talk(subset[k].de,'A',token);await new Promise(r=>setTimeout(r,130));}if(token===speechToken)currentlySpeaking=false;})();}}
  else if(a==='list-prev'||a==='list-next'){state.listPage+=a==='list-next'?1:-1;renderWords();}
  else if(a==='dialogue-view'){stopSpeech();state.allLines=!state.allLines;renderDialogues();}
- else if(a==='dialogue-page-prev'||a==='dialogue-page-next'){stopSpeech();const step=Math.max(2,Math.min(3,Math.floor((MAIN.clientHeight-235)/90)));state.lineIndex=Math.max(0,Math.min(DIALOGUES[state.dialogueIndex].lines.length-1,(Math.floor(state.lineIndex/step)+(a==='dialogue-page-next'?1:-1))*step));renderDialogues();}
+ else if(a==='dialogue-page-prev'||a==='dialogue-page-next'){stopSpeech();const step=(MAIN.clientHeight>=690?3:2);state.lineIndex=Math.max(0,Math.min(DIALOGUES[state.dialogueIndex].lines.length-1,(Math.floor(state.lineIndex/step)+(a==='dialogue-page-next'?1:-1))*step));renderDialogues();}
  else if(a==='toggle-translation'){state.showTranslation=!state.showTranslation;renderDialogues(true);}
  else if(a==='line-speak'){state.lineIndex=i;const l=DIALOGUES[state.dialogueIndex].lines[i];speakOnce(l.de,l.speaker);if(!state.allLines)renderDialogues(true);}
  else if(a==='dialogue-play-all'){speakSeries(DIALOGUES[state.dialogueIndex].lines);}
@@ -449,6 +449,7 @@ document.getElementById('pauseBtn').addEventListener('click',()=>{
  if(!synth||!currentlySpeaking){toast('Pusti neku reč ili dijalog za slušanje.');return;}
  try{if(paused){synth.resume();paused=false;}else{synth.pause();paused=true;}updatePauseBtn();}catch(e){toast('Pauza nije podržana na ovom uređaju.');}
 });
+window.addEventListener('resize',()=>{if(state.page==='words'&&state.wordMode==='list')renderWords(true);else if(state.page==='dialogues'&&state.allLines)renderDialogues(true);});
 window.addEventListener('keydown',e=>{
  if(e.target.closest('input,select,textarea'))return;
  if(state.page==='words'&&state.wordMode==='cards'&&e.key==='ArrowRight'){state.wordIndex=Math.min(matchingWords().length-1,state.wordIndex+1);renderWords();}
