@@ -595,6 +595,17 @@
  .exam-form-screen .exam-form-instruction span{font-size:9.2px}
  .exam-form-screen .exam-form-prompt{font-size:8.8px;line-height:1.1}
 }
+/* DE-MAX v50: Cela vežba uz Potvrdi za Slušanje 2 */
+@media(max-width:599px){
+ #shell.keyboard-open #keyboardToolbar.form-keyboard #keyboardFormAll{
+  flex:1.2 1 0!important;
+  white-space:nowrap;
+ }
+ #shell.keyboard-open #keyboardToolbar.form-keyboard #keyboardDone{
+  flex:1 1 0!important;
+  white-space:nowrap;
+ }
+}
 </style></head>
 <body>
 <div id="shell">
@@ -912,10 +923,11 @@ function activateKeyboardLayout(){
  if(window.innerWidth>=600)return;
  shell.classList.add('keyboard-open');
  keyboardToolbar.hidden=false;
- keyboardToolbar.classList.toggle('form-keyboard',page===12);
+ keyboardToolbar.classList.toggle('form-keyboard',page===9||page===12);
  keyboardNext.hidden=page!==14;
- keyboardFormAll.hidden=page!==12;
- keyboardCaption.hidden=page===12;
+ keyboardFormAll.hidden=page!==9&&page!==12;
+ keyboardFormAll.textContent=page===9?'▦ Cela vežba':'▦ Ceo formular';
+ keyboardCaption.hidden=page===9||page===12;
  updateMailKeyboardCaption();
  updateMobileViewport();
  requestAnimationFrame(revealFocusedInput);
@@ -924,6 +936,7 @@ function activateKeyboardLayout(){
 }
 function closeKeyboardLayout(){
  shell.classList.remove('keyboard-open');keyboardToolbar.hidden=true;keyboardToolbar.classList.remove('form-keyboard');keyboardNext.hidden=true;keyboardFormAll.hidden=true;
+ keyboardFormAll.textContent='▦ Ceo formular';
  keyboardCaption.hidden=false;
  keyboardCaption.textContent='✎ Unos odgovora';
  updateMobileViewport();
@@ -936,14 +949,18 @@ function updateMailKeyboardCaption(){
 }
 keyboardFormAll.addEventListener('pointerdown',e=>e.preventDefault());
 keyboardFormAll.addEventListener('click',()=>{
- if(page!==12)return;
- // Blur removes the on-screen keyboard; the saved answers stay in place.
+ if(page!==9&&page!==12)return;
+ const currentPage=page;
+ // The inputs save on typing; closing the keyboard keeps all answers.
  if(document.activeElement instanceof HTMLElement)document.activeElement.blur();
  closeKeyboardLayout();
- main.classList.remove('exam-form-solutions-open');
+ if(currentPage===12)main.classList.remove('exam-form-solutions-open');
  main.scrollTop=0;
  requestAnimationFrame(()=>{
-  if(page===12){updateMobileViewport();main.scrollTop=0;}
+  if(page===currentPage){
+   updateMobileViewport();
+   main.scrollTop=0;
+  }
  });
 });
 keyboardNext.addEventListener('pointerdown',e=>e.preventDefault());
