@@ -124,6 +124,111 @@
     .quiz-setting-label{font-size:13px;font-weight:900;color:#1e3e70;text-align:left;margin:13px 0 7px}
     .quiz-choice-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
     .quiz-choice-row .smallbtn[aria-pressed="true"]{background:#1956ba;color:white;border-color:#1956ba}
+
+    /* Fixed one-screen mobile layout. All long materials use Next/Previous. */
+    html,body{height:100%;width:100%;overflow:hidden;overscroll-behavior:none}
+    .shell{height:100vh;height:100dvh;overflow:hidden}
+    .main{display:flex;flex-direction:column;overflow:hidden;min-height:0;padding:9px 11px 8px;overscroll-behavior:none}
+    .main>*{flex-shrink:0;min-width:0}
+    .page-title{font-size:18px;margin:0 0 4px;line-height:1.15}
+    .main .description{font-size:11px;line-height:1.25;margin:0 0 7px}
+    .main .hint{display:none}
+    .top{padding:8px 12px}
+    .brand-mark{width:42px;height:36px}
+    .brand-title{font-size:15px}
+    .brand-sub{font-size:10px}
+    .bottom{padding:4px 6px calc(4px + env(safe-area-inset-bottom))}
+    .nav-btn{min-height:44px;padding:3px 1px}
+    .nav-btn .symbol{font-size:18px}
+    .smallbtn{min-height:35px;padding:7px 8px;font-size:11px}
+    .btn{min-height:39px;padding:7px 8px;font-size:12px}
+    .slide-controls{margin-top:6px;gap:7px}
+    .course-heading{padding:6px 9px;margin:0 0 6px;gap:2px}
+    .course-heading span:first-child{font-size:11px}
+    .course-heading span:last-child{font-size:12px;line-height:1.2}
+    .select-row{margin-bottom:6px;gap:7px}
+    .select-row .smallbtn{min-width:0;min-height:34px}
+    .controls-row{margin-bottom:6px;gap:6px}
+    .field{min-height:37px;padding:8px 9px;font-size:13px}
+    .progress-wrap{height:5px;margin:7px 0 5px}
+    .meta{font-size:10px}
+    .main .notice{font-size:10px;padding:6px 8px}
+    .page-home .hero{flex:1;min-height:0;padding:10px 14px}
+    .page-home .hero h1{font-size:clamp(19px,5vw,24px);margin:6px 0 5px;line-height:1.1}
+    .page-home .hero p{font-size:11px;line-height:1.3}
+    .page-home .hero-label{font-size:10px;padding:3px 7px}
+    .page-home .stats{margin:7px 0;gap:6px}
+    .page-home .stat{padding:7px 3px;border-radius:11px}
+    .page-home .stat strong{font-size:19px}
+    .page-home .section-header{margin:4px 0 7px;font-size:12px}
+    .page-home .launch{min-height:56px;padding:8px 10px;margin-bottom:6px;gap:8px;border-radius:12px}
+    .page-home .launch-icon{width:37px;height:37px;font-size:20px}
+    .page-home .launch strong{font-size:12px}
+    .page-home .launch small{font-size:10px;line-height:1.25;margin-top:1px}
+    .page-home .notice{margin-top:2px}
+    .page-home .tip{display:none}
+    .page-words .description,.page-dialogues .description,.page-quiz .description{display:none}
+    .page-words .word-card{flex:1;min-height:0;padding:12px 10px;border-radius:16px}
+    .page-words .word-card .bigword{font-size:clamp(20px,6vw,29px);margin:9px 0 7px;line-height:1.13}
+    .page-words .word-card .word-trans{font-size:clamp(14px,4vw,18px);margin:2px 0 9px}
+    .page-words .word-card .circle-btn{height:37px;min-width:40px}
+    .page-words .slide-controls{margin-top:6px}
+    .page-words .row-between{margin-top:2px}
+    .page-words .btn.wide.ghost{margin-top:6px!important;min-height:36px}
+    .page-words.mode-list .search-list{flex:1;min-height:0;display:flex;flex-direction:column;margin-top:2px;gap:5px;overflow:hidden}
+    .page-words.mode-list .vocab-row{flex:1;min-height:0;padding:5px 7px;gap:7px;border-radius:10px}
+    .page-words.mode-list .vocab-row strong{font-size:12px;line-height:1.1}
+    .page-words.mode-list .vocab-row span{font-size:11px;line-height:1.1;margin-top:2px}
+    .page-words.mode-list .vocab-row .sound{width:32px;height:32px;font-size:14px}
+    .page-words.mode-list .filter-foot{margin:5px 0 0;justify-content:space-between}
+    .page-dialogues .row-between[style]{margin-bottom:5px!important}
+    .page-dialogues .top-tools{display:grid;grid-template-columns:1.2fr .7fr 1fr;gap:5px;margin:0 0 7px}
+    .page-dialogues .top-tools button{min-width:0;padding:6px 4px;white-space:nowrap;font-size:10px}
+    .page-dialogues .dialogue-card{flex:1;min-height:0;padding:11px;border-radius:15px}
+    .page-dialogues .say{font-size:clamp(18px,5.4vw,26px);line-height:1.23;margin:10px 0 6px}
+    .page-dialogues .translation{font-size:clamp(13px,3.8vw,16px);line-height:1.25;margin:5px 0 10px}
+    .page-dialogues .talk-badge{padding:4px 8px;font-size:10px}
+    .page-dialogues .talk-actions .circle-btn{height:36px}
+    .page-dialogues .dialogue-lines-compact{flex:1;min-height:0;display:flex;flex-direction:column;gap:6px;overflow:hidden}
+    .page-dialogues .talk-row{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;padding:6px 8px;margin:0;border-radius:11px}
+    .page-dialogues .talk-row p{margin:2px 0;line-height:1.16}
+    .page-dialogues .talk-row .de{font-size:clamp(11px,3.3vw,14px)}
+    .page-dialogues .talk-row .sr{font-size:clamp(10px,3vw,12px)}
+    .page-dialogues .talk-row .row-between{min-height:24px}
+    .page-dialogues .talk-row-btn{padding:4px 6px;font-size:13px}
+    .page-dialogues .slide-controls .btn{font-size:11px}
+    .page-quiz .quiz-intro,.page-quiz .quiz-question,.page-quiz .quiz-result{flex:1;min-height:0;padding:10px 12px;overflow:hidden}
+    .page-quiz .quiz-intro{display:flex;flex-direction:column;justify-content:center}
+    .page-quiz .quiz-intro .emoji{font-size:26px}
+    .page-quiz .quiz-intro h2{font-size:17px;margin:4px 0}
+    .page-quiz .quiz-intro p{font-size:11px;line-height:1.3;margin:4px 0}
+    .page-quiz .quiz-setting-label{font-size:11px;margin:10px 0 5px}
+    .page-quiz .quiz-choice-row .smallbtn{min-height:36px}
+    .page-quiz .quiz-question{display:flex;flex-direction:column;justify-content:center}
+    .page-quiz .quiz-word{font-size:clamp(19px,5.8vw,27px);margin:8px 0 10px}
+    .page-quiz .quiz-option{padding:7px 10px;margin:4px 0;min-height:40px;border-radius:10px;font-size:12px}
+    .page-quiz .quiz-question .notice{margin:5px 0!important}
+    .page-quiz .quiz-result{display:flex;flex-direction:column;align-items:center;justify-content:center}
+    .page-quiz .quiz-result .score{font-size:38px}
+    @media(max-height:710px){
+      .top{padding:6px 10px}.brand-mark{width:37px;height:32px}
+      .brand-sub{font-size:9px}.bottom{padding:3px 5px calc(3px + env(safe-area-inset-bottom))}.nav-btn{min-height:39px}
+      .main{padding:6px 9px}.page-title{font-size:17px}
+      .page-home .notice{display:none}
+      .page-home .launch{min-height:50px;padding:6px 9px;margin-bottom:5px}
+      .page-home .launch-icon{width:34px;height:34px}.page-home .stats{margin:5px 0}
+      .page-words .course-heading,.page-dialogues .course-heading{padding:4px 8px}
+      .page-words .word-card .bigword{margin:5px 0}
+      .page-dialogues .say{margin:6px 0 4px}
+    }
+    @media(max-height:590px){
+      .brand-sub{display:none}.main .page-title{font-size:16px}
+      .page-home .hero p{display:none}
+      .page-home .stats{display:none}
+      .page-dialogues .row-between[style]{display:none}
+      .page-words .word-card .eyebrow{font-size:9px}
+      .page-quiz .quiz-intro .emoji{display:none}
+    }
   </style>
 </head>
 <body>
