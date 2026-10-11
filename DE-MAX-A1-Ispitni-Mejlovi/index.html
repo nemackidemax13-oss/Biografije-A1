@@ -251,15 +251,43 @@ header{background:var(--white);border-bottom:1px solid #e8eaf0}.topbar{display:f
  .sheet-commands #allBtn{flex-basis:61px!important}
  .sheet-commands #stopBtn{flex-basis:30px!important;max-width:30px!important}
 }
+
+/* DE-MAX V9: reading controls, compact all-visible jokers, audio follow-along. */
+#allBtn.btn.red,#allBtn{background:#087c42!important;border-color:#087c42!important;color:#fff!important;box-shadow:0 3px 9px rgba(8,124,66,.16)}
+#allBtn:hover{background:#066b39!important}
+.qa .speaking-now{background:linear-gradient(100deg,#fff2ad,#ffe28d)!important;box-shadow:0 0 0 3px #ffd04b!important;color:#172238!important;border-radius:5px;box-decoration-break:clone;-webkit-box-decoration-break:clone;transition:background .12s ease}
+.qa.playing{border-color:#e9bd4f!important;box-shadow:0 0 0 2px rgba(243,185,51,.28)!important}
+@media(max-width:650px){
+ .toolbar{grid-template-columns:minmax(0,1fr)!important}
+ .toolbar .control select{font-size:14px}
+ .toolbar .search-toggle{display:none!important}
+ .aside{width:100vw!important;max-width:100vw!important;border-radius:0!important}
+ .aside-head{padding:8px 12px!important;min-height:47px!important;height:47px!important;flex:0 0 47px}
+ .aside-head .pill{font-size:12px!important;padding:4px 9px!important}
+ .helper-close{width:31px!important;height:31px!important;font-size:20px!important}
+ .helper-actions{display:none!important}
+ .helper-pager{display:none!important}
+ .helper-content{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;align-items:stretch;column-gap:7px!important;gap:7px!important;overflow:hidden!important;padding:7px 8px max(7px,env(safe-area-inset-bottom))!important;flex:1 1 auto!important;min-height:0!important;background:#f6f8fc!important}
+ .helper-group{display:flex!important;flex-direction:column!important;gap:calc(5px * var(--joker-fit,1))!important;margin:0!important;min-width:0!important;min-height:0!important}
+ .helper-group h3{font-size:calc(9px * var(--joker-fit,1))!important;margin:0!important;text-align:center!important;letter-spacing:0!important;font-weight:900!important;line-height:1.15!important;color:#9f2441!important}
+ .joker{flex:1 1 0!important;min-height:0!important;overflow:hidden!important;margin:0!important;padding:calc(5px * var(--joker-fit,1)) calc(5px * var(--joker-fit,1))!important;border-radius:8px!important;box-shadow:none!important}
+ .joker-de{font-size:calc(11px * var(--joker-fit,1))!important;line-height:1.12!important;gap:2px!important;font-weight:800!important}
+ .joker .serbian{font-size:calc(9.7px * var(--joker-fit,1))!important;line-height:1.12!important;margin:calc(3px * var(--joker-fit,1)) 0 0!important;color:#111!important}
+ .joker .speak{width:calc(20px * var(--joker-fit,1))!important;height:calc(20px * var(--joker-fit,1))!important;min-width:calc(20px * var(--joker-fit,1))!important;padding:0!important;font-size:calc(10px * var(--joker-fit,1))!important;border-radius:5px!important}
+ .joker-text{min-width:0!important;overflow-wrap:anywhere!important;hyphens:auto!important}
+ .helper-group .pick{display:none!important}
+}
+@media(max-width:365px){.helper-content{column-gap:5px!important;padding:6px 5px!important}.helper-group{gap:calc(3px * var(--joker-fit,1))!important}}
+@media(min-width:651px){.helper-content .pick{display:none}}
 </style></head>
 <body><div class="sitebar"></div><header><div class="wrap topbar"><div class="brand"><img src="data:image/webp;base64,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" alt="DE-MAX Tutin logo" class="brand-logo"/><div><div class="brand-name">DE-MAX TUTIN</div><div class="brand-sub">Nemački jezik · A1</div></div></div><div class="top-pill">2019 — 2026</div></div></header>
 <main class="wrap"><section class="hero"><div class="eyebrow">ÖSD / A1 · Schreiben</div><h1>Ispitni mejlovi, jasnije i lakše.</h1><p>Čitaj pitanje, vežbaj odgovor, poslušaj pravilan nemački izgovor i koristi pomoćne rečenice. Sve na jednom mestu.</p><div class="stats"><span class="stat"><strong>36</strong> mejlova</span><span class="stat"><strong>108</strong> pitanja i odgovora</span><span class="stat"><strong>12</strong> džoker rečenica</span><span class="stat">🔊 Nemački izgovor</span></div></section>
-<section class="toolbar" aria-label="Pretraga i izbor mejla"><div class="control search-control"><label for="search">Pronađi reč ili temu</label><input type="search" id="search" placeholder="Npr. Party, Sport, Wann..." autocomplete="off"/></div><div class="control year-control"><label for="year">Godina</label><select id="year"></select></div><div class="control"><label for="emailSelect">Broj mejla</label><select id="emailSelect"></select></div><button type="button" class="search-toggle mobile-only" id="searchToggle" aria-label="Pretraga mejlova" aria-expanded="false" title="Pretraga">⌕</button></section>
+<section class="toolbar" aria-label="Pretraga i izbor mejla"><div class="control search-control"><label for="search">Pronađi reč ili temu</label><input type="search" id="search" placeholder="Npr. Party, Sport, Wann..." autocomplete="off"/></div><div class="control year-control"><label for="year">Godina</label><select id="year"></select></div><div class="control"><label for="emailSelect">Broj mejla</label><select id="emailSelect"></select></div></section>
 <div id="empty" class="empty" hidden>Za ovu pretragu nema mejlova. Probaj drugu reč ili izaberi sve godine.</div>
 <div class="helper-overlay mobile-only" id="helperOverlay" hidden></div>
 <div class="layout"><div class="left-column"><section class="sheet" id="sheet" aria-label="Ispitni mejl"><div class="sheet-head"><div class="heading-top"><span class="mail-label" id="mailLabel">MEJL 01 / 36</span><span class="page-label" id="sourcePage">Izvor: strana 2</span></div><h2 id="mailTitle">maj, 2020</h2><p class="muted">3 pitanja · 3 odgovora · nemački + srpski</p><div class="progress"><div class="fill" id="progressFill"></div></div></div>
 <div class="sheet-commands"><div class="command-group"><button type="button" class="btn red helper-inline" id="helperQuickBtn" aria-label="Otvori pomoćne džoker rečenice" aria-controls="helpers" aria-expanded="false" title="Pomoćne rečenice">✦ DŽOKERI</button></div><div class="command-group"><div class="rates speed-widget"><span>Brzina</span> <button type="button" id="rateButton" class="rate-button" aria-haspopup="dialog" aria-controls="rateDialog" aria-label="Izaberite brzinu izgovora">Normalno ▾</button><select id="rate" hidden aria-hidden="true" tabindex="-1"><option value="0.75">Sporo</option><option value="0.90" selected>Normalno</option><option value="1.08">Brže</option></select></div><button type="button" class="btn red" id="allBtn">▶ Slušaj sve</button><button type="button" class="btn" id="stopBtn">■ Stop</button><button type="button" class="btn mobile-only" id="jumpHelpers">✦ Džokeri ↓</button></div></div>
-<div class="qa-list" id="qa"></div><div class="sheet-bottom"><div class="selected-joker" id="selectedHelper" aria-live="polite">Izaberi džoker rečenicu iz desne kolone.</div><details class="sample-section"><summary>✉ Sastavi primer kompletnog mejla</summary><div class="sample-body"><p>Primer je sastavljen od odgovora i odabrane pomoćne rečenice. Po potrebi prilagodi primaoca i ime.</p><pre lang="de" id="sampleText"></pre><button class="btn red" id="copy" type="button">⧉ Kopiraj primer mejla</button></div></details></div><nav class="mail-nav" aria-label="Navigacija kroz mejlove"><button type="button" class="btn" id="prev">← Prethodni mejl</button><div class="nav-mid" id="navMid">1 / 36</div><button type="button" class="btn red" id="next">Sledeći mejl →</button></nav></section></div>
+<div class="qa-list" id="qa"></div><div class="sheet-bottom"><div class="selected-joker" id="selectedHelper" aria-live="polite">Izaberi džoker rečenicu iz desne kolone.</div><details class="sample-section"><summary>✉ Sastavi primer kompletnog mejla</summary><div class="sample-body"><p>Primer sadrži odgovore i završnu rečenicu. Prilagodi primaoca i ime.</p><pre lang="de" id="sampleText"></pre><button class="btn red" id="copy" type="button">⧉ Kopiraj primer mejla</button></div></details></div><nav class="mail-nav" aria-label="Navigacija kroz mejlove"><button type="button" class="btn" id="prev">← Prethodni mejl</button><div class="nav-mid" id="navMid">1 / 36</div><button type="button" class="btn red" id="next">Sledeći mejl →</button></nav></section></div>
 <aside class="aside" id="helpers" aria-label="Pomoćne džoker rečenice"><div class="aside-head"><span class="pill">☰ MENI · DŽOKER REČENICE</span><button type="button" class="helper-close mobile-only" id="helperClose" aria-label="Zatvori džoker rečenice">×</button><h2>Pomoć za mejl</h2><p>Nemački izraz · prevod · izgovor</p></div><div class="helper-actions mobile-only"><p>Izaberi pomoćnu rečenicu ili poslušaj njen izgovor.</p></div><div class="helper-content" id="helperBody"></div><nav id="helperPager" class="helper-pager" aria-label="Listaj pomoćne rečenice"><button type="button" id="helperPrev" aria-label="Prethodne džoker rečenice">‹</button><span id="helperPage" aria-live="polite">1–3 / 12</span><button type="button" id="helperNext" aria-label="Sledeće džoker rečenice">›</button></nav></aside></div></main><dialog class="rate-dialog" id="rateDialog" aria-label="Brzina izgovora">
  <div class="rate-dialog-head">Brzina izgovora</div>
  <div class="rate-dialog-options" id="rateOptions" role="group" aria-label="Izaberi brzinu">
@@ -280,31 +308,69 @@ let voices=[];
 function setVoices(){if(!('speechSynthesis' in window))return;voices=speechSynthesis.getVoices();state.voice=voices.find(v=>/^de(-|$)/i.test(v.lang)&&/google|microsoft|anna|katja|hedda|vicki|daniel/i.test(v.name))||voices.find(v=>/^de(-|$)/i.test(v.lang))||null}
 if('speechSynthesis' in window){setVoices();speechSynthesis.onvoiceschanged=setVoices;}
 let sequence=0;
-function stop(){sequence++;if('speechSynthesis' in window)speechSynthesis.cancel()}
-function speak(text,then){if(!('speechSynthesis' in window)){toast('Izgovor nije podržan u ovom pregledaču.');return}const phrase=String(text||'').trim();if(!phrase)return;const u=new SpeechSynthesisUtterance(phrase);u.lang='de-DE';u.rate=Number(byId('rate').value)||.9;u.pitch=1;u.voice=state.voice;u.onend=()=>then&&then();u.onerror=()=>{};speechSynthesis.speak(u)}
-function play(text){stop();speak(text)}
-function speakAll(){const mail=current();if(!mail)return;stop();const thisRun=sequence;let texts=mail.qa.flatMap(a=>[a.q,a.a]),i=0;const run=()=>{if(sequence!==thisRun||i>=texts.length)return;speak(texts[i++],run)};run();toast('Reprodukujem pitanja i odgovore na nemačkom.');}
+let markedSentence=null;
+let audioHasStarted=false;
+function clearActive(){
+ if(markedSentence){markedSentence.classList.remove('speaking-now');markedSentence.removeAttribute('aria-current');markedSentence=null}
+ document.querySelectorAll('#qa .qa.playing').forEach(el=>el.classList.remove('playing'));
+}
+function markActive(target){
+ clearActive();
+ if(!target)return;
+ const el=Array.from(document.querySelectorAll('#qa [data-utterance]')).find(x=>x.dataset.utterance===target);
+ if(el){el.classList.add('speaking-now');el.setAttribute('aria-current','true');markedSentence=el;el.closest('.qa')?.classList.add('playing');}
+}
+function stop(){sequence++;clearActive();if('speechSynthesis' in window)window.speechSynthesis.cancel()}
+function speak(text,next=null,options={}){
+ if(!('speechSynthesis' in window)){if(!options.auto)toast('Izgovor nije podržan u ovom pregledaču.');return}
+ const phrase=String(text||'').trim();if(!phrase)return;
+ const id=sequence;
+ const u=new SpeechSynthesisUtterance(phrase);u.lang='de-DE';u.rate=Number(byId('rate').value)||.9;u.pitch=1;if(state.voice)u.voice=state.voice;
+ u.onstart=()=>{if(sequence!==id)return;audioHasStarted=true;markActive(options.target)};
+ u.onend=()=>{if(sequence!==id)return;clearActive();if(typeof next==='function')next()};
+ u.onerror=ev=>{if(sequence!==id)return;clearActive();if(ev.error!=='interrupted'&&ev.error!=='canceled'&&ev.error!=='cancelled'&&!options.auto)toast('Izgovor nije uspeo. Pritisni Sve ponovo.')};
+ try{window.speechSynthesis.speak(u)}catch(e){clearActive();if(!options.auto)toast('Izgovor nije dostupan. Pokušaj ponovo.')}
+}
+function play(text,target=null){stop();speak(text,null,{target})}
+function speakAll(auto=false){
+ const mail=current();if(!mail)return;
+ stop();audioHasStarted=false;
+ const runId=sequence;
+ const parts=mail.qa.flatMap((q,i)=>[{text:q.q,target:`q:${i}`},{text:q.a,target:`a:${i}`}]);
+ let i=0;
+ function readNext(){
+  if(sequence!==runId)return;
+  if(i>=parts.length){clearActive();return}
+  const part=parts[i++];speak(part.text,readNext,{target:part.target,auto});
+ }
+ readNext();
+ if(!auto)toast('Čitam nemačka pitanja i odgovore redom.');
+ if(auto)setTimeout(()=>{
+  if(sequence===runId&&!audioHasStarted)toast('Za automatski izgovor možda je potreban prvi dodir. Pritisni zeleno Sve.');
+ },2400);
+}
 function filtered(){return DATA.emails.filter(e=>(state.year==='all'||e.year===state.year) && (!state.query || (`${e.date} ${e.id} ${e.qa.map(q=>Object.values(q).filter(x=>typeof x==='string').join(' ')).join(' ')}`).toLocaleLowerCase('sr').includes(state.query)))}
 function current(){return DATA.emails.find(e=>e.id===state.id)}
 function renderPicklist(){const arr=filtered(),sel=byId('emailSelect');sel.innerHTML=arr.length?arr.map(e=>`<option value="${e.id}" ${e.id===state.id?'selected':''}>${String(e.id).padStart(2,'0')} · ${esc(e.date)}</option>`).join(''):'<option>Nema rezultata</option>';if(arr.length && !arr.some(e=>e.id===state.id))state.id=arr[0].id;sel.value=String(state.id);byId('empty').hidden=!!arr.length;byId('sheet').hidden=!arr.length;byId('helpers').hidden=!arr.length;const k=arr.findIndex(e=>e.id===state.id);byId('prev').disabled=k<=0;byId('next').disabled=k===arr.length-1;}
 function buildQa(q,i){
-return `<article class="qa"><button type="button" class="qa-expand" data-expand="${i}" title="Uvećaj pitanje i odgovor" aria-label="Uvećaj pitanje i odgovor ${i+1}">⤢</button><div class="qa-top"><div class="q-number">${i+1}</div><div class="language"><h3 lang="de">${esc(q.q)}</h3><p class="serbian" lang="sr">${esc(q.qsr)}</p></div><button class="speak" type="button" data-speak="q:${i}" aria-label="Izgovori pitanje ${i+1}" title="Izgovori pitanje">🔊</button></div><div class="answer ${state.practice?'hidden-practice':''}"><div class="answer-row"><div class="language"><div class="label">Odgovor · Antwort</div><p class="answer-de" lang="de">${esc(q.a)}</p><p class="serbian" lang="sr">${esc(q.asr)}</p><button class="btn reveal" type="button" data-reveal="${i}">👁 Prikaži odgovor</button></div><button class="speak" type="button" data-speak="a:${i}" aria-label="Izgovori odgovor ${i+1}" title="Izgovori odgovor">🔊</button></div></div></article>`;}
+return `<article class="qa"><button type="button" class="qa-expand" data-expand="${i}" title="Uvećaj pitanje i odgovor" aria-label="Uvećaj pitanje i odgovor ${i+1}">⤢</button><div class="qa-top"><div class="q-number">${i+1}</div><div class="language"><h3 lang="de" data-utterance="q:${i}">${esc(q.q)}</h3><p class="serbian" lang="sr">${esc(q.qsr)}</p></div><button class="speak" type="button" data-speak="q:${i}" aria-label="Izgovori pitanje ${i+1}" title="Izgovori pitanje">🔊</button></div><div class="answer ${state.practice?'hidden-practice':''}"><div class="answer-row"><div class="language"><div class="label">Odgovor · Antwort</div><p class="answer-de" lang="de" data-utterance="a:${i}">${esc(q.a)}</p><p class="serbian" lang="sr">${esc(q.asr)}</p><button class="btn reveal" type="button" data-reveal="${i}">👁 Prikaži odgovor</button></div><button class="speak" type="button" data-speak="a:${i}" aria-label="Izgovori odgovor ${i+1}" title="Izgovori odgovor">🔊</button></div></div></article>`;}
 function renderEmail(){const m=current();if(!m)return;byId('mailLabel').textContent=`MEJL ${String(m.id).padStart(2,'0')} / ${DATA.emails.length}`;byId('mailTitle').textContent=m.date;byId('sourcePage').textContent=`Izvor: strana ${m.page}`;byId('progressFill').style.width=(m.id/DATA.emails.length*100)+'%';byId('qa').innerHTML=m.qa.map(buildQa).join('');byId('navMid').textContent=`${m.id} / ${DATA.emails.length}`;byId('emailSelect').value=String(m.id);byId('selectedHelper').textContent=state.joker?.de||'Izaberi džoker rečenicu iz desne kolone.';renderSample();}
 function renderHelpers(){
- if(window.matchMedia('(max-width:650px)').matches){
-  byId('helperBody').innerHTML=DATA.helpers.map((group,gi)=>`<section class="helper-group"><h3>${esc(group.title)}</h3>${group.rows.map((h,hi)=>{const yes=state.joker?.de===h.de;return `<div class="joker ${yes?'is-selected':''}"><div class="joker-de"><span class="joker-text" data-joker="${gi}:${hi}" lang="de">${esc(h.de)}</span><button type="button" class="speak" data-speak="joker:${gi}:${hi}" aria-label="Izgovori pomoćnu rečenicu">🔊</button></div><p class="serbian" lang="sr">${esc(h.sr)}</p><button type="button" class="pick" data-joker="${gi}:${hi}">${yes?'✓ Izabrana rečenica':'+ Dodaj u primer mejla'}</button></div>`}).join('')}</section>`).join('');
-  return;
- }
-byId('helperBody').innerHTML=DATA.helpers.map((g,gi)=>`<section class="helper-group"><h3>${esc(g.title)}</h3>${g.rows.map((h,hi)=>{let yes=state.joker?.de===h.de;return `<div class="joker ${yes?'is-selected':''}"><div class="joker-de"><span class="joker-text" data-joker="${gi}:${hi}" lang="de">${esc(h.de)}</span><button type="button" class="speak" data-speak="joker:${gi}:${hi}" title="Izgovori džoker rečenicu" aria-label="Izgovori pomoćnu rečenicu">🔊</button></div><p class="serbian" lang="sr">${esc(h.sr)}</p><button type="button" class="pick" data-joker="${gi}:${hi}">${yes?'✓ Izabrana rečenica':'+ Izaberi za primer mejla'}</button></div>`}).join('')}</section>`).join('')+`<div class="tips"><strong>Pravilo iz materijala:</strong> džoker rečenicu upotrebi najviše jednom, a na kraju mejla napiši pozdrav, npr. <em>Liebe Grüße</em> ili <em>Viele Grüße</em>.</div>`;}
-function renderSample(){const m=current();if(!m)return;const template=['Hallo,','', 'vielen Dank für deine E-Mail.','',...m.qa.map(q=>q.a),'',state.joker?.de||'Ich warte auf deine Antwort.','','Liebe Grüße','[Dein Name]'].join('\n');byId('sampleText').textContent=template;}
+ // Both helper groups are fully visible in a two-column reading menu on phones.
+ byId('helperBody').innerHTML=DATA.helpers.map((group,gi)=>`<section class="helper-group"><h3>${esc(group.title)}</h3>${group.rows.map((h,hi)=>`<div class="joker"><div class="joker-de"><span class="joker-text" lang="de">${esc(h.de)}</span><button type="button" class="speak" data-speak="joker:${gi}:${hi}" aria-label="Izgovori džoker rečenicu ${hi+1}">🔊</button></div><p class="serbian" lang="sr">${esc(h.sr)}</p></div>`).join('')}</section>`).join('');
+}
+function renderSample(){const m=current();if(!m)return;const template=['Hallo,','', 'vielen Dank für deine E-Mail.','',...m.qa.map(q=>q.a),'','Ich warte auf deine Antwort.','','Liebe Grüße','[Dein Name]'].join('\n');byId('sampleText').textContent=template;}
 function draw(){renderPicklist();if(filtered().length){renderEmail();renderHelpers()} const url=new URL(location.href);url.searchParams.set('mail',state.id);history.replaceState(null,'',url.pathname+url.search+url.hash);scheduleFit()}
-function changeEmail(id){if(!DATA.emails.some(e=>e.id===id))return;stop();state.id=id;draw();if(!window.matchMedia('(max-width:650px)').matches) window.scrollTo({top:0,behavior:'smooth'})}
+function changeEmail(id){if(!DATA.emails.some(e=>e.id===id))return;stop();state.id=id;draw();speakAll(true);if(!window.matchMedia('(max-width:650px)').matches) window.scrollTo({top:0,behavior:'smooth'})}
 byId('year').innerHTML='<option value="all">Sve godine</option>'+Array.from(new Set(DATA.emails.map(m=>m.year))).sort().map(y=>`<option value="${y}">${y}</option>`).join('');
 byId('year').addEventListener('change',e=>{state.year=e.target.value;stop();draw()});byId('search').addEventListener('input',e=>{state.query=e.target.value.trim().toLocaleLowerCase('sr');stop();draw()});byId('emailSelect').addEventListener('change',e=>changeEmail(Number(e.target.value)));
 byId('prev').addEventListener('click',()=>{let l=filtered(),i=l.findIndex(e=>e.id===state.id);if(i>0)changeEmail(l[i-1].id)});byId('next').addEventListener('click',()=>{let l=filtered(),i=l.findIndex(e=>e.id===state.id);if(i<l.length-1)changeEmail(l[i+1].id)});
-byId('allBtn').addEventListener('click',speakAll);byId('stopBtn').addEventListener('click',()=>{stop();toast('Izgovor zaustavljen.')});
-byId('qa').addEventListener('click',e=>{const ex=e.target.closest('[data-expand]');if(ex){showExpanded(Number(ex.dataset.expand));return}const r=e.target.closest('[data-reveal]');if(r){const card=r.closest('.answer');card.classList.remove('hidden-practice');scheduleFit();return} const b=e.target.closest('[data-speak]');if(b){const [type,n]=b.dataset.speak.split(':');const qa=current().qa[Number(n)];play(type==='q'?qa.q:qa.a)}});
-byId('helperBody').addEventListener('click',e=>{const s=e.target.closest('[data-speak]');if(s){const [,g,h]=s.dataset.speak.split(':');play(DATA.helpers[Number(g)].rows[Number(h)].de);return}const j=e.target.closest('[data-joker]');if(j){const [g,h]=j.dataset.joker.split(':').map(Number);state.joker=DATA.helpers[g].rows[h];renderHelpers();renderEmail();toast('Džoker rečenica je dodata u primer mejla.'); if(compactMedia.matches) closeHelpers();}});
+byId('allBtn').addEventListener('click',()=>speakAll(false));byId('stopBtn').addEventListener('click',()=>{stop();toast('Izgovor zaustavljen.')});
+byId('qa').addEventListener('click',e=>{const ex=e.target.closest('[data-expand]');if(ex){showExpanded(Number(ex.dataset.expand));return}const r=e.target.closest('[data-reveal]');if(r){const card=r.closest('.answer');card.classList.remove('hidden-practice');scheduleFit();return} const b=e.target.closest('[data-speak]');if(b){const [type,n]=b.dataset.speak.split(':');const qa=current().qa[Number(n)];play(type==='q'?qa.q:qa.a,`${type}:${Number(n)}`)}});
+byId('helperBody').addEventListener('click',e=>{
+ const b=e.target.closest('[data-speak]');if(!b)return;
+ const [,group,row]=b.dataset.speak.split(':');play(DATA.helpers[Number(group)].rows[Number(row)].de);
+});
 byId('copy').addEventListener('click',async()=>{const text=byId('sampleText').textContent;try{await navigator.clipboard.writeText(text);toast('Primer mejla je kopiran.')}catch{const el=byId('sampleText');const range=document.createRange();range.selectNodeContents(el);getSelection().removeAllRanges();getSelection().addRange(range);toast('Označen tekst — izaberi Kopiraj.')}});
 byId('jumpHelpers').addEventListener('click',()=>{if(compactMedia.matches){openHelpers()}else{byId('helpers').scrollIntoView({behavior:'smooth',block:'start'})}});
 
@@ -328,8 +394,22 @@ function closeHelpers(){
 
 let fitRaf=0;
 function scheduleFit(){cancelAnimationFrame(fitRaf);fitRaf=requestAnimationFrame(()=>requestAnimationFrame(fitMobile))}
+function fitJokers(){
+ const body=byId('helperBody');if(!body)return;
+ if(!compactMedia.matches){body.style.removeProperty('--joker-fit');return}
+ let factor=1;
+ for(let attempt=0;attempt<32;attempt++){
+  body.style.setProperty('--joker-fit',String(factor));
+  const rows=body.querySelectorAll('.joker');
+  const overflowing=Array.from(rows).some(el=>el.scrollHeight>el.clientHeight+1);
+  if(!overflowing)break;
+  factor=Math.max(.62,Number((factor-.015).toFixed(3)));
+  if(factor===.62)break;
+ }
+}
 function fitMobile(){
  const sheet=byId('sheet'),qa=byId('qa'),aside=byId('helpers');
+ fitJokers();
  if(!compactMedia.matches){sheet.style.removeProperty('--fit');aside.style.removeProperty('--fit-joker');qa.style.removeProperty('overflow-y');return}
  sheet.style.setProperty('--fit','1.19');
  aside.style.removeProperty('--fit-joker');
@@ -354,11 +434,6 @@ byId('closeDialog').addEventListener('click',()=>byId('readDialog').close());
 byId('readDialog').addEventListener('click',e=>{if(e.target===byId('readDialog'))byId('readDialog').close()});
 byId('helperPrev').addEventListener('click',()=>{state.helperPage=Math.max(0,state.helperPage-1);renderHelpers();scheduleFit()});
 byId('helperNext').addEventListener('click',()=>{state.helperPage=Math.min(Math.ceil(12/(innerHeight>=790?6:(innerHeight>=660?5:4)))-1,state.helperPage+1);renderHelpers();scheduleFit()});
-byId('searchToggle').addEventListener('click',()=>{
- const on=document.querySelector('.toolbar').classList.toggle('search-open');
- byId('searchToggle').setAttribute('aria-expanded',String(on));
- if(on)byId('search').focus();
-});
 window.addEventListener('resize',()=>{if(!compactMedia.matches) closeHelpers(); renderHelpers();scheduleFit()});
 compactMedia.addEventListener?.('change',()=>{if(!compactMedia.matches) closeHelpers(); renderHelpers();scheduleFit()});
 byId('helperQuickBtn').addEventListener('click',openHelpers);
@@ -383,5 +458,5 @@ byId('rateOptions').addEventListener('click',e=>{const b=e.target.closest('[data
 byId('rateDone').addEventListener('click',()=>{rateDialog.close();byId('rateButton').focus()});
 rateDialog.addEventListener('click',e=>{if(e.target===rateDialog)rateDialog.close()});
 updateRate('0.90');
-window.addEventListener('pagehide',stop);window.addEventListener('popstate',()=>{state.id=Number(new URLSearchParams(location.search).get('mail'))||1;draw()});draw();
+window.addEventListener('pagehide',stop);window.addEventListener('popstate',()=>{stop();state.id=Number(new URLSearchParams(location.search).get('mail'))||1;draw();speakAll(true)});draw();setTimeout(()=>speakAll(true),220);
 </script></body></html>
