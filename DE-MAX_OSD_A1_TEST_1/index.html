@@ -68,7 +68,14 @@
 .lesen3-image-cell{position:relative;display:flex;flex-direction:column;min-width:0;gap:0;overflow:hidden}
 .lesen3-image-cell .docimg{display:block;width:100%;height:auto;aspect-ratio:auto;object-fit:contain}
 .lesen3-native-number-repair{position:absolute;top:6px;left:6px;min-width:22px;height:23px;display:flex;align-items:center;justify-content:center;background:#606060;color:#fff;font-size:14px;line-height:1;font-weight:900;pointer-events:none;z-index:2;border-radius:0 0 1px 0}
-.lesen3-sheet-wrap{display:block;width:100%;line-height:0}.lesen3-sheet{display:block;width:100%;height:auto;max-width:100%;object-fit:contain;border-radius:10px;cursor:zoom-in}</style></head>
+.lesen3-sheet-wrap{display:block;width:100%;line-height:0}.lesen3-sheet{display:block;width:100%;height:auto;max-width:100%;object-fit:contain;border-radius:10px;cursor:zoom-in}
+/* Jednaka, minimalna lajsna u sva tri slušanja, bez prelaska u novi red. */
+.fixed-audio-dock{display:flex;justify-content:center;align-items:center;padding:2px 6px;min-height:0}
+.fixed-audio-dock .audio-panel-mini{box-sizing:border-box;width:min(100%,260px);max-width:260px;height:31px;min-height:31px;max-height:31px;padding:2px 6px;gap:5px;border-radius:8px;box-shadow:none;flex-wrap:nowrap;overflow:hidden}
+.fixed-audio-dock .audio-mini-title{font-size:10px;line-height:1;overflow:hidden;text-overflow:ellipsis;flex:0 1 auto;white-space:nowrap}
+.fixed-audio-dock .audio-mini-time{font-size:9px;line-height:1;flex:1 1 auto;text-align:center;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:clip}
+.fixed-audio-dock .audio-mini-play{height:26px;min-height:26px;min-width:64px;padding:3px 7px;font-size:10px;line-height:1;flex:0 0 auto;border-radius:7px}
+</style></head>
 <body>
 <div id="shell">
   <header class="top"><div class="identity"><div class="brand"><div class="logo">D•M</div><div><div class="brand-name">DE-MAX TUTIN</div><div class="brand-sub">ÖSD A1 · Ispitna simulacija</div></div></div><div class="top-right"><div class="pg" id="pageLabel">01 / 15</div><small id="sectionLabel">TEST 1</small></div></div><div class="bar"><div class="fill" id="progress"></div></div></header>
