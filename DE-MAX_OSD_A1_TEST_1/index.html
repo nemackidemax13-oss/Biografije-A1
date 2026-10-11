@@ -35,7 +35,6 @@ function get(k){return storage.answers[k]??'';}
 function toast(t){const el=document.getElementById('toast');el.textContent=t;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),3000);}
 function tag(t){return `<span class="chip">${t}</span>`}
 function heading(task,pts,desc){return `<div class="section-bar"><div><div class="eyebrow">ÖSD Zertifikat A1 · Test 1</div><h1 class="h2">${task}</h1></div>${tag(pts)}</div><p class="lead">${desc}</p>`;}
-function openOriginal(p){showImage(`pdf-page-${p}.webp`,`Originalni test · strana ${p}`);}
 function showImage(file,title){const el=document.getElementById('modal');document.getElementById('modalImg').src=A+file;document.getElementById('modalTitle').textContent=title||'Originalni zadatak';document.getElementById('modalScroll').scrollTop=0;el.classList.add('show');}
 function img(file,title,cls='docimg'){return `<img src="${A+file}.webp" alt="${h(title)}" class="${cls}" loading="lazy" onclick="showImage('${file}.webp','${h(title)}')" tabindex="0" onkeydown="if(event.key==='Enter')showImage('${file}.webp','${h(title)}')">`;}
 function originalBtns(nums){return '';}
