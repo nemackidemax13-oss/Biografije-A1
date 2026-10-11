@@ -1,0 +1,23 @@
+name: Download DE-MAX OSD A1 Test 1 ZIP
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/export-demax-osd-a1-test1.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  zip-app:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Upload complete app ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: DE-MAX_OSD_A1_TEST_1
+          path: DE-MAX_OSD_A1_TEST_1/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 90
