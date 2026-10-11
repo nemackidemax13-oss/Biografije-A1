@@ -261,12 +261,12 @@ let saved={};
 try {saved=JSON.parse(localStorage.getItem(storageKey)||'{}')||{};}catch(e){saved={};}
 let favorites = new Set((saved.favorites||[]).filter(i=>Number.isInteger(i)&&i>=0&&i<WORDS.length));
 let bestQuiz = Number(saved.bestQuiz||0);
-const state={page:'home',cat:-1,wordIndex:0,wordMode:'cards',search:'',listPage:0,dialogueIndex:0,lineIndex:0,allLines:false,showTranslation:true,quiz:null,quizCat:-1,quizDirection:'de-sr',quizLength:10,speed:Number(saved.speed||.85)};
+const state={page:'home',cat:-1,wordIndex:0,wordMode:'cards',search:'',listPage:0,dialogueIndex:0,lineIndex:0,allLines:false,showTranslation:true,quiz:null,quizCat:-1,quizDirection:'de-sr',quizLength:10,speed:Number(saved.speed||.85),autoWord:saved.autoWord!==false};
 const safe=(s)=>String(s).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const countLines=DIALOGUES.reduce((n,x)=>n+x.lines.length,0);
 let voices=[],speechToken=0,currentlySpeaking=false,paused=false,toastTimer=null;
 const synth=window.speechSynthesis||null;
-function persist(){try{localStorage.setItem(storageKey,JSON.stringify({favorites:[...favorites],bestQuiz,speed:state.speed}));}catch(e){}}
+function persist(){try{localStorage.setItem(storageKey,JSON.stringify({favorites:[...favorites],bestQuiz,speed:state.speed,autoWord:state.autoWord}));}catch(e){}}
 function loadVoices(){try{voices=synth?synth.getVoices():[];}catch(e){voices=[];}}
 loadVoices(); if(synth){synth.onvoiceschanged=loadVoices;}
 function voiceFor(speaker){const de=voices.filter(v=>/^de([_-]|$)/i.test(v.lang));return de.length ? (speaker==='B'&&de.length>1?de[1]:de[0]):null;}
@@ -316,17 +316,23 @@ function renderHome(){
     <button class="launch" data-action="home-word"><span class="launch-icon">📖</span><span><strong>Rečnik · nemački / srpski</strong><small>${CATS.length} oblasti, glasovni izgovor i sačuvane reči</small></span><span class="launch-arrow">›</span></button>
     <button class="launch" data-action="home-dialogues"><span class="launch-icon">💬</span><span><strong>Dijalozi iz auto-radionice</strong><small>Od razgovora s mušterijom do lakiranja i poliranja</small></span><span class="launch-arrow">›</span></button>
     <button class="launch" data-action="home-quiz"><span class="launch-icon">🏆</span><span><strong>A1 kviz · proveri znanje</strong><small>10 ili 20 pitanja sa tri ponuđena odgovora</small></span><span class="launch-arrow">›</span></button>
-    <div class="notice">🔊 Za nemački izgovor koristi se glas na tvom telefonu ili računaru. Radi bez posebnog API ključa. Klikni na zvučnik za slušanje.</div>
+    <div class="notice">🔊 Za nemački izgovor koristi se glas na tvom telefonu ili računaru. Radi bez posebnog API ključa. Reči se automatski izgovaraju kada otvoriš karticu ili pređeš na sledeću. Automatski izgovor možeš isključiti u rečniku.</div>
     <div class="tip">DE-MAX TUTIN · Uči svojim tempom · Stručne reči uz jednostavne A1 rečenice</div>`;
 }
 function matchingWords(){return WORDS.map((w,i)=>({...w,id:i})).filter(w=>(state.search||state.cat===-1||(state.cat===-2?favorites.has(w.id):w.c===state.cat))&&(!state.search||(`${w.de} ${w.sr}`).toLocaleLowerCase('sr').includes(state.search.toLocaleLowerCase('sr'))));}
+// Automatski izgovori prikazanu nemačku reč nakon korisničke navigacije.
+function autoSpeakCurrentWord(){
+  if(state.page!=='words'||state.wordMode!=='cards'||!state.autoWord)return;
+  const w=matchingWords()[state.wordIndex];
+  if(w)speakOnce(w.de,'A');
+}
 function renderWords(keepScroll=false){
   MAIN.className='main page-words mode-'+state.wordMode;
   let words=matchingWords();state.wordIndex=Math.max(0,Math.min(state.wordIndex,words.length-1));
   const item=words[state.wordIndex];const mode=state.wordMode;
   MAIN.innerHTML=`<h1 class="page-title">📖 Rečnik za radionicu</h1><p class="description">${WORDS.length} reči i izraza · tapni 🔊 za nemački izgovor.</p>
     <div class="course-heading"><span>${state.cat===-2?'★ Sačuvane reči':'📚 Sve oblasti redom'}</span><span>${state.cat===-2?(favorites.size+' reči'):(item?safe(CATS[item.c].name):'Sve oblasti')}</span></div>
-    <div class="select-row"><button class="smallbtn" data-action="word-filter">${state.cat===-2?'📚 Sve reči':'★ Sačuvane reči'}</button><button class="smallbtn" data-action="word-mode">${mode==='cards'?'☷ Spisak':'▣ Kartice'}</button></div>
+    <div class="select-row"><button class="smallbtn" data-action="word-filter">${state.cat===-2?'📚 Sve reči':'★ Sačuvane reči'}</button><button class="smallbtn" data-action="word-mode">${mode==='cards'?'☷ Spisak':'▣ Kartice'}</button><button class="smallbtn" data-action="word-auto" aria-pressed="${state.autoWord}" aria-label="Automatski izgovor nemačkih reči" title="Automatski izgovor pri promeni kartice">${state.autoWord?'🔊 Auto: UKLJ.':'🔇 Auto: ISKLJ.'}</button></div>
     <div class="controls-row"><input class="field" id="search" type="search" placeholder="Pretraži: git, Farbe, hauba..." value="${safe(state.search)}" autocomplete="off" spellcheck="false" aria-label="Pretraži rečnik"><span class="meta">${words.length} rezultata</span></div>
     ${mode==='cards'?renderWordCard(words,item):renderWordList(words)}
     <div class="hint">Brzina nemačkog izgovora menja se gore desno (0.7× / 0.85× / 1× / 1.15×).</div>`;
@@ -403,19 +409,20 @@ function renderQuizQuestion(q){const p=q.questions[q.index],dir=state.quizDirect
  ${q.selected!==null?`<div class="notice" style="margin:11px 0">${q.answers[q.answers.length-1]?'✅ Tačno!':'❌ Netačno.'} <b>${safe(p.word.de)}</b> = ${safe(p.word.sr)}</div><button class="btn wide green" data-action="quiz-next">${q.index===q.questions.length-1?'Prikaži rezultat':'Sledeće pitanje →'}</button>`:''}
  </div>`;}
 // Delegated events: accessible and resilient across rerenders.
-document.querySelector('.bottom').addEventListener('click',e=>{const b=e.target.closest('[data-page]');if(b)setPage(b.dataset.page);});
+document.querySelector('.bottom').addEventListener('click',e=>{const b=e.target.closest('[data-page]');if(b){setPage(b.dataset.page);autoSpeakCurrentWord();}});
 MAIN.addEventListener('click',e=>{
  const b=e.target.closest('[data-action]');if(!b||b.disabled)return;
  const a=b.dataset.action,id=Number(b.dataset.id),i=Number(b.dataset.i);
- if(a==='home-word')setPage('words');
+ if(a==='home-word'){setPage('words');autoSpeakCurrentWord();}
  else if(a==='home-dialogues')setPage('dialogues');
  else if(a==='home-quiz')setPage('quiz');
- else if(a==='word-mode'){state.wordMode=state.wordMode==='cards'?'list':'cards';state.listPage=0;stopSpeech();renderWords();}
- else if(a==='word-filter'){stopSpeech();state.cat=state.cat===-2?-1:-2;state.search='';state.wordIndex=0;state.listPage=0;renderWords();}
+ else if(a==='word-mode'){state.wordMode=state.wordMode==='cards'?'list':'cards';state.listPage=0;stopSpeech();renderWords();autoSpeakCurrentWord();}
+ else if(a==='word-filter'){stopSpeech();state.cat=state.cat===-2?-1:-2;state.search='';state.wordIndex=0;state.listPage=0;renderWords();autoSpeakCurrentWord();}
+ else if(a==='word-auto'){state.autoWord=!state.autoWord;persist();stopSpeech();renderWords(true);autoSpeakCurrentWord();}
  else if(a==='word-speak'){const w=matchingWords()[state.wordIndex];if(w)speakOnce(w.de);}
  else if(a==='speak-by-id'){speakOnce(WORDS[id].de);}
  else if(a==='favorite'||a==='favorite-id'){const w=a==='favorite'?matchingWords()[state.wordIndex]:WORDS[id];if(!w)return;const idx=a==='favorite'?w.id:id;if(favorites.has(idx))favorites.delete(idx);else favorites.add(idx);persist();renderWords(true);}
- else if(a==='word-prev'||a==='word-next'){stopSpeech();state.wordIndex+=a==='word-next'?1:-1;renderWords();}
+ else if(a==='word-prev'||a==='word-next'){stopSpeech();state.wordIndex+=a==='word-next'?1:-1;renderWords();autoSpeakCurrentWord();}
  else if(a==='word-play-ten'){const words=matchingWords(),from=state.wordIndex,to=Math.min(words.length,from+10);const subset=words.slice(from,to).map(x=>({de:x.de}));if(subset.length){ // speech cards are rendered from the current 10-word subset
       stopSpeech();const token=speechToken;currentlySpeaking=true;(async()=>{for(let k=0;k<subset.length;k++){if(token!==speechToken)break;state.wordIndex=from+k;renderWords(true);await talk(subset[k].de,'A',token);await new Promise(r=>setTimeout(r,130));}if(token===speechToken)currentlySpeaking=false;})();}}
  else if(a==='list-prev'||a==='list-next'){state.listPage+=a==='list-next'?1:-1;renderWords();}
@@ -452,8 +459,8 @@ document.getElementById('pauseBtn').addEventListener('click',()=>{
 window.addEventListener('resize',()=>{if(state.page==='words'&&state.wordMode==='list')renderWords(true);else if(state.page==='dialogues'&&state.allLines)renderDialogues(true);});
 window.addEventListener('keydown',e=>{
  if(e.target.closest('input,select,textarea'))return;
- if(state.page==='words'&&state.wordMode==='cards'&&e.key==='ArrowRight'){state.wordIndex=Math.min(matchingWords().length-1,state.wordIndex+1);renderWords();}
- else if(state.page==='words'&&state.wordMode==='cards'&&e.key==='ArrowLeft'){state.wordIndex=Math.max(0,state.wordIndex-1);renderWords();}
+ if(state.page==='words'&&state.wordMode==='cards'&&e.key==='ArrowRight'){stopSpeech();state.wordIndex=Math.min(matchingWords().length-1,state.wordIndex+1);renderWords();autoSpeakCurrentWord();}
+ else if(state.page==='words'&&state.wordMode==='cards'&&e.key==='ArrowLeft'){stopSpeech();state.wordIndex=Math.max(0,state.wordIndex-1);renderWords();autoSpeakCurrentWord();}
  else if(state.page==='dialogues'&&!state.allLines&&e.key==='ArrowRight'){state.lineIndex=Math.min(DIALOGUES[state.dialogueIndex].lines.length-1,state.lineIndex+1);renderDialogues();}
  else if(state.page==='dialogues'&&!state.allLines&&e.key==='ArrowLeft'){state.lineIndex=Math.max(0,state.lineIndex-1);renderDialogues();}
 });
