@@ -327,6 +327,13 @@ body:not(.home-mode) .welcome{display:none}body.home-mode>.sitebar,body.home-mod
 @media(max-width:370px), (max-height:660px){
  .welcome-hero{padding:20px 0 14px}.welcome-symbol{width:58px;height:58px;border-radius:17px;font-size:33px;margin:15px auto 16px}.welcome-symbol span{width:24px;height:24px}.welcome h1{font-size:37px}.welcome h1 strong{font-size:29px;margin-top:8px}.welcome-instruction{font-size:16px;margin-top:16px}.welcome-subtext{font-size:11px}.welcome-stats>div{min-height:66px;padding:7px 4px}.welcome-stats b{font-size:20px}.welcome-stats span{font-size:9px}.welcome-start{min-height:51px;padding:12px}.welcome-foot{margin-top:11px}
 }
+
+/* DE-MAX navigation colors: previous red, next green */
+.mail-nav #prev{background:#c8233d;border-color:#c8233d;color:#fff;box-shadow:0 3px 9px rgba(200,35,61,.18)}
+.mail-nav #prev:hover{background:#aa1830;border-color:#aa1830;color:#fff}
+.mail-nav #next{background:#128148;border-color:#128148;color:#fff;box-shadow:0 3px 9px rgba(18,129,72,.18)}
+.mail-nav #next:hover{background:#0c6938;border-color:#0c6938;color:#fff}
+.mail-nav #prev::after,.mail-nav #next::after{color:#fff}
 </style></head>
 <body class="home-mode"><section class="welcome" id="welcome" aria-label="Početna stranica — ispitni mejlovi">
  <div class="welcome-art" aria-hidden="true"><span></span><span></span><span></span></div>
