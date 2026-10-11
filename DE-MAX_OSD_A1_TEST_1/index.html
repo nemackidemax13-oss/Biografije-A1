@@ -382,13 +382,18 @@
  .rafaela-write-screen .rafaela-draft,
  .rafaela-write-screen .rafaela-disclaimer{display:none}
 }
+/* DE-MAX v44: dugme Ceo formular umesto oznake Unos odgovora */
+#keyboardFormAll{background:#e3efff;color:#1b4e85;border:1px solid #aec6e7;border-radius:9px;font-weight:900;padding:6px 12px;min-height:33px}
+#keyboardFormAll[hidden],#keyboardCaption[hidden]{display:none!important}
+#shell.keyboard-open #keyboardFormAll{flex:1 1 auto;text-align:center;font-size:12px;white-space:nowrap}
+#shell.keyboard-open #keyboardDone{flex:0 0 auto}
 </style></head>
 <body>
 <div id="shell">
   <header class="top"><div class="identity"><div class="brand"><div class="logo">D•M</div><div><div class="brand-name">DE-MAX TUTIN</div><div class="brand-sub">ÖSD A1 · Ispitna simulacija</div></div></div><div class="top-right"><div class="pg" id="pageLabel">01 / 15</div><small id="sectionLabel">TEST 1</small></div></div><div class="bar"><div class="fill" id="progress"></div></div></header>
   <div class="fixed-audio-dock" id="fixedAudioDock" hidden></div>
   <main class="main" id="main" aria-live="polite"></main>
-  <div class="keyboard-toolbar" id="keyboardToolbar" hidden><span id="keyboardCaption">✎ Unos odgovora</span><button type="button" id="keyboardNext" hidden>Dalje →</button><button type="button" id="keyboardDone">✓ Potvrdi</button></div>
+  <div class="keyboard-toolbar" id="keyboardToolbar" hidden><span id="keyboardCaption">✎ Unos odgovora</span><button type="button" id="keyboardFormAll" hidden>▦ Ceo formular</button><button type="button" id="keyboardNext" hidden>Dalje →</button><button type="button" id="keyboardDone">✓ Potvrdi</button></div>
   <footer class="bottom"><button class="btn btn-back" id="back">← Nazad</button><button class="btn btn-next" id="next">Počni →</button></footer>
   <div class="toast" id="toast" role="status"></div>
 </div>
@@ -674,6 +679,7 @@ document.getElementById('back').onclick=()=>go(page-1);document.getElementById('
 const keyboardToolbar=document.getElementById('keyboardToolbar');
 const keyboardDone=document.getElementById('keyboardDone');
 const keyboardNext=document.getElementById('keyboardNext');
+const keyboardFormAll=document.getElementById('keyboardFormAll');
 const keyboardCaption=document.getElementById('keyboardCaption');
 const shell=document.getElementById('shell');
 const isExamTextInput=el=>el&&el.matches&&el.matches('#main input[type="text"],#main input[type="number"],#main input[type="tel"],#main textarea.rafaela-entry')&&(page===9||page===12||page===14);
@@ -696,6 +702,8 @@ function activateKeyboardLayout(){
  shell.classList.add('keyboard-open');
  keyboardToolbar.hidden=false;
  keyboardNext.hidden=page!==14;
+ keyboardFormAll.hidden=page!==12;
+ keyboardCaption.hidden=page===12;
  updateMailKeyboardCaption();
  updateMobileViewport();
  requestAnimationFrame(revealFocusedInput);
@@ -703,7 +711,8 @@ function activateKeyboardLayout(){
  setTimeout(revealFocusedInput,380);
 }
 function closeKeyboardLayout(){
- shell.classList.remove('keyboard-open');keyboardToolbar.hidden=true;keyboardNext.hidden=true;
+ shell.classList.remove('keyboard-open');keyboardToolbar.hidden=true;keyboardNext.hidden=true;keyboardFormAll.hidden=true;
+ keyboardCaption.hidden=false;
  keyboardCaption.textContent='✎ Unos odgovora';
  updateMobileViewport();
 }
@@ -713,6 +722,14 @@ function updateMailKeyboardCaption(){
  const i=ids.indexOf(document.activeElement?.id);
  keyboardCaption.textContent=i===3?'✎ Potpis':'✎ Odgovor '+(i>=0?i+1:1)+'/3';
 }
+keyboardFormAll.addEventListener('pointerdown',e=>e.preventDefault());
+keyboardFormAll.addEventListener('click',()=>{
+ if(page!==12)return;
+ if(document.activeElement instanceof HTMLElement)document.activeElement.blur();
+ closeKeyboardLayout();
+ main.scrollTop=0;
+ requestAnimationFrame(()=>{if(page===12)main.scrollTop=0;});
+});
 keyboardNext.addEventListener('pointerdown',e=>e.preventDefault());
 keyboardNext.addEventListener('click',()=>{
  if(page!==14)return;
