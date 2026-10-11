@@ -545,6 +545,56 @@
 .exam-form-sr-hint{display:inline;color:#315985;font-weight:850}
 .status.pending{color:#285081;background:#e8f0fe}
 @media(max-height:710px){.exam-form-prompt{font-size:9.1px;line-height:1.16}}
+
+/* DE-MAX v48: vidljivo uputstvo iznad formulara */
+.exam-form-screen .exam-form-instruction{
+ flex:0 0 auto;
+ display:flex;
+ flex-direction:column;
+ justify-content:center;
+ gap:2px;
+ padding:6px 9px;
+ border:1px solid #b9d4ee;
+ border-left:4px solid #286bae;
+ border-radius:8px;
+ background:#e8f2ff;
+ line-height:1.27;
+ text-align:left;
+ margin:0;
+ box-shadow:0 1px 4px #274b7d12;
+}
+.exam-form-screen .exam-form-instruction strong{
+ display:block;
+ font-size:11px;
+ font-weight:900;
+ color:#183c6a;
+}
+.exam-form-screen .exam-form-instruction span{
+ display:block;
+ font-size:10.6px;
+ font-weight:800;
+ color:#375e90;
+}
+.exam-form-screen .exam-form-prompt{
+ border-left:3px solid #d3dfea;
+ background:#f7faff;
+ padding:4px 6px;
+ font-size:10.2px;
+ line-height:1.24;
+}
+@media(max-height:710px){
+ .exam-form-screen .exam-form-instruction{gap:1px;padding:4px 7px}
+ .exam-form-screen .exam-form-instruction strong{font-size:10px;line-height:1.16}
+ .exam-form-screen .exam-form-instruction span{font-size:9.8px;line-height:1.16}
+ .exam-form-screen .exam-form-prompt{font-size:9px;line-height:1.13;padding:2px 5px}
+ .exam-form-card{gap:2px}
+}
+@media(max-height:575px){
+ .exam-form-screen .exam-form-instruction{padding:3px 6px}
+ .exam-form-screen .exam-form-instruction strong{font-size:9.5px}
+ .exam-form-screen .exam-form-instruction span{font-size:9.2px}
+ .exam-form-screen .exam-form-prompt{font-size:8.8px;line-height:1.1}
+}
 </style></head>
 <body>
 <div id="shell">
@@ -677,7 +727,11 @@ ${heading('Hören · Aufgabe 3','10 bodova','Saslušajte pet osoba i izaberite o
 </section>`;}
 function form(){return `<section class="exam-form-screen">
 ${heading('Schreiben · Aufgabe 1','5 bodova','')}
-<p class="exam-form-prompt" lang="de"><strong class="exam-form-prompt-label">Situation:</strong> Ihr Freund Ricardo Torres will im September mit seiner Freundin Urlaub in der Schweiz machen. Sie fahren mit dem Zug und brauchen ein Zimmer für zwei Personen mit Frühstück. Sie möchten schwimmen und wandern. Die Reise zahlt Ricardo mit Kreditkarte. Er ist am 26. November 1979 geboren. <strong>Helfen Sie Ihrem Freund und füllen Sie das Formular aus.</strong> <span class="exam-form-sr-hint">Popunite ovaj formular sa ovim podacima.</span></p>
+<div class="exam-form-instruction" aria-label="Uputstvo za formular">
+ <strong>Helfen Sie Ihrem Freund und füllen Sie das Formular aus.</strong>
+ <span>Popunite ovaj formular sa ovim podacima.</span>
+</div>
+<p class="exam-form-prompt" lang="de"><strong class="exam-form-prompt-label">Situation:</strong> Ihr Freund Ricardo Torres will im September mit seiner Freundin Urlaub in der Schweiz machen. Sie fahren mit dem Zug und brauchen ein Zimmer für zwei Personen mit Frühstück. Sie möchten schwimmen und wandern. Die Reise zahlt Ricardo mit Kreditkarte. Er ist am 26. November 1979 geboren.</p>
 <div class="card exam-form-card">
 <div class="exam-form-brand"><strong>Reiseangebote · Formular</strong><span>www.auf-und-weg.com</span></div>
 <div class="exam-form-fields">
@@ -692,7 +746,6 @@ ${heading('Schreiben · Aufgabe 1','5 bodova','')}
 <div class="exam-form-row exam-form-sport"><label>Sport:</label><div class="exam-form-sport-options">${['Fußball','Wandern','Radfahren','Schwimmen'].map(x=>`<label class="opt"><input type="checkbox" ${get('f_sport_'+x)?'checked':''} onchange="set('f_sport_${x}',this.checked)">${x}</label>`).join('')}</div></div>
 <div class="exam-form-row"><label>Bezahlung:</label>${answerChoices('f_pay',['bar','Kreditkarte'])}</div>
 </div>
-<button type="button" class="btn btn-wide btn-next exam-form-solution-button" id="solutionButton" onclick="go(13)">Dalje · mejl</button>
 </div></section>`;}
 
 const RAFAELA_OPENING='Liebe Rafaela,\nvielen Dank für dein E-Mail. Hier die wichtigsten Informationen zu meiner Berlin-Reise:';
@@ -818,7 +871,7 @@ function result(){const g=grades();const done=g.mailPts!==null;const basePass=g.
 function cover(){return `<div class="intro cover-compact"><div class="hero"><div class="hero-medallion">A1</div><div class="med">DE-MAX TUTIN · PRIPREMA</div><h1>TEST 1</h1><div style="font-weight:750;font-size:18px">ÖSD Zertifikat A1</div><p style="color:#c8d9f1;font-size:11px;line-height:1.45;margin-top:9px">Kompletna simulacija ispita sa originalnim zadacima, slikama i snimcima.</p><span class="tag">SLUŠAJ · REŠAVAJ · PROVERI REZULTAT</span></div><div class="feature-tiles"><div class="tile"><strong>30</strong><small>Lesen</small></div><div class="tile"><strong>30</strong><small>Hören</small></div><div class="tile"><strong>15</strong><small>Schreiben*</small></div></div><div class="card card-tight" style="margin-bottom:8px"><label class="mini-title" for="candidate">Ime i prezime kandidata</label><input id="candidate" type="text" value="${h(storage.name)}" oninput="storage.name=this.value;save()" placeholder="Unesite ime i prezime" style="width:100%;border:1px solid #cbd8ec;border-radius:10px;padding:11px;background:#f9fbff"></div><p class="small center" style="margin:2px 0">*Čitanje 30 + slušanje 30 + formular 5 + mejl 10 = 75. Prolaz: 38 bodova.</p></div>`;}
 function intro(which){const reading=which==='read',hearing=which==='hear';let title=reading?'Razumevanje':hearing?'Slušanje':'Formular i mejl';let sub=reading?'LESEN':hearing?'HÖREN':'SCHREIBEN';let pts=reading?30:hearing?30:15;let tasks=reading?['Situationen + Anzeigen (10 bodova)','Anzeigen · JA / NEIN (10 bodova)','Texte + Bilder (10 bodova)']:hearing?['Fotos + 5 Texte (10 bodova)','Nachricht · Notizen (10 bodova)','Wo gefällt es Ihnen? (10 bodova)']:['Formular · Ricardo Torres (5 bodova)','Pisanje mejla (10 bodova)','Završni rezultat (prag 38 od 75)'];return `<div class="intro section-intro intro-compact"><div class="topicicon">${reading?'📖':hearing?'🎧':'✉'}</div><div class="center"><div class="eyebrow">${sub} · ÖSD A1</div><h2>${title}</h2><p class="lead">${reading?'Pročitajte zadatke i odaberite tačne odgovore.':hearing?'Originalni snimci se mogu automatski pustiti ili ručno pokrenuti.':'Popunite formular, pročitajte postavku mejla i napišite odgovor na sledećoj strani.'}</p><div class="points">${pts}<small> bodova</small></div><div class="medals"><span class="medal green">Minimum ${reading||hearing?6:4}</span>${hearing?'<span class="medal">3 originalna MP3</span>':reading?'<span class="medal">25 min na ispitu</span>':'<span class="medal">Mejl 10 bodova</span>'}</div></div><div class="card rules">${tasks.map((t,i)=>`<div class="rule"><span class="n">${i+1}</span><span>${t}</span></div>`).join('')}${hearing?`<div class="rule" style="border:0"><span>Automatsko pokretanje slušanja</span><button class="switch ${storage.autoPlay?'yes':''}" aria-label="Automatski pokreći snimke" onclick="storage.autoPlay=!storage.autoPlay;save();render()"></button></div>`:''}</div></div>`;}
 function render(){if(![8,9,10].includes(page))stopAudio();let html='';switch(page){case 0:html=cover();break;case 1:html=intro('read');break;case 2:html=r1();break;case 3:html=r2(0);break;case 4:html=r2(1);break;case 5:html=r2(2);break;case 6:html=r3();break;case 7:html=intro('hear');break;case 8:html=h1();break;case 9:html=h2();break;case 10:html=h3();break;case 11:html=intro('write');break;case 12:html=form();break;case 13:html=mailPrompt();break;case 14:html=mail();break;case 15:html=result();break;}
-const audioDock=document.getElementById('fixedAudioDock');audioDock.hidden=![8,9,10].includes(page);audioDock.innerHTML=[8,9,10].includes(page)?audioPanel(page-7):'';main.classList.toggle('r2-no-scroll',page>=3&&page<=5);main.classList.toggle('listen-no-scroll',page===9||page===10);main.classList.toggle('exam-form-no-scroll',page===12);main.classList.toggle('rafaela-page',page===14);main.classList.toggle('rafaela-prompt-page',page===13);main.classList.toggle('exam-form-solutions-open',false);main.innerHTML=html;document.getElementById('pageLabel').textContent=String(page+1).padStart(2,'0')+' / '+pages.length;document.getElementById('sectionLabel').textContent=pages[page].toUpperCase();document.getElementById('progress').style.width=((page+1)/pages.length*100)+'%';document.getElementById('back').disabled=page===0;document.getElementById('back').style.opacity=page===0?.4:1;document.getElementById('next').textContent=page===15?'Početna ↺':page===0?'Počni →':page===14?'Prikaži rezultat ✓':page===13?'Piši mejl →':page===12?'Postavka mejla →':'Sledeća →';if([8,9,10].includes(page))prepareAudio(page-7);}
+const audioDock=document.getElementById('fixedAudioDock');audioDock.hidden=![8,9,10].includes(page);audioDock.innerHTML=[8,9,10].includes(page)?audioPanel(page-7):'';main.classList.toggle('r2-no-scroll',page>=3&&page<=5);main.classList.toggle('listen-no-scroll',page===9||page===10);main.classList.toggle('exam-form-no-scroll',page===12);main.classList.toggle('rafaela-page',page===14);main.classList.toggle('rafaela-prompt-page',page===13);main.classList.toggle('exam-form-solutions-open',false);main.innerHTML=html;document.getElementById('pageLabel').textContent=String(page+1).padStart(2,'0')+' / '+pages.length;document.getElementById('sectionLabel').textContent=pages[page].toUpperCase();document.getElementById('progress').style.width=((page+1)/pages.length*100)+'%';document.getElementById('back').disabled=page===0;document.getElementById('back').style.opacity=page===0?.4:1;document.getElementById('next').textContent=page===15?'Početna ↺':page===0?'Počni →':page===14?'Prikaži rezultat ✓':page===13?'Piši mejl →':page===12?'Dalje · mejl':'Sledeća →';if([8,9,10].includes(page))prepareAudio(page-7);}
 function go(p){if(p<0||p>=pages.length)return;page=p;main.scrollTop=0;render();}
 function toggleSolutions(){storage.showSolutions=!storage.showSolutions;save();const pos=main.scrollTop;render();main.scrollTop=pos;}
 function stopAudio(){if(!audio.paused)audio.pause();playingPage=null;}
