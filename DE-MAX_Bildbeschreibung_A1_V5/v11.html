@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f7f9fd">
+<meta name="description" content="DE-MAX Usmeni ispit A1 – 40 slika, govor, prevod i ispravka rečenica">
+<title>Usmeni ispit · Opis slike A1</title>
+<style>
+:root{--navy:#102f63;--blue:#1769c9;--red:#ec2947;--green:#14a667;--line:#d9e6f7;--bg:#f5f8ff}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:var(--navy);background:#e5edf9}
+button,input,textarea{font:inherit}button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+.app{width:100%;max-width:520px;height:100dvh;margin:0 auto;overflow:hidden;display:flex;flex-direction:column;background:#f7faff;box-shadow:0 0 40px #14345817}
+.top{height:45px;flex:none;display:grid;grid-template-columns:50px 1fr 50px;align-items:center;background:#fff;padding:0 8px;border-bottom:1px solid #e1e9f5}
+.top h2{font-size:16px;text-align:center;line-height:1;margin:0;font-weight:850;letter-spacing:-.2px}
+.icon{width:36px;height:36px;border:0;background:transparent;border-radius:10px;color:var(--red);font-size:28px;display:grid;place-items:center;justify-self:start;padding:0}
+#micTop{justify-self:end;border:1px solid #ffced6;font-size:22px}
+#micTop.active{color:#fff;background:var(--red);border-color:var(--red)}
+.flow{height:21px;background:#eff4fc;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 12px;font-size:9px;font-weight:800;color:#7286a7;border-bottom:1px solid #e0e9f6}
+.progress{background:#d7e5fa;height:4px;border-radius:5px;width:29%;overflow:hidden}.progress i{display:block;height:100%;width:0;background:var(--red);transition:width .18s}
+.content{flex:1;min-height:0;position:relative;overflow:hidden}
+.screen{height:100%;width:100%;min-height:0;display:flex;flex-direction:column;padding:12px;gap:9px;overflow:hidden}
+.tag{display:inline-block;padding:4px 9px;color:#2162ba;border:1px solid #d2e4ff;background:#e9f3ff;border-radius:999px;font-size:10px;font-weight:850}
+h1,h3,p{margin:0}h1{font-size:26px;letter-spacing:-.7px;font-weight:900}p{font-size:12px;line-height:1.43;color:#677d9d}
+.bbtn{border:0;min-height:44px;padding:9px 13px;font-weight:850;border-radius:12px;background:#fff;color:var(--navy);box-shadow:0 2px 10px #132f6512;transition:filter .12s}
+.bbtn:active{filter:brightness(.94)}
+.red{background:linear-gradient(135deg,#fa3c58,#e91f40)!important;color:#fff!important;box-shadow:0 8px 18px #ee32513b}
+.green{background:#14a667!important;color:white!important}
+.blue{background:#1769c9!important;color:#fff!important;box-shadow:0 4px 12px #1769c933}
+.outline{color:#1757b0;border:1px solid #c2d8f7}
+.white{background:white;border:1px solid var(--line)}
+#wel{padding:13px 18px 16px;justify-content:space-between;background:radial-gradient(ellipse at top,#e6f2ff 0,#f6faff 60%)}
+.welHead{text-align:center;flex:none;padding-top:4px}
+.eyebrow{font-size:10px;display:inline-block;font-weight:850;letter-spacing:.8px;padding:7px 12px;border:1px solid #ffd5dd;background:#fff3f5;border-radius:30px;color:#d42b49}
+.welHead h1{margin-top:17px;font-size:clamp(30px,6.3dvh,45px);line-height:1.1}.welHead h1 em{font-style:normal;color:var(--red)}
+.welHead h3{font-size:clamp(18px,3dvh,22px);color:#2463ba;margin:5px 0 10px}.welHead p{font-size:12px;max-width:350px;margin:auto}
+.hero{flex:1;min-height:120px;position:relative;margin:5px 0;display:grid;place-items:center}
+.hero:before{content:"";position:absolute;width:85%;height:80%;background:#dfedff;border-radius:38% 62% 58% 42%}
+.hero img{width:82%;height:87%;max-height:340px;object-fit:cover;object-position:center 20%;border:6px solid white;border-radius:22px;box-shadow:0 15px 35px #14335e26;position:relative;transform:rotate(-2deg)}
+.flag{position:absolute;top:10%;right:5%;font-size:27px;background:#fff;padding:9px;border-radius:12px;box-shadow:0 4px 14px #0a32631e}
+.welFoot{flex:none;display:grid;gap:8px}.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.facts span{font-size:10px;text-align:center;font-weight:800;color:#4168a2;border:1px solid #e1eafd;border-radius:10px;background:#ffffffbb;padding:8px 3px}
+#start{width:100%;font-size:17px;min-height:53px}
+.welFoot small{font-size:10px;color:#7f90a8;text-align:center}
+.linklike{font-size:11px;color:#2e69bd;font-weight:700;background:transparent;border:0;text-decoration:underline;padding:3px;text-align:center}
+.chooseHead{text-align:center;flex:none}.chooseHead h1{margin:3px 0;font-size:24px}
+.choices{flex:1;min-height:0;display:grid;grid-template-rows:repeat(3,minmax(0,1fr));gap:8px}
+.choice{padding:5px;border:1px solid #d7e5f5;background:white;border-radius:16px;display:flex;gap:8px;align-items:stretch;min-height:0;box-shadow:0 4px 15px #17417416;overflow:hidden}
+.choice b{flex:0 0 57px;display:grid;place-content:center;gap:5px;text-align:center;color:#235ab0;font-size:12px}.choice b strong{font-size:20px;border-radius:12px;color:#2468ca;background:#e8f3ff;padding:5px}
+.choice img{min-width:0;width:100%;height:100%;object-fit:cover;object-position:center 20%;border-radius:11px}
+.chooseActions{display:flex;gap:8px}.chooseActions button{flex:1;font-size:12px}
+#pv{gap:10px}#pv .chooseHead{flex:none}#pv .picture{flex:1;min-height:0;border:1px solid var(--line);padding:7px;border-radius:18px;background:white;display:grid;place-items:center;box-shadow:0 6px 22px #173b6615}
+#pv .picture img{max-height:100%;max-width:100%;object-fit:contain;border-radius:11px}
+.pvActions{flex:none;display:grid;gap:8px}.pvActions #describe{min-height:53px;font-size:17px}
+#practice{gap:7px;overflow:hidden;padding:8px 10px calc(8px + env(safe-area-inset-bottom))}
+.prTitle{display:flex;align-items:center;justify-content:space-between;flex:none}.prTitle h1{font-size:20px}.prTitle .tag{margin-bottom:3px}
+.photoWrap{height:clamp(118px,22dvh,200px);flex:none;border-radius:15px;padding:5px;background:#fff;border:1px solid var(--line);display:flex;justify-content:center;align-items:center;min-height:0;box-shadow:0 4px 13px #143c7213}
+.photoWrap img{width:100%;height:100%;object-fit:contain;border-radius:10px}
+.help{flex:none;background:#fff;border:1px solid #f5d8dd;border-radius:13px;overflow:hidden}
+.helpHead{background:#fff2f4;color:#c4314b;font-size:11px;font-weight:850;padding:7px 10px}
+#suggestions{padding:6px 9px;display:grid;gap:5px}
+.hint{display:flex;gap:7px;align-items:flex-start}.num{flex:none;width:19px;height:19px;display:grid;place-items:center;border-radius:7px;background:#f9e8ed;color:#c23453;font-size:10px;font-weight:900}
+.hint .de{font-size:11.4px;font-weight:750;line-height:1.25;color:#1a3a69}.hint .sr{font-size:10.3px;line-height:1.25;color:#7789a2}
+.prTextLabel{font-size:12px;font-weight:850;flex:none}
+.controls{display:grid;grid-template-columns:1fr 1.13fr 1.2fr;gap:6px;flex:none}
+.controls .bbtn{padding:6px 3px;min-height:42px;font-size:10.4px;line-height:1.18;box-shadow:none}
+.controls .bbtn:disabled{opacity:.55;cursor:not-allowed}
+.status{font-size:10.6px;line-height:1.3;color:#41668c;background:#e8f1ff;border:1px solid #d4e6fb;border-radius:9px;padding:7px 9px;flex:none}
+.status.live{background:#e8faf0;border-color:#bdebd7;color:#137a59}.status.err{background:#fff1f3;border-color:#ffd2d9;color:#b53049}
+#speechText{flex:1;min-height:54px;width:100%;resize:none;padding:10px;border:1px solid #cddff5;border-radius:12px;background:white;color:#123963;font-size:13px;line-height:1.35}
+.transbox{background:#fff1f5;border:1px solid #ffd8e0;border-radius:10px;padding:7px 9px;font-size:11px;flex:none;max-height:78px;overflow:auto}.transbox strong{display:block;color:#d02d47;margin-bottom:3px}.transbox p{color:#33516d;font-size:11px}
+#result{overflow-y:auto;gap:10px}.resultBox{flex:none;background:#fff;border:1px solid #dfe8f7;border-radius:14px;padding:12px}.resultBox strong{font-size:13px}.resultBox p{color:#203d64;font-size:12px;line-height:1.55;margin-top:6px;white-space:pre-wrap}
+.pair{margin-top:7px;background:#f2f6ff;padding:8px;border-radius:9px}.pair .de{font-weight:750;font-size:12px}.pair .sr{color:#7789a5;margin-top:2px;font-size:11.5px}.resultBox.corrected{background:#ecf9f2;border-color:#c1ebd5}
+.resultActions{flex:none;display:flex;gap:7px;flex-wrap:wrap}.resultActions button{flex:1;min-width:25%;font-size:11px}
+#toast{position:absolute;bottom:12%;left:8%;right:8%;z-index:50;background:#173d69;color:white;padding:12px 15px;border-radius:12px;box-shadow:0 7px 25px #16395840;font-size:12px;text-align:center;display:none}
+#toast.show{display:block}
+.overlay{position:fixed;inset:0;background:#07182ebd;z-index:100;display:grid;place-items:center;padding:15px}
+.dialog{width:min(430px,100%);background:white;border-radius:20px;padding:20px;display:grid;gap:10px}
+.dialog h2{font-size:22px;margin:0}.dialog p{font-size:12px}.dialog input{font-size:16px;width:100%;border:1px solid #cbdcf5;border-radius:10px;padding:10px}
+.dialog label{font-size:12px;font-weight:800;color:#22456e}.dialog .x{justify-self:end;font-size:24px;background:transparent;border:0}
+#zoom img{width:100%;height:90dvh;object-fit:contain}
+@media(max-height:680px){
+.top{height:41px}.flow{height:18px}.screen{padding:8px;gap:6px}
+#practice{gap:5px;padding:6px 8px calc(6px + env(safe-area-inset-bottom))}
+.photoWrap{height:clamp(104px,20dvh,156px)}.helpHead{padding:5px 8px}#suggestions{gap:3px;padding:5px 7px}.hint .de{font-size:10.5px}.hint .sr{font-size:9.5px}.hint .num{height:17px;width:17px}
+.controls .bbtn{min-height:38px;font-size:9.6px}.status{padding:6px 8px}
+#speechText{min-height:40px}.welHead h1{margin-top:9px}.welHead h3{margin-bottom:5px}
+}
+@media(min-width:600px){.app{border:5px solid #fff;border-radius:20px;height:min(100dvh,850px);margin:0 auto}}
+
+/* V6 — veća slika i pomoć koja se otvara po potrebi */
+#practice{gap:7px;padding:7px 10px calc(8px + env(safe-area-inset-bottom));overflow:hidden}
+#practice .prTitle{flex:none;min-height:30px}
+#practice .prHeading{display:flex;align-items:center;gap:9px}
+#practice .prHeading h1{font-size:21px;line-height:1.1;letter-spacing:-.45px}
+#practice .prHeading .tag{margin:0;flex:none}
+#practice .photoWrap{height:clamp(170px,43dvh,350px);flex:0 1 auto;min-height:0;padding:4px;border-radius:16px}
+#practice .photoWrap img{width:100%;height:100%;object-fit:contain;object-position:center}
+#practice .help{flex:none;min-height:0}
+#practice .helpHead{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:38px;padding:8px 11px;border:0;cursor:pointer;text-align:left;font-size:12px;font-weight:850}
+#practice .helpHead:focus-visible{outline:2px solid #ec2947;outline-offset:-2px}
+#practice .helpArrow{font-size:19px;line-height:1;flex:none}
+#practice #suggestions{max-height:min(25dvh,175px);overflow-y:auto;overscroll-behavior:contain;padding:8px 10px;gap:8px}
+#practice.hints-open .photoWrap{height:clamp(140px,29dvh,260px)}
+#practice .prTextLabel{font-size:11.5px}
+#practice #speechText{flex:1 1 56px;min-height:52px}
+@media(max-height:680px){
+ #practice{gap:5px;padding:6px 8px calc(6px + env(safe-area-inset-bottom))}
+ #practice .photoWrap{height:clamp(140px,39dvh,270px)}
+ #practice.hints-open .photoWrap{height:clamp(110px,25dvh,190px)}
+ #practice .helpHead{min-height:33px;padding:6px 9px;font-size:11px}
+ #practice #suggestions{max-height:22dvh;padding:5px 8px;gap:5px}
+}
+@media(max-height:560px){
+ #practice .photoWrap{height:35dvh}
+ #practice.hints-open .photoWrap{height:22dvh}
+ #practice .status{padding:5px 7px}
+ #practice .controls .bbtn{min-height:36px}
+}
+
+/* V7 — centriran manji naslov i još veća slika */
+#practice .prTitle{position:relative;min-height:34px;flex:none}
+#practice .prHeading{display:flex;align-items:center;gap:0}
+#practice .prHeading h1{
+  position:absolute;left:50%;top:50%;
+  transform:translate(-50%,-50%);
+  font-size:17px;line-height:1.1;font-weight:850;
+  letter-spacing:-.3px;white-space:nowrap;
+  text-align:center;pointer-events:none
+}
+#practice .prHeading .tag{margin:0;position:relative;z-index:1}
+#practice .photoWrap{
+  height:clamp(182px,47dvh,375px);
+  margin-inline:-5px;padding:2px;
+  border-radius:14px;overflow:hidden
+}
+#practice .photoWrap img{width:100%;height:100%;object-fit:contain}
+#practice.hints-open .photoWrap{height:clamp(145px,31dvh,270px)}
+@media(max-height:680px){
+ #practice .prHeading h1{font-size:16px}
+ #practice .photoWrap{height:clamp(155px,43dvh,300px)}
+ #practice.hints-open .photoWrap{height:clamp(112px,27dvh,200px)}
+}
+@media(max-height:560px){
+ #practice .prHeading h1{font-size:15px}
+ #practice .photoWrap{height:39dvh}
+ #practice.hints-open .photoWrap{height:24dvh}
+}
+
+
+/* V8 — maksimalno sužena gornja traka; široka, uvećana slika bez zoom dugmeta */
+.top{height:30px;grid-template-columns:34px minmax(0,1fr) 34px;padding:0 5px}
+.top h2{font-size:12px;letter-spacing:0;line-height:1}
+.top .icon{width:29px;height:29px;border-radius:7px;font-size:24px}
+#micTop{font-size:18px}
+.flow{height:12px;padding:0 8px;font-size:8px}
+.flow .progress{height:3px}
+#practice{gap:5px;padding:4px 5px calc(5px + env(safe-area-inset-bottom))}
+#practice .prTitle{min-height:26px}
+#practice .prHeading h1{font-size:16px}
+#practice .prHeading .tag{font-size:9px;padding:3px 7px}
+#practice .photoWrap,
+#practice.hints-open .photoWrap{
+  box-sizing:border-box;
+  width:calc(100% + 10px);
+  height:auto;
+  aspect-ratio:1.14 / 1;
+  max-height:52dvh;
+  min-height:0;
+  flex:0 1 auto;
+  margin-inline:-5px;
+  padding:0;
+  border-radius:10px;
+  overflow:hidden;
+}
+#practice .photoWrap img{
+  box-sizing:border-box;
+  width:114%;
+  min-width:114%;
+  max-width:none;
+  height:100%;
+  flex:0 0 114%;
+  object-fit:contain;
+  object-position:center center;
+  border-radius:0;
+}
+#practice .helpHead{min-height:30px;padding:5px 9px;font-size:11px}
+#practice .prTextLabel{font-size:11px}
+#practice .controls .bbtn{min-height:37px;padding:5px 3px;font-size:10px}
+#practice .status{padding:5px 7px;font-size:10px}
+#practice #speechText{flex:1 1 60px;min-height:48px;padding:7px 9px}
+@media(max-height:680px){
+ .top{height:30px}.flow{height:12px}
+ #practice{gap:4px;padding:4px 5px calc(5px + env(safe-area-inset-bottom))}
+ #practice .photoWrap,#practice.hints-open .photoWrap{
+   height:auto;max-height:48dvh;min-height:0;flex:0 1 auto;
+ }
+ #practice .prHeading h1{font-size:15px}
+ #practice .helpHead{min-height:28px;padding:5px 8px}
+ #practice .controls .bbtn{min-height:34px}
+}
+@media(max-height:560px){
+ #practice .photoWrap,#practice.hints-open .photoWrap{
+   height:auto;max-height:43dvh;min-height:0;flex:0 1 auto;
+ }
+ #practice #speechText{min-height:42px}
+}
+
+/* V11 — svi tasteri za izbor sledećih fotografija postaju izrazito plavi */
+#shuffle,#chooseAgain,#nextPictures{
+  background:#0067e6!important;
+  background-image:none!important;
+  color:#ffffff!important;
+  border:2px solid #004db3!important;
+  box-shadow:0 4px 15px #0067e655!important;
+  opacity:1!important;
+}
+#shuffle:active,#chooseAgain:active,#nextPictures:active{background:#004db3!important}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="top">
+<button class="icon" id="back" aria-label="Nazad" hidden>‹</button>
+<h2>Usmeni ispit</h2>
+<button class="icon" id="micTop" aria-label="Pokreni mikrofon" title="Mikrofon" hidden>🎙</button>
+</header>
+<div class="flow"><span id="step">POČETNA</span><span class="progress"><i id="prog"></i></span><span id="smallState">40 slika</span></div>
+<main class="content">
+<section class="screen" id="wel">
+<div class="welHead"><div class="eyebrow">A1 NIVO · GOVORNE VEŽBE</div><h1>Usmeni ispit<em>.</em></h1><h3>Opis slike</h3><p>Izaberi fotografiju, opiši je na nemačkom, poslušaj svoj odgovor i vežbaj uz prevod i ispravku.</p></div>
+<div class="hero"><img id="heroPic" alt="Dve osobe u parku"><span class="flag">🇩🇪</span></div>
+<div class="welFoot"><div class="facts"><span>✦ 40 slika</span><span>◉ Prevod</span><span>✓ Provera</span></div><button class="bbtn red" id="start">Započni vežbu →</button><small>Mobilni prikaz 9:16 · Nemački A1</small><button class="linklike" id="openSettings">Poveži OpenAI proveru ↗</button></div>
+</section>
+<section class="screen" id="choose" hidden>
+<div class="chooseHead"><span class="tag">KORAK 01 / 03</span><h1>Izaberi fotografiju</h1><p>Dodirni jednu od tri ponuđene slike.</p></div>
+<div class="choices" id="choiceList"></div>
+<div class="chooseActions"><button class="bbtn blue" id="shuffle" style="background:#0067e6!important;background-image:none!important;color:#ffffff!important;border:2px solid #004db3!important;box-shadow:0 4px 15px #0067e655!important">↻ Druge slike</button></div>
+</section>
+<section class="screen" id="pv" hidden>
+<div class="chooseHead"><span class="tag" id="previewNum">Bild 1</span><h1>Posmatraj fotografiju</h1><p>Obrati pažnju na osobe, mesto i radnju.</p></div>
+<div class="picture"><img id="previewImg" alt="Fotografija za opis"></div>
+<div class="pvActions"><button class="bbtn red" id="describe">Počni opis ›</button><button class="bbtn blue" id="chooseAgain" style="background:#0067e6!important;background-image:none!important;color:#ffffff!important;border:2px solid #004db3!important;box-shadow:0 4px 15px #0067e655!important">‹ Izaberi drugu sliku</button></div>
+</section>
+<section class="screen" id="practice" hidden>
+<div class="prTitle"><div class="prHeading"><span class="tag" id="pracNum">Bild 1</span><h1>Opis slike</h1></div></div>
+<div class="photoWrap"><img id="photo" alt="Fotografija za opis"></div>
+<div class="help"><button type="button" class="helpHead" id="hintsToggle" aria-expanded="false" aria-controls="suggestions"><span>📘 Predložene rečenice kao pomoć</span><span class="helpArrow" id="hintsArrow">▾</span></button><div id="suggestions" hidden></div></div>
+<div class="prTextLabel">Tvoj opis na nemačkom</div>
+<div class="controls">
+<button class="bbtn green" id="listen">▶ Slušaj</button>
+<button class="bbtn red" id="stop" disabled>■ Završi snimanje</button>
+<button class="bbtn outline" id="check">✓ Proveri i ispravi</button>
+</div>
+<div class="status" id="recordStatus" role="status">Pritisni „Počni opis” da se mikrofon automatski uključi.</div>
+<textarea id="speechText" spellcheck="false" placeholder="Ono što učenik kaže biće ovde prikazano..."></textarea>
+<div class="transbox" id="translation" hidden><strong>Prevod učenikovog odgovora</strong><p id="translationText"></p></div>
+</section>
+<section class="screen" id="result" hidden>
+<div class="prTitle"><h1>Provera opisa</h1><span class="tag" id="resultNum">Bild 1</span></div>
+<div class="resultBox"><strong>🗣 Šta je učenik rekao</strong><p id="said"></p><div id="saidTranslations"></div></div>
+<div class="resultBox corrected"><strong>✓ Ispravljen nemački</strong><p id="corrected"></p><div id="correctedTranslations"></div></div>
+<div class="resultBox"><strong>💬 Komentar profesora</strong><p id="feedback"></p><div id="errors"></div></div>
+<div class="resultBox"><strong>💡 Dodatne rečenice sa prevodom</strong><div id="newHints"></div></div>
+<div class="resultActions"><button class="bbtn green" id="speakCorrection">▶ Slušaj</button><button class="bbtn white" id="retry">↻ Opet</button><button class="bbtn blue" id="nextPictures" style="background:#0067e6!important;background-image:none!important;color:#ffffff!important;border:2px solid #004db3!important;box-shadow:0 4px 15px #0067e655!important">Druge slike ›</button></div>
+</section>
+<div id="toast" role="status"></div>
+</main>
+</div>
+<div class="overlay" id="settings" hidden><div class="dialog">
+<button class="x" id="closeSettings" aria-label="Zatvori">×</button><h2>OpenAI povezivanje</h2>
+<p>Za prepis govora, prevod i proveru potreban je server koji čuva tvoj OpenAI API ključ. Ključ se ne postavlja na GitHub.</p>
+<label for="serverUrl">URL objavljenog servera (npr. Replit)</label><input id="serverUrl" type="url" placeholder="https://tvoj-server.replit.app">
+<label for="accessCode">Pristupni kod, ako postoji</label><input id="accessCode" type="password" placeholder="Opciono">
+<button class="bbtn red" id="saveSettings">Sačuvaj i proveri vezu</button><p id="connectionStatus"></p>
+</div></div>
+<script src="scenes.js"></script>
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id), scenes=window.DEMAX_SCENES||[];
+const screens=['wel','choose','pv','practice','result'];
+const baseKey='demax_bild_ai_backend',codeKey='demax_bild_ai_code';
+let backend=localStorage.getItem(baseKey)||'',code=localStorage.getItem(codeKey)||'';
+let page=0,choices=[],scene=null,sceneChoice=1,recorder=null,stream=null,parts=[],recorded=null,recording=false,busy=false;
+let toastTimer=null;
+function alertMsg(t){$('toast').textContent=t;$('toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('show'),3700);}
+function show(n){
+page=n;screens.forEach((id,i)=>$(id).hidden=i!==n);
+$('back').hidden=n===0;$('micTop').hidden=n!==3;
+$('step').textContent=['POČETNA','IZBOR SLIKE','PREGLED SLIKE','OPIS SLIKE','ISPRAVKA'][n];
+$('prog').style.width=[0,25,50,75,100][n]+'%';
+$('smallState').textContent=['40 slika','3 ponuđene','cela slika','govor','rezultat'][n];
+}
+function setStatus(msg,mode){$('recordStatus').textContent=msg;$('recordStatus').className='status'+(mode?' '+mode:'');}
+function shuffle(){
+const old=choices.map(x=>x.no);
+let pool=scenes.filter(s=>!old.includes(s.no));
+for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const p=pool[i];pool[i]=pool[j];pool[j]=p;}
+choices=pool.slice(0,3);
+$('choiceList').replaceChildren();
+choices.forEach((c,i)=>{
+const b=document.createElement('button');b.className='choice';
+const label=document.createElement('b');label.innerHTML='<strong>'+String(i+1)+'</strong>Bild '+String(i+1);
+const img=document.createElement('img');img.src=c.img;img.alt='Bild '+String(i+1)+' – '+c.sr;img.loading='lazy';
+b.append(label,img);b.onclick=()=>select(i);$('choiceList').append(b);
+});
+}
+function renderHints(id,hints){
+const root=$(id);root.replaceChildren();
+(hints||[]).forEach((x,j)=>{
+const h=document.createElement('div');h.className='hint';
+const num=document.createElement('span');num.className='num';num.textContent=String(j+1);
+const wrap=document.createElement('div');const de=document.createElement('div'),sr=document.createElement('div');
+de.className='de';sr.className='sr';de.textContent=x.de||'';sr.textContent=x.sr||'';
+wrap.append(de,sr);h.append(num,wrap);root.append(h);
+});
+}
+function setHintsOpen(open){
+ const body=$('suggestions'),toggle=$('hintsToggle');
+ body.hidden=!open;
+ toggle.setAttribute('aria-expanded',String(open));
+ $('hintsArrow').textContent=open?'▴':'▾';
+ $('practice').classList.toggle('hints-open',open);
+}
+function baseHints(s){
+return [
+{de:'Auf dem Bild sehe ich zwei Personen.',sr:'Na slici vidim dve osobe.'},
+{de:'Die Personen sind '+s.de+'.',sr:'Osobe su '+s.sr+'.'},
+{de:'Ich sehe auch andere Dinge.',sr:'Vidim i druge stvari.'}
+];}
+function select(i){
+stopAndClear();scene=choices[i];sceneChoice=i+1;recorded=null;
+$('previewImg').src=scene.img;$('photo').src=scene.img;
+$('previewNum').textContent=$('pracNum').textContent=$('resultNum').textContent='Bild '+sceneChoice;
+$('speechText').value='';$('translation').hidden=true;$('translationText').textContent='';
+renderHints('suggestions',baseHints(scene));setHintsOpen(false);setStatus('Mikrofon će se uključiti kada pritisneš „Počni opis”.','');
+show(2);
+loadHints();
+}
+function base(){return backend.trim().replace(/\/+$/,'');}
+function headers(){return code?{'X-DEMAX-CODE':code}:{};}
+async function jsonPost(endpoint,body){
+const r=await fetch(base()+endpoint,{method:'POST',headers:{'Content-Type':'application/json',...headers()},body:JSON.stringify(body)});
+const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.error||('HTTP '+r.status));return d;
+}
+async function loadHints(){
+if(!base()||!scene)return;
+const s=scene;
+try{const d=await jsonPost('/api/help',{scene:{no:s.no,place:s.de,action:'',de:'Die Personen sind '+s.de},base_suggestions:baseHints(s).map(x=>x.de)});
+if(scene===s&&Array.isArray(d.suggestions)&&d.suggestions.length)renderHints('suggestions',d.suggestions.map(x=>typeof x==='string'?{de:x,sr:''}:x));}catch(e){}
+}
+function stopAndClear(){
+if(recorder&&recorder.state!=='inactive'){recorder.onstop=null;try{recorder.stop();}catch(e){}}
+if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}
+recording=false;recorder=null;$('stop').disabled=true;$('micTop').classList.remove('active');
+}
+async function startRecording(){
+if(recording||page!==3)return;
+if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia||!window.MediaRecorder){setStatus('Mikrofon nije podržan u ovom pregledaču; napiši opis ručno.','err');return;}
+try{
+stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
+if(page!==3){stopAndClear();return;}
+const opts={};for(const mime of ['audio/webm;codecs=opus','audio/mp4','audio/webm','audio/ogg']){if(MediaRecorder.isTypeSupported(mime)){opts.mimeType=mime;break;}}
+parts=[];recorded=null;recorder=new MediaRecorder(stream,opts);
+recorder.ondataavailable=e=>{if(e.data&&e.data.size)parts.push(e.data);};
+recorder.onstop=async()=>{
+recording=false;$('stop').disabled=true;$('micTop').classList.remove('active');
+if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}
+recorded=new Blob(parts,{type:recorder.mimeType||'audio/webm'});
+if(recorded.size){setStatus('Snimanje završeno. Učitavam izgovoreni odgovor...','live');await transcribe();}
+else setStatus('Nema snimljenog govora. Pokušaj ponovo.','err');
+};
+recorder.start();recording=true;$('stop').disabled=false;$('micTop').classList.add('active');
+setStatus('● Snimanje je uključeno. Govori na nemačkom. Kada završiš, pritisni „Završi snimanje”.','live');
+}catch(e){setStatus('Mikrofon nije dostupan. Dozvoli pristup mikrofonu ili napiši odgovor ručno.','err');}
+}
+function stopRecording(){if(recorder&&recording){try{recorder.stop();}catch(e){setStatus('Snimanje nije zaustavljeno.','err');}}}
+async function transcribe(){
+if(!base()){setStatus('Snimak je sačuvan, ali za automatski prepis moraš povezati OpenAI server u podešavanjima.','err');return;}
+try{
+const form=new FormData();const type=recorded.type||'audio/webm';const ext=type.includes('mp4')?'m4a':type.includes('ogg')?'ogg':'webm';
+form.append('audio',recorded,'odgovor.'+ext);
+const r=await fetch(base()+'/api/transcribe',{method:'POST',headers:headers(),body:form});
+const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.error||('HTTP '+r.status));
+$('speechText').value=d.text||'';setStatus('Govor je pretvoren u tekst. Pritisni „Proveri i ispravi”.','live');
+if((d.text||'').trim())translate(d.text);
+}catch(e){setStatus('AI prepis nije dostupan: '+e.message,'err');}
+}
+async function translate(text){
+if(!base()||!text.trim())return;
+try{const d=await jsonPost('/api/translate',{text});if(d.translation_sr){$('translationText').textContent=d.translation_sr;$('translation').hidden=false;}}catch(e){}
+}
+function addPairs(id,pairs){
+const root=$(id);root.replaceChildren();(pairs||[]).forEach(x=>{const e=document.createElement('div');e.className='pair';
+const de=document.createElement('div'),sr=document.createElement('div');de.className='de';sr.className='sr';
+de.textContent=x.de||'';sr.textContent=x.sr||'';e.append(de,sr);root.append(e);});
+}
+async function check(){
+if(recording){alertMsg('Prvo završi snimanje.');return;}
+const txt=$('speechText').value.trim();if(txt.length<5){alertMsg('Izgovori ili napiši bar jednu rečenicu.');return;}
+if(!base()){alertMsg('Za proveru i prevod poveži OpenAI server sa početne strane.');return;}
+if(busy)return;busy=true;$('check').disabled=true;$('check').textContent='⏳ Proveravam...';
+try{
+const d=await jsonPost('/api/review',{text:txt,scene:{no:scene.no,place:scene.de,action:'',de:'Die Personen sind '+scene.de+'.'}});
+$('said').textContent=txt;$('corrected').textContent=d.corrected_text||txt;$('feedback').textContent=d.feedback_sr||'';
+addPairs('saidTranslations',d.student_sentence_translations);
+addPairs('correctedTranslations',d.corrected_sentence_translations);
+$('errors').replaceChildren();(d.errors||[]).forEach(x=>{const p=document.createElement('p');p.textContent='• '+(typeof x==='string'?x:(x.explanation_sr||x.explanation||''));$('errors').append(p);});
+addPairs('newHints',(d.suggestions||[]).map(x=>typeof x==='string'?{de:x,sr:''}:x));
+show(4);
+}catch(e){setStatus('Provera nije uspela: '+e.message,'err');alertMsg('Proveri AI server u podešavanjima.');}
+finally{busy=false;$('check').disabled=false;$('check').textContent='✓ Proveri i ispravi';}
+}
+function say(t){if(!t.trim()){alertMsg('Nema teksta za slušanje.');return;}if(!('speechSynthesis' in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='de-DE';u.rate=.87;const vs=speechSynthesis.getVoices();u.voice=vs.find(x=>x.lang.toLowerCase().startsWith('de'))||null;speechSynthesis.speak(u);}
+function goBack(){if(page===4)show(3);else if(page===3){stopAndClear();show(2);}else if(page===2)show(1);else if(page===1)show(0);}
+function openSettings(){$('serverUrl').value=backend;$('accessCode').value=code;$('connectionStatus').textContent='';$('settings').hidden=false;}
+$('heroPic').src=scenes[24]?.img||'';
+$('start').onclick=()=>{shuffle();show(1);};
+$('shuffle').onclick=shuffle;
+$('hintsToggle').onclick=()=>setHintsOpen($('suggestions').hidden);
+$('back').onclick=goBack;
+$('chooseAgain').onclick=()=>show(1);
+$('describe').onclick=()=>{show(3);startRecording();};
+$('micTop').onclick=()=>{if(recording)stopRecording();else startRecording();};
+$('stop').onclick=stopRecording;
+$('listen').onclick=()=>say($('speechText').value.trim()||'');
+$('check').onclick=check;
+$('speakCorrection').onclick=()=>say($('corrected').textContent||'');
+$('retry').onclick=()=>{$('speechText').value='';$('translation').hidden=true;show(3);startRecording();};
+$('nextPictures').onclick=()=>{shuffle();show(1);};
+$('openSettings').onclick=openSettings;
+$('closeSettings').onclick=()=>$('settings').hidden=true;
+$('settings').onclick=e=>{if(e.target===$('settings'))$('settings').hidden=true;};
+$('saveSettings').onclick=async()=>{
+const url=$('serverUrl').value.trim();
+if(url&&!/^https:\/\/|^http:\/\/localhost(?::\d+)?$/i.test(url)){alertMsg('Server mora početi sa https://');return;}
+backend=url.replace(/\/+$/,'');code=$('accessCode').value.trim();
+localStorage.setItem(baseKey,backend);localStorage.setItem(codeKey,code);
+$('connectionStatus').textContent='Proveravam server...';
+if(!backend){$('connectionStatus').textContent='Unesi URL objavljenog Replit servera koji ima /api/transcribe i /api/review.';return;}
+try{const r=await fetch(base()+'/api/health');if(!r.ok)throw Error('HTTP '+r.status);const d=await r.json();
+$('connectionStatus').textContent=d.ready?'✓ Server je povezan. AI funkcije su spremne.':'Server je dostupan, ali OpenAI API ključ nije postavljen.';}
+catch(e){$('connectionStatus').textContent='Nema veze sa serverom. Proveri adresu i objavu na Replitu.';}
+};
+$('speechText').addEventListener('input',()=>$('translation').hidden=true);
+window.addEventListener('beforeunload',stopAndClear);
+if(scenes.length!==40)alertMsg('Baza slika nije potpuno učitana.');show(0);
+})();
+</script>
+</body></html>
