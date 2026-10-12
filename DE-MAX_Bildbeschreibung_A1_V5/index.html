@@ -87,6 +87,36 @@ h1,h3,p{margin:0}h1{font-size:26px;letter-spacing:-.7px;font-weight:900}p{font-s
 #speechText{min-height:40px}.welHead h1{margin-top:9px}.welHead h3{margin-bottom:5px}
 }
 @media(min-width:600px){.app{border:5px solid #fff;border-radius:20px;height:min(100dvh,850px);margin:0 auto}}
+
+/* V6 — veća slika i pomoć koja se otvara po potrebi */
+#practice{gap:7px;padding:7px 10px calc(8px + env(safe-area-inset-bottom));overflow:hidden}
+#practice .prTitle{flex:none;min-height:30px}
+#practice .prHeading{display:flex;align-items:center;gap:9px}
+#practice .prHeading h1{font-size:21px;line-height:1.1;letter-spacing:-.45px}
+#practice .prHeading .tag{margin:0;flex:none}
+#practice .photoWrap{height:clamp(170px,43dvh,350px);flex:0 1 auto;min-height:0;padding:4px;border-radius:16px}
+#practice .photoWrap img{width:100%;height:100%;object-fit:contain;object-position:center}
+#practice .help{flex:none;min-height:0}
+#practice .helpHead{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:38px;padding:8px 11px;border:0;cursor:pointer;text-align:left;font-size:12px;font-weight:850}
+#practice .helpHead:focus-visible{outline:2px solid #ec2947;outline-offset:-2px}
+#practice .helpArrow{font-size:19px;line-height:1;flex:none}
+#practice #suggestions{max-height:min(25dvh,175px);overflow-y:auto;overscroll-behavior:contain;padding:8px 10px;gap:8px}
+#practice.hints-open .photoWrap{height:clamp(140px,29dvh,260px)}
+#practice .prTextLabel{font-size:11.5px}
+#practice #speechText{flex:1 1 56px;min-height:52px}
+@media(max-height:680px){
+ #practice{gap:5px;padding:6px 8px calc(6px + env(safe-area-inset-bottom))}
+ #practice .photoWrap{height:clamp(140px,39dvh,270px)}
+ #practice.hints-open .photoWrap{height:clamp(110px,25dvh,190px)}
+ #practice .helpHead{min-height:33px;padding:6px 9px;font-size:11px}
+ #practice #suggestions{max-height:22dvh;padding:5px 8px;gap:5px}
+}
+@media(max-height:560px){
+ #practice .photoWrap{height:35dvh}
+ #practice.hints-open .photoWrap{height:22dvh}
+ #practice .status{padding:5px 7px}
+ #practice .controls .bbtn{min-height:36px}
+}
 </style>
 </head>
 <body>
@@ -114,9 +144,9 @@ h1,h3,p{margin:0}h1{font-size:26px;letter-spacing:-.7px;font-weight:900}p{font-s
 <div class="pvActions"><button class="bbtn red" id="describe">Počni opis ›</button><button class="bbtn white" id="chooseAgain">‹ Izaberi drugu sliku</button></div>
 </section>
 <section class="screen" id="practice" hidden>
-<div class="prTitle"><div><span class="tag" id="pracNum">Bild 1</span><h1>Opis slike</h1></div><button class="bbtn white" id="enlarge" style="min-height:31px;padding:4px 8px">⛶</button></div>
+<div class="prTitle"><div class="prHeading"><span class="tag" id="pracNum">Bild 1</span><h1>Opis slike</h1></div><button class="bbtn white" id="enlarge" style="min-height:31px;padding:4px 8px">⛶</button></div>
 <div class="photoWrap"><img id="photo" alt="Fotografija za opis"></div>
-<div class="help"><div class="helpHead">📘 Predložene rečenice kao pomoć</div><div id="suggestions"></div></div>
+<div class="help"><button type="button" class="helpHead" id="hintsToggle" aria-expanded="false" aria-controls="suggestions"><span>📘 Predložene rečenice kao pomoć</span><span class="helpArrow" id="hintsArrow">▾</span></button><div id="suggestions" hidden></div></div>
 <div class="prTextLabel">Tvoj opis na nemačkom</div>
 <div class="controls">
 <button class="bbtn green" id="listen">▶ Slušaj</button>
@@ -188,6 +218,13 @@ de.className='de';sr.className='sr';de.textContent=x.de||'';sr.textContent=x.sr|
 wrap.append(de,sr);h.append(num,wrap);root.append(h);
 });
 }
+function setHintsOpen(open){
+ const body=$('suggestions'),toggle=$('hintsToggle');
+ body.hidden=!open;
+ toggle.setAttribute('aria-expanded',String(open));
+ $('hintsArrow').textContent=open?'▴':'▾';
+ $('practice').classList.toggle('hints-open',open);
+}
 function baseHints(s){
 return [
 {de:'Auf dem Bild sehe ich zwei Personen.',sr:'Na slici vidim dve osobe.'},
@@ -199,7 +236,7 @@ stopAndClear();scene=choices[i];sceneChoice=i+1;recorded=null;
 $('previewImg').src=scene.img;$('photo').src=scene.img;
 $('previewNum').textContent=$('pracNum').textContent=$('resultNum').textContent='Bild '+sceneChoice;
 $('speechText').value='';$('translation').hidden=true;$('translationText').textContent='';
-renderHints('suggestions',baseHints(scene));setStatus('Mikrofon će se uključiti kada pritisneš „Počni opis”.','');
+renderHints('suggestions',baseHints(scene));setHintsOpen(false);setStatus('Mikrofon će se uključiti kada pritisneš „Počni opis”.','');
 show(2);
 loadHints();
 }
@@ -283,6 +320,7 @@ function openSettings(){$('serverUrl').value=backend;$('accessCode').value=code;
 $('heroPic').src=scenes[24]?.img||'';
 $('start').onclick=()=>{shuffle();show(1);};
 $('shuffle').onclick=shuffle;
+$('hintsToggle').onclick=()=>setHintsOpen($('suggestions').hidden);
 $('back').onclick=goBack;
 $('chooseAgain').onclick=()=>show(1);
 $('describe').onclick=()=>{show(3);startRecording();};
