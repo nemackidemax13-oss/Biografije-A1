@@ -207,6 +207,16 @@ h1,h3,p{margin:0}h1{font-size:26px;letter-spacing:-.7px;font-weight:900}p{font-s
  #practice #speechText{min-height:42px}
 }
 
+/* V11 — svi tasteri za izbor sledećih fotografija postaju izrazito plavi */
+#shuffle,#chooseAgain,#nextPictures{
+  background:#0067e6!important;
+  background-image:none!important;
+  color:#ffffff!important;
+  border:2px solid #004db3!important;
+  box-shadow:0 4px 15px #0067e655!important;
+  opacity:1!important;
+}
+#shuffle:active,#chooseAgain:active,#nextPictures:active{background:#004db3!important}
 </style>
 </head>
 <body>
@@ -226,12 +236,12 @@ h1,h3,p{margin:0}h1{font-size:26px;letter-spacing:-.7px;font-weight:900}p{font-s
 <section class="screen" id="choose" hidden>
 <div class="chooseHead"><span class="tag">KORAK 01 / 03</span><h1>Izaberi fotografiju</h1><p>Dodirni jednu od tri ponuđene slike.</p></div>
 <div class="choices" id="choiceList"></div>
-<div class="chooseActions"><button class="bbtn blue" id="shuffle" style="background:#1769c9!important;color:white!important;border-color:#1769c9">↻ Druge 3 slike</button></div>
+<div class="chooseActions"><button class="bbtn blue" id="shuffle" style="background:#0067e6!important;background-image:none!important;color:#ffffff!important;border:2px solid #004db3!important;box-shadow:0 4px 15px #0067e655!important">↻ Druge slike</button></div>
 </section>
 <section class="screen" id="pv" hidden>
 <div class="chooseHead"><span class="tag" id="previewNum">Bild 1</span><h1>Posmatraj fotografiju</h1><p>Obrati pažnju na osobe, mesto i radnju.</p></div>
 <div class="picture"><img id="previewImg" alt="Fotografija za opis"></div>
-<div class="pvActions"><button class="bbtn red" id="describe">Počni opis ›</button><button class="bbtn white" id="chooseAgain">‹ Izaberi drugu sliku</button></div>
+<div class="pvActions"><button class="bbtn red" id="describe">Počni opis ›</button><button class="bbtn blue" id="chooseAgain" style="background:#0067e6!important;background-image:none!important;color:#ffffff!important;border:2px solid #004db3!important;box-shadow:0 4px 15px #0067e655!important">‹ Izaberi drugu sliku</button></div>
 </section>
 <section class="screen" id="practice" hidden>
 <div class="prTitle"><div class="prHeading"><span class="tag" id="pracNum">Bild 1</span><h1>Opis slike</h1></div></div>
@@ -253,7 +263,7 @@ h1,h3,p{margin:0}h1{font-size:26px;letter-spacing:-.7px;font-weight:900}p{font-s
 <div class="resultBox corrected"><strong>✓ Ispravljen nemački</strong><p id="corrected"></p><div id="correctedTranslations"></div></div>
 <div class="resultBox"><strong>💬 Komentar profesora</strong><p id="feedback"></p><div id="errors"></div></div>
 <div class="resultBox"><strong>💡 Dodatne rečenice sa prevodom</strong><div id="newHints"></div></div>
-<div class="resultActions"><button class="bbtn green" id="speakCorrection">▶ Slušaj</button><button class="bbtn white" id="retry">↻ Opet</button><button class="bbtn blue" id="nextPictures" style="background:#1769c9!important;color:white!important;border-color:#1769c9">Druge slike ›</button></div>
+<div class="resultActions"><button class="bbtn green" id="speakCorrection">▶ Slušaj</button><button class="bbtn white" id="retry">↻ Opet</button><button class="bbtn blue" id="nextPictures" style="background:#0067e6!important;background-image:none!important;color:#ffffff!important;border:2px solid #004db3!important;box-shadow:0 4px 15px #0067e655!important">Druge slike ›</button></div>
 </section>
 <div id="toast" role="status"></div>
 </main>
