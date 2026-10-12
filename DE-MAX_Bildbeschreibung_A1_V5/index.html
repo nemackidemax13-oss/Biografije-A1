@@ -117,6 +117,36 @@ h1,h3,p{margin:0}h1{font-size:26px;letter-spacing:-.7px;font-weight:900}p{font-s
  #practice .status{padding:5px 7px}
  #practice .controls .bbtn{min-height:36px}
 }
+
+/* V7 — centriran manji naslov i još veća slika */
+#practice .prTitle{position:relative;min-height:34px;flex:none}
+#practice .prHeading{display:flex;align-items:center;gap:0}
+#practice .prHeading h1{
+  position:absolute;left:50%;top:50%;
+  transform:translate(-50%,-50%);
+  font-size:17px;line-height:1.1;font-weight:850;
+  letter-spacing:-.3px;white-space:nowrap;
+  text-align:center;pointer-events:none
+}
+#practice .prHeading .tag{margin:0;position:relative;z-index:1}
+#practice .photoWrap{
+  height:clamp(182px,47dvh,375px);
+  margin-inline:-5px;padding:2px;
+  border-radius:14px;overflow:hidden
+}
+#practice .photoWrap img{width:100%;height:100%;object-fit:contain}
+#practice.hints-open .photoWrap{height:clamp(145px,31dvh,270px)}
+@media(max-height:680px){
+ #practice .prHeading h1{font-size:16px}
+ #practice .photoWrap{height:clamp(155px,43dvh,300px)}
+ #practice.hints-open .photoWrap{height:clamp(112px,27dvh,200px)}
+}
+@media(max-height:560px){
+ #practice .prHeading h1{font-size:15px}
+ #practice .photoWrap{height:39dvh}
+ #practice.hints-open .photoWrap{height:24dvh}
+}
+
 </style>
 </head>
 <body>
