@@ -217,12 +217,37 @@ h1,h3,p{margin:0}h1{font-size:26px;letter-spacing:-.7px;font-weight:900}p{font-s
   opacity:1!important;
 }
 #shuffle:active,#chooseAgain:active,#nextPictures:active{background:#004db3!important}
+
+/* V12 — crvena navigaciona strelica i plave ikone za izbor fotografija */
+#back{
+  display:grid;place-items:center;
+  width:30px;height:28px;min-height:28px;
+  padding:0;border:1px solid #ffc4d0;
+  border-radius:9px;background:#fff0f3;
+  color:#e91f40!important;
+  box-shadow:0 1px 3px #b6264420;
+}
+#back svg{width:21px;height:21px;display:block;stroke:#e91f40}
+#back:active{background:#ffe0e7;transform:scale(.96)}
+.choice{border:1px solid #c6dcff}
+.choice b{color:#1458b7;font-weight:800}
+.choice b strong{
+  display:grid;place-items:center;
+  min-width:34px;min-height:34px;
+  padding:4px 7px;
+  border-radius:11px;
+  background:#1769e8!important;
+  color:#ffffff!important;
+  box-shadow:0 2px 8px #1769e83d;
+  font-size:20px;line-height:1;
+}
+.choice:active{border-color:#1769e8;background:#f0f6ff}
 </style>
 </head>
 <body>
 <div class="app">
 <header class="top">
-<button class="icon" id="back" aria-label="Nazad" hidden>‹</button>
+<button class="icon" id="back" type="button" aria-label="Nazad" title="Nazad" hidden><svg aria-hidden="true" width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg></button>
 <h2>Usmeni ispit</h2>
 <button class="icon" id="micTop" aria-label="Pokreni mikrofon" title="Mikrofon" hidden>🎙</button>
 </header>
