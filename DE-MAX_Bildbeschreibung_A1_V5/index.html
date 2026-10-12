@@ -242,6 +242,36 @@ h1,h3,p{margin:0}h1{font-size:26px;letter-spacing:-.7px;font-weight:900}p{font-s
   font-size:20px;line-height:1;
 }
 .choice:active{border-color:#1769e8;background:#f0f6ff}
+
+/* V13 — malo šira fotografija tokom opisa (mobilni 9:16) */
+#practice .photoWrap,
+#practice.hints-open .photoWrap{
+  width:calc(100% + 18px);
+  margin-inline:-9px;
+  aspect-ratio:1.22 / 1;
+  height:auto;
+  max-height:56dvh;
+  min-height:0;
+  flex:0 1 auto;
+  padding:0;
+  border-radius:10px;
+  overflow:hidden;
+}
+#practice .photoWrap img{
+  width:120%;
+  min-width:120%;
+  max-width:none;
+  height:100%;
+  flex:0 0 120%;
+  object-fit:contain;
+  object-position:center center;
+}
+@media(max-height:680px){
+  #practice .photoWrap,#practice.hints-open .photoWrap{max-height:49dvh}
+}
+@media(max-height:560px){
+  #practice .photoWrap,#practice.hints-open .photoWrap{max-height:43dvh}
+}
 </style>
 </head>
 <body>
