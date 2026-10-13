@@ -608,6 +608,18 @@ h1,h3,p{margin:0}h1{font-size:26px;letter-spacing:-.7px;font-weight:900}p{font-s
 @media(max-height:520px){
   #wel .hero img{max-height:30dvh}
 }
+
+/* V26 — crveni naslovi izbora i pregleda; čitljiva crna instrukcija */
+#choose .chooseHead h1,
+#pv .chooseHead h1 {
+  color:#e91f40;
+}
+#pv .chooseHead p {
+  color:#111;
+  font-weight:850;
+  font-size:14px;
+  line-height:1.35;
+}
 </style>
 </head>
 <body>
@@ -625,7 +637,7 @@ h1,h3,p{margin:0}h1{font-size:26px;letter-spacing:-.7px;font-weight:900}p{font-s
 <div class="welFoot"><div class="facts"><span>✦ 40 slika</span><span>◉ Prevod</span><span>✓ Provera</span></div><button class="bbtn red" id="start">Započni vežbu →</button><small>Mobilni prikaz 9:16 · Nemački A1</small><button class="linklike settingsGear" id="openSettings" type="button" aria-label="Podešavanja AI veze" title="Podešavanja AI veze">⚙</button></div>
 </section>
 <section class="screen" id="choose" hidden>
-<div class="chooseHead"><h1>Izaberi fotografiju</h1><p>Dodirni jednu od tri ponuđene slike.</p></div>
+<div class="chooseHead"><h1>Izaberite fotografiju</h1><p>Dodirni jednu od tri ponuđene slike.</p></div>
 <div class="choices" id="choiceList"></div>
 <div class="chooseActions"><button class="bbtn blue" id="shuffle" style="background:#0067e6!important;background-image:none!important;color:#ffffff!important;border:2px solid #004db3!important;box-shadow:0 4px 15px #0067e655!important">↻ Druge slike</button></div>
 </section>
