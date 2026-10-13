@@ -579,6 +579,18 @@ h1,h3,p{margin:0}h1{font-size:26px;letter-spacing:-.7px;font-weight:900}p{font-s
   font-weight:850;
   line-height:1.35;
 }
+
+/* V24 — samo malo veća fotografija bez DE zastavice i ukrasnih kvadratića */
+#wel .hero img{
+  width:min(95%,375px);
+  max-height:min(38dvh,310px);
+}
+@media(max-height:680px){
+  #wel .hero img{max-height:32dvh}
+}
+@media(max-height:520px){
+  #wel .hero img{max-height:28dvh}
+}
 </style>
 </head>
 <body>
@@ -592,7 +604,7 @@ h1,h3,p{margin:0}h1{font-size:26px;letter-spacing:-.7px;font-weight:900}p{font-s
 <main class="content">
 <section class="screen" id="wel">
 <div class="welHead"><img class="welLogo" src="data:image/webp;base64,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" alt="DE-MAX Tutin logo"><div class="eyebrow">A1 NIVO</div><h1>Opis slike<em>.</em></h1><p>Izaberi fotografiju, opiši je na nemačkom, poslušaj svoj odgovor i vežbaj uz prevod i ispravku.</p></div>
-<div class="hero"><img id="heroPic" alt="Dve osobe u parku"><span class="heroSpark" aria-hidden="true">✦</span><span class="heroFlag" role="img" aria-label="Nemačka zastava">🇩🇪</span></div>
+<div class="hero"><img id="heroPic" alt="Dve osobe u parku"></div>
 <div class="welFoot"><div class="facts"><span>✦ 40 slika</span><span>◉ Prevod</span><span>✓ Provera</span></div><button class="bbtn red" id="start">Započni vežbu →</button><small>Mobilni prikaz 9:16 · Nemački A1</small><button class="linklike settingsGear" id="openSettings" type="button" aria-label="Podešavanja AI veze" title="Podešavanja AI veze">⚙</button></div>
 </section>
 <section class="screen" id="choose" hidden>
