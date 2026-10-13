@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="sr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DE-MAX • Almina – izgovor 19 tema</title><style>:root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#182d48;background:#f1f6fd}*{box-sizing:border-box}body{margin:0}.container{max-width:780px;margin:auto;padding:20px 14px 50px}header{background:linear-gradient(130deg,#0d4c9d,#1272d3);color:white;border-radius:22px;padding:23px 20px;margin-bottom:17px;box-shadow:0 12px 25px #12508c26}h1{font-size:25px;margin:2px 0 7px}.subtitle{opacity:.94;margin:0}.controls{display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin-top:18px}select,button{font:inherit;border-radius:12px;padding:11px 14px;border:1px solid #c9d9ed;background:white;color:#16375f}button{cursor:pointer;font-weight:650}button.primary{background:#1061bd;color:white;border-color:#1061bd}button.stop{color:#a1252e}.notice{font-size:13px;color:#395777;margin:12px 2px 20px}section{border:1px solid #d8e3f0;background:white;border-radius:18px;margin:12px 0;padding:17px;box-shadow:0 3px 12px #0b37650b}h2{font-size:19px;margin:0 0 10px;color:#0e4e9e}.sentence{font-size:17px;line-height:1.75;margin:0 0 8px;border-radius:9px;padding:5px 8px;cursor:pointer}.translation{display:block;color:#bd2339;font-family:"Trebuchet MS", "Segoe UI",sans-serif;font-size:13.5px;font-weight:500;line-height:1.5;letter-spacing:.05px;margin-top:1px}.sentence.active{background:#fff1e7;outline:2px solid #ff7639}.actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}.actions button{padding:9px 11px;font-size:14px}.footer{color:#526c88;text-align:center;font-size:13px;margin:25px 0}.chip{display:inline-block;padding:3px 9px;border-radius:30px;background:#e5f1ff;font-size:13px;font-weight:700;color:#1264b5}button:focus-visible,select:focus-visible,.sentence:focus-visible{outline:3px solid #ff9b44}</style></head><body><main class="container"><header><div class="chip">DE-MAX • A1</div><h1>Almina – vežba nemačkog izgovora</h1><p class="subtitle">Biografija + svih 19 tema • slušaj rečenicu po rečenicu</p><div class="controls"><label for="speed">Brzina:</label><select id="speed"><option value="0.7">Sporo (0,7×)</option><option value="0.88" selected>Polako (0,88×)</option><option value="1">Normalno (1×)</option></select><button class="stop" id="stop">■ Zaustavi</button></div></header><p class="notice" id="status">Pritisni „Slušaj temu“ ili dodirni rečenicu da čuješ izgovor. Za glas je potreban pregledač koji podržava nemački govor.</p><div id="content"></div><p class="footer">DE-MAX • Vežba izgovora za A1 • izgovor generiše glas telefona ili računara</p></main><script>
+const topics = [
+ [
+  "Biografie – Almina",
+  [
+   "Guten Tag.",
+   "Mein Name ist Almina.",
+   "Ich bin 21 Jahre alt.",
+   "Ich komme aus Serbien, aus Tutin.",
+   "Ich bin verheiratet.",
+   "Ich wohne in Tutin."
+  ]
+ ],
+ [
+  "1. Familie",
+  [
+   "Mein Mann heißt Semin.",
+   "Er ist 30 Jahre alt.",
+   "Er lebt in Goslar in Deutschland.",
+   "Er arbeitet auch in Goslar.",
+   "Ich wohne in Tutin.",
+   "Ich habe keine Kinder."
+  ]
+ ],
+ [
+  "2. Hobbys",
+  [
+   "Meine Hobbys sind Kochen und Spazierengehen.",
+   "Am Abend höre ich gern Musik.",
+   "Ich verbringe gern Zeit mit meinen Freundinnen."
+  ]
+ ],
+ [
+  "3. Lieblingsessen",
+  [
+   "Ich esse gern Reis und Gemüse.",
+   "Am liebsten esse ich Pizza.",
+   "Ich koche auch gern zu Hause."
+  ]
+ ],
+ [
+  "4. Lieblingsgetränk",
+  [
+   "Am Morgen trinke ich gern Tee.",
+   "Ich trinke auch viel Wasser.",
+   "Manchmal trinke ich Kaffee."
+  ]
+ ],
+ [
+  "5. Sprachen",
+  [
+   "Ich lerne Deutsch online.",
+   "Ich spreche schon ein bisschen Deutsch.",
+   "Deutsch ist für mich wichtig.",
+   "Ich übe jeden Tag neue Wörter."
+  ]
+ ],
+ [
+  "6. Freizeit",
+  [
+   "In meiner Freizeit sehe ich fern.",
+   "Oft telefoniere ich mit meinem Mann.",
+   "Ich gehe auch gern spazieren."
+  ]
+ ],
+ [
+  "7. Sport",
+  [
+   "Ich gehe gern spazieren.",
+   "Manchmal mache ich Sport zu Hause.",
+   "Sport ist gesund."
+  ]
+ ],
+ [
+  "8. Musik",
+  [
+   "Ich höre jeden Tag Musik.",
+   "Ich mag ruhige Musik.",
+   "Beim Kochen höre ich oft Musik."
+  ]
+ ],
+ [
+  "9. Bücher",
+  [
+   "Ich lese gern kurze Texte auf Deutsch.",
+   "Ich habe ein Deutschbuch.",
+   "Mit dem Buch lerne ich neue Wörter."
+  ]
+ ],
+ [
+  "10. Lieblingskleidung",
+  [
+   "Ich trage gern Jeans und T-Shirts.",
+   "Im Winter trage ich eine warme Jacke.",
+   "Ich mag bequeme Kleidung."
+  ]
+ ],
+ [
+  "11. Freunde",
+  [
+   "Ich habe gute Freundinnen in Tutin.",
+   "Wir trinken manchmal zusammen Kaffee.",
+   "Meine Freundinnen sind sehr nett."
+  ]
+ ],
+ [
+  "12. Urlaub",
+  [
+   "Im Sommer fahre ich gern ans Meer.",
+   "Ich mag die Sonne und den Strand.",
+   "Ich möchte mit meinem Mann Urlaub machen."
+  ]
+ ],
+ [
+  "13. Was ich gerne mache",
+  [
+   "Ich koche sehr gern.",
+   "Ich gehe gern einkaufen.",
+   "Am Wochenende telefoniere ich mit Semin."
+  ]
+ ],
+ [
+  "14. Arbeit / Beruf / Job",
+  [
+   "Ich bin Hausfrau.",
+   "Ich arbeite zu Hause.",
+   "Ich putze und koche.",
+   "Ich mache auch die Wäsche."
+  ]
+ ],
+ [
+  "15. Tiere / Haustiere",
+  [
+   "Ich mag Katzen und Hunde.",
+   "Katzen finde ich süß.",
+   "Ich sehe gern Tiere in der Natur."
+  ]
+ ],
+ [
+  "16. Filme",
+  [
+   "Am Abend sehe ich gern Filme.",
+   "Ich mag lustige Filme.",
+   "Manchmal sehe ich einen Film auf dem Handy."
+  ]
+ ],
+ [
+  "17. Lieblingsfarbe",
+  [
+   "Meine Lieblingsfarbe ist Blau.",
+   "Ich mag auch Weiß und Grün.",
+   "Blaue Kleidung finde ich schön."
+  ]
+ ],
+ [
+  "18. Wohnort / Herkunft",
+  [
+   "Ich komme aus Tutin in Serbien.",
+   "Ich wohne jetzt in Tutin.",
+   "Mein Mann Semin lebt in Goslar.",
+   "Goslar liegt in Deutschland.",
+   "Ich möchte meinen Mann besuchen."
+  ]
+ ],
+ [
+  "19. Lieblingslied",
+  [
+   "Ich höre gern verschiedene Lieder.",
+   "Mein Lieblingslied höre ich oft.",
+   "Musik macht mir gute Laune."
+  ]
+ ]
+];
+const translations = [
+ [
+  "Dobar dan.",
+  "Moje ime je Almina.",
+  "Imam 21 godinu.",
+  "Dolazim iz Srbije, iz Tutina.",
+  "Udata sam.",
+  "Živim u Tutinu."
+ ],
+ [
+  "Moj muž se zove Semin.",
+  "On ima 30 godina.",
+  "On živi u Goslaru u Nemačkoj.",
+  "On takođe radi u Goslaru.",
+  "Ja živim u Tutinu.",
+  "Nemam dece."
+ ],
+ [
+  "Moji hobiji su kuvanje i šetnja.",
+  "Uveče rado slušam muziku.",
+  "Volim da provodim vreme sa svojim prijateljicama."
+ ],
+ [
+  "Rado jedem pirinač i povrće.",
+  "Najradije jedem picu.",
+  "Takođe rado kuvam kod kuće."
+ ],
+ [
+  "Ujutru rado pijem čaj.",
+  "Pijem i mnogo vode.",
+  "Ponekad pijem kafu."
+ ],
+ [
+  "Učim nemački onlajn.",
+  "Već govorim malo nemački.",
+  "Nemački mi je važan.",
+  "Svakog dana vežbam nove reči."
+ ],
+ [
+  "U slobodno vreme gledam televiziju.",
+  "Često razgovaram telefonom sa svojim mužem.",
+  "Takođe rado šetam."
+ ],
+ [
+  "Rado šetam.",
+  "Ponekad vežbam kod kuće.",
+  "Sport je zdrav."
+ ],
+ [
+  "Svakog dana slušam muziku.",
+  "Volim mirnu muziku.",
+  "Dok kuvam, često slušam muziku."
+ ],
+ [
+  "Rado čitam kratke tekstove na nemačkom.",
+  "Imam knjigu za nemački jezik.",
+  "Uz tu knjigu učim nove reči."
+ ],
+ [
+  "Rado nosim farmerke i majice.",
+  "Zimi nosim toplu jaknu.",
+  "Volim udobnu odeću."
+ ],
+ [
+  "Imam dobre prijateljice u Tutinu.",
+  "Ponekad zajedno pijemo kafu.",
+  "Moje prijateljice su veoma ljubazne."
+ ],
+ [
+  "Leti rado putujem na more.",
+  "Volim sunce i plažu.",
+  "Želim da idem na odmor sa svojim mužem."
+ ],
+ [
+  "Veoma rado kuvam.",
+  "Rado idem u kupovinu.",
+  "Vikendom razgovaram telefonom sa Seminom."
+ ],
+ [
+  "Ja sam domaćica.",
+  "Radim kod kuće.",
+  "Čistim i kuvam.",
+  "Takođe perem veš."
+ ],
+ [
+  "Volim mačke i pse.",
+  "Mačke su mi slatke.",
+  "Volim da gledam životinje u prirodi."
+ ],
+ [
+  "Uveče rado gledam filmove.",
+  "Volim smešne filmove.",
+  "Ponekad gledam film na telefonu."
+ ],
+ [
+  "Moja omiljena boja je plava.",
+  "Volim i belu i zelenu.",
+  "Plava odeća mi je lepa."
+ ],
+ [
+  "Dolazim iz Tutina u Srbiji.",
+  "Sada živim u Tutinu.",
+  "Moj muž Semin živi u Goslaru.",
+  "Goslar se nalazi u Nemačkoj.",
+  "Želim da posetim svog muža."
+ ],
+ [
+  "Rado slušam različite pesme.",
+  "Svoju omiljenu pesmu često slušam.",
+  "Muzika me oraspoloži."
+ ]
+];
+const content=document.getElementById('content'), status=document.getElementById('status');let active=null,run=0;let voice=null;
+function getVoice(){const a=speechSynthesis.getVoices();return a.find(v=>v.lang.toLowerCase().startsWith('de')&&/google|microsoft|anna|katja/i.test(v.name))||a.find(v=>v.lang.toLowerCase().startsWith('de'))||null}
+if('speechSynthesis' in window){speechSynthesis.onvoiceschanged=()=>voice=getVoice();voice=getVoice()}else{status.textContent='Ovaj pregledač ne podržava čitanje naglas. Pokušaj Chrome ili Edge.'}
+function clearActive(){document.querySelectorAll('.sentence.active').forEach(x=>x.classList.remove('active'))}
+function stop(){run++;if('speechSynthesis' in window)speechSynthesis.cancel();clearActive();status.textContent='Čitanje zaustavljeno.'}
+document.getElementById('stop').onclick=stop;
+function speakOne(t,s,token){return new Promise(resolve=>{if(!('speechSynthesis' in window)||token!==run){resolve();return}clearActive();let el=document.getElementById('s-'+t+'-'+s);if(el){el.classList.add('active');el.scrollIntoView({block:'nearest',behavior:'smooth'})}let utter=new SpeechSynthesisUtterance(topics[t][1][s].replaceAll('…',''));utter.lang='de-DE';utter.rate=Number(document.getElementById('speed').value);utter.pitch=1;voice=getVoice();if(voice)utter.voice=voice;let completed=false;function done(){if(!completed){completed=true;resolve()}}utter.onend=done;utter.onerror=done;status.textContent='Čitam: '+topics[t][0];speechSynthesis.speak(utter)})}
+async function play(t,s,all){stop();const token=run;let end=all?topics[t][1].length:s+1;for(let i=s;i<end;i++){if(token!==run)return;await speakOne(t,i,token)}if(token===run){clearActive();status.textContent='Čitanje završeno. Izaberi sledeću temu.'}}
+for(let t=0;t<topics.length;t++){let sec=document.createElement('section'),title=document.createElement('h2');title.textContent=topics[t][0];sec.appendChild(title);topics[t][1].forEach((sentence,s)=>{let p=document.createElement('p');p.className='sentence';p.id='s-'+t+'-'+s;p.tabIndex=0;p.title='Pritisni da čuješ ovu rečenicu';p.textContent=sentence;let tr=document.createElement('span');tr.className='translation';tr.textContent=translations[t][s];p.appendChild(tr);p.onclick=()=>play(t,s,false);p.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();play(t,s,false)}};sec.appendChild(p)});let actions=document.createElement('div');actions.className='actions';let btn=document.createElement('button');btn.className='primary';btn.textContent='▶ Slušaj celu temu';btn.onclick=()=>play(t,0,true);actions.appendChild(btn);let rep=document.createElement('button');rep.textContent='↻ Ponovi od početka';rep.onclick=()=>play(t,0,true);actions.appendChild(rep);sec.appendChild(actions);content.appendChild(sec)}
+</script></body></html>
