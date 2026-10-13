@@ -591,6 +591,23 @@ h1,h3,p{margin:0}h1{font-size:26px;letter-spacing:-.7px;font-weight:900}p{font-s
 @media(max-height:520px){
   #wel .hero img{max-height:28dvh}
 }
+
+/* V25 — šira i blago veća početna fotografija koja popunjava okvir */
+#wel .hero img{
+  box-sizing:border-box;
+  width:min(100%,410px);
+  max-width:100%;
+  height:100%;
+  max-height:min(41dvh,335px);
+  object-fit:cover;
+  object-position:center 30%;
+}
+@media(max-height:680px){
+  #wel .hero img{max-height:35dvh}
+}
+@media(max-height:520px){
+  #wel .hero img{max-height:30dvh}
+}
 </style>
 </head>
 <body>
