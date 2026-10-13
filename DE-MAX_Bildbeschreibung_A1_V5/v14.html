@@ -290,6 +290,72 @@ h1,h3,p{margin:0}h1{font-size:26px;letter-spacing:-.7px;font-weight:900}p{font-s
   object-fit:contain;
   object-position:center center;
 }
+
+/* V15 — plava Bild oznaka, manja slika i čitljiviji govor učenika */
+#previewNum,#pracNum,#resultNum{
+  background:#1769c9!important;
+  border:1px solid #0f56a8!important;
+  color:#fff!important;
+  box-shadow:0 2px 7px #1769c929;
+}
+#practice .photoWrap,#practice.hints-open .photoWrap{
+  width:calc(100% + 10px);
+  margin-inline:-5px;
+  aspect-ratio:1.43 / 1;
+  height:auto;
+  max-height:39dvh;
+  min-height:0;
+  flex:0 1 auto;
+}
+#practice .photoWrap img{
+  width:100%;min-width:100%;max-width:100%;
+  height:100%;flex:0 0 100%;object-fit:contain;
+}
+#practice .prTextLabel{font-size:12.5px}
+#practice #speechText{
+  flex:1 1 140px;
+  min-height:118px;
+  font-size:17px;
+  line-height:1.48;
+  padding:12px 13px;
+  color:#102f63;
+  border:2px solid #b6cef0;
+  border-radius:12px;
+  overflow-y:auto;
+  caret-color:#1769c9;
+}
+#practice #speechText::placeholder{font-size:14px;line-height:1.4;color:#7387a2}
+#practice .controls{grid-template-columns:.8fr 1.1fr 1.25fr;gap:5px}
+#practice .controls .bbtn{
+  min-height:35px;
+  padding:4px 3px;
+  font-size:10.2px;
+  line-height:1.12;
+  border-radius:9px;
+  box-shadow:none;
+}
+#listen,#speakCorrection{
+  background:#1769c9!important;
+  background-image:none!important;
+  border-color:#1769c9!important;
+  color:#fff!important;
+}
+#check{
+  background:#14a667!important;
+  background-image:none!important;
+  border:1px solid #118352!important;
+  color:#fff!important;
+  box-shadow:0 2px 7px #14a66722!important;
+}
+@media(max-height:680px){
+  #practice .photoWrap,#practice.hints-open .photoWrap{max-height:36dvh}
+  #practice #speechText{min-height:90px;font-size:16px;padding:9px 11px}
+  #practice .controls .bbtn{min-height:33px;font-size:9.8px;padding:4px 2px}
+}
+@media(max-height:560px){
+  #practice .photoWrap,#practice.hints-open .photoWrap{max-height:31dvh}
+  #practice #speechText{min-height:70px;font-size:16px}
+}
 </style>
 </head>
 <body>
