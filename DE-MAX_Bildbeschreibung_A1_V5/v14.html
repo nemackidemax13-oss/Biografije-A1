@@ -359,6 +359,70 @@ h1,h3,p{margin:0}h1{font-size:26px;letter-spacing:-.7px;font-weight:900}p{font-s
 
 /* V16 — slika šira levo i desno, bez promene njene visine i ostalih elemenata */
 #practice .photoWrap img{object-fit:fill;}
+
+/* V17 — fotografija od vrha, Bild broj uz govor, sačuvane prethodne funkcije */
+#practice{
+  gap:6px;
+  padding:0 6px calc(7px + env(safe-area-inset-bottom));
+}
+#practice .photoWrap,
+#practice.hints-open .photoWrap{
+  width:calc(100% + 12px);
+  margin:0 -6px;
+  aspect-ratio:1.22 / 1;
+  height:auto;
+  max-height:43dvh;
+  min-height:0;
+  flex:0 1 auto;
+  padding:0;
+  border-top:0;
+  border-radius:0 0 12px 12px;
+}
+#practice .photoWrap img{
+  width:100%;
+  min-width:100%;
+  max-width:100%;
+  height:100%;
+  object-fit:fill;
+  border-radius:0 0 12px 12px;
+}
+#practice .speechHead{
+  display:flex;
+  flex:none;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  min-height:23px;
+}
+#practice .speechHead .prTextLabel{
+  flex:1;
+  font-size:12.5px;
+  font-weight:850;
+}
+#practice #speechNum{
+  position:static;
+  flex:none;
+  margin:0;
+  padding:4px 8px;
+  background:#1769c9!important;
+  color:#fff!important;
+  border:1px solid #0f56a8!important;
+  box-shadow:0 2px 7px #1769c929;
+  font-size:10px;
+  line-height:1.1;
+}
+@media(max-height:680px){
+  #practice .photoWrap,
+  #practice.hints-open .photoWrap{
+    max-height:39dvh;
+  }
+}
+@media(max-height:560px){
+  #practice .photoWrap,
+  #practice.hints-open .photoWrap{
+    max-height:34dvh;
+  }
+}
 </style>
 </head>
 <body>
@@ -386,10 +450,9 @@ h1,h3,p{margin:0}h1{font-size:26px;letter-spacing:-.7px;font-weight:900}p{font-s
 <div class="pvActions"><button class="bbtn red" id="describe">Počni opis ›</button><button class="bbtn blue" id="chooseAgain" style="background:#0067e6!important;background-image:none!important;color:#ffffff!important;border:2px solid #004db3!important;box-shadow:0 4px 15px #0067e655!important">‹ Izaberi drugu sliku</button></div>
 </section>
 <section class="screen" id="practice" hidden>
-<div class="prTitle"><div class="prHeading"><span class="tag" id="pracNum">Bild 1</span><h1>Opis slike</h1></div></div>
 <div class="photoWrap"><img id="photo" alt="Fotografija za opis"></div>
 <div class="help"><button type="button" class="helpHead" id="hintsToggle" aria-expanded="false" aria-controls="suggestions"><span>📘 Predložene rečenice kao pomoć</span><span class="helpArrow" id="hintsArrow">▾</span></button><div id="suggestions" hidden></div></div>
-<div class="prTextLabel">Tvoj opis na nemačkom</div>
+<div class="speechHead"><div class="prTextLabel">Tvoj opis slike na nemačkom</div><span class="tag speechNum" id="speechNum">Bild 1</span></div>
 <div class="controls">
 <button class="bbtn green" id="listen">▶ Slušaj</button>
 <button class="bbtn red" id="stop" disabled>■ Završi snimanje</button>
@@ -476,7 +539,7 @@ return [
 function select(i){
 stopAndClear();scene=choices[i];sceneChoice=i+1;recorded=null;
 $('previewImg').src=scene.img;$('photo').src=scene.img;
-$('previewNum').textContent=$('pracNum').textContent=$('resultNum').textContent='Bild '+sceneChoice;
+$('previewNum').textContent=$('speechNum').textContent=$('resultNum').textContent='Bild '+sceneChoice;
 $('speechText').value='';$('translation').hidden=true;$('translationText').textContent='';
 renderHints('suggestions',baseHints(scene));setHintsOpen(false);setStatus('Mikrofon će se uključiti kada pritisneš „Počni opis”.','');
 show(2);
