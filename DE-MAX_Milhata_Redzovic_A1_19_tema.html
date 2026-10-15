@@ -24,12 +24,12 @@ button:focus-visible,select:focus-visible,.sentence:focus-visible{outline:3px so
 .info{display:flex;gap:9px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin:14px 2px 4px}
 .info .counter{font-size:12px;font-weight:800;color:#165eaa;background:#e1efff;border-radius:20px;padding:6px 11px}
 .status{flex:1;font-size:13px;line-height:1.55;color:#395777;margin:0}
-.example{font-size:12px;color:#536d86;margin:5px 4px 18px;line-height:1.5}
+
 .jump{display:flex;align-items:center;gap:9px;margin:0 2px 17px}.jump label{font-size:13px;font-weight:800;color:#244e7d}.jump select{flex:1;min-width:0;max-width:none}
 section{border:1px solid #dce7f3;background:white;border-radius:18px;margin:13px 0;padding:17px 15px 15px;box-shadow:0 4px 14px #0b37650c;scroll-margin-top:10px}
 h2{font-size:18px;margin:0 0 10px;color:#1052a1;line-height:1.3}
-.sentence{font-size:16.7px;line-height:1.55;margin:0 0 6px;border-radius:9px;padding:7px 8px;cursor:pointer;border:2px solid transparent;transition:background .12s,border-color .12s}
-.sentence:hover{background:#f5f9ff}.sentence.active{background:#fff4ee;border-color:#e94c39}
+.sentence{font-size:16.7px;line-height:1.55;margin:0 0 6px;border-radius:9px;padding:7px 8px;border:2px solid transparent;transition:background .12s,border-color .12s}.sentence-line{display:flex;align-items:center;justify-content:space-between;gap:10px}.sentence-line .de{flex:1;min-width:0}.speaker-btn{flex:0 0 42px;display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;min-height:42px;border:1px solid #bfd6f0;border-radius:12px;padding:0;background:#e9f3ff;color:#125baa;font-size:21px;line-height:1}.speaker-btn:hover{background:#d7eafe}.speaker-btn:active{background:#bddbfb;transform:scale(.96)}.sentence.active .speaker-btn{background:#fff;color:#bd412b;border-color:#f2ad9e}
+.sentence.active{background:#fff4ee;border-color:#e94c39}
 .de{display:block;font-weight:600;color:#213650}.translation{display:block;font-size:13px;font-weight:500;line-height:1.55;color:#b42643;margin-top:2px}
 .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}.actions button{font-size:13.5px;padding:10px 12px;min-height:42px}
 .footer{text-align:center;color:#60788f;font-size:12px;margin:23px 0 6px}
@@ -46,7 +46,6 @@ h2{font-size:18px;margin:0 0 10px;color:#1052a1;line-height:1.3}
 <button class="stop" id="stop" type="button">■ Zaustavi</button></div>
 </header>
 <div class="info"><p class="status" id="status" aria-live="polite">Dodirni nemačku rečenicu ili pritisni „Slušaj celu temu“ za izgovor.</p><span class="counter" id="counter"></span></div>
-<p class="example">Napomena: podaci o porodici su prema dostavljenim informacijama. Odgovori o hobijima, hrani, muzici i drugim ukusima su predlozi za A1 vežbu i mogu se prilagoditi.</p>
 <div class="jump"><label for="goto">Izaberi temu:</label><select id="goto" aria-label="Pređi na temu"></select></div>
 <div id="content"></div>
 <p class="footer">DE-MAX • A1 • Izgovor putem govorne funkcije telefona ili računara</p>
@@ -90,9 +89,13 @@ const opt=document.createElement('option');opt.value='topic-'+t;opt.textContent=
 const sec=document.createElement('section');sec.id='topic-'+t;
 const h2=document.createElement('h2');h2.textContent=topic.title;sec.appendChild(h2);
 topic.rows.forEach((row,i)=>{
-const p=document.createElement('div');p.className='sentence';p.id='s-'+t+'-'+i;p.tabIndex=0;p.setAttribute('role','button');p.setAttribute('aria-label','Slušaj: '+row.de);
-p.innerHTML='';const de=document.createElement('span');de.className='de';de.textContent=row.de;const sr=document.createElement('span');sr.className='translation';sr.textContent=row.sr;
-p.append(de,sr);p.addEventListener('click',()=>play(t,i,false));p.addEventListener('keydown',ev=>{if(ev.key==='Enter'||ev.key===' '){ev.preventDefault();play(t,i,false)}});sec.appendChild(p);
+const p=document.createElement('div');p.className='sentence';p.id='s-'+t+'-'+i;
+const line=document.createElement('div');line.className='sentence-line';
+const de=document.createElement('span');de.className='de';de.textContent=row.de;
+const speaker=document.createElement('button');speaker.type='button';speaker.className='speaker-btn';speaker.textContent='🔊';speaker.title='Slušaj nemačku rečenicu';speaker.setAttribute('aria-label','Slušaj nemačku rečenicu: '+row.de);
+speaker.addEventListener('click',()=>play(t,i,false));
+const sr=document.createElement('span');sr.className='translation';sr.textContent=row.sr;
+line.append(de,speaker);p.append(line,sr);sec.appendChild(p);
 });
 const actions=document.createElement('div');actions.className='actions';
 const btn=document.createElement('button');btn.type='button';btn.className='primary';btn.textContent='▶ Slušaj celu temu';btn.addEventListener('click',()=>play(t,0,true));
