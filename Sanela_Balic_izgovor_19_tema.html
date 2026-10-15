@@ -20,12 +20,15 @@ button{cursor:pointer;font-weight:700;touch-action:manipulation}
 button.primary{background:#1061bd;color:white;border-color:#1061bd}
 button.stop{color:#a1252e}
 .notice{font-size:13px;color:#395777;line-height:1.5;margin:13px 3px}
-.example-note{border-left:3px solid #e1a450;background:#fff9ec;border-radius:0 9px 9px 0;padding:9px 11px;margin:10px 2px 18px;font-size:12.5px;line-height:1.5;color:#664c27}
 section{border:1px solid #d8e3f0;background:white;border-radius:18px;margin:12px 0;padding:17px 14px;box-shadow:0 3px 12px #0b37650b}
 h2{font-size:19px;margin:0 0 12px;color:#0e4e9e}
 .sentence{font-size:16.5px;line-height:1.55;margin:0 0 7px;border-radius:9px;padding:6px 8px;cursor:pointer;white-space:normal}
 .sentence:hover{background:#f5f9ff}
-.translation{display:block;color:#bd2339;font-family:"Trebuchet MS","Segoe UI",sans-serif;font-size:13.3px;font-weight:500;line-height:1.5;letter-spacing:.04px;margin-top:2px}
+.de-line{display:flex;align-items:center;gap:9px}
+.de-text{flex:1;min-width:0}
+.sound-btn{flex:0 0 37px;display:inline-flex;align-items:center;justify-content:center;width:37px;height:37px;min-height:37px;border-radius:10px;border:1px solid #b8d7ff;padding:0;background:#e9f3ff;color:#075ab3;font-size:19px;line-height:1}
+.sound-btn:hover,.sound-btn:focus-visible{background:#cce5ff;border-color:#428de2}
+.translation{display:block;color:#bd2339;font-family:"Trebuchet MS","Segoe UI",sans-serif;font-size:13.3px;font-weight:500;line-height:1.5;letter-spacing:.04px;margin-top:2px;padding-left:46px}
 .sentence.active{background:#fff1e7;outline:2px solid #e84d36}
 .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
 .actions button{padding:9px 12px;font-size:14px;flex-grow:1}
@@ -54,7 +57,6 @@ button:focus-visible,select:focus-visible,.sentence:focus-visible{outline:3px so
 </div>
 </header>
 <p class="notice" id="status" aria-live="polite">Dodirni rečenicu ili pritisni „Slušaj celu temu“. Izgovor koristi nemački glas tvog telefona ili računara.</p>
-<p class="example-note"><strong>Napomena:</strong> Podaci o Saneli i porodici uneti su prema dostavljenim informacijama. Rečenice o hobijima, hrani, bojama i drugim ličnim ukusima predstavljaju A1 primere za vežbu i mogu se prilagoditi.</p>
 <div id="content"></div>
 <p class="footer">DE-MAX • A1 – Biografija i 19 tema •  Izgovor se generiše na uređaju. Na telefonu, čitanje se pokreće dodirom.</p>
 </main>
@@ -133,18 +135,28 @@ for(let t=0;t<topics.length;t++){
     const p=document.createElement('p');
     p.className='sentence';
     p.id=`s-${t}-${s}`;
-    p.tabIndex=0;
-    p.setAttribute('role','button');
-    p.setAttribute('aria-label','Poslušaj na nemačkom: '+item.de);
-    p.title='Pritisni da čuješ nemačku rečenicu';
-    p.textContent=item.de;
+    p.title='Dodirni rečenicu ili zvučnik za nemački izgovor';
+    const line=document.createElement('span');
+    line.className='de-line';
+    const speaker=document.createElement('button');
+    speaker.className='sound-btn';
+    speaker.type='button';
+    speaker.textContent='🔊';
+    speaker.setAttribute('aria-label','Poslušaj rečenicu: '+item.de);
+    speaker.title='Poslušaj ovu rečenicu';
+    speaker.addEventListener('click',e=>{e.stopPropagation();play(t,s,false)});
+    const de=document.createElement('span');
+    de.className='de-text';
+    de.textContent=item.de;
+    line.appendChild(speaker);
+    line.appendChild(de);
+    p.appendChild(line);
     const tr=document.createElement('span');
     tr.className='translation';
     tr.textContent=item.sr;
     tr.setAttribute('aria-hidden','true');
     p.appendChild(tr);
     p.addEventListener('click',()=>play(t,s,false));
-    p.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();play(t,s,false)}});
     sec.appendChild(p);
   });
   const actions=document.createElement('div');
