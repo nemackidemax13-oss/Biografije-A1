@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#125cba">
+<title>DE-MAX • Sanela Balic – A1 biografija i 19 tema</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:#182d48;background:#f1f6fd;color-scheme:light}
+*{box-sizing:border-box}
+body{margin:0}
+.container{max-width:780px;margin:0 auto;padding:16px 12px 52px}
+header{background:linear-gradient(130deg,#0d4c9d,#1272d3);color:white;border-radius:20px;padding:22px 18px 19px;box-shadow:0 12px 25px #12508c26}
+h1{font-size:clamp(22px,5vw,27px);line-height:1.2;margin:10px 0 7px}
+.subtitle{font-size:14px;line-height:1.5;opacity:.95;margin:0}
+.chip{display:inline-block;padding:4px 10px;border-radius:30px;background:#e5f1ff;font-size:12px;font-weight:750;color:#1264b5}
+.controls{display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin-top:17px}
+select,button{font:inherit;border-radius:12px;padding:10px 12px;border:1px solid #c9d9ed;background:white;color:#16375f;min-height:43px}
+button{cursor:pointer;font-weight:700;touch-action:manipulation}
+button.primary{background:#1061bd;color:white;border-color:#1061bd}
+button.stop{color:#a1252e}
+.notice{font-size:13px;color:#395777;line-height:1.5;margin:13px 3px}
+.example-note{border-left:3px solid #e1a450;background:#fff9ec;border-radius:0 9px 9px 0;padding:9px 11px;margin:10px 2px 18px;font-size:12.5px;line-height:1.5;color:#664c27}
+section{border:1px solid #d8e3f0;background:white;border-radius:18px;margin:12px 0;padding:17px 14px;box-shadow:0 3px 12px #0b37650b}
+h2{font-size:19px;margin:0 0 12px;color:#0e4e9e}
+.sentence{font-size:16.5px;line-height:1.55;margin:0 0 7px;border-radius:9px;padding:6px 8px;cursor:pointer;white-space:normal}
+.sentence:hover{background:#f5f9ff}
+.translation{display:block;color:#bd2339;font-family:"Trebuchet MS","Segoe UI",sans-serif;font-size:13.3px;font-weight:500;line-height:1.5;letter-spacing:.04px;margin-top:2px}
+.sentence.active{background:#fff1e7;outline:2px solid #e84d36}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.actions button{padding:9px 12px;font-size:14px;flex-grow:1}
+.footer{color:#526c88;text-align:center;font-size:12.5px;line-height:1.5;margin:25px 4px}
+button:focus-visible,select:focus-visible,.sentence:focus-visible{outline:3px solid #ff9b44;outline-offset:2px}
+@media(min-width:600px){.container{padding-top:24px}section{padding:18px}}
+@media(max-width:360px){.actions button{width:100%}.sentence{font-size:16px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<main class="container">
+<header>
+<div class="chip">DE-MAX • A1</div>
+<h1>Sanela Balic – vežba nemačkog izgovora</h1>
+<p class="subtitle">Biografija + svih 19 tema • nemački izgovor i prevod na srpski • slušaj rečenicu po rečenicu</p>
+<div class="controls">
+<label for="speed">Brzina:</label>
+<select id="speed" aria-label="Brzina nemačkog izgovora">
+<option value="0.7">Sporo (0,7×)</option>
+<option value="0.88" selected>Polako (0,88×)</option>
+<option value="1">Normalno (1×)</option>
+<option value="1.15">Brže (1,15×)</option>
+</select>
+<button class="stop" id="stop" type="button">■ Zaustavi</button>
+</div>
+</header>
+<p class="notice" id="status" aria-live="polite">Dodirni rečenicu ili pritisni „Slušaj celu temu“. Izgovor koristi nemački glas tvog telefona ili računara.</p>
+<p class="example-note"><strong>Napomena:</strong> Podaci o Saneli i porodici uneti su prema dostavljenim informacijama. Rečenice o hobijima, hrani, bojama i drugim ličnim ukusima predstavljaju A1 primere za vežbu i mogu se prilagoditi.</p>
+<div id="content"></div>
+<p class="footer">DE-MAX • A1 – Biografija i 19 tema •  Izgovor se generiše na uređaju. Na telefonu, čitanje se pokreće dodirom.</p>
+</main>
+<script>
+'use strict';
+const topics = [{"title":"Biografie – Sanela Balic","sentences":[{"de":"Guten Tag.","sr":"Dobar dan."},{"de":"Mein Name ist Sanela Balic.","sr":"Moje ime je Sanela Balic."},{"de":"Ich bin 38 Jahre alt.","sr":"Imam 38 godina."},{"de":"Ich bin verheiratet.","sr":"Udata sam."},{"de":"Ich bin Hausfrau.","sr":"Domaćica sam."},{"de":"Ich habe sechs Kinder.","sr":"Imam šestoro dece."},{"de":"Ich habe vier Töchter und zwei Söhne.","sr":"Imam četiri ćerke i dva sina."},{"de":"Mein Mann heißt Hasim.","sr":"Moj muž se zove Hasim."},{"de":"Er ist 56 Jahre alt.","sr":"On ima 56 godina."},{"de":"Er ist Bauarbeiter.","sr":"On je građevinski radnik."},{"de":"Mein Mann lebt in Wien, in Österreich.","sr":"Moj muž živi u Beču, u Austriji."},{"de":"Ich lerne Deutsch.","sr":"Učim nemački."},{"de":"Ich möchte gut Deutsch sprechen.","sr":"Želim dobro da govorim nemački."},{"de":"Vielen Dank.","sr":"Hvala vam puno."}]},{"title":"1. Familie","sentences":[{"de":"Meine Familie ist groß.","sr":"Moja porodica je velika."},{"de":"Wir haben sechs Kinder.","sr":"Imamo šestoro dece."},{"de":"Meine Töchter heißen Belkisa, Belma, Amina und Aisa.","sr":"Moje ćerke se zovu Belkisa, Belma, Amina i Aisa."},{"de":"Meine Söhne heißen Ibrahim und Jusuf.","sr":"Moji sinovi se zovu Ibrahim i Jusuf."},{"de":"Belkisa ist 19 Jahre alt.","sr":"Belkisa ima 19 godina."},{"de":"Belma ist 16 Jahre alt.","sr":"Belma ima 16 godina."},{"de":"Amina ist 15 Jahre alt.","sr":"Amina ima 15 godina."},{"de":"Aisa ist 13 Jahre alt.","sr":"Aisa ima 13 godina."},{"de":"Ibrahim ist 7 Jahre alt.","sr":"Ibrahim ima 7 godina."},{"de":"Jusuf ist 5 Jahre alt.","sr":"Jusuf ima 5 godina."},{"de":"Mein Mann heißt Hasim und ist 56 Jahre alt.","sr":"Moj muž se zove Hasim i ima 56 godina."},{"de":"Er lebt in Wien.","sr":"On živi u Beču."},{"de":"Ich liebe meine Familie sehr.","sr":"Mnogo volim svoju porodicu."},{"de":"Meine Kinder sind mir sehr wichtig.","sr":"Moja deca su mi veoma važna."}]},{"title":"2. Hobbys","sentences":[{"de":"Ich habe verschiedene Hobbys.","sr":"Imam različite hobije."},{"de":"Ich koche gern.","sr":"Rado kuvam."},{"de":"Ich gehe gern spazieren.","sr":"Volim da šetam."},{"de":"Manchmal höre ich Musik.","sr":"Ponekad slušam muziku."},{"de":"Meine Familie ist mir sehr wichtig.","sr":"Moja porodica mi je veoma važna."}]},{"title":"3. Lieblingsessen","sentences":[{"de":"Ich esse gern zu Hause.","sr":"Volim da jedem kod kuće."},{"de":"Ich mag Reis, Gemüse und Fleisch.","sr":"Volim pirinač, povrće i meso."},{"de":"Ich koche oft für meine Familie.","sr":"Često kuvam za svoju porodicu."},{"de":"Am Wochenende koche ich gern etwas Besonderes.","sr":"Vikendom rado kuvam nešto posebno."},{"de":"Meine Kinder essen gern zusammen.","sr":"Moja deca vole da jedu zajedno."}]},{"title":"4. Lieblingsgetränk","sentences":[{"de":"Ich trinke gern Wasser.","sr":"Rado pijem vodu."},{"de":"Am Morgen trinke ich oft Tee.","sr":"Ujutru često pijem čaj."},{"de":"Manchmal trinke ich Kaffee.","sr":"Ponekad pijem kafu."},{"de":"Im Sommer trinke ich gern kaltes Wasser.","sr":"Leti rado pijem hladnu vodu."},{"de":"Wasser ist mein Lieblingsgetränk.","sr":"Voda je moje omiljeno piće."}]},{"title":"5. Sprachen","sentences":[{"de":"Ich lerne Deutsch.","sr":"Učim nemački."},{"de":"Deutsch ist eine schöne Sprache.","sr":"Nemački je lep jezik."},{"de":"Ich lerne jeden Tag neue Wörter.","sr":"Svakog dana učim nove reči."},{"de":"Ich übe das Sprechen und das Hören.","sr":"Vežbam govor i slušanje."},{"de":"Ich möchte einfache Gespräche auf Deutsch führen.","sr":"Želim da vodim jednostavne razgovore na nemačkom."}]},{"title":"6. Freizeit","sentences":[{"de":"Ich habe eine große Familie.","sr":"Imam veliku porodicu."},{"de":"In meiner Freizeit bin ich gern mit meinen Kindern zusammen.","sr":"U slobodno vreme volim da budem sa svojom decom."},{"de":"Wir sprechen und lachen viel.","sr":"Mnogo razgovaramo i smejemo se."},{"de":"Manchmal gehen wir zusammen spazieren.","sr":"Ponekad zajedno idemo u šetnju."},{"de":"Am Abend ruhe ich mich gern aus.","sr":"Uveče volim da se odmaram."}]},{"title":"7. Sport","sentences":[{"de":"Ich gehe gern spazieren.","sr":"Volim da šetam."},{"de":"Spazierengehen ist gut für mich.","sr":"Šetnja je dobra za mene."},{"de":"Ich bin oft in Bewegung.","sr":"Često sam u pokretu."},{"de":"Manchmal gehe ich mit meinen Kindern in den Park.","sr":"Ponekad idem sa decom u park."},{"de":"Sport ist gut für die Gesundheit.","sr":"Sport je dobar za zdravlje."}]},{"title":"8. Musik","sentences":[{"de":"Ich höre gern Musik.","sr":"Volim da slušam muziku."},{"de":"Musik macht mir Freude.","sr":"Muzika mi pričinjava radost."},{"de":"Ich höre manchmal Musik beim Kochen.","sr":"Ponekad slušam muziku dok kuvam."},{"de":"Am Abend höre ich gern ruhige Lieder.","sr":"Uveče rado slušam mirne pesme."},{"de":"Meine Kinder mögen auch Musik.","sr":"I moja deca vole muziku."}]},{"title":"9. Bücher","sentences":[{"de":"Ich lese manchmal Bücher.","sr":"Ponekad čitam knjige."},{"de":"Ich lese auch kurze Texte auf Deutsch.","sr":"Čitam i kratke tekstove na nemačkom."},{"de":"Ich lerne gern neue Wörter.","sr":"Volim da učim nove reči."},{"de":"Ein Wörterbuch hilft mir beim Lernen.","sr":"Rečnik mi pomaže pri učenju."},{"de":"Lesen ist gut für mein Deutsch.","sr":"Čitanje je dobro za moj nemački."}]},{"title":"10. Lieblingskleidung","sentences":[{"de":"Ich mag bequeme Kleidung.","sr":"Volim udobnu odeću."},{"de":"Zu Hause trage ich gern bequeme Sachen.","sr":"Kod kuće volim da nosim udobne stvari."},{"de":"Im Winter trage ich eine warme Jacke.","sr":"Zimi nosim toplu jaknu."},{"de":"Im Sommer trage ich leichte Kleidung.","sr":"Leti nosim laganu odeću."},{"de":"Beim Einkaufen sehe ich mir gern Kleidung an.","sr":"U kupovini volim da razgledam odeću."}]},{"title":"11. Freunde","sentences":[{"de":"Freunde sind wichtig.","sr":"Prijatelji su važni."},{"de":"Ich habe gute Freundinnen.","sr":"Imam dobre prijateljice."},{"de":"Wir sprechen gern miteinander.","sr":"Rado razgovaramo jedna s drugom."},{"de":"Manchmal trinken wir zusammen Kaffee.","sr":"Ponekad zajedno pijemo kafu."},{"de":"Ich freue mich über nette Menschen.","sr":"Drago mi je kada sam okružena ljubaznim ljudima."}]},{"title":"12. Urlaub","sentences":[{"de":"Ich mag Urlaub mit meiner Familie.","sr":"Volim odmor sa svojom porodicom."},{"de":"Im Urlaub möchte ich mich erholen.","sr":"Na odmoru želim da se odmorim."},{"de":"Ich fahre gern an schöne Orte.","sr":"Rado putujem na lepa mesta."},{"de":"Ich möchte auch Wien besuchen.","sr":"Želim da posetim i Beč."},{"de":"Dort lebt mein Mann Hasim.","sr":"Tamo živi moj muž Hasim."}]},{"title":"13. Was ich gerne mache","sentences":[{"de":"Ich verbringe gern Zeit mit meiner Familie.","sr":"Volim da provodim vreme sa svojom porodicom."},{"de":"Ich koche gern für meine Kinder.","sr":"Volim da kuvam za svoju decu."},{"de":"Ich spreche gern mit meinen Kindern.","sr":"Volim da razgovaram sa svojom decom."},{"de":"Ich lerne gern Deutsch.","sr":"Volim da učim nemački."},{"de":"Am Abend entspanne ich mich gern.","sr":"Uveče volim da se opustim."}]},{"title":"14. Arbeit / Beruf / Job","sentences":[{"de":"Ich bin Hausfrau.","sr":"Domaćica sam."},{"de":"Ich habe zu Hause viel zu tun.","sr":"Kod kuće imam mnogo obaveza."},{"de":"Ich koche, putze und räume auf.","sr":"Kuvam, čistim i sređujem."},{"de":"Ich kümmere mich um meine Familie.","sr":"Brinem o svojoj porodici."},{"de":"Mein Mann ist Bauarbeiter.","sr":"Moj muž je građevinski radnik."},{"de":"Er lebt in Wien in Österreich.","sr":"On živi u Beču u Austriji."}]},{"title":"15. Tiere / Haustiere","sentences":[{"de":"Ich finde Tiere interessant.","sr":"Životinje su mi zanimljive."},{"de":"Hunde und Katzen sind beliebte Haustiere.","sr":"Psi i mačke su popularni kućni ljubimci."},{"de":"Kinder sehen sich gern Tiere an.","sr":"Deca vole da posmatraju životinje."},{"de":"Im Park kann man oft Vögel sehen.","sr":"U parku se često mogu videti ptice."},{"de":"Tiere brauchen Wasser und Futter.","sr":"Životinjama su potrebni voda i hrana."}]},{"title":"16. Filme","sentences":[{"de":"Ich sehe manchmal Filme.","sr":"Ponekad gledam filmove."},{"de":"Am Abend sehe ich gern fern.","sr":"Uveče volim da gledam televiziju."},{"de":"Ich mag lustige Filme.","sr":"Volim smešne filmove."},{"de":"Meine Kinder sehen gern Kinderfilme.","sr":"Moja deca vole da gledaju dečje filmove."},{"de":"Wir sehen manchmal zusammen einen Film.","sr":"Ponekad zajedno gledamo neki film."}]},{"title":"17. Lieblingsfarbe","sentences":[{"de":"Ich mag viele Farben.","sr":"Volim mnogo boja."},{"de":"Blau und Grün finde ich schön.","sr":"Plavu i zelenu smatram lepim bojama."},{"de":"Im Sommer mag ich helle Farben.","sr":"Leti volim svetle boje."},{"de":"Meine Kinder mögen bunte Sachen.","sr":"Moja deca vole šarene stvari."},{"de":"Jede Farbe ist auf ihre Art schön.","sr":"Svaka boja je lepa na svoj način."}]},{"title":"18. Wohnort / Herkunft","sentences":[{"de":"Mein Mann lebt in Wien.","sr":"Moj muž živi u Beču."},{"de":"Wien liegt in Österreich.","sr":"Beč se nalazi u Austriji."},{"de":"Wien ist die Hauptstadt von Österreich.","sr":"Beč je glavni grad Austrije."},{"de":"Mein Mann heißt Hasim.","sr":"Moj muž se zove Hasim."},{"de":"Er ist Bauarbeiter.","sr":"On je građevinski radnik."},{"de":"Ich möchte Wien gern besuchen.","sr":"Želela bih da posetim Beč."}]},{"title":"19. Lieblingslied","sentences":[{"de":"Ich höre gern schöne Lieder.","sr":"Volim da slušam lepe pesme."},{"de":"Musik gehört zu meinem Alltag.","sr":"Muzika je deo moje svakodnevice."},{"de":"Am Abend höre ich manchmal ruhige Musik.","sr":"Uveče ponekad slušam mirnu muziku."},{"de":"Ich singe manchmal mit meinen Kindern.","sr":"Ponekad pevam sa svojom decom."},{"de":"Ein schönes Lied macht gute Laune.","sr":"Lepa pesma popravlja raspoloženje."}]}];
+const content=document.getElementById('content');
+const status=document.getElementById('status');
+const speed=document.getElementById('speed');
+let run=0, voice=null, currentUtterance=null;
+const hasSpeech=('speechSynthesis' in window && 'SpeechSynthesisUtterance' in window);
+function getVoice(){
+  if(!hasSpeech)return null;
+  const voices=window.speechSynthesis.getVoices();
+  return voices.find(v=>v.lang.toLowerCase().startsWith('de') && /google|microsoft|anna|katja/i.test(v.name))
+      || voices.find(v=>v.lang.toLowerCase().startsWith('de')) || null;
+}
+if(hasSpeech){
+  voice=getVoice();
+  window.speechSynthesis.addEventListener?.('voiceschanged',()=>{voice=getVoice()});
+}else{
+  status.textContent='Ovaj pregledač ne podržava čitanje naglas. Probaj Chrome, Edge ili Safari sa uključenim govorom.';
+}
+function clearActive(){document.querySelectorAll('.sentence.active').forEach(el=>el.classList.remove('active'))}
+function stop(showMessage=true){
+  run++;
+  if(hasSpeech)window.speechSynthesis.cancel();
+  currentUtterance=null;
+  clearActive();
+  if(showMessage)status.textContent='Čitanje je zaustavljeno.';
+}
+document.getElementById('stop').addEventListener('click',()=>stop());
+function speakOne(t,s,token){
+  return new Promise(resolve=>{
+    if(!hasSpeech || token!==run){resolve();return}
+    const el=document.getElementById(`s-${t}-${s}`);
+    clearActive();
+    if(el){
+      el.classList.add('active');
+      el.scrollIntoView({block:'nearest',behavior:'smooth'});
+    }
+    const sentence=topics[t].sentences[s].de;
+    const utter=new SpeechSynthesisUtterance(sentence);
+    currentUtterance=utter;
+    utter.lang='de-DE';
+    utter.rate=Number(speed.value);
+    utter.pitch=1;
+    voice=getVoice();
+    if(voice)utter.voice=voice;
+    let settled=false;
+    function done(){if(!settled){settled=true;resolve()}}
+    utter.onend=done;
+    utter.onerror=(event)=>{if(token===run && event.error!=='canceled' && event.error!=='interrupted'){status.textContent='Govor nije uspeo. Proveri podešavanja govora na uređaju.';}done()};
+    status.textContent='Čitam: '+topics[t].title;
+    // Poziva se iz korisnikovog klika ili nakon prethodnog govora.
+    window.speechSynthesis.speak(utter);
+  });
+}
+async function play(t,s,all){
+  stop(false);
+  if(!hasSpeech){status.textContent='Nema podrške za nemački govor u ovom pregledaču.';return}
+  const token=run;
+  const end=all?topics[t].sentences.length:s+1;
+  for(let i=s;i<end;i++){
+    if(token!==run)return;
+    await speakOne(t,i,token);
+  }
+  if(token===run){clearActive();status.textContent='Čitanje je završeno. Izaberi sledeću temu.'}
+}
+for(let t=0;t<topics.length;t++){
+  const sec=document.createElement('section');
+  const title=document.createElement('h2');
+  title.textContent=topics[t].title;
+  sec.appendChild(title);
+  topics[t].sentences.forEach((item,s)=>{
+    const p=document.createElement('p');
+    p.className='sentence';
+    p.id=`s-${t}-${s}`;
+    p.tabIndex=0;
+    p.setAttribute('role','button');
+    p.setAttribute('aria-label','Poslušaj na nemačkom: '+item.de);
+    p.title='Pritisni da čuješ nemačku rečenicu';
+    p.textContent=item.de;
+    const tr=document.createElement('span');
+    tr.className='translation';
+    tr.textContent=item.sr;
+    tr.setAttribute('aria-hidden','true');
+    p.appendChild(tr);
+    p.addEventListener('click',()=>play(t,s,false));
+    p.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();play(t,s,false)}});
+    sec.appendChild(p);
+  });
+  const actions=document.createElement('div');
+  actions.className='actions';
+  const btn=document.createElement('button');
+  btn.className='primary';btn.type='button';
+  btn.textContent='▶ Slušaj celu temu';
+  btn.addEventListener('click',()=>play(t,0,true));
+  actions.appendChild(btn);
+  const rep=document.createElement('button');
+  rep.type='button';rep.textContent='↻ Ponovi od početka';
+  rep.addEventListener('click',()=>play(t,0,true));
+  actions.appendChild(rep);
+  sec.appendChild(actions);
+  content.appendChild(sec);
+}
+window.addEventListener('pagehide',()=>stop(false));
+</script>
+</body>
+</html>
