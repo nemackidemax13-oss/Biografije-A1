@@ -3,6 +3,12 @@
   "compatibility_date": "2026-10-17",
   "workers_dev": true,
   "assets": {
-    "directory": "./OSD-A1-Schreiben-AI"
-  }
+    "directory": "./OSD-A1-Schreiben-AI",
+    "binding": "ASSETS",
+    "run_worker_first": [
+      "/api/*",
+      "/health"
+    ]
+  },
+  "main": "./src/email-worker.js"
 }
