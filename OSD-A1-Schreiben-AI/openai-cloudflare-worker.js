@@ -1,7 +1,7 @@
 // DE-MAX TUTIN — OpenAI API server za 35 A1 mejlova.
 // Postavi ovaj kod kao Cloudflare Worker. NIKADA ne upisuj API kljuc u ovaj fajl.
 // U Cloudflare: Settings > Variables and Secrets > OPENAI_API_KEY (Secret).
-const SITE_ORIGIN = "https://nemackidemax13-oss.github.io";
+const SITE_ORIGINS = new Set(["https://nemackidemax13-oss.github.io", "https://biografije-a1.nemackidemax13.workers.dev"]);
 const TASKS_URL = "https://raw.githubusercontent.com/nemackidemax13-oss/Biografije-A1/main/OSD-A1-Schreiben-AI/tasks.json";
 const MODEL_DEFAULT = "gpt-4.1-mini";
 const TIMEOUT_MS = 25000;
@@ -17,7 +17,7 @@ const ipHits = new Map();
 function cors(origin) {
   const h = {"Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store",
     "X-Content-Type-Options": "nosniff", "Vary": "Origin"};
-  if (origin === SITE_ORIGIN) h["Access-Control-Allow-Origin"] = SITE_ORIGIN;
+  if (SITE_ORIGINS.has(origin)) h["Access-Control-Allow-Origin"] = origin;
   return h;
 }
 function json(data, status, origin) {
@@ -164,7 +164,7 @@ export default {
       return json({status:"ok",openaiConfigured:Boolean(env.OPENAI_API_KEY),tasks:35,provider:"OpenAI"},200,origin);
     if(url.pathname!=="/api/check-email")
       return json({error:"Nepoznata putanja. Koristi /health ili /api/check-email."},404,origin);
-    if(origin!==SITE_ORIGIN)
+    if(!SITE_ORIGINS.has(origin))
       return json({error:"Nedozvoljena web adresa."},403,origin);
     if(request.method==="OPTIONS")
       return new Response(null,{status:204,headers:{
