@@ -1,0 +1,8 @@
+{
+  "name": "biografije-a1",
+  "compatibility_date": "2026-10-17",
+  "workers_dev": true,
+  "assets": {
+    "directory": "./OSD-A1-Schreiben-AI"
+  }
+}
