@@ -1167,6 +1167,14 @@ html body #answerPanel .editorarea .foot button#check.checkbtn:enabled{
 .a1-prep-exit{display:inline-flex;align-items:center;gap:5px;min-height:36px;padding:6px 11px;border:1px solid #ffffff80;border-radius:9px;background:#ffffff18;color:#fff;font:800 13px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif;text-decoration:none;white-space:nowrap;touch-action:manipulation}
 .a1-prep-exit:hover{background:#ffffff30}
 .a1-prep-exit:focus-visible{outline:3px solid #ffca45;outline-offset:2px}
+/* Malo crveno dugme A1 Priprema: jasno vidljivo na pocetnoj i pri izboru mejla. */
+.a1-prep-mini{display:inline-flex;align-items:center;justify-content:center;max-width:max-content;min-height:27px;padding:4px 8px;border:1px solid #aa1c30;border-radius:7px;background:#c61e32;color:#fff!important;font:800 11px/1.15 system-ui,-apple-system,"Segoe UI",sans-serif;text-decoration:none;white-space:nowrap;position:relative;z-index:2}
+.a1-prep-mini:hover{background:#ac172c}
+.mail-home-hero{padding-top:48px!important}
+.mail-home-hero .a1-prep-mini{position:absolute;top:8px;left:10px}
+.a1-prep-topline{display:none}
+body.view-mail:not(.mobile-writing) .a1-prep-topline{display:flex;align-items:center;padding:4px 9px;background:#edf4ff;border-bottom:1px solid #d8e4f5}
+@media(max-width:799px){.mail-home-hero{padding-top:43px!important}}
 
 /* DE-MAX: omogućeno skrolovanje otvorenog mejla i vidljiv povratak na A1 pripremu. */
 @media (max-width:799px) {
@@ -1178,6 +1186,17 @@ html body #answerPanel .editorarea .foot button#check.checkbtn:enabled{
     min-height:0!important;
     max-height:100dvh!important;
     overflow:hidden!important;
+  }
+  body.view-mail .a1-prep-topline {
+    display:flex!important;
+    align-items:center!important;
+    flex:0 0 auto!important;
+    position:relative!important;
+    z-index:80!important;
+    min-height:36px!important;
+    padding:4px 9px!important;
+    background:#edf4ff!important;
+    border-bottom:1px solid #d8e4f5!important;
   }
   body.view-mail:not(.mobile-writing) .workspace {
     display:block!important;
@@ -1197,6 +1216,8 @@ html body #answerPanel .editorarea .foot button#check.checkbtn:enabled{
     max-height:none!important;
     overflow:visible!important;
   }
+  /* Tokom kucanja strelica ostaje vidljiva; pitanja i odgovor se skroluju. */
+  body.view-mail.mobile-writing .a1-prep-topline {display:flex!important}
   body.view-mail.mobile-writing .answer .editorarea .task-paired,
   body.view-mail.mobile-writing .answer .editorarea textarea {
     overflow-y:auto!important;
@@ -1204,22 +1225,16 @@ html body #answerPanel .editorarea .foot button#check.checkbtn:enabled{
     touch-action:pan-y;
   }
 }
-
-/* Jedna mala traka za izlaz samo kada se index.html direktno koristi kao iframe. */
-#directEmbeddedExit{display:none;flex:0 0 37px;align-items:center;padding:4px 9px;background:#f0f5ff;border-bottom:1px solid #d8e4f5;position:relative;z-index:200}
-body.is-direct-embed #directEmbeddedExit{display:flex}
-#directEmbeddedExitButton{min-height:29px;border:0;border-radius:7px;background:#c61e32;color:#fff;padding:5px 10px;font:800 12px/1.15 system-ui,-apple-system,"Segoe UI",sans-serif}
-body.is-direct-embed.view-home #mailHome{min-height:calc(100dvh - 37px)}
 </style>
 </head>
 <body class="view-home">
 <div class="app">
-<nav id="directEmbeddedExit" aria-label="Povratak u glavnu aplikaciju"><button type="button" id="directEmbeddedExitButton">← Izađi</button></nav>
 <section id="mailHome" aria-label="Izbor mejla">
- <div class="mail-home-hero"><div class="mail-home-eyebrow">DE-MAX TUTIN · ÖSD A1</div><div class="mail-home-logo" aria-label="De-Max Tutin"><b>DE-MAX</b><small>TUTIN</small></div><div class="mail-home-eyebrow">35 MEJLOVA · A1 VEŽBANJE</div><h1>Izaberi mejl</h1><p>Odaberi zadatak i napiši odgovor na nemačkom</p></div>
+ <div class="mail-home-hero"><a class="a1-prep-mini" target="_self" aria-label="Nazad na A1 Pripremu">← A1 Priprema</a><div class="mail-home-eyebrow">DE-MAX TUTIN · ÖSD A1</div><div class="mail-home-logo" aria-label="De-Max Tutin"><b>DE-MAX</b><small>TUTIN</small></div><div class="mail-home-eyebrow">35 MEJLOVA · A1 VEŽBANJE</div><h1>Izaberi mejl</h1><p>Odaberi zadatak i napiši odgovor na nemačkom</p></div>
  <div class="mail-home-summary"><span>MEJLOVI ZA VEŽBANJE</span><span id="homeProgress">0 / 35 provereno</span></div>
  <div id="mailHomeGrid" class="mail-home-grid" aria-label="35 mejlova"></div>
 </section>
+<nav class="a1-prep-topline" aria-label="Povratak na A1 Pripremu"><a class="a1-prep-mini" target="_self">← A1 Priprema</a></nav>
 <header>
   <div class="head-top"><div class="brand">De-Max Tutin</div><div class="headtag">ÖSD A1 • <span id="total">35</span> MEJLOVA</div></div>
   <div class="headnav"><button id="prev" title="Prethodni mejl">‹</button><select id="pick" aria-label="Izaberi mejl"></select><button id="pickMobile" type="button" class="pick-mobile" aria-label="Izaberi mejl" aria-haspopup="dialog">1. mejl — Baštenska zabava</button><button id="next" title="Sledeći mejl">›</button></div>
@@ -1620,12 +1635,11 @@ else renderMailGrid();
   // A cross-origin child cannot navigate its intermediate parent in Chromium.
   // Ask De-Max to return itself; never discard its authenticated frame via _top.
   let pendingReturn = null;
-  let traversingHistory = false;
+  let returningToApp = false;
   window.addEventListener('pagehide', () => {
     clearTimeout(pendingReturn);
     pendingReturn = null;
   });
-  window.addEventListener('pageshow', () => { traversingHistory = false; });
   window.addEventListener('message', event => {
     if (event.origin !== parentOrigin || event.source !== window.parent
       || event.data?.type !== 'demax:email-return-accepted') return;
@@ -1656,61 +1670,23 @@ else renderMailGrid();
     });
     else link.addEventListener('click', event => {
       if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
-      // Go back to the actual De-Max document, not a freshly loaded copy.
-      // The flag is issued only by De-Max's explicit same-tab launch. Direct,
-      // bookmarked, new-tab and embedded links keep their normal safe href.
-      const depth = window.history?.state?.demaxReturnDepth ?? 0;
+      // Replace this exercise entry with the saved De-Max menu. Traversing a
+      // calculated history depth can stall mobile browsers when the exercise
+      // contains internal history entries.
       if (params.get('demax_same_tab') !== '1'
         || window.parent !== window
         || referringOrigin !== destination.origin
         || !validId(category) || !validId(material)
-        || !Number.isSafeInteger(depth) || depth < 0
-        || window.history.length <= depth + 1) return;
+      ) return;
       event.preventDefault();
-      if (traversingHistory) return;
-      traversingHistory = true;
-      // Skip the mail/grid entries created within this exercise as well.
+      if (returningToApp) return;
+      returningToApp = true;
       try {
-        window.history.go(-(depth + 1));
-        pendingReturn = setTimeout(() => {
-          traversingHistory = false;
-          pendingReturn = null;
-          window.location.assign(destination.href);
-        }, 1500);
+        window.location.replace(destination.href);
       } catch {
-        traversingHistory = false;
         window.location.assign(destination.href);
       }
     });
-  });
-})();
-</script>
-<script id="demax-direct-iframe-exit">
-(() => {
-  // iframe.html ima sopstvenu traku za izlaz; ne prikazivati je dvaput.
-  const params = new URLSearchParams(location.search);
-  if (window.parent === window || params.get('mail_embedded_wrapper') === '1') return;
-  document.body.classList.add('is-direct-embed');
-  const button = document.getElementById('directEmbeddedExitButton');
-  let returnUrl = null;
-  try {
-    const candidate = params.get('return') || document.referrer;
-    const url = new URL(candidate);
-    if ((url.protocol === 'https:' || url.protocol === 'http:')
-      && !url.username && !url.password
-      && !(url.origin === location.origin && url.pathname.startsWith('/OSD-A1-Schreiben-AI/'))) {
-      returnUrl = url;
-    }
-  } catch {}
-  button.addEventListener('click', () => {
-    // Maticalna aplikacija moze zatvoriti svoj iframe pomocu ove poruke.
-    window.parent.postMessage({type:'demax:emails:close'}, '*');
-    window.parent.postMessage({type:'demax:email-return'}, '*');
-    if (returnUrl) {
-      // Korisnicki klik omogucava top-level povratak osim kada roditelj blokira navigaciju sandbox-om.
-      try { window.top.location.assign(returnUrl.href); return; } catch {}
-    }
-    button.textContent = 'Nazad u glavnoj aplikaciji';
   });
 })();
 </script>
