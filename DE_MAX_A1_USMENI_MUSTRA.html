@@ -53,6 +53,7 @@ button{font:inherit;cursor:pointer}button:focus-visible,a:focus-visible{outline:
 @media(max-width:920px){body{overflow:auto}.app{min-height:100dvh;height:auto;width:min(760px,calc(100% - 14px));margin:7px auto}.main{display:flex;flex-direction:column}.photoWrap{height:45vh;min-height:280px;flex:none}.entries{max-height:none;overflow:visible}.top{height:70px}.photoFoot{padding:9px 12px}}
 @media(max-width:590px){.app{margin:0;width:100%;border-radius:0;padding:7px;gap:7px}.top{height:65px;gap:5px}.logo{width:72px}.logo strong{font-size:16px}.logo small{font-size:8px;letter-spacing:.5px}.heading{padding:6px}.heading h1{font-size:18px}.heading p{font-size:9px}.back{font-size:10px;padding:0 8px}.photoWrap{height:290px;min-height:0}.readHeader strong{font-size:14px}.buttons{gap:4px}.action{font-size:10px;padding:7px}.de{font-size:13px}.sr{font-size:11px}.line{margin-bottom:4px}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+.navSteps{display:flex;gap:6px;align-items:stretch;flex:none}.navSteps .back{min-width:80px}.thirdNav{background:linear-gradient(135deg,#d7263b,#ae1930)}.thirdNav:hover{background:#971429}@media(max-width:590px){.navSteps{flex-direction:column;gap:4px}.navSteps .back{font-size:9px;min-width:65px;flex:1;padding:3px}.heading h1{font-size:17px}.heading p{font-size:8px}}
 </style>
 </head>
 <body>
@@ -60,7 +61,7 @@ button{font:inherit;cursor:pointer}button:focus-visible,a:focus-visible{outline:
 <header class="top">
 <div class="logo"><strong>DE-MAX</strong><small>TUTIN</small></div>
 <div class="heading"><h1>Mustra – opis slike</h1><p>DRUGI DEO USMENOG ISPITA · PRIMER SA RECEPCIJE</p></div>
-<a class="back" href="DE_MAX_A1_USMENI_2_OPIS_SLIKE.html">← 2. deo</a>
+<nav class="navSteps" aria-label="Navigacija između delova"><a class="back" href="DE_MAX_A1_USMENI_2_OPIS_SLIKE.html">← 2. deo</a><a class="back thirdNav" href="DE_MAX_A1_USMENI_3_DIJALOG.html" title="Treći deo usmenog ispita: Dijalog">3. deo →</a></nav>
 </header>
 <main class="main">
 <section class="panel">
