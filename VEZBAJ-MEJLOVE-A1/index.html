@@ -1592,6 +1592,8 @@ $('answer').addEventListener('focus',()=>{
 $('answer').addEventListener('blur',()=>document.body.classList.remove('is-typing'));
 $('answer').addEventListener('focus',()=>{
   if(window.matchMedia('(max-width:799px)').matches){
+    // Ako je ovaj prikaz unutar naseg iframe URL-a, roditeljski okvir prati tastaturu.
+    if(window.parent!==window)window.parent.postMessage({type:'DEMAX_MAIL_EDITOR_FOCUS'},location.origin);
     // Direktan dodir na polje za mejl takodje otvara namenski mobilni rezim.
     if(!document.body.classList.contains('mobile-writing'))openMobileWriting();
     requestAnimationFrame(setMobileVisibleHeight);
