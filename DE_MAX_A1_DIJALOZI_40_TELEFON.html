@@ -118,7 +118,7 @@ function render(){
   const letter=tab==="extra"?"":(i%2?"B":"A");
   const hide=tab==="practice"&&(i%2===1)&&!revealed.has(i);
   out+='<article class="line '+(letter==="B"?"speakerB ":"")+(hide?"hidden-answer":"")+'" id="line'+i+'"><div class="linehead"><span class="speaker">'+(tab==="extra"?"Dodatna rečenica":tab==="mine"?"Moj izbor":"Osoba "+letter)+'</span><span class="counter">'+(i+1)+' / '+rows.length+'</span></div>';
-  if(hide)out+='<div class="words" style="display:block;color:#aa6584;font-size:12px">Odgovori naglas na nemačkom, pa prikaži odgovor.</div>';
+  if(hide)out+='<div class="words" data-prompt="1" style="display:block;color:#aa6584;font-size:12px">Odgovori naglas na nemačkom, pa prikaži odgovor.</div>';
   out+='<div class="words">'+escape(p[0])+'</div>'+(showTranslations?'<div class="translation">'+escape(p[1])+'</div>':'');
   out+='<div class="lineactions">'+(hide?'<button class="mini reveal" data-reveal="'+i+'" type="button">👁 Prikaži</button>':'')+'<button class="mini" data-sound="'+i+'" type="button" title="Poslušaj">🔊</button><button class="mini star '+(isSaved(p)?"saved":"")+'" data-save="'+i+'" type="button" title="Dodaj ili ukloni iz Moj dijalog">'+(isSaved(p)?"★ Dodato":"☆ Dodaj")+'</button></div></article>'
  });
@@ -147,7 +147,7 @@ $("lines").addEventListener("click",e=>{
  const b=e.target.closest("button");if(!b)return;
  if(b.dataset.sound!==undefined)playSingle(Number(b.dataset.sound));
  else if(b.dataset.save!==undefined)saveRow(Number(b.dataset.save));
- else if(b.dataset.reveal!==undefined){revealed.add(Number(b.dataset.reveal));let div=$("line"+b.dataset.reveal);div?.classList.remove("hidden-answer");b.remove()}
+ else if(b.dataset.reveal!==undefined){revealed.add(Number(b.dataset.reveal));let div=$("line"+b.dataset.reveal);div?.classList.remove("hidden-answer");div?.querySelector("[data-prompt]")?.remove();b.remove()}
 });
 $("play").onclick=playAll;
 $("stop").onclick=()=>{stop();setStatus("Slušanje je zaustavljeno.")};
