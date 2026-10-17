@@ -1167,8 +1167,6 @@ html body #answerPanel .editorarea .foot button#check.checkbtn:enabled{
 .a1-prep-exit{display:inline-flex;align-items:center;gap:5px;min-height:36px;padding:6px 11px;border:1px solid #ffffff80;border-radius:9px;background:#ffffff18;color:#fff;font:800 13px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif;text-decoration:none;white-space:nowrap;touch-action:manipulation}
 .a1-prep-exit:hover{background:#ffffff30}
 .a1-prep-exit:focus-visible{outline:3px solid #ffca45;outline-offset:2px}
-.a1-prep-exit--writer{display:none}
-body.mobile-writing .a1-prep-exit--writer{display:inline-flex;min-height:30px;padding:4px 6px;color:#154894;border-color:#b9cceb;background:#fff;font-size:11px}
 /* Malo crveno dugme A1 Priprema: jasno vidljivo na pocetnoj i pri izboru mejla. */
 .a1-prep-mini{display:inline-flex;align-items:center;justify-content:center;max-width:max-content;min-height:27px;padding:4px 8px;border:1px solid #aa1c30;border-radius:7px;background:#c61e32;color:#fff!important;font:800 11px/1.15 system-ui,-apple-system,"Segoe UI",sans-serif;text-decoration:none;white-space:nowrap;position:relative;z-index:2}
 .a1-prep-mini:hover{background:#ac172c}
@@ -1212,7 +1210,7 @@ body.view-mail:not(.mobile-writing) .a1-prep-topline{display:flex;align-items:ce
     <div class="panel-title"><strong id="writeHeading">2. NAPIŠI SVOJ ODGOVOR</strong><button class="mobile-jump" id="mobileBackToMail" type="button">← Postavka</button><span class="limit-note">A1 • oko 30 reči • do 10 bodova</span></div>
     <div class="editorarea"><div class="editor-top"><span class="save-flag">Čuva se automatski</span></div><textarea id="answer" spellcheck="true" lang="de" placeholder="Napiši odgovor na sva tri pitanja.&#10;&#10;Liebe Grüße&#10;…" aria-label="Ovde upiši mejl na nemačkom"></textarea>
       <div class="paired-card task-paired" aria-label="Pitanja i uputstvo za mejl">
-        <div class="paired-heading"><span id="questionsHead">PITANJA • 1. MEJL</span><a class="a1-prep-exit a1-prep-exit--writer" href="https://de-max-a-1-aplikacija.replit.app/course/a1-priprema" target="_top" aria-label="Nazad na vežbe A1 Pripreme">← Vežbe</a><button id="mobileBackInline" type="button" aria-label="Vrati se na postavku mejla">← Postavka</button></div>
+        <div class="paired-heading"><span id="questionsHead">PITANJA • 1. MEJL</span><button id="mobileBackInline" type="button" aria-label="Vrati se na postavku mejla">← Postavka</button></div>
         <div id="pairs-instruction" class="paired-lines"></div>
         <div id="pairs-questions-intro" class="paired-lines"></div>
         <div id="pairs-qs" class="paired-lines question-lines"></div>
@@ -1517,14 +1515,14 @@ function openMailFromGrid(index,addHistory=true){
  if(document.body.classList.contains('mobile-writing')||document.body.classList.contains('mobile-review'))closeMobileWriting(false);
  document.body.classList.remove('view-home');document.body.classList.add('view-mail');
  current=n;render();
- if(addHistory)history.pushState({demaxMail:n},'','#mejl-'+(n+1));
+ if(addHistory)history.pushState({demaxMail:n,demaxReturnDepth:(history.state?.demaxReturnDepth||0)+1},'','#mejl-'+(n+1));
  window.scrollTo({top:0,behavior:'instant'});
 }
 function returnToMailGrid(updateHistory=true){
  if(document.body.classList.contains('mobile-writing')||document.body.classList.contains('mobile-review'))closeMobileWriting(false);
  document.body.classList.remove('view-mail');document.body.classList.add('view-home');
  renderMailGrid();
- if(updateHistory)history.replaceState({demaxHome:true},'',location.pathname+location.search);
+ if(updateHistory)history.replaceState({demaxHome:true,demaxReturnDepth:history.state?.demaxReturnDepth||0},'',location.pathname+location.search);
  window.scrollTo({top:0,behavior:'instant'});
 }
 $('backToGrid').addEventListener('click',()=>returnToMailGrid());
@@ -1555,9 +1553,35 @@ else renderMailGrid();
     destination.searchParams.set('celina', category);
     destination.searchParams.set('vezba', material);
   }
-  document.querySelectorAll('a.a1-prep-mini, a.a1-prep-exit').forEach(link => {
+  // Preserve the already loaded De-Max document and its signed-in session.
+  // Each internal mail history entry carries its depth, including after Back.
+  if (!Number.isSafeInteger(history.state?.demaxReturnDepth) || history.state.demaxReturnDepth < 0) {
+    history.replaceState({ ...history.state, demaxReturnDepth: 0 }, '', location.href);
+  }
+  let fromDeMax = params.get('demax_return') === '1';
+  try { fromDeMax ||= new URL(document.referrer).origin === destination.origin; } catch {}
+  let leaving = false;
+  document.querySelectorAll('a.a1-prep-mini').forEach(link => {
     link.href = destination.href;
     link.target = '_top';
+    link.addEventListener('click', event => {
+      if (event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+      const depth = history.state?.demaxReturnDepth;
+      if (!fromDeMax || window.top !== window || !Number.isSafeInteger(depth) || depth < 0 || history.length <= depth + 1) return;
+      event.preventDefault();
+      if (leaving) return;
+      leaving = true;
+      let timer;
+      const didLeave = () => window.clearTimeout(timer);
+      window.addEventListener('pagehide', didLeave, { once: true });
+      timer = window.setTimeout(() => {
+        window.removeEventListener('pagehide', didLeave);
+        // History can be unavailable in a newly opened tab. Keep a real,
+        // permission-checked course link as the fallback, never the login root.
+        window.location.replace(destination.href);
+      }, 1500);
+      history.go(-(depth + 1));
+    });
   });
 })();
 </script>
