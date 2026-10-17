@@ -1226,21 +1226,10 @@ body.view-mail:not(.mobile-writing) .a1-prep-topline{display:flex;align-items:ce
   }
 }
 
-/* Nov, samostalan link: nema dodatnog iframe-a niti test dugmeta. */
-#newMailExitBar { display:none; flex:0 0 38px; min-height:38px; align-items:center; justify-content:flex-start; padding:4px 10px; background:#edf4ff; border-bottom:1px solid #d7e3f5; z-index:180; position:relative; }
-#newMailExit { display:inline-flex; align-items:center; justify-content:center; min-height:29px; border:0; border-radius:7px; background:#c61e32; color:white!important; font:800 12px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif; padding:5px 11px; text-decoration:none; -webkit-tap-highlight-color:transparent; cursor:pointer; }
-#newMailExit:hover {background:#a8172b}
-#newMailExit:focus-visible {outline:3px solid #2e71dd;outline-offset:2px}
-html.mail-app-embedded #newMailExitBar {display:flex}
-html.mail-app-embedded body.view-home #mailHome {min-height:calc(100dvh - 38px)}
-html.mail-app-embedded body.view-mail .app {height:100dvh!important;max-height:100dvh!important}
-html.mail-app-embedded body.mobile-writing #newMailExitBar {flex:0 0 36px;min-height:36px}
-@supports (height: 100svh) { html.mail-app-embedded body.view-home #mailHome {min-height:calc(100svh - 38px)} }
 </style>
 </head>
 <body class="view-home">
 <div class="app">
-  <nav id="newMailExitBar" aria-label="Povratak iz vežbe"><a id="newMailExit" href="#">← Izađi</a></nav>
 <section id="mailHome" aria-label="Izbor mejla">
  <div class="mail-home-hero"><div class="mail-home-eyebrow">DE-MAX TUTIN · ÖSD A1</div><div class="mail-home-logo" aria-label="De-Max Tutin"><b>DE-MAX</b><small>TUTIN</small></div><div class="mail-home-eyebrow">35 MEJLOVA · A1 VEŽBANJE</div><h1>Izaberi mejl</h1><p>Odaberi zadatak i napiši odgovor na nemačkom</p></div>
  <div class="mail-home-summary"><span>MEJLOVI ZA VEŽBANJE</span><span id="homeProgress">0 / 35 provereno</span></div>
@@ -1608,46 +1597,6 @@ else renderMailGrid();
 </script>
 <!-- OpenAI provera ide preko Cloudflare Workera; direktna podesavanja API kljuca nisu potrebna. -->
 
-<script id="demax-standalone-embed-exit">
-(() => {
-  'use strict';
-  const inFrame = window.parent !== window;
-  const qs = new URLSearchParams(location.search);
-  const exit = document.getElementById('newMailExit');
-  const isOwnAppPath = u => u.origin === location.origin
-     && (u.pathname.startsWith('/VEZBAJ-MEJLOVE-A1/') || u.pathname.startsWith('/OSD-A1-Schreiben-AI/'));
-  let returnTarget = '';
-  const raw = qs.get('return') || document.referrer;
-  if (raw) {
-    try {
-      const u = new URL(raw, location.href);
-      if (['https:','http:'].includes(u.protocol) && !u.username && !u.password && !isOwnAppPath(u)) returnTarget = u.href;
-    } catch {}
-  }
-  if (inFrame || returnTarget) {
-    document.documentElement.classList.add('mail-app-embedded');
-    if(returnTarget) {
-      exit.href = returnTarget;
-      exit.target = '_top';
-    }
-  }
-  exit.addEventListener('click', e => {
-    if (inFrame) {
-      // Roditeljska aplikacija moze sama zatvoriti iframe bez menjanja URL-a.
-      window.parent.postMessage({type:'demax:emails:close'}, '*');
-      window.parent.postMessage({type:'demax:email-return'}, '*');
-      if (returnTarget) return; // standardni link target=_top, korisnicki klik
-      e.preventDefault();
-      // Ako roditeljska aplikacija nema kod za obradu poruke i ne salje return,
-      // nema dozvoljenog nacina da dete samo ukloni roditeljev iframe.
-      return;
-    }
-    if (!returnTarget) {
-      e.preventDefault();
-      if (history.length > 1) history.back();
-    }
-  });
-})();
-</script>
+
 </body>
 </html>
