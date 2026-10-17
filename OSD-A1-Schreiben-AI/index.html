@@ -1175,6 +1175,56 @@ html body #answerPanel .editorarea .foot button#check.checkbtn:enabled{
 .a1-prep-topline{display:none}
 body.view-mail:not(.mobile-writing) .a1-prep-topline{display:flex;align-items:center;padding:4px 9px;background:#edf4ff;border-bottom:1px solid #d8e4f5}
 @media(max-width:799px){.mail-home-hero{padding-top:43px!important}}
+
+/* DE-MAX: omogućeno skrolovanje otvorenog mejla i vidljiv povratak na A1 pripremu. */
+@media (max-width:799px) {
+  /* U iframe-u se skroluje sadržaj mejla, nezavisno od roditeljske aplikacije. */
+  body.view-mail:not(.mobile-writing) .app {
+    display:flex!important;
+    flex-direction:column!important;
+    height:100dvh!important;
+    min-height:0!important;
+    max-height:100dvh!important;
+    overflow:hidden!important;
+  }
+  body.view-mail .a1-prep-topline {
+    display:flex!important;
+    align-items:center!important;
+    flex:0 0 auto!important;
+    position:relative!important;
+    z-index:80!important;
+    min-height:36px!important;
+    padding:4px 9px!important;
+    background:#edf4ff!important;
+    border-bottom:1px solid #d8e4f5!important;
+  }
+  body.view-mail:not(.mobile-writing) .workspace {
+    display:block!important;
+    flex:1 1 0!important;
+    height:auto!important;
+    min-height:0!important;
+    overflow-x:hidden!important;
+    overflow-y:auto!important;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior-y:contain!important;
+    touch-action:pan-y;
+  }
+  body.view-mail:not(.mobile-writing) .panel,
+  body.view-mail:not(.mobile-writing) .taskscroll {
+    min-height:0!important;
+    height:auto!important;
+    max-height:none!important;
+    overflow:visible!important;
+  }
+  /* Tokom kucanja strelica ostaje vidljiva; pitanja i odgovor se skroluju. */
+  body.view-mail.mobile-writing .a1-prep-topline {display:flex!important}
+  body.view-mail.mobile-writing .answer .editorarea .task-paired,
+  body.view-mail.mobile-writing .answer .editorarea textarea {
+    overflow-y:auto!important;
+    -webkit-overflow-scrolling:touch;
+    touch-action:pan-y;
+  }
+}
 </style>
 </head>
 <body class="view-home">
@@ -1542,46 +1592,22 @@ else renderMailGrid();
 <!-- OpenAI provera ide preko Cloudflare Workera; direktna podesavanja API kljuca nisu potrebna. -->
 <script id="demax-exercise-return">
 (function () {
-  // Menu IDs are not credentials. The destination remains fixed to De-Max,
-  // where the existing sign-in and course-permission checks still apply.
+  // A1 priprema je odredište čak i ako je mejl otvoren kao zaseban tab ili iframe.
   const destination = new URL('https://de-max-a-1-aplikacija.replit.app/course/a1-priprema');
   const params = new URLSearchParams(location.search);
   const category = params.get('demax_celina');
   const material = params.get('demax_vezba');
-  const validId = value => /^[1-9]\d{0,15}$/.test(value || '') && Number.isSafeInteger(Number(value));
+  const validId = value => /^[1-9]\\d{0,15}$/.test(value || '') && Number.isSafeInteger(Number(value));
   if (validId(category) && validId(material)) {
     destination.searchParams.set('celina', category);
     destination.searchParams.set('vezba', material);
   }
-  // Preserve the already loaded De-Max document and its signed-in session.
-  // Each internal mail history entry carries its depth, including after Back.
-  if (!Number.isSafeInteger(history.state?.demaxReturnDepth) || history.state.demaxReturnDepth < 0) {
-    history.replaceState({ ...history.state, demaxReturnDepth: 0 }, '', location.href);
-  }
-  let fromDeMax = params.get('demax_return') === '1';
-  try { fromDeMax ||= new URL(document.referrer).origin === destination.origin; } catch {}
-  let leaving = false;
+  // Pravi link (target=_top) izlazi iz iframe-a na jedan dodir.
+  // Ne presretati klik putem history.go: istorija u iframe-u nije pouzdana.
   document.querySelectorAll('a.a1-prep-mini').forEach(link => {
     link.href = destination.href;
     link.target = '_top';
-    link.addEventListener('click', event => {
-      if (event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
-      const depth = history.state?.demaxReturnDepth;
-      if (!fromDeMax || window.top !== window || !Number.isSafeInteger(depth) || depth < 0 || history.length <= depth + 1) return;
-      event.preventDefault();
-      if (leaving) return;
-      leaving = true;
-      let timer;
-      const didLeave = () => window.clearTimeout(timer);
-      window.addEventListener('pagehide', didLeave, { once: true });
-      timer = window.setTimeout(() => {
-        window.removeEventListener('pagehide', didLeave);
-        // History can be unavailable in a newly opened tab. Keep a real,
-        // permission-checked course link as the fallback, never the login root.
-        window.location.replace(destination.href);
-      }, 1500);
-      history.go(-(depth + 1));
-    });
+    link.setAttribute('rel', 'noopener');
   });
 })();
 </script>
