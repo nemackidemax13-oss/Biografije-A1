@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#153f75">
-<title>DE-MAX Tutin – A1 dijalozi za 40 situacija</title>
+<title>DE-MAX Tutin – ÖSD A1 dijalozi za 40 situacija</title>
 <style>
 :root{color-scheme:light;--ink:#173452;--navy:#133c70;--blue:#2467bf;--line:#d8e4f2;--muted:#647990;--red:#d42845;--green:#168357;--soft:#f4f8ff}
 *{box-sizing:border-box}html,body{height:100%;margin:0}body{font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:#e9f2ff;color:var(--ink);display:flex;justify-content:center;overscroll-behavior:none}button,input{font:inherit}button{cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #ffba3e;outline-offset:1px}
@@ -12,11 +12,12 @@
 header{display:flex;align-items:center;gap:8px;padding:calc(6px + env(safe-area-inset-top)) 9px 7px;background:linear-gradient(115deg,#ffed8a,#ffcc43);border-bottom:1px solid #dca92c}
 .logo{color:#ca243d;font-weight:1000;font-size:17px;font-style:italic;letter-spacing:-1.3px;white-space:nowrap}.logo small{display:block;font-style:normal;color:#345278;font-size:7px;letter-spacing:1px;text-align:center}
 .heading{flex:1;min-width:0}.heading h1{font-size:14px;line-height:1.15;margin:0;font-weight:900}.heading p{font-size:10px;margin:2px 0 0;font-weight:700;color:#644c23}
-.back{display:grid;place-items:center;flex:none;min-width:55px;height:32px;border-radius:8px;background:#174980;color:#fff;text-decoration:none;font-size:11px;font-weight:800}
+.search-trigger{flex:none;display:grid;place-items:center;width:39px;height:37px;border:1px solid #e4a434;border-radius:10px;background:#fff9e2;color:#d21b3c;padding:5px;box-shadow:0 2px 6px #bd8c2d18}
+.search-trigger svg{height:22px;width:22px;stroke:currentColor;fill:none;stroke-width:2.7;stroke-linecap:round;stroke-linejoin:round}
 .scene-bar{padding:8px;display:grid;grid-template-columns:36px 1fr 36px;gap:6px;background:var(--soft);border-bottom:1px solid var(--line)}
-.arrow{background:#e2edff;color:#17498d;border:1px solid #c4d7f3;border-radius:10px;font-size:23px;font-weight:900}
+.arrow{background:#fff0f2;color:#d21e3e;border:2px solid #edacb7;border-radius:10px;font-size:29px;font-weight:1000;line-height:1;display:grid;place-items:center}.arrow:active{background:#d21e3e;color:#fff}
 .current{display:flex;align-items:center;justify-content:center;text-align:left;gap:10px;min-width:0;background:#fff;border:1px solid #cbd9eb;padding:6px 8px;border-radius:10px;color:var(--ink)}
-.scene-emoji{font-size:27px;flex:none}.current-text{min-width:0;flex:1}.current-text strong{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.current-text small{display:block;font-size:11px;color:#57728f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chevron{font-weight:900;color:#2868be;font-size:18px}
+.scene-emoji{font-size:27px;flex:none}.current-text{min-width:0;flex:1}.current-text strong{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.current-text small{display:block;font-size:11px;color:#57728f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.current{cursor:default}
 .toptabs{display:flex;gap:5px;padding:6px 7px 7px;background:#fff;border-bottom:1px solid var(--line)}.tab{flex:1;min-width:0;border:1px solid #d8e4f1;border-radius:9px;background:#f3f7fc;padding:7px 2px;font-size:11px;font-weight:900;color:#425e80}.tab.active{background:var(--blue);border-color:var(--blue);color:#fff}
 .workspace{overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#bacdea transparent;padding:9px 8px 14px;background:linear-gradient(#fbfdff,#f0f6fe)}
 .hint{font-size:11px;color:#64809b;font-weight:700;margin:1px 3px 8px;display:flex;gap:6px;justify-content:space-between;align-items:center}.hint b{color:#275b9b}.option-label{display:flex;align-items:center;gap:5px;white-space:nowrap}
@@ -40,16 +41,16 @@ footer{z-index:2;padding:7px 8px calc(7px + env(safe-area-inset-bottom));backgro
 </head>
 <body>
 <div class="app" id="app">
-<header><div class="logo">DE-MAX<small>TUTIN</small></div><div class="heading"><h1>A1 · Dijalozi (40 situacija)</h1><p>ÖSD / telc · razgovor • slušanje • prevod</p></div><a class="back" target="_top" href="DE_MAX_A1_USMENI_2_OPIS_SLIKE_TELEFON.html">← Opis</a></header>
+<header><div class="logo">DE-MAX<small>TUTIN</small></div><div class="heading"><h1>ÖSD A1 · Dijalozi</h1><p>40 situacija · razgovor • slušanje • prevod</p></div><button class="search-trigger" type="button" id="openSearch" title="Pretraži 40 situacija i rečenice" aria-label="Otvori pretragu"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.9"/><path d="m16.1 16.1 5 5"/></svg></button></header>
 <div class="scene-bar">
 <button class="arrow" type="button" id="prev" aria-label="Prethodna situacija">‹</button>
-<button class="current" type="button" id="choose" aria-label="Izaberi situaciju"><span class="scene-emoji" id="emo"></span><span class="current-text"><strong id="sceneName"></strong><small id="sceneMeta"></small></span><span class="chevron">⌄</span></button>
+<div class="current" id="choose" aria-live="polite"><span class="scene-emoji" id="emo"></span><span class="current-text"><strong id="sceneName"></strong><small id="sceneMeta"></small></span></div>
 <button class="arrow" type="button" id="next" aria-label="Sledeća situacija">›</button>
 </div>
 <div class="toptabs" role="tablist" aria-label="Način vežbanja"><button class="tab active" id="tab-dialog" type="button">💬 Dijalog</button><button class="tab" id="tab-extra" type="button">＋ Dodatne</button><button class="tab" id="tab-mine" type="button">★ Moj dijalog</button><button class="tab" id="tab-practice" type="button">🎯 Vežbaj</button></div>
 <div class="workspace" id="workspace" tabindex="0" aria-label="Rečenice dijaloga"><div id="lines"></div></div>
 <footer><div class="actions"><button type="button" class="ctrl main" id="play">▶ Pusti redom</button><button type="button" class="ctrl" id="pause">⏸ Pauza</button><button type="button" class="ctrl danger" id="stop">■ Stop</button><button type="button" class="ctrl" id="speed">1,0×</button></div><div class="status" id="status" role="status">Izaberi situaciju i pokreni slušanje.</div></footer>
-<div class="overlay" id="overlay" hidden><div class="sheet" role="dialog" aria-label="Izbor situacije" aria-modal="true"><div class="sheet-head"><strong>Izaberi situaciju · 1–40</strong><button class="close" type="button" id="close" aria-label="Zatvori">×</button></div><input id="search" class="search" placeholder="Pretraži situacije i rečenice…" type="search" autocomplete="off"><div class="scene-list" id="sceneList"></div></div></div>
+<div class="overlay" id="overlay" hidden><div class="sheet" role="dialog" aria-label="Izbor situacije" aria-modal="true"><div class="sheet-head"><strong>Pretraga · ÖSD A1 (40 situacija)</strong><button class="close" type="button" id="close" aria-label="Zatvori">×</button></div><input id="search" class="search" placeholder="Pretraži situacije i rečenice…" type="search" autocomplete="off"><div class="scene-list" id="sceneList"></div></div></div>
 </div>
 <script src="DE_MAX_A1_DIJALOZI_40_DATA_01.js?v=20261018"></script>
 <script src="DE_MAX_A1_DIJALOZI_40_DATA_02.js?v=20261018"></script>
@@ -139,7 +140,7 @@ function sceneSelector(){
 }
 function openChoose(){$("overlay").hidden=false;$("search").value="";sceneSelector();$("search").focus()}
 function closeChoose(){$("overlay").hidden=true}
-$("choose").onclick=openChoose;$("close").onclick=closeChoose;
+$("openSearch").onclick=openChoose;$("close").onclick=closeChoose;
 $("overlay").addEventListener("click",e=>{if(e.target===$("overlay"))closeChoose()});
 $("search").addEventListener("input",sceneSelector);
 $("sceneList").addEventListener("click",e=>{const b=e.target.closest("[data-scene]");if(b)setScene(Number(b.dataset.scene)-1)});
