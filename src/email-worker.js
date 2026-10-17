@@ -178,6 +178,11 @@ async function grade(body,env) {
     !answer.trim() || answer.length>MAX_ANSWER_CHARS) {
     return {status:400,data:{error:"Izaberi mejl i napisi odgovor (do 2200 znakova)."}};
   }
+  const wordCount=(answer.match(/[\p{L}\p{N}]+(?:['’\-][\p{L}\p{N}]+)*/gu)||[]).length;
+  if(wordCount<15)return {status:422,data:{
+    error:"Mejl nije ocenjen: napisano je "+wordCount+" reči. Potrebno je najmanje 15 reči za ocenjivanje.",
+    status:"not_graded",wordCount,minWords:15
+  }};
   let all;
   try { all=await tasks(); }
   catch {return {status:503,data:{error:"Baza zadataka trenutno nije dostupna. Pokusaj ponovo."}};}
