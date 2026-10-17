@@ -28,6 +28,23 @@
   <script>
     // Velicina roditeljskog okvira prati vidljivi deo ekrana na mobilnom.
     (() => {
+      // Spoljasnja glavna aplikacija salje svoj povratni URL kroz iframe.
+      // Ako se iframe direktno prikazuje na telefonu, koristi se stranica koja ga je otvorila.
+      const qs=new URLSearchParams(location.search);
+      const explicit=qs.get('return');
+      const fromParent=explicit || document.referrer || '';
+      if(fromParent) {
+        try {
+          const back=new URL(fromParent,location.href);
+          if((back.protocol==='https:'||back.protocol==='http:')
+            && !(back.origin===location.origin && back.pathname.startsWith('/OSD-A1-Schreiben-AI/'))) {
+            const child=document.getElementById('demax-mail-frame');
+            const url=new URL(child.getAttribute('src'),location.href);
+            url.searchParams.set('return',back.href);
+            child.src=url.href;
+          }
+        }catch{}
+      }
       const resizeFrame = () => {
         const viewport = window.visualViewport;
         const height = Math.max(200, Math.round(viewport ? viewport.height : window.innerHeight));
