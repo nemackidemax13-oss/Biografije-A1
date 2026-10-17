@@ -318,31 +318,398 @@ function makeHair(role){
 }
 for(const role of ["mann","frau","kind"]){HAIR_INDEX[role]=BANK.length;BANK.push(makeHair(role))}
 const CLOTH_ITEMS=[
- {de:"Pullover",article:"m",sr:"džemper",srType:"m",label:"džemper"},
- {de:"Jacke",article:"f",sr:"jaknu",srType:"f",label:"jakna"},
- {de:"T-Shirt",article:"n",sr:"majicu",srType:"f",label:"majica"},
- {de:"Hemd",article:"n",sr:"košulju",srType:"f",label:"košulja"},
- {de:"Hose",article:"f",sr:"pantalone",srType:"p",label:"pantalone"},
- {de:"Jeans",article:"f",sr:"farmerke",srType:"p",label:"farmerke"},
- {de:"Schuhe",article:"p",sr:"cipele",srType:"p",label:"cipele"},
- {de:"Kleid",article:"n",sr:"haljinu",srType:"f",label:"haljina"},
- {de:"Bluse",article:"f",sr:"bluzu",srType:"f",label:"bluza"},
- {de:"Mantel",article:"m",sr:"kaput",srType:"m",label:"kaput"},
- {de:"Mütze",article:"f",sr:"kapu",srType:"f",label:"kapa"},
- {de:"Rock",article:"m",sr:"suknju",srType:"f",label:"suknja"},
- {de:"Anzug",article:"m",sr:"odelo",srType:"n",label:"odelo"},
- {de:"Schal",article:"m",sr:"šal",srType:"m",label:"šal"},
- {de:"Hut",article:"m",sr:"šešir",srType:"m",label:"šešir"},
- {de:"Stiefel",article:"p",sr:"čizme",srType:"p",label:"čizme"},
- {de:"Socken",article:"p",sr:"čarape",srType:"p",label:"čarape"},
- {de:"Handschuhe",article:"p",sr:"rukavice",srType:"p",label:"rukavice"},
- {de:"Schlafanzug",article:"m",sr:"pidžamu",srType:"f",label:"pidžama"},
- {de:"Sakko",article:"n",sr:"sako",srType:"m",label:"sako"},
- {de:"Sweatshirt",article:"n",sr:"duksericu",srType:"f",label:"dukserica"},
- {de:"Trikot",article:"n",sr:"dres",srType:"m",label:"dres"},
- {de:"Krawatte",article:"f",sr:"kravatu",srType:"f",label:"kravata"},
- {de:"Tasche",article:"f",sr:"torbu",srType:"f",label:"torba"},
- {de:"Badehose",article:"f",sr:"kupaće gaće",srType:"p",label:"kupaći"}
+ {
+  "de": "Pullover",
+  "article": "m",
+  "sr": "džemper",
+  "srType": "m",
+  "label": "džemper"
+ },
+ {
+  "de": "Jacke",
+  "article": "f",
+  "sr": "jaknu",
+  "srType": "f",
+  "label": "jakna"
+ },
+ {
+  "de": "T-Shirt",
+  "article": "n",
+  "sr": "majicu",
+  "srType": "f",
+  "label": "majica"
+ },
+ {
+  "de": "Hemd",
+  "article": "n",
+  "sr": "košulju",
+  "srType": "f",
+  "label": "košulja"
+ },
+ {
+  "de": "Hose",
+  "article": "f",
+  "sr": "pantalone",
+  "srType": "p",
+  "label": "pantalone"
+ },
+ {
+  "de": "Jeans",
+  "article": "f",
+  "sr": "farmerke",
+  "srType": "p",
+  "label": "farmerke"
+ },
+ {
+  "de": "Schuhe",
+  "article": "p",
+  "sr": "cipele",
+  "srType": "p",
+  "label": "cipele"
+ },
+ {
+  "de": "Kleid",
+  "article": "n",
+  "sr": "haljinu",
+  "srType": "f",
+  "label": "haljina"
+ },
+ {
+  "de": "Bluse",
+  "article": "f",
+  "sr": "bluzu",
+  "srType": "f",
+  "label": "bluza"
+ },
+ {
+  "de": "Mantel",
+  "article": "m",
+  "sr": "kaput",
+  "srType": "m",
+  "label": "kaput"
+ },
+ {
+  "de": "Mütze",
+  "article": "f",
+  "sr": "kapu",
+  "srType": "f",
+  "label": "kapa"
+ },
+ {
+  "de": "Rock",
+  "article": "m",
+  "sr": "suknju",
+  "srType": "f",
+  "label": "suknja"
+ },
+ {
+  "de": "Anzug",
+  "article": "m",
+  "sr": "odelo",
+  "srType": "n",
+  "label": "odelo"
+ },
+ {
+  "de": "Schal",
+  "article": "m",
+  "sr": "šal",
+  "srType": "m",
+  "label": "šal"
+ },
+ {
+  "de": "Hut",
+  "article": "m",
+  "sr": "šešir",
+  "srType": "m",
+  "label": "šešir"
+ },
+ {
+  "de": "Weste",
+  "article": "f",
+  "sr": "prsluk",
+  "srType": "m",
+  "label": "prsluk"
+ },
+ {
+  "de": "Shorts",
+  "article": "p",
+  "sr": "šorc",
+  "srType": "m",
+  "label": "šorc"
+ },
+ {
+  "de": "Stiefel",
+  "article": "p",
+  "sr": "čizme",
+  "srType": "p",
+  "label": "čizme"
+ },
+ {
+  "de": "Socken",
+  "article": "p",
+  "sr": "čarape",
+  "srType": "p",
+  "label": "čarape"
+ },
+ {
+  "de": "Handschuhe",
+  "article": "p",
+  "sr": "rukavice",
+  "srType": "p",
+  "label": "rukavice"
+ },
+ {
+  "de": "Schlafanzug",
+  "article": "m",
+  "sr": "pidžamu",
+  "srType": "f",
+  "label": "pidžama"
+ },
+ {
+  "de": "Sakko",
+  "article": "n",
+  "sr": "sako",
+  "srType": "m",
+  "label": "sako"
+ },
+ {
+  "de": "Sweatshirt",
+  "article": "n",
+  "sr": "duksericu",
+  "srType": "f",
+  "label": "dukserica"
+ },
+ {
+  "de": "Trikot",
+  "article": "n",
+  "sr": "dres",
+  "srType": "m",
+  "label": "dres"
+ },
+ {
+  "de": "Krawatte",
+  "article": "f",
+  "sr": "kravatu",
+  "srType": "f",
+  "label": "kravata"
+ },
+ {
+  "de": "Tasche",
+  "article": "f",
+  "sr": "torbu",
+  "srType": "f",
+  "label": "torba"
+ },
+ {
+  "de": "Badehose",
+  "article": "f",
+  "sr": "kupaće gaće",
+  "srType": "p",
+  "label": "kupaći"
+ },
+ {
+  "de": "Turnschuhe",
+  "article": "p",
+  "sr": "patike",
+  "srType": "p",
+  "label": "patike"
+ },
+ {
+  "de": "Sandalen",
+  "article": "p",
+  "sr": "sandale",
+  "srType": "p",
+  "label": "sandale"
+ },
+ {
+  "de": "Hausschuhe",
+  "article": "p",
+  "sr": "papuče",
+  "srType": "p",
+  "label": "papuče"
+ },
+ {
+  "de": "Flipflops",
+  "article": "p",
+  "sr": "japanke",
+  "srType": "p",
+  "label": "japanke"
+ },
+ {
+  "de": "Stiefeletten",
+  "article": "p",
+  "sr": "čizmice",
+  "srType": "p",
+  "label": "čizmice"
+ },
+ {
+  "de": "Gummistiefel",
+  "article": "p",
+  "sr": "gumene čizme",
+  "srType": "p",
+  "label": "gumene čizme"
+ },
+ {
+  "de": "Strumpfhose",
+  "article": "f",
+  "sr": "hulahopke",
+  "srType": "p",
+  "label": "hulahopke"
+ },
+ {
+  "de": "Leggings",
+  "article": "p",
+  "sr": "helanke",
+  "srType": "p",
+  "label": "helanke"
+ },
+ {
+  "de": "Jogginghose",
+  "article": "f",
+  "sr": "donji deo trenerke",
+  "srType": "m",
+  "label": "donji deo trenerke"
+ },
+ {
+  "de": "Trainingsanzug",
+  "article": "m",
+  "sr": "trenerku",
+  "srType": "f",
+  "label": "trenerka"
+ },
+ {
+  "de": "Regenjacke",
+  "article": "f",
+  "sr": "kabanicu",
+  "srType": "f",
+  "label": "kabanica"
+ },
+ {
+  "de": "Winterjacke",
+  "article": "f",
+  "sr": "zimsku jaknu",
+  "srType": "f",
+  "label": "zimska jakna"
+ },
+ {
+  "de": "Lederjacke",
+  "article": "f",
+  "sr": "kožnu jaknu",
+  "srType": "f",
+  "label": "kožna jakna"
+ },
+ {
+  "de": "Strickjacke",
+  "article": "f",
+  "sr": "kardigan",
+  "srType": "m",
+  "label": "kardigan"
+ },
+ {
+  "de": "Kapuzenpullover",
+  "article": "m",
+  "sr": "duks sa kapuljačom",
+  "srType": "m",
+  "label": "duks sa kapuljačom"
+ },
+ {
+  "de": "Poloshirt",
+  "article": "n",
+  "sr": "polo-majicu",
+  "srType": "f",
+  "label": "polo-majica"
+ },
+ {
+  "de": "Top",
+  "article": "n",
+  "sr": "top",
+  "srType": "m",
+  "label": "top"
+ },
+ {
+  "de": "Unterhemd",
+  "article": "n",
+  "sr": "potkošulju",
+  "srType": "f",
+  "label": "potkošulja"
+ },
+ {
+  "de": "Unterhose",
+  "article": "f",
+  "sr": "donji veš",
+  "srType": "m",
+  "label": "donji veš"
+ },
+ {
+  "de": "Badeanzug",
+  "article": "m",
+  "sr": "kupaći kostim",
+  "srType": "m",
+  "label": "kupaći kostim"
+ },
+ {
+  "de": "Bikini",
+  "article": "m",
+  "sr": "bikini",
+  "srType": "m",
+  "label": "bikini"
+ },
+ {
+  "de": "Bademantel",
+  "article": "m",
+  "sr": "bade-mantil",
+  "srType": "m",
+  "label": "bade-mantil"
+ },
+ {
+  "de": "Gürtel",
+  "article": "m",
+  "sr": "kaiš",
+  "srType": "m",
+  "label": "kaiš"
+ },
+ {
+  "de": "Sonnenbrille",
+  "article": "f",
+  "sr": "sunčane naočare",
+  "srType": "p",
+  "label": "sunčane naočare"
+ },
+ {
+  "de": "Brille",
+  "article": "f",
+  "sr": "naočare",
+  "srType": "p",
+  "label": "naočare"
+ },
+ {
+  "de": "Kappe",
+  "article": "f",
+  "sr": "kačket",
+  "srType": "m",
+  "label": "kačket"
+ },
+ {
+  "de": "Abendkleid",
+  "article": "n",
+  "sr": "svečanu haljinu",
+  "srType": "f",
+  "label": "svečana haljina"
+ },
+ {
+  "de": "Regenmantel",
+  "article": "m",
+  "sr": "kišni mantil",
+  "srType": "m",
+  "label": "kišni mantil"
+ },
+ {
+  "de": "Rucksack",
+  "article": "m",
+  "sr": "ranac",
+  "srType": "m",
+  "label": "ranac"
+ }
 ];
 const CLOTH_COLORS=[
  {de:"schwarz",sr:["crni","crnu","crno","crne"],label:"crna"},
