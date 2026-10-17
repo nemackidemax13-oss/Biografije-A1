@@ -1167,14 +1167,6 @@ html body #answerPanel .editorarea .foot button#check.checkbtn:enabled{
 .a1-prep-exit{display:inline-flex;align-items:center;gap:5px;min-height:36px;padding:6px 11px;border:1px solid #ffffff80;border-radius:9px;background:#ffffff18;color:#fff;font:800 13px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif;text-decoration:none;white-space:nowrap;touch-action:manipulation}
 .a1-prep-exit:hover{background:#ffffff30}
 .a1-prep-exit:focus-visible{outline:3px solid #ffca45;outline-offset:2px}
-/* Malo crveno dugme A1 Priprema: jasno vidljivo na pocetnoj i pri izboru mejla. */
-.a1-prep-mini{display:inline-flex;align-items:center;justify-content:center;max-width:max-content;min-height:27px;padding:4px 8px;border:1px solid #aa1c30;border-radius:7px;background:#c61e32;color:#fff!important;font:800 11px/1.15 system-ui,-apple-system,"Segoe UI",sans-serif;text-decoration:none;white-space:nowrap;position:relative;z-index:2}
-.a1-prep-mini:hover{background:#ac172c}
-.mail-home-hero{padding-top:48px!important}
-.mail-home-hero .a1-prep-mini{position:absolute;top:8px;left:10px}
-.a1-prep-topline{display:none}
-body.view-mail:not(.mobile-writing) .a1-prep-topline{display:flex;align-items:center;padding:4px 9px;background:#edf4ff;border-bottom:1px solid #d8e4f5}
-@media(max-width:799px){.mail-home-hero{padding-top:43px!important}}
 
 /* DE-MAX: omogućeno skrolovanje otvorenog mejla i vidljiv povratak na A1 pripremu. */
 @media (max-width:799px) {
@@ -1186,17 +1178,6 @@ body.view-mail:not(.mobile-writing) .a1-prep-topline{display:flex;align-items:ce
     min-height:0!important;
     max-height:100dvh!important;
     overflow:hidden!important;
-  }
-  body.view-mail .a1-prep-topline {
-    display:flex!important;
-    align-items:center!important;
-    flex:0 0 auto!important;
-    position:relative!important;
-    z-index:80!important;
-    min-height:36px!important;
-    padding:4px 9px!important;
-    background:#edf4ff!important;
-    border-bottom:1px solid #d8e4f5!important;
   }
   body.view-mail:not(.mobile-writing) .workspace {
     display:block!important;
@@ -1216,8 +1197,6 @@ body.view-mail:not(.mobile-writing) .a1-prep-topline{display:flex;align-items:ce
     max-height:none!important;
     overflow:visible!important;
   }
-  /* Tokom kucanja strelica ostaje vidljiva; pitanja i odgovor se skroluju. */
-  body.view-mail.mobile-writing .a1-prep-topline {display:flex!important}
   body.view-mail.mobile-writing .answer .editorarea .task-paired,
   body.view-mail.mobile-writing .answer .editorarea textarea {
     overflow-y:auto!important;
@@ -1234,11 +1213,10 @@ body.view-mail:not(.mobile-writing) .a1-prep-topline{display:flex;align-items:ce
 <body class="view-home">
 <div class="app">
 <section id="mailHome" aria-label="Izbor mejla">
- <div class="mail-home-hero"><a class="a1-prep-mini" target="_self" aria-label="Nazad na A1 Pripremu">← A1 Priprema</a><div class="mail-home-eyebrow">DE-MAX TUTIN · ÖSD A1</div><div class="mail-home-logo" aria-label="De-Max Tutin"><b>DE-MAX</b><small>TUTIN</small></div><div class="mail-home-eyebrow">35 MEJLOVA · A1 VEŽBANJE</div><h1>Izaberi mejl</h1><p>Odaberi zadatak i napiši odgovor na nemačkom</p><a class="mail-home-test-link" href="./test-a1.html" target="_self" aria-label="Otvori kompletan ÖSD A1 Test 1">ÖSD A1 Test 1 →</a></div>
+ <div class="mail-home-hero"><div class="mail-home-eyebrow">DE-MAX TUTIN · ÖSD A1</div><div class="mail-home-logo" aria-label="De-Max Tutin"><b>DE-MAX</b><small>TUTIN</small></div><div class="mail-home-eyebrow">35 MEJLOVA · A1 VEŽBANJE</div><h1>Izaberi mejl</h1><p>Odaberi zadatak i napiši odgovor na nemačkom</p><a class="mail-home-test-link" href="./test-a1.html" target="_self" aria-label="Otvori kompletan ÖSD A1 Test 1">ÖSD A1 Test 1 →</a></div>
  <div class="mail-home-summary"><span>MEJLOVI ZA VEŽBANJE</span><span id="homeProgress">0 / 35 provereno</span></div>
  <div id="mailHomeGrid" class="mail-home-grid" aria-label="35 mejlova"></div>
 </section>
-<nav class="a1-prep-topline" aria-label="Povratak na A1 Pripremu"><a class="a1-prep-mini" target="_self">← A1 Priprema</a></nav>
 <header>
   <div class="head-top"><div class="brand">De-Max Tutin</div><div class="headtag">ÖSD A1 • <span id="total">35</span> MEJLOVA</div></div>
   <div class="headnav"><button id="prev" title="Prethodni mejl">‹</button><select id="pick" aria-label="Izaberi mejl"></select><button id="pickMobile" type="button" class="pick-mobile" aria-label="Izaberi mejl" aria-haspopup="dialog">1. mejl — Baštenska zabava</button><button id="next" title="Sledeći mejl">›</button></div>
