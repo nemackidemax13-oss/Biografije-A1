@@ -13,7 +13,8 @@ function linksFor(returnUrl, referrer = '', ids = { demax_celina: '20', demax_ve
   if (returnUrl) params.set('demax_return_url', returnUrl);
   const links = [0, 1].map(() => ({ attributes: {}, listeners: {}, addEventListener(type, fn) { this.listeners[type] = fn; }, setAttribute(key, value) { this.attributes[key] = value; } }));
   const assigned = [];
-  const location = { search: '?' + params, ancestorOrigins: ancestors, assign(url) { assigned.push(url); } };
+  const replaced = [];
+  const location = { search: '?' + params, ancestorOrigins: ancestors, assign(url) { assigned.push(url); }, replace(url) { replaced.push(url); } };
   const document = { referrer, querySelectorAll() { return links; } };
   const requests = [];
   const traversals = [];
@@ -27,7 +28,7 @@ function linksFor(returnUrl, referrer = '', ids = { demax_celina: '20', demax_ve
     clearTimeout(id) {cancelled.push(id);}, setTimeout(fn) {timers.push(fn); return timers.length;} });
   links.requests = requests;
   links.timers = timers;
-  Object.assign(links, {traversals, assigned, listeners, cancelled});
+  Object.assign(links, {traversals, assigned, replaced, listeners, cancelled});
   return links;
 }
 
@@ -45,29 +46,29 @@ function click(link, changes = {}) {
   link.listeners.click({button:0, preventDefault() {prevented = true;}, ...changes});
   return prevented;
 }
-test('same-tab return restores the actual previous menu without navigating to a fresh copy', () => {
+test('same-tab return replaces the exercise page with the selected De-Max menu', () => {
   const links = linksFor(course, course, sameTab);
   assert.equal(click(links[0]), true);
-  assert.deepEqual(links.traversals, [-1]);
+  assert.deepEqual(links.replaced, [`${course}?celina=20&vezba=90`]);
+  assert.deepEqual(links.traversals, []);
   assert.deepEqual(links.assigned, []);
 });
-test('return skips every mail opened inside the exercise, not just its last grid', () => {
+test('repeated exit taps cannot start duplicate navigations', () => {
   const links = linksFor(course, course, sameTab, [], {length:6, state:{demaxReturnDepth:3}});
   click(links[0]);
-  assert.deepEqual(links.traversals, [-4]);
   click(links[1]);
-  assert.deepEqual(links.traversals, [-4], 'double taps must not traverse twice');
+  assert.deepEqual(links.replaced, [`${course}?celina=20&vezba=90`]);
+  assert.deepEqual(links.traversals, []);
 });
-test('direct, untrusted, new-tab and invalid-depth openings keep the safe menu href', () => {
-  for (const [ref, ids, history] of [
-    ['',sameTab,{}], ['https://evil.test/',sameTab,{}],
-    [course,{demax_celina:'20',demax_vezba:'90'},{}],
-    [course,sameTab,{length:1}], [course,sameTab,{length:3,state:{demaxReturnDepth:5}}],
-    [course,sameTab,{state:{demaxReturnDepth:-1}}], [course,sameTab,{state:{demaxReturnDepth:0.5}}],
+test('direct, untrusted and unmarked openings keep the safe menu href', () => {
+  for (const [ref, ids] of [
+    ['',sameTab], ['https://evil.test/',sameTab],
+    [course,{demax_celina:'20',demax_vezba:'90'}],
   ]) {
-    const links = linksFor(course, ref, ids, [], history);
+    const links = linksFor(course, ref, ids);
     assert.equal(click(links[0]), false);
     assert.deepEqual(links.traversals, []);
+    assert.deepEqual(links.replaced, []);
     assert.equal(links[0].href, `${course}?celina=20&vezba=90`);
   }
 });
@@ -75,16 +76,6 @@ test('modified clicks retain native new-tab behavior', () => {
   const links = linksFor(course, course, sameTab);
   assert.equal(click(links[0], {ctrlKey:true}), false);
   assert.deepEqual(links.traversals, []);
-});
-test('leaving for the retained menu cancels the reload fallback; a blocked traversal has a safe fallback', () => {
-  const links = linksFor(course, course, sameTab);
-  click(links[0]);
-  links.listeners.pagehide();
-  assert.ok(links.cancelled.includes(1));
-  const blocked = linksFor(course, course, sameTab);
-  click(blocked[0]);
-  blocked.timers[0]();
-  assert.deepEqual(blocked.assigned, [`${course}?celina=20&vezba=90`]);
 });
 test('embedded same-tab marked links still ask the authenticated parent, never traverse the wrapper', () => {
   const links = linksFor(course, course, sameTab, ['https://de-max-a-1-aplikacija.replit.app']);
