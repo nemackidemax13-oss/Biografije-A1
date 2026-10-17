@@ -1358,6 +1358,129 @@ body.view-mail:not(.mobile-writing) .a1-prep-topline{display:flex;align-items:ce
   }
 }
 
+
+/* DE-MAX keyboard dock v3 (18.10.2026): tanak brojac/provera tik iznad tastature;
+   tri pitanja su statična i ne mogu da se skroluju tokom pisanja. */
+@media (max-width:799px) {
+ html body.view-mail.mobile-writing #answerPanel .editorarea,
+ html body.view-mail.mobile-writing #answerPanel.answer.has-result .editorarea {
+   gap:2px!important;
+   padding:2px 6px 0!important;
+   margin:0!important;
+   overflow:hidden!important;
+ }
+ html body.view-mail.mobile-writing #answerPanel .editorarea .task-paired {
+   flex:0 1 auto!important;
+   height:auto!important;
+   min-height:0!important;
+   max-height:49%!important;
+   margin:0!important;
+   padding:4px 7px!important;
+   overflow:hidden!important;
+   overflow-x:hidden!important;
+   overflow-y:hidden!important;
+   overscroll-behavior:none!important;
+   touch-action:none!important;
+   scrollbar-width:none!important;
+ }
+ html body.view-mail.mobile-writing #answerPanel .task-paired .paired-heading {
+   min-height:20px!important;
+   margin:0 0 2px!important;
+   line-height:1.05!important;
+ }
+ html body.view-mail.mobile-writing #answerPanel .task-paired .paired-heading span {
+   font-size:10.5px!important;
+   line-height:1.05!important;
+ }
+ html body.view-mail.mobile-writing #answerPanel .task-paired #mobileBackInline {
+   touch-action:manipulation!important;
+   height:22px!important;
+   min-height:22px!important;
+   max-height:22px!important;
+   padding:2px 7px!important;
+   font-size:10px!important;
+ }
+ html body.view-mail.mobile-writing #answerPanel .task-paired #pairs-qs {
+   gap:2px!important;
+ }
+ html body.view-mail.mobile-writing #answerPanel .task-paired .sentence-pair {
+   padding:0 0 2px!important;
+   margin:0!important;
+ }
+ html body.view-mail.mobile-writing #answerPanel .task-paired .sentence-de {
+   font-size:11.6px!important;
+   line-height:1.16!important;
+ }
+ html body.view-mail.mobile-writing #answerPanel .task-paired .sentence-sr {
+   font-size:10.6px!important;
+   line-height:1.14!important;
+ }
+ html body.view-mail.mobile-writing #answerPanel .editorarea textarea#answer {
+   flex:1 1 0%!important;
+   min-height:45px!important;
+   height:0!important;
+   margin:0!important;
+   padding:5px 8px!important;
+   border-radius:7px!important;
+   overflow-y:auto!important;
+ }
+ html body.view-mail.mobile-writing #answerPanel .editorarea .mini-progress {
+   display:none!important;
+ }
+ html body.view-mail.mobile-writing #answerPanel .editorarea .foot {
+   position:static!important;
+   bottom:auto!important;
+   top:auto!important;
+   order:3!important;
+   flex:0 0 30px!important;
+   width:100%!important;
+   height:30px!important;
+   min-height:30px!important;
+   max-height:30px!important;
+   gap:3px!important;
+   margin:0!important;
+   padding:0!important;
+   border:0!important;
+   border-radius:0!important;
+   box-shadow:none!important;
+   background:#fff!important;
+ }
+ html body.view-mail.mobile-writing #answerPanel .editorarea .counter {
+   flex:1 1 auto!important;
+   min-width:0!important;
+   font-size:10.5px!important;
+   line-height:1!important;
+   white-space:nowrap!important;
+ }
+ html body.view-mail.mobile-writing #answerPanel .editorarea button#check.checkbtn {
+   flex:0 0 auto!important;
+   height:28px!important;
+   min-height:28px!important;
+   max-height:28px!important;
+   padding:3px 8px!important;
+   font-size:11px!important;
+   line-height:1!important;
+   border-radius:6px!important;
+   background:#18834b!important;
+   color:#fff!important;
+ }
+ html body.view-mail.mobile-writing.keyboard-tight #answerPanel .task-paired .sentence-de {
+   font-size:10.9px!important;
+   line-height:1.11!important;
+ }
+ html body.view-mail.mobile-writing.keyboard-tight #answerPanel .task-paired .sentence-sr {
+   font-size:10px!important;
+   line-height:1.1!important;
+ }
+ html body.view-mail.mobile-writing.keyboard-micro #answerPanel .editorarea .task-paired {
+   max-height:47%!important;
+   padding:2px 5px!important;
+ }
+ html body.view-mail.mobile-writing.keyboard-micro #answerPanel .editorarea .counter {
+   font-size:10px!important;
+ }
+}
+
 </style>
 </head>
 <body class="view-home">
@@ -1666,8 +1789,8 @@ function setMobileVisibleHeight(){
    apiKeyboardHeight<70 && !mailParentVisibleHeight;
  if(keyboardNotReported){
    // Pregledaci unutar iframe-a cesto ne menjaju visualViewport.
-   // Konzervativan prostor (53% visine) drzi obe komande IZNAD tastature.
-   height=Math.min(height,Math.max(190,Math.floor(baseline*.53)));
+   // Rezervni prostor (57% visine) spusta traku blize tastaturi ako resize nije prijavljen.
+   height=Math.min(height,Math.max(190,Math.floor(baseline*.57)));
  }
  height=Math.max(165,Math.floor(height));
  document.documentElement.style.setProperty('--mobile-visible-height',height+'px');
