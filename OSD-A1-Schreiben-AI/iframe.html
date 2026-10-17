@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="sr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <title>DE-MAX A1 – Pisanje mejlova (iframe)</title>
+  <style>
+    :root { color-scheme: light; --frame-height: 100dvh; }
+    html, body { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; background: #fff; }
+    * { box-sizing: border-box; }
+    .iframe-container { position: fixed; inset: 0; width: 100%; height: var(--frame-height); overflow: hidden; background: #fff; }
+    iframe { display: block; width: 100%; height: 100%; border: 0; margin: 0; padding: 0; background: #fff; }
+    .fallback { position: absolute; bottom: 8px; left: 8px; z-index: -1; font: 13px system-ui,sans-serif; }
+  </style>
+</head>
+<body>
+  <main class="iframe-container" aria-label="DE-MAX A1 – aplikacija za pisanje mejlova">
+    <iframe
+      id="demax-mail-frame"
+      src="./?v=green5"
+      title="DE-MAX A1: 35 mejlova – pisanje i AI provera"
+      loading="eager"
+      allow="clipboard-write"
+      referrerpolicy="strict-origin-when-cross-origin"
+    ></iframe>
+  </main>
+  <script>
+    // Velicina roditeljskog okvira prati vidljivi deo ekrana na mobilnom.
+    (() => {
+      const resizeFrame = () => {
+        const viewport = window.visualViewport;
+        const height = Math.max(200, Math.round(viewport ? viewport.height : window.innerHeight));
+        document.documentElement.style.setProperty('--frame-height', height + 'px');
+      };
+      resizeFrame();
+      window.addEventListener('resize', resizeFrame, {passive:true});
+      window.visualViewport?.addEventListener('resize', resizeFrame, {passive:true});
+    })();
+  </script>
+</body>
+</html>
