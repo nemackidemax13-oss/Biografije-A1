@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
+<meta name="theme-color" content="#ffffff">
+<title>DE-MAX · ÖSD A1 Test 1</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#fff;font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+.shell{width:100%;height:100dvh;display:flex;flex-direction:column;min-height:0}
+nav{flex:0 0 auto;min-height:39px;background:#f5f8fd;border-bottom:1px solid #dfe8f3;display:flex;align-items:center;gap:12px;padding:5px 10px}
+nav a{display:inline-flex;align-items:center;justify-content:center;min-height:27px;padding:4px 9px;background:#c61e32;color:#fff;border-radius:7px;text-decoration:none;font-size:12px;font-weight:800}
+nav span{font-size:12px;font-weight:800;color:#254569}
+iframe{flex:1 1 0;min-height:0;width:100%;display:block;border:0;background:white}
+</style>
+</head>
+<body>
+<div class="shell">
+<nav aria-label="Navigacija"><a href="./" aria-label="Nazad na sve mejlove">← Mejlovi</a><span>DE-MAX · ÖSD A1 Test 1</span></nav>
+<iframe id="demaxTestFrame" src="https://nemackidemax13-oss.github.io/Biografije-A1/DE-MAX_OSD_A1_TEST_1/" title="DE-MAX ÖSD A1 Test 1 – svi zadaci" allow="autoplay; clipboard-write" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+</div>
+<script>
+// Prati vidljivi viewport pri otvaranju mobilne tastature.
+(function(){
+  const root=document.querySelector('.shell');
+  function fit(){
+    const vv=window.visualViewport;
+    const h=Math.max(200,Math.round(vv ? vv.height : window.innerHeight));
+    root.style.height=h+'px';
+  }
+  fit();
+  window.addEventListener('resize',fit,{passive:true});
+  window.visualViewport?.addEventListener('resize',fit,{passive:true});
+})();
+</script>
+</body>
+</html>
