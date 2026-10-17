@@ -1225,12 +1225,16 @@ body.view-mail:not(.mobile-writing) .a1-prep-topline{display:flex;align-items:ce
     touch-action:pan-y;
   }
 }
+
+/* Jedina dopuna pocetne strane mejlova: ulaz u ÖSD A1 Test bez Replita. */
+.mail-home-test-link{display:inline-flex;align-items:center;justify-content:center;gap:5px;margin-top:12px;min-height:36px;padding:8px 16px;border:1px solid #d7e7fc;border-radius:10px;background:#fff;color:#114d99!important;text-decoration:none;font-size:13px;font-weight:900;box-shadow:0 4px 12px #102d5a25;position:relative;z-index:2}
+.mail-home-test-link:hover,.mail-home-test-link:focus-visible{background:#eef5ff}
 </style>
 </head>
 <body class="view-home">
 <div class="app">
 <section id="mailHome" aria-label="Izbor mejla">
- <div class="mail-home-hero"><a class="a1-prep-mini" target="_self" aria-label="Nazad na A1 Pripremu">← A1 Priprema</a><div class="mail-home-eyebrow">DE-MAX TUTIN · ÖSD A1</div><div class="mail-home-logo" aria-label="De-Max Tutin"><b>DE-MAX</b><small>TUTIN</small></div><div class="mail-home-eyebrow">35 MEJLOVA · A1 VEŽBANJE</div><h1>Izaberi mejl</h1><p>Odaberi zadatak i napiši odgovor na nemačkom</p></div>
+ <div class="mail-home-hero"><a class="a1-prep-mini" target="_self" aria-label="Nazad na A1 Pripremu">← A1 Priprema</a><div class="mail-home-eyebrow">DE-MAX TUTIN · ÖSD A1</div><div class="mail-home-logo" aria-label="De-Max Tutin"><b>DE-MAX</b><small>TUTIN</small></div><div class="mail-home-eyebrow">35 MEJLOVA · A1 VEŽBANJE</div><h1>Izaberi mejl</h1><p>Odaberi zadatak i napiši odgovor na nemačkom</p><a class="mail-home-test-link" href="./test-a1.html" target="_self" aria-label="Otvori kompletan ÖSD A1 Test 1">ÖSD A1 Test 1 →</a></div>
  <div class="mail-home-summary"><span>MEJLOVI ZA VEŽBANJE</span><span id="homeProgress">0 / 35 provereno</span></div>
  <div id="mailHomeGrid" class="mail-home-grid" aria-label="35 mejlova"></div>
 </section>
