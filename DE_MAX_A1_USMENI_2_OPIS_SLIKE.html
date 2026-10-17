@@ -22,7 +22,9 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}butto
 .step .num{width:16px;height:16px;flex:none;display:grid;place-items:center;background:#4d90e4;color:#fff;border-radius:5px;font-size:10px;font-weight:900}
 .step span:last-child{font-size:9px;font-weight:800;line-height:1.12;max-width:100%;min-width:0}
 .example{border:1px solid #cbdcef;border-radius:8px;background:#f7faff;min-height:0;padding:3px 8px;display:flex;flex-direction:column;justify-content:center;gap:2px;overflow:hidden}
-.sample-content{width:100%;min-width:0;align-self:center;overflow:hidden}
+.sample-content{width:100%;min-width:0;align-self:center;display:grid;grid-template-columns:18px minmax(0,1fr);column-gap:4px;align-items:start;overflow:hidden}
+.sample-number{font-size:12.5px;font-weight:900;color:#173f73;line-height:1.15}
+.sample-lines{min-width:0;overflow:hidden}
 .samplehead{font-size:12.5px;font-weight:900;color:#173f73;letter-spacing:0;white-space:nowrap;line-height:1.15}
 .samplede{font-size:11px;line-height:1.13;font-weight:850;color:#173f73;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:2px}
 .samplesr{color:#161616;font-size:11.5px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2;margin-top:3px}
@@ -217,7 +219,7 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}butto
   <button class="step" data-step="5"><span class="num">6</span><span>Detalji</span></button>
  </nav>
  <section class="example" aria-label="Ispitno pitanje i prevod">
-  <div class="sample-content"><div class="samplehead" id="samplehead">1. Wie viele Personen sehen Sie?</div><div class="samplesr" id="samplesr">Koliko osoba vidite?</div></div>
+  <div class="sample-content"><span class="sample-number" id="sampleNumber">1.</span><div class="sample-lines"><div class="samplehead" id="samplehead">Wie viele Personen sehen Sie?</div><div class="samplesr" id="samplesr">Koliko osoba vidite?</div></div></div>
  </section>
  <section class="panel" aria-label="Izbor rečenica">
   <div class="paneltitle"><strong id="selectorTitle">Izaberi rečenice</strong><span class="small" id="categoryCount">194 rečenice</span></div>
@@ -444,7 +446,8 @@ function listen(i){
 }
 function source(){const ids=BANK.map((_,i)=>i).filter(i=>BANK[i].cat===category);if(category==="extra"){const closing=ids.filter(i=>BANK[i].de==="Das war meine Bildbeschreibung.");return ids.filter(i=>BANK[i].de!=="Das war meine Bildbeschreibung.").concat(closing)}if(category==="start"&&step===0)return ids.slice(0,6).concat(ids.filter(i=>BANK[i].personExample));if(category==="start"&&step===1)return ids.slice(6).filter(i=>!BANK[i].personExample);return ids}
 function renderSample(){
- $("#samplehead").textContent=SAMPLE_HEADS[step];
+ $("#sampleNumber").textContent=(step+1)+".";
+ $("#samplehead").textContent=SAMPLE_HEADS[step].replace(/^\d+\.\s*/,"");
  $("#samplesr").textContent=SAMPLE_TRANSLATIONS[step];
  document.querySelectorAll(".step").forEach((button,index)=>{
   const isSelected=index===step;
