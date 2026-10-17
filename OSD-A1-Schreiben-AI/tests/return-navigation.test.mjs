@@ -8,19 +8,26 @@ const script = html.match(/<script id="demax-exercise-return">([\s\S]*?)<\/scrip
 const course = 'https://de-max-a-1-aplikacija.replit.app/course/a1-priprema';
 const preview = 'https://navigation-test.archer.replit.dev';
 
-function linksFor(returnUrl, referrer = '', ids = { demax_celina: '20', demax_vezba: '90' }, ancestors = []) {
+function linksFor(returnUrl, referrer = '', ids = { demax_celina: '20', demax_vezba: '90' }, ancestors = [], historyOptions = {}) {
   const params = new URLSearchParams(ids);
   if (returnUrl) params.set('demax_return_url', returnUrl);
   const links = [0, 1].map(() => ({ attributes: {}, listeners: {}, addEventListener(type, fn) { this.listeners[type] = fn; }, setAttribute(key, value) { this.attributes[key] = value; } }));
-  const location = { search: '?' + params, ancestorOrigins: ancestors };
+  const assigned = [];
+  const location = { search: '?' + params, ancestorOrigins: ancestors, assign(url) { assigned.push(url); } };
   const document = { referrer, querySelectorAll() { return links; } };
   const requests = [];
-  const window = {parent: {postMessage(...args) { requests.push(args); }}, addEventListener() {}};
+  const traversals = [];
+  const listeners = {};
+  const cancelled = [];
+  const window = { location, history: { state: null, length: 2, go(delta) { traversals.push(delta); }, ...historyOptions },
+    parent: {postMessage(...args) { requests.push(args); }}, addEventListener(type, fn) {listeners[type] = fn;} };
+  if (!ancestors.length) window.parent = window;
   const timers = [];
   vm.runInNewContext(script, { URL, URLSearchParams, document, location, window,
-    clearTimeout() {}, setTimeout(fn) {timers.push(fn); return timers.length;} });
+    clearTimeout(id) {cancelled.push(id);}, setTimeout(fn) {timers.push(fn); return timers.length;} });
   links.requests = requests;
   links.timers = timers;
+  Object.assign(links, {traversals, assigned, listeners, cancelled});
   return links;
 }
 
@@ -30,6 +37,66 @@ test('published opening returns to the selected published course, not the login 
     assert.equal(link.target, '_self');
     assert.equal(link.attributes.rel, 'noopener');
   }
+});
+
+const sameTab = { demax_celina:'20', demax_vezba:'90', demax_same_tab:'1' };
+function click(link, changes = {}) {
+  let prevented = false;
+  link.listeners.click({button:0, preventDefault() {prevented = true;}, ...changes});
+  return prevented;
+}
+test('same-tab return restores the actual previous menu without navigating to a fresh copy', () => {
+  const links = linksFor(course, course, sameTab);
+  assert.equal(click(links[0]), true);
+  assert.deepEqual(links.traversals, [-1]);
+  assert.deepEqual(links.assigned, []);
+});
+test('return skips every mail opened inside the exercise, not just its last grid', () => {
+  const links = linksFor(course, course, sameTab, [], {length:6, state:{demaxReturnDepth:3}});
+  click(links[0]);
+  assert.deepEqual(links.traversals, [-4]);
+  click(links[1]);
+  assert.deepEqual(links.traversals, [-4], 'double taps must not traverse twice');
+});
+test('direct, untrusted, new-tab and invalid-depth openings keep the safe menu href', () => {
+  for (const [ref, ids, history] of [
+    ['',sameTab,{}], ['https://evil.test/',sameTab,{}],
+    [course,{demax_celina:'20',demax_vezba:'90'},{}],
+    [course,sameTab,{length:1}], [course,sameTab,{length:3,state:{demaxReturnDepth:5}}],
+    [course,sameTab,{state:{demaxReturnDepth:-1}}], [course,sameTab,{state:{demaxReturnDepth:0.5}}],
+  ]) {
+    const links = linksFor(course, ref, ids, [], history);
+    assert.equal(click(links[0]), false);
+    assert.deepEqual(links.traversals, []);
+    assert.equal(links[0].href, `${course}?celina=20&vezba=90`);
+  }
+});
+test('modified clicks retain native new-tab behavior', () => {
+  const links = linksFor(course, course, sameTab);
+  assert.equal(click(links[0], {ctrlKey:true}), false);
+  assert.deepEqual(links.traversals, []);
+});
+test('leaving for the retained menu cancels the reload fallback; a blocked traversal has a safe fallback', () => {
+  const links = linksFor(course, course, sameTab);
+  click(links[0]);
+  links.listeners.pagehide();
+  assert.ok(links.cancelled.includes(1));
+  const blocked = linksFor(course, course, sameTab);
+  click(blocked[0]);
+  blocked.timers[0]();
+  assert.deepEqual(blocked.assigned, [`${course}?celina=20&vezba=90`]);
+});
+test('embedded same-tab marked links still ask the authenticated parent, never traverse the wrapper', () => {
+  const links = linksFor(course, course, sameTab, ['https://de-max-a-1-aplikacija.replit.app']);
+  click(links[0]);
+  assert.equal(links.requests.length, 1);
+  assert.deepEqual(links.traversals, []);
+});
+test('an unrelated outer wrapper never has its joint history traversed by the exercise', () => {
+  const links = linksFor(course, course, sameTab, ['https://replit.com']);
+  assert.equal(click(links[0]), false);
+  assert.deepEqual(links.traversals, []);
+  assert.equal(links[0].target, '_self');
 });
 
 test('preview opening returns to the same preview session rather than the production login', () => {

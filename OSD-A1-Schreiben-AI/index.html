@@ -1639,6 +1639,12 @@ else renderMailGrid();
   // A cross-origin child cannot navigate its intermediate parent in Chromium.
   // Ask De-Max to return itself; never discard its authenticated frame via _top.
   let pendingReturn = null;
+  let traversingHistory = false;
+  window.addEventListener('pagehide', () => {
+    clearTimeout(pendingReturn);
+    pendingReturn = null;
+  });
+  window.addEventListener('pageshow', () => { traversingHistory = false; });
   window.addEventListener('message', event => {
     if (event.origin !== parentOrigin || event.source !== window.parent
       || event.data?.type !== 'demax:email-return-accepted') return;
@@ -1666,6 +1672,34 @@ else renderMailGrid();
         }
         notice.textContent = 'De-Max nije primio povratak. Zatvori mejlove i ponovo otvori ažuriranu De-Max aplikaciju.';
       }, 1500);
+    });
+    else link.addEventListener('click', event => {
+      if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+      // Go back to the actual De-Max document, not a freshly loaded copy.
+      // The flag is issued only by De-Max's explicit same-tab launch. Direct,
+      // bookmarked, new-tab and embedded links keep their normal safe href.
+      const depth = window.history?.state?.demaxReturnDepth ?? 0;
+      if (params.get('demax_same_tab') !== '1'
+        || window.parent !== window
+        || referringOrigin !== destination.origin
+        || !validId(category) || !validId(material)
+        || !Number.isSafeInteger(depth) || depth < 0
+        || window.history.length <= depth + 1) return;
+      event.preventDefault();
+      if (traversingHistory) return;
+      traversingHistory = true;
+      // Skip the mail/grid entries created within this exercise as well.
+      try {
+        window.history.go(-(depth + 1));
+        pendingReturn = setTimeout(() => {
+          traversingHistory = false;
+          pendingReturn = null;
+          window.location.assign(destination.href);
+        }, 1500);
+      } catch {
+        traversingHistory = false;
+        window.location.assign(destination.href);
+      }
     });
   });
 })();
