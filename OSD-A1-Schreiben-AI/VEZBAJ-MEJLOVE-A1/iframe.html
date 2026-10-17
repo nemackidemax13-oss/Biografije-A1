@@ -1709,6 +1709,13 @@ body.view-mail:not(.mobile-writing) .a1-prep-topline{display:flex;align-items:ce
 .retry-mail-btn{background:#18834b!important;color:#fff!important;border:0;border-radius:9px;font:850 13px system-ui,-apple-system,sans-serif;min-height:39px;padding:9px 15px;cursor:pointer;max-width:100%;touch-action:manipulation}
 .retry-mail-btn:focus-visible{outline:3px solid #97dab4;outline-offset:2px}
 
+
+/* Komentar AI nastavnika za svako od tri pitanja, bez uticaja na stari API. */
+.question-feedback{display:grid;grid-template-columns:1fr;gap:6px;margin:9px 0 12px}
+.question-feedback-item{border-left:3px solid #2268bd;background:#eff5fe;padding:7px 9px;border-radius:5px;color:#163c67}
+.question-feedback-item b{font-size:11px}
+.question-feedback-item p{margin:3px 0;font-size:12px;line-height:1.42}
+
 </style>
 </head>
 <body class="view-home">
@@ -1845,6 +1852,7 @@ function renderResult(r){
  $('result').innerHTML=`<div class="result-title"><span>REZULTAT PROVERE</span><span class="ai-label">${isAI?'AI provera':'Osnovna automatska provera'}</span></div>
  <div class="scorebox"><div class="score">${score.toLocaleString('sr-RS')}<small> / 10 bodova</small></div><div class="score-caption">Ocena za vežbanje — nije zvanična ÖSD ocena</div></div>
  <div class="rubric"><span>1. pitanje <b>${pts[0]}/2</b></span><span>2. pitanje <b>${pts[1]}/2</b></span><span>3. pitanje <b>${pts[2]}/2</b></span><span>Gramatika <b>${grammar}/2</b></span><span>Forma <b>${form}/1</b></span><span>Dužina <b>${len}/1</b></span></div>
+ ${Array.isArray(r.questionFeedback)&&r.questionFeedback.length===3?'<div class="question-feedback">'+r.questionFeedback.map((q,i)=>'<div class="question-feedback-item"><b>'+(i+1)+'. pitanje</b><p>'+escapeHtml(q)+'</p></div>').join('')+'</div>':''}
  <div class="correction-label">✎ ISPRAVLJEN MEJL</div>
  <div class="corrected" lang="de">${escapeHtml(correction)}</div>
  <div class="change-hint">${changed?'Prikazana je automatski ispravljena verzija tvog mejla.':'Tekst je prikazan bez dodatnih automatskih izmena.'}</div>
