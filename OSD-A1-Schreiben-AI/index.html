@@ -1593,8 +1593,23 @@ else renderMailGrid();
 <script id="demax-exercise-return">
 (function () {
   // A1 priprema je odredište čak i ako je mejl otvoren kao zaseban tab ili iframe.
-  const destination = new URL('https://de-max-a-1-aplikacija.replit.app/course/a1-priprema');
+  let destination = new URL('https://de-max-a-1-aplikacija.replit.app/course/a1-priprema');
   const params = new URLSearchParams(location.search);
+  // Development and published De-Max have separate login sessions. Return to
+  // the origin that opened this exercise, never silently switch environments.
+  try {
+    const requested = new URL(params.get('demax_return_url'));
+    let referringOrigin = '';
+    try { referringOrigin = new URL(document.referrer).origin; } catch {}
+    const publishedApp = requested.origin === destination.origin;
+    const samePreview = requested.hostname.endsWith('.replit.dev') && requested.origin === referringOrigin;
+    if (requested.protocol === 'https:' && !requested.username && !requested.password
+      && (publishedApp || samePreview)
+      && /^(?:\/[A-Za-z0-9_-]+)*\/course\/a1-priprema\/?$/.test(requested.pathname)) {
+      // Retain only the trusted origin/path, not arbitrary query data or hash.
+      destination = new URL(requested.pathname, requested.origin);
+    }
+  } catch {}
   const category = params.get('demax_celina');
   const material = params.get('demax_vezba');
   const validId = value => /^[1-9]\d{0,15}$/.test(value || '') && Number.isSafeInteger(Number(value));
