@@ -144,7 +144,7 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}butto
  <section class="panel" aria-label="Izbor rečenica">
   <div class="paneltitle"><strong id="selectorTitle">Izaberi rečenice</strong><span class="small" id="categoryCount">154 rečenice</span><button class="load" id="loadExample">+ Primer</button></div>
   <div class="rolebar" id="rolebar" hidden aria-label="Izbor osobe"><button data-role="mann" class="active">Muškarac</button><button data-role="frau">Žena</button><button data-role="kind">Dete</button></div>
-  <div class="modebar" id="modebar" hidden aria-label="Izbor osobina"><button data-mode="age" class="active">Godine</button><button data-mode="hair">Kosa</button></div>
+  <div class="modebar" id="modebar" hidden aria-label="Izbor osobina"><button data-mode="description">Opis</button><button data-mode="age" class="active">Godine</button><button data-mode="hair">Kosa</button></div>
   <div class="agebar" id="agebar" hidden aria-label="Interaktivni izbor godina">
    <div class="age-controls"><span class="age-person" id="agePerson">Der Mann</span>
     <button type="button" class="age-btn" id="ageMinus" aria-label="Smanji broj godina">−</button>
@@ -343,9 +343,9 @@ function stop(){runId++;if("speechSynthesis" in window)speechSynthesis.cancel()}
 function utter(text,callback){if(!("speechSynthesis" in window)){alert("Nemački govor nije podržan u ovom pregledaču.");return}let u=new SpeechSynthesisUtterance(text);u.lang="de-DE";u.rate=.87;u.pitch=1;const v=voice();if(v)u.voice=v;u.onend=()=>{if(callback)callback()};u.onerror=()=>{if(callback)callback()};speechSynthesis.speak(u)}
 function listen(i){stop();utter(BANK[i].de)}
 function source(){const ids=BANK.map((_,i)=>i).filter(i=>BANK[i].cat===category);if(category==="extra"){const closing=ids.filter(i=>BANK[i].de==="Das war meine Bildbeschreibung.");return ids.filter(i=>BANK[i].de!=="Das war meine Bildbeschreibung.").concat(closing)}return category==="start"&&step===0?ids.slice(0,6):category==="start"&&step===1?ids.slice(6):ids}
-function renderSample(){const i=step===3?(appearanceMode==="age"?AGE_INDEX[category]:HAIR_INDEX[category]):step===4?CLOTH_INDEX[activeRole]:SAMPLE_PHRASES[step],s=BANK[i];$("#samplehead").textContent=SAMPLE_HEADS[step];$("#samplede").textContent=s.de;$("#samplesr").textContent=s.sr;document.querySelectorAll(".step").forEach((x,j)=>x.classList.toggle("active",j===step))}
+function renderSample(){const i=step===3?(appearanceMode==="age"?AGE_INDEX[category]:appearanceMode==="hair"?HAIR_INDEX[category]:source()[0]):step===4?CLOTH_INDEX[activeRole]:SAMPLE_PHRASES[step],s=BANK[i];$("#samplehead").textContent=SAMPLE_HEADS[step];$("#samplede").textContent=s.de;$("#samplesr").textContent=s.sr;document.querySelectorAll(".step").forEach((x,j)=>x.classList.toggle("active",j===step))}
 function renderList(){
- if(step===3){
+ if(step===3&&appearanceMode!=="description"){
    $("#categoryCount").textContent=appearanceMode==="age"?"Godine":"Kosa";
    return;
  }
@@ -369,11 +369,11 @@ function renderChosen(){
 }
 function addOrRemove(i){const pos=chosen.indexOf(i);if(pos<0){chosen.push(i);chosenIndex=chosen.length-1;if(auto)listen(i)}else{stop();chosen.splice(pos,1);chosenIndex=Math.min(pos,chosen.length-1)}renderChosen();renderList();renderAge();renderHair();renderClothing()}
 function showRoles(){
- const show=step===3||step===4,appearance=step===3;
+ const show=step===3||step===4,appearance=step===3&&appearanceMode!=="description";
  $("#rolebar").hidden=!show;
  const panel=$("#phrases").closest(".panel");
  panel.classList.toggle("appearance-only",appearance);
- $("#selectorTitle").textContent=appearance?(appearanceMode==="age"?"Izaberi godine":"Izaberi kosu"):"Izaberi rečenice";
+ $("#selectorTitle").textContent=step===3?(appearanceMode==="age"?"Izaberi godine":appearanceMode==="hair"?"Izaberi kosu":"Opis osobe"):"Izaberi rečenice";
  document.querySelectorAll("[data-role]").forEach(b=>b.classList.toggle("active",b.dataset.role===activeRole));
  renderModes();renderAge();renderHair();renderClothing();
 }
@@ -382,7 +382,7 @@ function playAll(){stop();const my=runId,arr=[...chosen];let position=0;function
 $("#steps").addEventListener("click",e=>{const b=e.target.closest("[data-step]");if(b)chooseStep(Number(b.dataset.step))});
 $("#rolebar").addEventListener("click",e=>{const b=e.target.closest("[data-role]");if(!b)return;activeRole=b.dataset.role;if(step===3)category=activeRole;page=0;showRoles();renderSample();renderList()});
 $("#modebar").addEventListener("click",e=>{const b=e.target.closest("[data-mode]");if(!b)return;appearanceMode=b.dataset.mode;page=0;showRoles();renderSample();renderList()});
-$("#sampleSound").addEventListener("click",()=>listen(step===3?(appearanceMode==="age"?AGE_INDEX[category]:HAIR_INDEX[category]):step===4?CLOTH_INDEX[activeRole]:SAMPLE_PHRASES[step]));
+$("#sampleSound").addEventListener("click",()=>listen(step===3?(appearanceMode==="age"?AGE_INDEX[category]:appearanceMode==="hair"?HAIR_INDEX[category]:source()[0]):step===4?CLOTH_INDEX[activeRole]:SAMPLE_PHRASES[step]));
 $("#ageMinus").addEventListener("click",()=>adjustAge(-1));
 $("#agePlus").addEventListener("click",()=>adjustAge(1));
 $("#ageSound").addEventListener("click",()=>listen(AGE_INDEX[category]));
