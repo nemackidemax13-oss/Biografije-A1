@@ -1035,6 +1035,47 @@ body.view-mail .prompt .panel-title strong#mailNumberText{font-size:16px!importa
   }
 }
 
+
+/* DE-MAX: mobilni uredjivac mejlova 14 px; brojac i provera uz donju ivicu
+   vidljivog prostora, neposredno iznad Android/iOS tastature. */
+@media (max-width:799px) {
+ body.view-mail #answer,
+ body.mobile-writing #answer,
+ body.mobile-writing .answer .editorarea textarea {
+   font-size:14px!important;
+   line-height:1.44!important;
+   -webkit-text-size-adjust:100%;
+ }
+ body.mobile-writing .answer .editorarea .foot {
+   position:static!important;
+   display:flex!important;
+   flex-wrap:nowrap!important;
+   justify-content:space-between!important;
+   align-items:center!important;
+   width:100%!important;
+   min-height:47px!important;
+   flex-shrink:0!important;
+   gap:7px!important;
+   padding:3px 2px calc(3px + env(safe-area-inset-bottom,0px))!important;
+   background:#fff!important;
+ }
+ body.mobile-writing .answer .editorarea .counter {
+   font-size:14px!important;
+   font-weight:850!important;
+   white-space:nowrap!important;
+ }
+ body.mobile-writing .answer .editorarea .checkbtn {
+   font-size:14px!important;
+   min-height:40px!important;
+   padding:8px 11px!important;
+ }
+ body.mobile-writing .answer .editorarea {min-height:0!important;overflow:hidden!important}
+ body.mobile-writing .answer .editorarea textarea {min-height:55px!important}
+}
+@media (max-width:360px) {
+ body.mobile-writing .answer .editorarea .counter {font-size:12px!important}
+ body.mobile-writing .answer .editorarea .checkbtn {font-size:12px!important;padding-inline:8px!important}
+}
 </style>
 </head>
 <body class="view-home">
@@ -1175,7 +1216,8 @@ function renderResult(r){
 }
 function updateCount(){
  let c=words($('answer').value);
- $('count').textContent=c+' reči'+(c<15?' · preporučeno još '+(15-c):c>30?' · preko 30 reči':' · spremno');
+ $('count').textContent=c+' / 30 reči';
+ $('count').title=c<15?'Za vežbu preporučujemo bar 15 reči.':c>30?'Cilj je oko 30 reči.':'Broj napisanih reči (cilj: oko 30).';
  $('count').classList.toggle('valid',c>=15&&c<=30);
  $('progress').style.width=Math.min(100,(c/30)*100)+'%';
  $('check').disabled=c===0;
@@ -1262,6 +1304,8 @@ $('answer').addEventListener('focus',()=>{
 $('answer').addEventListener('blur',()=>document.body.classList.remove('is-typing'));
 $('answer').addEventListener('focus',()=>{
   if(window.matchMedia('(max-width:799px)').matches){
+    // Direktan dodir na polje za mejl takodje otvara namenski mobilni rezim.
+    if(!document.body.classList.contains('mobile-writing'))openMobileWriting();
     requestAnimationFrame(setMobileVisibleHeight);
     setTimeout(setMobileVisibleHeight,180);
     setTimeout(setMobileVisibleHeight,420);
@@ -1313,14 +1357,17 @@ function setMobileVisibleHeight(){
 }
 function openMobileWriting(){
  if(!window.matchMedia('(max-width:799px)').matches){document.getElementById('answerPanel').scrollIntoView({behavior:'smooth'});return}
- $('answer').blur();
- document.body.classList.remove('reading-mode','mobile-review','is-typing');
- document.body.classList.add('mobile-writing');
+ document.body.classList.remove('reading-mode','mobile-review');
+ document.body.classList.add('mobile-writing','is-typing');
  $('writeHeading').textContent='NAPIŠI SVOJ ODGOVOR';
  setMobileVisibleHeight();
  growMailEditor();
  window.scrollTo(0,0);
+ // Otvori tastaturu odmah i zadrzi komande za broj reci/proveru u vidljivom delu.
+ if(document.activeElement!==$('answer'))$('answer').focus({preventScroll:true});
  requestAnimationFrame(setMobileVisibleHeight);
+ setTimeout(setMobileVisibleHeight,150);
+ setTimeout(setMobileVisibleHeight,350);
 }
 function closeMobileWriting(toResult=false){
  $('answer').blur();
@@ -1390,6 +1437,6 @@ const initialMail=location.hash.match(/^#mejl-(\d+)$/);
 if(initialMail&&Number(initialMail[1])>=1&&Number(initialMail[1])<=MAILS.length)openMailFromGrid(Number(initialMail[1])-1,false);
 else renderMailGrid();
 </script>
-<script src="./openai-direct.js"></script>
+<!-- OpenAI provera ide preko Cloudflare Workera; direktna podesavanja API kljuca nisu potrebna. -->
 </body>
 </html>
