@@ -1133,6 +1133,34 @@ body.view-mail .prompt .panel-title strong#mailNumberText{font-size:16px!importa
   body.mobile-writing .answer .editorarea .counter{font-size:11px!important}
   body.mobile-writing .answer .editorarea .checkbtn {font-size:11.5px!important;padding-inline:7px!important}
 }
+
+/* Poslednje pravilo: zeleno dugme u SVIM prikazima, ukljucujuci mobilni rezim i disabled. */
+html body #answerPanel .editorarea .foot button#check.checkbtn,
+html body #answerPanel .editorarea .foot button#check.checkbtn:enabled,
+html body #answerPanel .editorarea .foot button#check.checkbtn:disabled,
+html body #answerPanel .editorarea .foot button#check.checkbtn:hover:not(:disabled),
+html body.mobile-writing #answerPanel .editorarea .foot button#check.checkbtn {
+  background:#18834b!important;
+  background-color:#18834b!important;
+  color:#fff!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+html body #answerPanel .editorarea .foot button#check.checkbtn:disabled{
+  opacity:.65!important;
+}
+html body #answerPanel .editorarea .foot button#check.checkbtn:enabled{
+  opacity:1!important;
+}
+@media(max-width:799px){
+ html body #answerPanel .editorarea .foot button#check.checkbtn{
+  min-height:34px!important;
+  height:34px!important;
+  padding:6px 10px!important;
+  font-size:12.5px!important;
+  border-radius:8px!important;
+ }
+}
 </style>
 </head>
 <body class="view-home">
@@ -1164,7 +1192,7 @@ body.view-mail .prompt .panel-title strong#mailNumberText{font-size:16px!importa
     </div>
   </section>
   <section class="panel answer" id="answerPanel" aria-label="Pisanje odgovora">
-    <div class="panel-title"><strong id="writeHeading">2. NAPIŠI SVOJ ODGOVOR</strong><button class="mobile-jump" id="mobileBackToMail" type="button">← Postavka</button><button class="mobile-edit" id="mobileEditAgain" type="button">✎ Izmeni odgovor</button><span class="limit-note">A1 • oko 30 reči • do 10 bodova</span></div>
+    <div class="panel-title"><strong id="writeHeading">2. NAPIŠI SVOJ ODGOVOR</strong><button class="mobile-jump" id="mobileBackToMail" type="button">← Postavka</button><span class="limit-note">A1 • oko 30 reči • do 10 bodova</span></div>
     <div class="editorarea"><div class="editor-top"><span class="save-flag">Čuva se automatski</span></div><textarea id="answer" spellcheck="true" lang="de" placeholder="Napiši odgovor na sva tri pitanja.&#10;&#10;Liebe Grüße&#10;…" aria-label="Ovde upiši mejl na nemačkom"></textarea>
       <div class="paired-card task-paired" aria-label="Pitanja i uputstvo za mejl">
         <div class="paired-heading"><span id="questionsHead">PITANJA • 1. MEJL</span><button id="mobileBackInline" type="button" aria-label="Vrati se na postavku mejla">← Postavka</button></div>
@@ -1438,7 +1466,7 @@ $('mobileStartTop').addEventListener('click',openMobileWriting);
 $('mobileStartBottom').addEventListener('click',openMobileWriting);
 $('mobileBackToMail').addEventListener('click',()=>closeMobileWriting(false));
 $('mobileBackInline').addEventListener('click',()=>closeMobileWriting(false));
-$('mobileEditAgain').addEventListener('click',openMobileWriting);
+
 window.visualViewport?.addEventListener('resize',setMobileVisibleHeight);
 window.visualViewport?.addEventListener('scroll',setMobileVisibleHeight);
 window.addEventListener('resize',()=>{
