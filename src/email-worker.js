@@ -1,7 +1,7 @@
 // DE-MAX TUTIN — OpenAI API server za 35 A1 mejlova.
 // Postavi ovaj kod kao Cloudflare Worker. NIKADA ne upisuj API kljuc u ovaj fajl.
 // U Cloudflare: Settings > Variables and Secrets > OPENAI_API_KEY (Secret).
-const SITE_ORIGINS = new Set(["https://nemackidemax13-oss.github.io", "https://biografije-a1.pages.dev", "https://biografije-a1.nemackidemax13.workers.dev"]);
+const SITE_ORIGINS = new Set(["https://nemackidemax13-oss.github.io", "https://biografije-a1.pages.dev", "https://biografije-a1.nemackidemax13.workers.dev", "https://a1nivo.nemackidemax13.workers.dev"]);
 const TASKS_URL = "https://raw.githubusercontent.com/nemackidemax13-oss/Biografije-A1/main/OSD-A1-Schreiben-AI/tasks.json";
 const MODEL_DEFAULT = "gpt-4.1-mini";
 const TIMEOUT_MS = 25000;
@@ -128,7 +128,9 @@ async function grade(body,env) {
   } finally {clearTimeout(timer);}
   if (!response.ok) {
     let err="OpenAI servis trenutno nije dostupan. Pokusaj kasnije.";
-    if(response.status===401)err="OpenAI API kljuc nije ispravan. Proveri Secret OPENAI_API_KEY.";
+    if(response.status===400)err="OpenAI je odbio zahtev (HTTP 400). Proveri OPENAI_MODEL i OpenAI API model.";
+    else if(response.status===401)err="OpenAI API kljuc nije ispravan. Proveri Secret OPENAI_API_KEY.";
+    else if(response.status===403)err="OpenAI nalog ili projekat nema pristup ovom modelu. Proveri API permissions.";
     else if(response.status===429)err="Dostignut OpenAI limit ili nema raspolozivog kredita. Proveri API Billing i Limits.";
     else if(response.status===404)err="Izabrani OpenAI model nije dostupan na ovom nalogu.";
     return {status:response.status===429?429:502,data:{error:err}};
