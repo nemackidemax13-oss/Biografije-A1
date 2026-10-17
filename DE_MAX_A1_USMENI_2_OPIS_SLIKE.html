@@ -88,7 +88,7 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}butto
 .compact-nav .nav{height:20px;min-width:25px;font-size:12px}
 .controls{height:31px;flex:none;display:flex;gap:4px;align-items:center;padding:3px 5px;border-top:1px solid #e9eef7;background:#f9fbfe}
 .ctrl{min-width:0;flex:1;height:25px;border:1px solid #c9d8e9;background:#fff;color:#235990;border-radius:6px;font-size:10px;font-weight:850;padding:2px 5px;white-space:nowrap}
-.ctrl.main{background:#2060af;color:white;border-color:#2060af;flex:1.2}
+.ctrl.main{background:#171717;color:#fff;border-color:#171717;flex:1.2}
 .ctrl.active{background:#eaf8ef;border-color:#aed9bf;color:#17724c}
 .ctrl.danger{color:#ba2b41;background:#fff3f5;border-color:#edc9d0;flex:.65}
 .agebar{height:83px;min-height:83px;flex:none;display:flex;flex-direction:column;gap:3px;padding:4px 5px;background:#f8fbff;border-bottom:1px solid #dbe8f6;overflow:hidden}
@@ -262,7 +262,7 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}butto
   <div class="paneltitle"><strong>Moj opis</strong><span class="small" id="total">0 rečenica</span></div>
   <div class="selected-area" id="selectedArea"></div>
   <div class="compact-nav"><button id="chosenPrev" class="nav" aria-label="Prethodna izabrana rečenica">‹</button><span id="chosenPage">0 od 0</span><button id="chosenNext" class="nav" aria-label="Sledeća izabrana rečenica">›</button></div>
-  <div class="controls"><button id="auto" class="ctrl active">🔊 Auto DA</button><button id="playAll" class="ctrl main">▶ Pusti sve</button><button id="stop" class="ctrl">■ Stop</button><button id="clear" class="ctrl danger">Obriši</button></div>
+  <div class="controls"><button id="playAll" class="ctrl main">▶ Pusti sve</button><button id="stop" class="ctrl">■ Stop</button><button id="clear" class="ctrl danger">Obriši</button></div>
  </section>
 </main>
 <script>
@@ -274,7 +274,7 @@ const SAMPLE_PHRASES=[0,6,13,54,121,142];
 const DEMO=[2,6,13,10,58,128,153];
 const $=(q)=>document.querySelector(q);
 let PAGE_SIZE=6;
-let category="start",page=0,step=0,chosen=[],chosenIndex=0,auto=true,runId=0,activeRole="mann",appearanceMode="age",speakingChosenPosition=-1;
+let category="start",page=0,step=0,chosen=[],chosenIndex=0,runId=0,activeRole="mann",appearanceMode="age",speakingChosenPosition=-1;
 const AGES={mann:30,frau:30,kind:8};
 const AGE_ROLES={mann:{label:"Der Mann",de:"Er",sr:"On"},frau:{label:"Die Frau",de:"Sie",sr:"Ona"},kind:{label:"Das Kind",de:"Es",sr:"Ono"}};
 const AGE_INDEX={};
@@ -478,7 +478,7 @@ function renderChosen(){
   const line=BANK[i],isSpeaking=speakingChosenPosition===first+offset;return '<div class="current '+(["age","custom-hair","custom-clothing"].includes(line.cat)?'dynamic-current':'')+(isSpeaking?' speaking-now':'')+'"'+(isSpeaking?' aria-current="true"':'')+'><span class="index">'+(isSpeaking?'▶':(first+offset+1)+'.')+'</span><div class="sentence"><div class="de">'+escapeHTML(line.de)+'</div><div class="sr">'+escapeHTML(line.sr)+'</div></div><button class="sound" data-chosen-sound="'+i+'" aria-label="Poslušaj rečenicu">🔊</button><button class="remove" data-chosen-remove="'+i+'" aria-label="Ukloni rečenicu">×</button></div>'
  }).join("")+'</div>'
 }
-function addOrRemove(i){const pos=chosen.indexOf(i);if(pos<0){chosen.push(i);chosenIndex=chosen.length-1;if(auto)listen(i)}else{stop();chosen.splice(pos,1);chosenIndex=Math.min(pos,chosen.length-1)}renderChosen();renderList();renderAge();renderHair();renderClothing()}
+function addOrRemove(i){const pos=chosen.indexOf(i);if(pos<0){chosen.push(i);chosenIndex=chosen.length-1;listen(i)}else{stop();chosen.splice(pos,1);chosenIndex=Math.min(pos,chosen.length-1)}renderChosen();renderList();renderAge();renderHair();renderClothing()}
 function showRoles(){
  const show=step===3||step===4,appearance=step===3&&appearanceMode!=="description";
  $("#rolebar").hidden=!show;
@@ -528,7 +528,6 @@ $("#chosenPrev").addEventListener("click",()=>{chosenIndex=Math.max(0,(Math.floo
 $("#chosenNext").addEventListener("click",()=>{chosenIndex=Math.min(chosen.length-1,(Math.floor(chosenIndex/chosenPageSize())+1)*chosenPageSize());renderChosen()});
 $("#selectedArea").addEventListener("click",e=>{const sound=e.target.closest("[data-chosen-sound]");if(sound){listen(Number(sound.dataset.chosenSound));return}const remove=e.target.closest("[data-chosen-remove]");if(remove)addOrRemove(Number(remove.dataset.chosenRemove))});
 $("#loadExample").addEventListener("click",()=>{stop();chosen=[...DEMO];chosenIndex=0;renderChosen();renderList()});
-$("#auto").addEventListener("click",()=>{auto=!auto;$("#auto").textContent=auto?"🔊 Auto DA":"🔇 Auto NE";$("#auto").classList.toggle("active",auto)});
 $("#playAll").addEventListener("click",playAll);
 $("#stop").addEventListener("click",stop);
 $("#clear").addEventListener("click",()=>{stop();chosen=[];chosenIndex=0;renderChosen();renderList()});
