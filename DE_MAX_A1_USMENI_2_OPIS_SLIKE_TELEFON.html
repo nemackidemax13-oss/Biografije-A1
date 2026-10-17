@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#14366b">
+<title>DE-MAX Tutin | A1 usmeni – Mustra za opis slike</title>
+<style>
+:root{color-scheme:light;--navy:#173969;--blue:#2263bb;--red:#d6273e;--line:#dbe6f4;--muted:#67809c;--shadow:0 6px 20px #25456d12}
+*{box-sizing:border-box}html,body{height:100%;margin:0;overflow:hidden;overscroll-behavior:none}
+body{font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:linear-gradient(120deg,#e9f2ff,#f7fafe);display:flex;align-items:center;justify-content:center;color:#173352}
+button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}button:focus-visible{outline:2px solid #2b82ed;outline-offset:1px}
+.app{width:min(100vw,56.25dvh);height:100dvh;max-height:100dvh;min-height:0;min-width:0;background:#fff;padding:5px;display:grid;grid-template-rows:27px 48px 46px minmax(0,1fr) minmax(188px,35%);gap:4px;overflow:hidden;box-shadow:0 10px 45px #1e406226}
+.top{min-height:0;display:flex;align-items:center;gap:7px;border-radius:7px;padding:2px 7px;background:linear-gradient(102deg,#ffec78,#ffd23e);border:1px solid #e8c84c;overflow:hidden}
+.brand{font-size:13px;font-style:italic;font-weight:1000;letter-spacing:-.5px;color:#d31f38;white-space:nowrap;line-height:1}
+.brand small{font-size:8px;color:#274064;font-style:normal;letter-spacing:.1px}
+.top h1{margin:0;border-left:1px solid #ceb748;padding-left:7px;min-width:0;font-size:12px;font-weight:850;color:#1c3c64;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.steps{min-height:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:4px}
+.step{min-width:0;min-height:0;display:flex;align-items:center;gap:4px;background:#2466bf;border:1px solid #15519c;color:#fff;border-radius:7px;text-align:left;padding:2px 4px;overflow:hidden}
+.step.active{background:#e11d3c!important;border-color:#a91a32!important;color:#fff!important;box-shadow:inset 0 0 0 1px #ff9cad!important}
+.step.active .num{background:#ad1630;color:#fff}
+.step .num{width:16px;height:16px;flex:none;display:grid;place-items:center;background:#4d90e4;color:#fff;border-radius:5px;font-size:10px;font-weight:900}
+.step span:last-child{font-size:9px;font-weight:800;line-height:1.12;max-width:100%;min-width:0}
+.example{border:1px solid #cbdcef;border-radius:8px;background:#f7faff;min-height:0;padding:3px 8px;display:flex;flex-direction:column;justify-content:center;gap:2px;overflow:hidden}
+.sample-content{width:100%;min-width:0;align-self:center;display:grid!important;grid-template-columns:20px minmax(0,1fr)!important;grid-template-rows:auto auto;column-gap:5px;row-gap:2px;align-items:start;overflow:hidden}
+.sample-number{grid-column:1;grid-row:1;font-size:12.5px;font-weight:900;color:#173f73;line-height:1.15}
+.sample-content>.samplehead{grid-column:2;grid-row:1;min-width:0;text-align:left}
+.sample-content>.samplesr{grid-column:2;grid-row:2;min-width:0;text-align:left;margin-top:0;color:#111!important;font-weight:900!important}
+.samplehead{font-size:12.5px;font-weight:900;color:#173f73;letter-spacing:0;white-space:nowrap;line-height:1.15}
+.samplede{font-size:11px;line-height:1.13;font-weight:850;color:#173f73;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:2px}
+.samplesr{color:#161616;font-size:11.5px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2;margin-top:3px}
+.sound{min-height:30px;min-width:30px;border:1px solid #bcdaff;border-radius:7px;background:#eaf4ff;color:#19579f;display:grid;place-items:center;font-size:14px;padding:3px}
+.panel{min-height:0;min-width:0;border:1px solid var(--line);border-radius:9px;background:#fff;box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column}
+.paneltitle{flex:none;height:25px;padding:0 6px;background:#f3f8ff;border-bottom:1px solid #dde8f7;display:flex;align-items:center;justify-content:space-between;gap:5px}
+.paneltitle strong{font-size:11px;color:#1b5398;line-height:1.05}
+.paneltitle .small{font-size:10px;color:#667f9b;white-space:nowrap}
+ .load{height:21px;flex:none;font-size:9px;font-weight:850;background:#eaf7ef;border:1px solid #b7dec6;border-radius:6px;color:#13734b;padding:2px 6px;white-space:nowrap}
+ .rolebar{height:25px;flex:none;display:flex;align-items:center;gap:4px;padding:2px 5px;background:#fafcff;border-bottom:1px solid #e5edf8}
+ .rolebar[hidden]{display:none}
+ .rolebar button{flex:1;min-width:0;height:20px;border:1px solid #c8d8ed;background:#fff;color:#295b96;border-radius:5px;font-size:10px;font-weight:850}
+ .rolebar button.active{background:#d6273e;border-color:#bd1d35;color:white}
+.phrases{flex:1;min-height:0;display:grid;grid-template-rows:repeat(var(--page-rows,3),minmax(0,1fr));gap:1px;padding:2px;overflow:hidden}
+.phrase{display:flex;align-items:stretch;gap:2px;border:1px solid #dce8f6;background:#fff;border-radius:5px;min-height:0;overflow:hidden}
+.phrase.selected{background:#fff1f3;border:2px solid #ed1636;box-shadow:inset 0 0 0 1px #ed163622}
+.phrase .add{flex:1;min-height:0;min-width:0;display:flex;align-items:center;gap:3px;background:transparent;border:0;text-align:left;padding:1px 3px}
+.plus{width:15px;height:15px;flex:none;border-radius:5px;background:#e6effe;color:#2561ac;display:grid;place-items:center;font-size:11px;font-weight:950}
+.phrase.selected .plus{background:#e21d3c;color:white}
+.phrasetxt{display:flex;min-height:0;min-width:0;flex-direction:column;justify-content:center;overflow:hidden;gap:1px}
+.de{font-size:9.5px;font-weight:780;line-height:1.10;color:#193f70;overflow-wrap:anywhere}
+.sr{font-size:7.8px;line-height:1.08;color:#617997;overflow-wrap:anywhere}
+.phrase .sound{align-self:center;min-width:21px;min-height:21px;padding:1px;margin-right:2px;font-size:10px}
+.pagination{flex:none;height:24px;background:#f9fbff;border-top:1px solid #e9f0fa;display:flex;align-items:center;justify-content:space-between;padding:2px 7px;gap:5px}
+.nav{height:24px;min-width:34px;padding:0 8px;border-radius:7px;border:1px solid #bb1833;background:#d6273e;color:#fff;font-weight:950;font-size:19px;line-height:1}
+.nav:disabled{opacity:.35;cursor:default}
+.pagecount{font-size:10px;font-weight:800;color:#53718f;white-space:nowrap}
+.compose .paneltitle{height:25px}
+.selected-area{flex:1;min-height:0;display:flex;align-items:stretch;padding:4px 5px;overflow:hidden}
+.chosen-grid{width:100%;height:100%;min-height:0;display:grid;grid-template-rows:repeat(var(--chosen-rows,2),minmax(0,1fr));gap:3px}
+.current{width:100%;min-height:0;max-height:100%;display:flex;align-items:center;gap:4px;padding:2px 4px;border:1px solid #e2eaf6;background:#fcfdff;border-radius:6px;overflow:hidden}
+.current .index{width:22px;height:22px;min-width:22px;display:grid;place-items:center;align-self:center;font-size:10px;font-weight:900;color:#8fa1b7;flex:none;padding:0;border-radius:100%}
+.current .sentence{min-width:0;flex:1;overflow:hidden;align-self:center}
+.current .sentence .de{font-size:11px;line-height:1.2}
+.current .sentence .sr{font-size:9px;line-height:1.2;margin-top:2px}
+.current .remove{align-self:center;flex:none;border:1px solid #f0c3cb;border-radius:6px;background:#fff1f4;color:#bf2941;font-size:13px;font-weight:900;width:23px;height:24px}
+.current .sound{min-width:23px;min-height:23px;font-size:11px}
+/* Tokom automatskog čitanja u "Moj opis" označi upravo izgovaranu rečenicu. */
+.current.speaking-now{border-color:#e32d49!important}
+.current.speaking-now .de{color:#a61939}
+.current.speaking-now .sr{color:#715969}
+.current.speaking-now .sound{background:#fff;border-color:#eaa3b0;color:#b91d3c}
+
+.empty{font-size:10.5px;color:#768ca5;text-align:center;line-height:1.5;margin:auto;padding:0 8px}
+.compact-nav{flex:none;height:23px;display:flex;justify-content:center;gap:6px;align-items:center;border-top:1px solid #edf2f9}
+.compact-nav span{font-size:9px;color:#5e7895;font-weight:800;min-width:45px;text-align:center}
+.compact-nav .nav{height:23px;min-width:31px;font-size:17px}
+.controls{height:31px;flex:none;display:flex;gap:4px;align-items:center;padding:3px 5px;border-top:1px solid #e9eef7;background:#f9fbfe}
+.ctrl{min-width:0;flex:1;height:25px;border:1px solid #c9d8e9;background:#fff;color:#235990;border-radius:6px;font-size:10px;font-weight:850;padding:2px 5px;white-space:nowrap}
+.ctrl.main{background:#189750;color:#fff;border-color:#137d42;flex:1.2}
+.ctrl.active{background:#eaf8ef;border-color:#aed9bf;color:#17724c}
+.ctrl.danger{color:#ba2b41;background:#fff3f5;border-color:#edc9d0;flex:.65}
+.agebar{height:83px;min-height:83px;flex:none;display:flex;flex-direction:column;gap:3px;padding:4px 5px;background:#f8fbff;border-bottom:1px solid #dbe8f6;overflow:hidden}
+.agebar[hidden]{display:none}
+.agebar.age-selected{background:#fff3f5;box-shadow:inset 0 0 0 2px #ed1636}
+.age-controls{display:flex;align-items:center;justify-content:center;gap:6px;flex:none;height:28px;min-width:0}
+.age-person{font-size:10px;font-weight:950;color:#174886;margin-right:auto;white-space:nowrap}
+.age-btn{width:29px;height:27px;border-radius:7px;border:1px solid #adc9e9;background:#eff6ff;color:#164a95;font-size:18px;font-weight:850;line-height:1;flex:none}
+.age-btn:disabled{opacity:.35;cursor:default}
+.age-number{min-width:29px;font-size:17px;text-align:center;font-weight:950;color:#173b6b}
+.age-unit{font-size:10px;color:#65809b;white-space:nowrap;margin-right:auto}
+.age-preview{display:flex;align-items:center;gap:4px;flex:1;min-height:0}
+.age-texts{display:flex;flex-direction:column;justify-content:center;flex:1;min-width:0}
+.age-texts strong{font-size:10.5px;line-height:1.13;color:#1b447b}
+.age-texts small{font-size:8.5px;line-height:1.12;color:#677f9c;margin-top:3px}
+.age-preview .sound{min-height:27px;min-width:27px;font-size:12px;padding:1px;flex:none}
+.age-add{background:#e9f7ee;color:#146a42;border:1px solid #a4d2b6;padding:3px 8px;border-radius:7px;height:28px;min-width:62px;font-size:10px;font-weight:900;flex:none}
+.agebar.age-selected .age-add{background:#d72641;color:white;border-color:#bd1935}
+.current.age-current{border:2px solid #ed1636;background:#fff4f6}
+.modebar{height:23px;flex:none;display:flex;gap:4px;align-items:center;justify-content:center;padding:2px 5px;background:#fbfdff;border-bottom:1px solid #e1e9f5}
+.modebar[hidden],.hairbar[hidden],.clothingbar[hidden]{display:none}
+.modebar button{flex:1;height:19px;border:1px solid #c8d8ed;background:white;color:#255797;border-radius:5px;font-size:10px;font-weight:850}
+.modebar button.active{background:#d6273e;color:white;border-color:#bc1e37}
+.choicebar{height:114px;min-height:114px;flex:none;display:flex;flex-direction:column;gap:3px;padding:4px 5px;background:#f8fbff;border-bottom:1px solid #e2ebf5;overflow:hidden}
+.choicebar.is-selected{background:#fff3f5;box-shadow:inset 0 0 0 2px #ed1636}
+.optionline{flex:none;height:24px;display:flex;align-items:center;gap:3px;min-width:0}
+.optionlabel{flex:none;width:46px;font-size:10px;font-weight:850;color:#25518a}
+.optionarrow{width:25px;height:22px;flex:none;padding:0;border:1px solid #bdd3ec;background:white;border-radius:6px;color:#1b589d;font-size:14px;font-weight:950}
+.optionvalue{flex:1;min-width:0;text-align:center;font-size:10px;font-weight:900;color:#1c477b;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.choicepreview{min-height:0;flex:1;display:flex;align-items:center;gap:4px;padding-top:1px}
+.choicetext{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:2px}
+.choicetext strong{font-size:10px;color:#153f76;line-height:1.12}
+.choicetext small{font-size:8.5px;color:#637b98;line-height:1.13}
+.choicepreview .sound{min-width:25px;min-height:25px;font-size:11px;flex:none;padding:1px}
+.choiceadd{background:#e8f7ee;border:1px solid #a8d6bd;color:#14734d;height:26px;min-width:61px;flex:none;padding:2px 5px;border-radius:7px;font-size:10px;font-weight:900}
+.choicebar.is-selected .choiceadd{background:#d6273e;border-color:#b71835;color:white}
+.current.dynamic-current{border:1px solid #ed1636;background:#fff3f5;box-shadow:inset 0 0 0 1px #ed1636}
+/* U koraku Izgled prikazuje se isključivo odabrani interaktivni deo, bez ostalih rečenica. */
+.panel.appearance-only .phrases,.panel.appearance-only .pagination,.panel.appearance-only .load{display:none}
+.panel.appearance-only .agebar:not([hidden]),.panel.appearance-only .hairbar:not([hidden]){
+  flex:1;height:auto;min-height:0;justify-content:center;gap:14px;padding:12px 10px;border-bottom:0
+}
+.panel.appearance-only .age-controls{height:38px;gap:8px}
+.panel.appearance-only .age-btn{width:40px;height:35px;font-size:23px}
+.panel.appearance-only .age-number{font-size:23px;min-width:34px}
+.panel.appearance-only .age-person{font-size:12px}
+.panel.appearance-only .age-preview,.panel.appearance-only .choicepreview{flex:none;min-height:64px}
+.panel.appearance-only .age-texts strong,.panel.appearance-only .choicetext strong{font-size:13px;line-height:1.3}
+.panel.appearance-only .age-texts small,.panel.appearance-only .choicetext small{font-size:10px}
+.panel.appearance-only .optionline{height:38px;gap:6px}
+.panel.appearance-only .optionlabel{font-size:12px;width:52px}
+.panel.appearance-only .optionarrow{width:35px;height:30px;font-size:20px}
+.panel.appearance-only .optionvalue{font-size:12px}
+.panel.appearance-only .age-preview .sound,.panel.appearance-only .choicepreview .sound{min-width:31px;min-height:31px;font-size:14px}
+.panel.appearance-only .age-add,.panel.appearance-only .choiceadd{min-width:72px;height:32px;font-size:11px}
+@media(max-height:620px){.panel.appearance-only .agebar:not([hidden]),.panel.appearance-only .hairbar:not([hidden]){gap:8px;padding:7px 8px}.panel.appearance-only .age-preview,.panel.appearance-only .choicepreview{min-height:48px}}
+
+@media(max-height:620px){.choicebar{height:105px;min-height:105px;padding:3px}.optionline{height:22px}.optionarrow{height:20px}.choicepreview .sound{min-height:23px;min-width:23px}.choiceadd{height:23px}}.app{grid-template-rows:25px 41px 39px minmax(0,1fr) minmax(172px,34%);gap:3px;padding:3px}.step span:last-child{font-size:8px}.phrases{gap:1px;padding:2px}.phrase .de{font-size:9.5px}.phrase .sr{font-size:7.7px}.samplede{font-size:10px}.samplehead{font-size:8px}}
+@media(max-width:360px){.step span:last-child{font-size:8px}.top h1{font-size:11px}.phrase .de{font-size:10px}.phrase .sr{font-size:8px}.picker .load{min-width:70px}}
+
+/* Mobilni prikaz sa uvećanim i čitljivim tekstom; gornja naslovna traka je uklonjena. */
+.app{grid-template-rows:55px 50px minmax(0,1fr) minmax(192px,35%)!important}
+.step .num{font-size:11px;width:18px;height:18px}
+.step span:last-child{font-size:11px;line-height:1.15}
+.samplehead{font-size:12.5px;line-height:1.16}
+.samplesr{font-size:11.5px;line-height:1.2;color:#161616;font-weight:900}
+.example{padding:3px 8px}
+.paneltitle{height:29px;padding:0 7px}
+.compose .paneltitle{height:29px}
+.paneltitle strong{font-size:13px;line-height:1.15}
+.paneltitle .small{font-size:10.5px}
+.load{font-size:10.5px}
+.rolebar{height:29px}
+.rolebar button{height:24px;font-size:11.5px}
+.modebar{height:27px}
+.modebar button{height:23px;font-size:11.5px}
+.phrase .add{padding:3px 5px;gap:5px}
+.phrase .de{font-size:12.8px;line-height:1.22;overflow-wrap:anywhere}
+.phrase .sr{font-size:10.5px;line-height:1.2;overflow-wrap:anywhere}
+.plus{width:18px;height:18px;font-size:12px}
+.phrase .sound{min-width:27px;min-height:28px;font-size:13px;margin-right:4px}
+.phrases{gap:2px;padding:3px}
+.pagination{height:27px}
+.pagecount{font-size:11px}
+.selected-area{padding:5px 6px}
+.current{gap:5px;padding:4px 5px}
+.current .index{font-size:11px}
+.current .sentence .de{font-size:14.2px;line-height:1.24}
+.current .sentence .sr{font-size:11.5px;line-height:1.23;margin-top:3px}
+.current .sound{min-width:27px;min-height:27px;font-size:13px}
+.current .remove{width:27px;height:27px}
+.empty{font-size:11.5px;line-height:1.45}
+.compact-nav{height:25px}
+.compact-nav span{font-size:10.5px}
+.controls{height:34px}
+.ctrl{height:28px;font-size:11px}
+/* Dugmad "Pusti sve" i "Obriši" malo veća, zajedno centrirana. */
+.controls.centered-controls{height:36px;justify-content:flex-end;gap:6px;padding:3px 5px}
+.controls.centered-controls .ctrl{flex:0 0 auto;height:30px;font-size:11.5px}
+.controls.centered-controls .ctrl.main{width:118px}
+.controls.centered-controls .ctrl.danger{width:116px}
+.age-texts strong,.choicetext strong{font-size:12.5px;line-height:1.25}
+.age-texts small,.choicetext small{font-size:10.5px;line-height:1.2}
+.optionlabel{font-size:11px}
+.optionvalue{font-size:11.5px}
+.age-person{font-size:11px}
+.age-unit{font-size:10.5px}
+.age-add,.choiceadd{font-size:11px}
+.panel.appearance-only .age-texts strong,.panel.appearance-only .choicetext strong{font-size:14px;line-height:1.3}
+.panel.appearance-only .age-texts small,.panel.appearance-only .choicetext small{font-size:11px}
+.panel.appearance-only .optionvalue{font-size:13px}
+.panel.appearance-only .optionlabel{font-size:12px}
+.panel.appearance-only .age-person{font-size:13px}
+@media(max-height:620px){
+ .app{grid-template-rows:49px 46px minmax(0,1fr) minmax(168px,35%)!important}
+ .step span:last-child{font-size:10.5px}
+ .samplehead{font-size:11.5px}
+ .samplesr{font-size:10.8px}
+ .phrase .de{font-size:12px}
+ .phrase .sr{font-size:10px}
+ .current .sentence .de{font-size:13px}
+ .current .sentence .sr{font-size:10.5px}
+ .paneltitle strong{font-size:12px}
+}
+@media(max-width:350px){
+ .step span:last-child{font-size:10px}
+ .phrase .de{font-size:12px}
+ .phrase .sr{font-size:10px}
+}
+/* Mobilni prikaz: aktivna kategorija ostaje crvena. */
+.steps .step.active{background-color:#e11d3c!important;border-color:#a91a32!important;color:#fff!important}
+.steps .step.active .num{background-color:#ad1630!important;color:#fff!important}
+</style></head>
+<body>
+<main class="app" id="app" aria-label="A1 opis slike — mustra za učenike">
+ <nav class="steps" id="steps" aria-label="Koraci opisa">
+  <button class="step active" data-step="0"><span class="num">1</span><span>Osobe</span></button>
+  <button class="step" data-step="1"><span class="num">2</span><span>Razgovor</span></button>
+  <button class="step" data-step="2"><span class="num">3</span><span>Mesto</span></button>
+  <button class="step" data-step="3"><span class="num">4</span><span>Izgled</span></button>
+  <button class="step" data-step="4"><span class="num">5</span><span>Odeća</span></button>
+  <button class="step" data-step="5"><span class="num">6</span><span>Detalji</span></button>
+ </nav>
+ <section class="example" aria-label="Ispitno pitanje i prevod">
+  <div class="sample-content"><span class="sample-number" id="sampleNumber">1.</span><div class="samplehead" id="samplehead">Wie viele Personen sehen Sie?</div><div class="samplesr" id="samplesr">Koliko osoba vidite?</div></div>
+ </section>
+ <section class="panel" aria-label="Izbor rečenica">
+  <div class="paneltitle"><strong id="selectorTitle">Izaberi rečenice</strong><span class="small" id="categoryCount">194 rečenice</span></div>
+  <div class="rolebar" id="rolebar" hidden aria-label="Izbor osobe"><button data-role="mann" class="active">Muškarac</button><button data-role="frau">Žena</button><button data-role="kind">Dete</button></div>
+  <div class="modebar" id="modebar" hidden aria-label="Izbor osobina"><button data-mode="description">Opis</button><button data-mode="age" class="active">Godine</button><button data-mode="hair">Kosa</button></div>
+  <div class="agebar" id="agebar" hidden aria-label="Interaktivni izbor godina">
+   <div class="age-controls"><span class="age-person" id="agePerson">Der Mann</span>
+    <button type="button" class="age-btn" id="ageMinus" aria-label="Smanji broj godina">−</button>
+    <span class="age-number" id="ageCount">30</span>
+    <button type="button" class="age-btn" id="agePlus" aria-label="Povećaj broj godina">+</button>
+    <span class="age-unit">godina</span>
+   </div>
+   <div class="age-preview"><div class="age-texts"><strong id="ageSentence">Er ist ungefähr 30 Jahre alt.</strong><small id="ageTranslation">On ima otprilike 30 godina.</small></div>
+    <button type="button" class="sound" id="ageSound" aria-label="Poslušaj godine">🔊</button>
+    <button type="button" class="age-add" id="ageAdd" aria-pressed="false">+ Dodaj</button>
+   </div>
+  </div>
+  <div class="choicebar hairbar" id="hairbar" hidden aria-label="Izbor kose">
+   <div class="optionline"><span class="optionlabel">Kosa</span><button class="optionarrow" data-hair-turn="style" data-delta="-1" aria-label="Prethodni oblik kose">‹</button><span class="optionvalue" id="hairStyle"></span><button class="optionarrow" data-hair-turn="style" data-delta="1" aria-label="Sledeći oblik kose">›</button></div>
+   <div class="optionline"><span class="optionlabel">Boja</span><button class="optionarrow" data-hair-turn="color" data-delta="-1" aria-label="Prethodna boja kose">‹</button><span class="optionvalue" id="hairColor"></span><button class="optionarrow" data-hair-turn="color" data-delta="1" aria-label="Sledeća boja kose">›</button></div>
+   <div class="choicepreview"><div class="choicetext"><strong id="hairSentence"></strong><small id="hairTranslation"></small></div><button class="sound" id="hairSound" aria-label="Poslušaj opis kose">🔊</button><button class="choiceadd" id="hairAdd" aria-pressed="false">+ Dodaj</button></div>
+  </div>
+  <div class="choicebar clothingbar" id="clothingbar" hidden aria-label="Izbor odevnih predmeta">
+   <div class="optionline"><span class="optionlabel">Odeća</span><button class="optionarrow" data-clothing-turn="item" data-delta="-1" aria-label="Prethodni odevni predmet">‹</button><span class="optionvalue" id="clothingItem"></span><button class="optionarrow" data-clothing-turn="item" data-delta="1" aria-label="Sledeći odevni predmet">›</button></div>
+   <div class="optionline"><span class="optionlabel">Boja</span><button class="optionarrow" data-clothing-turn="color" data-delta="-1" aria-label="Prethodna boja odeće">‹</button><span class="optionvalue" id="clothingColor"></span><button class="optionarrow" data-clothing-turn="color" data-delta="1" aria-label="Sledeća boja odeće">›</button></div>
+   <div class="choicepreview"><div class="choicetext"><strong id="clothingSentence"></strong><small id="clothingTranslation"></small></div><button class="sound" id="clothingSound" aria-label="Poslušaj opis odeće">🔊</button><button class="choiceadd" id="clothingAdd" aria-pressed="false">+ Dodaj</button></div>
+  </div>
+  <div class="phrases" id="phrases" aria-live="polite"></div>
+  <div class="pagination"><button id="prev" class="nav" aria-label="Prethodna stranica">‹</button><span class="pagecount" id="pageCount">Strana 1 od 4</span><button id="next" class="nav" aria-label="Sledeća stranica">›</button></div>
+ </section>
+ <section class="panel compose" aria-label="Sastavljeni opis">
+  <div class="paneltitle"><strong>Moj opis</strong><span class="small" id="total">0 rečenica</span></div>
+  <div class="selected-area" id="selectedArea"></div>
+  <div class="compact-nav"><button id="chosenPrev" class="nav" aria-label="Prethodna izabrana rečenica">‹</button><span id="chosenPage">Opis strana 1</span><button id="chosenNext" class="nav" aria-label="Sledeća izabrana rečenica">›</button></div>
+  <div class="controls centered-controls"><button id="playAll" class="ctrl main">▶ Pusti sve</button><button id="clear" class="ctrl danger">Obriši moj opis</button></div>
+ </section>
+</main>
+<script>
+"use strict";
+const BANK=[{"cat":"start","de":"Auf diesem Bild sehe ich zwei Personen.","sr":"Na ovoj slici vidim dve osobe."},{"cat":"start","de":"Auf diesem Bild sehe ich drei Personen.","sr":"Na ovoj slici vidim tri osobe."},{"cat":"start","de":"Auf diesem Bild sehe ich einen Mann und eine Frau.","sr":"Na ovoj slici vidim jednog čoveka i jednu ženu."},{"cat":"start","de":"Auf diesem Bild sehe ich zwei Männer.","sr":"Na ovoj slici vidim dva muškarca."},{"cat":"start","de":"Auf diesem Bild sehe ich zwei Frauen.","sr":"Na ovoj slici vidim dve žene."},{"cat":"start","de":"Auf diesem Bild sehe ich zwei Kinder.","sr":"Na ovoj slici vidim dvoje dece."},{"cat":"start","de":"Die Personen sprechen über etwas.","sr":"Osobe o nečemu pričaju."},{"cat":"start","de":"Die Personen sprechen miteinander über etwas.","sr":"Osobe međusobno razgovaraju o nečemu."},{"cat":"start","de":"Die Personen sprechen über etwas, vielleicht über die Arbeit.","sr":"Osobe pričaju o nečemu, možda o poslu."},{"cat":"start","de":"Ich denke, die Personen sind ein Ehemann und eine Ehefrau.","sr":"Mislim da su ove osobe muž i žena."},{"cat":"start","de":"Ich denke, die Frau ist Kundin.","sr":"Mislim da je žena mušterija."},{"cat":"start","de":"Ich denke, die Frau ist die Verkäuferin.","sr":"Mislim da je žena prodavačica."},{"cat":"places","de":"Die Personen sind in der Natur.","sr":"Osobe su u prirodi."},{"cat":"places","de":"Die Personen sind in der Bäckerei.","sr":"Osobe su u pekari."},{"cat":"places","de":"Die Personen sind in der Werkstatt.","sr":"Osobe su u radionici."},{"cat":"places","de":"Die Personen sind in der Wohnung.","sr":"Osobe su u stanu."},{"cat":"places","de":"Die Personen sind in der Küche.","sr":"Osobe su u kuhinji."},{"cat":"places","de":"Die Personen sind in der Boutique.","sr":"Osobe su u butiku."},{"cat":"places","de":"Die Personen sind in der Apotheke.","sr":"Osobe su u apoteci."},{"cat":"places","de":"Die Personen sind in der Metzgerei.","sr":"Osobe su u mesari."},{"cat":"places","de":"Die Personen sind in der Bibliothek.","sr":"Osobe su u biblioteci."},{"cat":"places","de":"Die Personen sind in der Schule.","sr":"Osobe su u školi."},{"cat":"places","de":"Die Personen sind im Café.","sr":"Osobe su u kafiću."},{"cat":"places","de":"Die Personen sind im Garten.","sr":"Osobe su u bašti."},{"cat":"places","de":"Die Personen sind im Supermarkt.","sr":"Osobe su u supermarketu."},{"cat":"places","de":"Die Personen sind im Wald.","sr":"Osobe su u šumi."},{"cat":"places","de":"Die Personen sind im Hotel.","sr":"Osobe su u hotelu."},{"cat":"places","de":"Die Personen sind im Buchladen.","sr":"Osobe su u knjižari."},{"cat":"places","de":"Die Personen sind im Blumenladen.","sr":"Osobe su u cvećari."},{"cat":"places","de":"Die Personen sind im Zug.","sr":"Osobe su u vozu."},{"cat":"places","de":"Die Personen sind im Wartezimmer.","sr":"Osobe su u čekaonici."},{"cat":"places","de":"Die Personen sind im Zimmer.","sr":"Osobe su u sobi."},{"cat":"places","de":"Die Personen sind im Fitnessstudio.","sr":"Osobe su u teretani."},{"cat":"places","de":"Die Personen sind im Büro.","sr":"Osobe su u kancelariji."},{"cat":"places","de":"Die Personen sind im Krankenhaus.","sr":"Osobe su u bolnici."},{"cat":"places","de":"Die Personen sind im Schwimmbad.","sr":"Osobe su na bazenu."},{"cat":"places","de":"Die Personen sind im Park.","sr":"Osobe su u parku."},{"cat":"places","de":"Die Personen sind im Schuhladen.","sr":"Osobe su u prodavnici obuće."},{"cat":"places","de":"Die Personen sind im Auto.","sr":"Osobe su u automobilu."},{"cat":"places","de":"Die Personen sind im Bus.","sr":"Osobe su u autobusu."},{"cat":"places","de":"Die Personen sind im Kino.","sr":"Osobe su u bioskopu."},{"cat":"places","de":"Die Personen sind zu Hause.","sr":"Osobe su kod kuće."},{"cat":"places","de":"Die Personen sind neben dem Fluss.","sr":"Osobe su pored reke."},{"cat":"places","de":"Die Personen sind am Bahnhof.","sr":"Osobe su na železničkoj stanici."},{"cat":"places","de":"Die Personen sind am Strand.","sr":"Osobe su na plaži."},{"cat":"places","de":"Die Personen sind am Flughafen.","sr":"Osobe su na aerodromu."},{"cat":"places","de":"Die Personen sind am Meer.","sr":"Osobe su na moru."},{"cat":"places","de":"Die Personen sind am See.","sr":"Osobe su na jezeru."},{"cat":"places","de":"Die Personen sind auf dem Markt.","sr":"Osobe su na pijaci."},{"cat":"places","de":"Die Personen sind auf der Straße.","sr":"Osobe su na ulici."},{"cat":"places","de":"Die Personen sind an der Rezeption.","sr":"Osobe su na recepciji."},{"cat":"places","de":"Die Personen sind an der Kasse.","sr":"Osobe su na kasi."},{"cat":"mann","de":"Der Mann links ist groß.","sr":"Muškarac levo je visok."},{"cat":"mann","de":"Der Mann rechts ist klein.","sr":"Muškarac desno je nizak."},{"cat":"mann","de":"Der Mann sieht glücklich aus.","sr":"Muškarac izgleda srećan."},{"cat":"mann","de":"Der Mann sieht besorgt aus.","sr":"Muškarac izgleda zabrinut."},{"cat":"mann","de":"Er ist ungefähr 20 Jahre alt.","sr":"On ima otprilike 20 godina."},{"cat":"mann","de":"Er ist circa 23 Jahre alt.","sr":"On ima oko 23 godine."},{"cat":"mann","de":"Er hat kurze braune Haare.","sr":"On ima kratku smeđu kosu."},{"cat":"mann","de":"Er hat lange schwarze Haare.","sr":"On ima dugu crnu kosu."},{"cat":"mann","de":"Er hat lockige graue Haare.","sr":"On ima kovrdžavu sedu kosu."},{"cat":"mann","de":"Er hat kurze blonde Haare.","sr":"On ima kratku plavu kosu."},{"cat":"mann","de":"Er ist haarlos.","sr":"On nema kosu."},{"cat":"mann","de":"Er hat eine blonde Haarsträhne.","sr":"On ima jedan plavi pramen."},{"cat":"mann","de":"Der Mann hat schöne weiße Zähne.","sr":"Muškarac ima lepe bele zube."},{"cat":"mann","de":"Der Mann lacht.","sr":"Muškarac se smeje."},{"cat":"mann","de":"Der Mann hat ein schönes Gesicht.","sr":"Muškarac ima lepo lice."},{"cat":"mann","de":"Der Mann trägt eine Armbanduhr.","sr":"Muškarac nosi ručni sat."},{"cat":"mann","de":"Der Mann trägt ein Armband.","sr":"Muškarac nosi narukvicu."},{"cat":"mann","de":"Der Mann hält eine Tüte.","sr":"Muškarac drži kesu."},{"cat":"mann","de":"Der Mann sieht freundlich aus.","sr":"Muškarac izgleda ljubazno."},{"cat":"mann","de":"Der Mann sieht wunderschön aus.","sr":"Muškarac izgleda prelepo."},{"cat":"mann","de":"Der Mann hat einen Bart.","sr":"Muškarac ima bradu."},{"cat":"mann","de":"Der Mann hat einen Schnurrbart.","sr":"Muškarac ima brkove."},{"cat":"mann","de":"Der Mann trägt eine Kette.","sr":"Muškarac nosi lančić."},{"cat":"frau","de":"Die Frau links ist groß.","sr":"Žena levo je visoka."},{"cat":"frau","de":"Die Frau rechts ist klein.","sr":"Žena desno je niska."},{"cat":"frau","de":"Die Frau sieht glücklich aus.","sr":"Žena izgleda srećna."},{"cat":"frau","de":"Die Frau sieht besorgt aus.","sr":"Žena izgleda zabrinuta."},{"cat":"frau","de":"Sie ist ungefähr 20 Jahre alt.","sr":"Ona ima otprilike 20 godina."},{"cat":"frau","de":"Sie ist circa 23 Jahre alt.","sr":"Ona ima oko 23 godine."},{"cat":"frau","de":"Sie hat kurze braune Haare.","sr":"Ona ima kratku smeđu kosu."},{"cat":"frau","de":"Sie hat lange schwarze Haare.","sr":"Ona ima dugu crnu kosu."},{"cat":"frau","de":"Sie hat lockige graue Haare.","sr":"Ona ima kovrdžavu sedu kosu."},{"cat":"frau","de":"Sie hat kurze blonde Haare.","sr":"Ona ima kratku plavu kosu."},{"cat":"frau","de":"Sie ist haarlos.","sr":"Ona nema kosu."},{"cat":"frau","de":"Sie hat eine blonde Haarsträhne.","sr":"Ona ima jedan plavi pramen."},{"cat":"frau","de":"Die Frau hat schöne weiße Zähne.","sr":"Žena ima lepe bele zube."},{"cat":"frau","de":"Die Frau lacht.","sr":"Žena se smeje."},{"cat":"frau","de":"Die Frau hat ein schönes Gesicht.","sr":"Žena ima lepo lice."},{"cat":"frau","de":"Die Frau trägt eine Armbanduhr.","sr":"Žena nosi ručni sat."},{"cat":"frau","de":"Die Frau trägt ein Armband.","sr":"Žena nosi narukvicu."},{"cat":"frau","de":"Die Frau hält eine Tüte.","sr":"Žena drži kesu."},{"cat":"frau","de":"Die Frau sieht freundlich aus.","sr":"Žena izgleda ljubazno."},{"cat":"frau","de":"Die Frau sieht wunderschön aus.","sr":"Žena izgleda prelepo."},{"cat":"frau","de":"Die Frau trägt Ohrringe.","sr":"Žena nosi minđuše."},{"cat":"frau","de":"Die Frau trägt einen Ring.","sr":"Žena nosi prsten."},{"cat":"frau","de":"Die Frau trägt eine Halskette.","sr":"Žena nosi ogrlicu."},{"cat":"kind","de":"Das Kind links ist groß.","sr":"Dete levo je visoko."},{"cat":"kind","de":"Das Kind rechts ist klein.","sr":"Dete desno je nisko."},{"cat":"kind","de":"Das Kind sieht glücklich aus.","sr":"Dete izgleda srećno."},{"cat":"kind","de":"Das Kind sieht besorgt aus.","sr":"Dete izgleda zabrinuto."},{"cat":"kind","de":"Es ist ungefähr 7 Jahre alt.","sr":"Ono ima otprilike 7 godina."},{"cat":"kind","de":"Es ist circa 9 Jahre alt.","sr":"Ono ima oko 9 godina."},{"cat":"kind","de":"Es hat kurze braune Haare.","sr":"Ono ima kratku smeđu kosu."},{"cat":"kind","de":"Es hat lange schwarze Haare.","sr":"Ono ima dugu crnu kosu."},{"cat":"kind","de":"Es hat lockige graue Haare.","sr":"Ono ima kovrdžavu sedu kosu."},{"cat":"kind","de":"Es hat kurze blonde Haare.","sr":"Ono ima kratku plavu kosu."},{"cat":"kind","de":"Es ist haarlos.","sr":"Ono nema kosu."},{"cat":"kind","de":"Es hat eine blonde Haarsträhne.","sr":"Ono ima jedan plavi pramen."},{"cat":"kind","de":"Das Kind hat schöne weiße Zähne.","sr":"Dete ima lepe bele zube."},{"cat":"kind","de":"Das Kind lacht.","sr":"Dete se smeje."},{"cat":"kind","de":"Das Kind hat ein schönes Gesicht.","sr":"Dete ima lepo lice."},{"cat":"kind","de":"Das Kind trägt eine Armbanduhr.","sr":"Dete nosi ručni sat."},{"cat":"kind","de":"Das Kind trägt ein Armband.","sr":"Dete nosi narukvicu."},{"cat":"kind","de":"Das Kind hält eine Tüte.","sr":"Dete drži kesu."},{"cat":"kind","de":"Das Kind sieht freundlich aus.","sr":"Dete izgleda ljubazno."},{"cat":"kind","de":"Das Kind sieht wunderschön aus.","sr":"Dete izgleda prelepo."},{"cat":"kind","de":"Das Kind trägt eine Brille.","sr":"Dete nosi naočare."},{"cat":"kind","de":"Das Kind trägt eine Sonnenbrille.","sr":"Dete nosi sunčane naočare."},{"cat":"kind","de":"Das Kind hat ein schönes Lachen.","sr":"Dete ima lep osmeh."},{"cat":"clothing","de":"Der Mann trägt einen schwarzen Pullover.","sr":"Muškarac nosi crni džemper."},{"cat":"clothing","de":"Der Mann trägt eine schwarze Jeans.","sr":"Muškarac nosi crne farmerke."},{"cat":"clothing","de":"Der Mann trägt ein schwarzes Hemd.","sr":"Muškarac nosi crnu košulju."},{"cat":"clothing","de":"Der Mann trägt eine blaue Jacke.","sr":"Muškarac nosi plavu jaknu."},{"cat":"clothing","de":"Der Mann trägt ein weißes T-Shirt.","sr":"Muškarac nosi belu majicu."},{"cat":"clothing","de":"Der Mann trägt eine rote Hose.","sr":"Muškarac nosi crvene pantalone."},{"cat":"clothing","de":"Der Mann trägt grüne Schuhe.","sr":"Muškarac nosi zelene cipele."},{"cat":"clothing","de":"Die Frau trägt einen schwarzen Pullover.","sr":"Žena nosi crni džemper."},{"cat":"clothing","de":"Die Frau trägt eine schwarze Jeans.","sr":"Žena nosi crne farmerke."},{"cat":"clothing","de":"Die Frau trägt ein schwarzes Hemd.","sr":"Žena nosi crnu košulju."},{"cat":"clothing","de":"Die Frau trägt eine blaue Jacke.","sr":"Žena nosi plavu jaknu."},{"cat":"clothing","de":"Die Frau trägt ein weißes T-Shirt.","sr":"Žena nosi belu majicu."},{"cat":"clothing","de":"Die Frau trägt eine rote Hose.","sr":"Žena nosi crvene pantalone."},{"cat":"clothing","de":"Die Frau trägt grüne Schuhe.","sr":"Žena nosi zelene cipele."},{"cat":"clothing","de":"Das Kind trägt einen schwarzen Pullover.","sr":"Dete nosi crni džemper."},{"cat":"clothing","de":"Das Kind trägt eine schwarze Jeans.","sr":"Dete nosi crne farmerke."},{"cat":"clothing","de":"Das Kind trägt ein schwarzes Hemd.","sr":"Dete nosi crnu košulju."},{"cat":"clothing","de":"Das Kind trägt eine blaue Jacke.","sr":"Dete nosi plavu jaknu."},{"cat":"clothing","de":"Das Kind trägt ein weißes T-Shirt.","sr":"Dete nosi belu majicu."},{"cat":"clothing","de":"Das Kind trägt eine rote Hose.","sr":"Dete nosi crvene pantalone."},{"cat":"clothing","de":"Das Kind trägt grüne Schuhe.","sr":"Dete nosi zelene cipele."},{"cat":"extra","de":"Auf dem Bild sehe ich noch einen Tisch.","sr":"Na slici vidim još jedan sto."},{"cat":"extra","de":"Im Hintergrund sehe ich noch ein Fenster.","sr":"U pozadini vidim još jedan prozor."},{"cat":"extra","de":"Der Raum ist groß.","sr":"Prostorija je velika."},{"cat":"extra","de":"Der Garten ist klein.","sr":"Bašta je mala."},{"cat":"extra","de":"Es ist Sommer.","sr":"Leto je."},{"cat":"extra","de":"Es ist Winter.","sr":"Zima je."},{"cat":"extra","de":"Es ist Herbst.","sr":"Jesen je."},{"cat":"extra","de":"Draußen ist es schön.","sr":"Napolju je lepo."},{"cat":"extra","de":"Draußen ist es kalt.","sr":"Napolju je hladno."},{"cat":"extra","de":"Der Mann sitzt.","sr":"Muškarac sedi."},{"cat":"extra","de":"Die Frau steht.","sr":"Žena stoji."},{"cat":"extra","de":"Das war meine Bildbeschreibung.","sr":"To je bio moj opis slike."},{"cat":"start","de":"Ich denke, der Mann ist der Verkäufer und die Frau ist die Kundin.","sr":"Mislim da je muškarac prodavac, a žena mušterija."},{"cat":"start","de":"Ich denke, der Mann ist der Bäcker und die Frau ist die Kundin.","sr":"Mislim da je muškarac pekar, a žena mušterija."},{"cat":"start","de":"Ich denke, die Frau ist die Ärztin und der Mann ist der Patient.","sr":"Mislim da je žena lekarka, a muškarac pacijent."},{"cat":"start","de":"Ich denke, die Frau ist die Verkäuferin und der Mann ist der Kunde.","sr":"Mislim da je žena prodavačica, a muškarac mušterija."},{"cat":"start","de":"Ich denke, der Mann ist der Arzt und die Frau ist die Patientin.","sr":"Mislim da je muškarac lekar, a žena pacijentkinja."},{"cat":"start","de":"Ich denke, die Frau ist die Apothekerin und der Mann ist der Kunde.","sr":"Mislim da je žena apotekarka, a muškarac mušterija."},{"cat":"start","de":"Ich denke, der Mann ist der Apotheker und die Frau ist die Kundin.","sr":"Mislim da je muškarac apotekar, a žena mušterija."},{"cat":"start","de":"Ich denke, der Mann ist der Mechaniker und die Frau ist die Kundin.","sr":"Mislim da je muškarac mehaničar, a žena mušterija."},{"cat":"start","de":"Ich denke, die Frau ist die Mechanikerin und der Mann ist der Kunde.","sr":"Mislim da je žena mehaničarka, a muškarac mušterija."},{"cat":"start","de":"Ich denke, der Mann ist der Kellner und die Frau ist ein Gast.","sr":"Mislim da je muškarac konobar, a žena gošća."},{"cat":"start","de":"Ich denke, die Frau ist die Kellnerin und der Mann ist der Gast.","sr":"Mislim da je žena konobarica, a muškarac gost."},{"cat":"start","de":"Ich denke, der Mann ist der Metzger und der andere Mann ist der Kunde.","sr":"Mislim da je jedan muškarac mesar, a drugi mušterija."},{"cat":"start","de":"Ich denke, die Frau ist die Friseurin und der Mann ist der Kunde.","sr":"Mislim da je žena frizerka, a muškarac mušterija."},{"cat":"start","de":"Ich denke, der Mann ist der Friseur und die Frau ist die Kundin.","sr":"Mislim da je muškarac frizer, a žena mušterija."},{"cat":"start","de":"Ich denke, die Frau ist die Lehrerin und das Mädchen ist die Schülerin.","sr":"Mislim da je žena učiteljica, a devojčica učenica."},{"cat":"start","de":"Ich denke, der Mann ist der Lehrer und der Junge ist der Schüler.","sr":"Mislim da je muškarac učitelj, a dečak učenik."},{"cat":"start","de":"Ich denke, die Frau ist die Kassiererin und der Mann ist der Kunde.","sr":"Mislim da je žena kasirka, a muškarac mušterija."},{"cat":"start","de":"Ich denke, der Mann ist der Kassierer und die Frau ist die Kundin.","sr":"Mislim da je muškarac kasir, a žena mušterija."},{"cat":"start","de":"Ich denke, die Frau ist die Floristin und der Mann ist der Kunde.","sr":"Mislim da je žena cvećarka, a muškarac mušterija."},{"cat":"start","de":"Ich denke, der Mann ist der Trainer und die Frau ist die Sportlerin.","sr":"Mislim da je muškarac trener, a žena sportistkinja."},{"cat":"start","de":"Ich denke, die Frau ist die Trainerin und der Mann ist der Sportler.","sr":"Mislim da je žena trenerka, a muškarac sportista."},{"cat":"start","de":"Ich denke, die Frau ist die Rezeptionistin und der Mann ist der Hotelgast.","sr":"Mislim da je žena recepcionerka, a muškarac gost hotela."},{"cat":"start","de":"Ich denke, der Mann ist der Busfahrer und die Frau ist ein Fahrgast.","sr":"Mislim da je muškarac vozač autobusa, a žena putnica."},{"cat":"start","de":"Ich denke, die Frau ist die Polizistin und der Mann ist der Autofahrer.","sr":"Mislim da je žena policajka, a muškarac vozač automobila."},{"cat":"start","de":"Ich denke, der Mann ist der Vater und das Kind ist sein Sohn.","sr":"Mislim da je muškarac otac, a dete njegov sin."},{"cat":"start","de":"Ich denke, die Frau ist die Mutter und das Kind ist ihre Tochter.","sr":"Mislim da je žena majka, a dete njena ćerka."},{"cat":"extra","de":"Ich denke, die Personen sitzen.","sr":"Mislim da osobe sede."},{"cat":"extra","de":"Ich denke, die Personen stehen.","sr":"Mislim da osobe stoje."},{"cat":"extra","de":"Der Mann sitzt und die Frau steht.","sr":"Muškarac sedi, a žena stoji."},{"cat":"extra","de":"Die Frau sitzt und der Mann steht.","sr":"Žena sedi, a muškarac stoji."},{"cat":"extra","de":"Der Raum ist groß und schön.","sr":"Prostorija je velika i lepa."},{"cat":"extra","de":"Der Raum ist hell.","sr":"Prostorija je svetla."},{"cat":"extra","de":"Der Raum ist klein.","sr":"Prostorija je mala."},{"cat":"extra","de":"Im Hintergrund sehe ich viele Brote und Brötchen.","sr":"U pozadini vidim mnogo hlebova i zemički."},{"cat":"extra","de":"Im Hintergrund sehe ich noch viele Personen.","sr":"U pozadini vidim još mnogo osoba."},{"cat":"extra","de":"Im Hintergrund sehe ich viele Stühle und Tische.","sr":"U pozadini vidim mnogo stolica i stolova."},{"cat":"start","personExample":true,"de":"Auf diesem Bild sehe ich eine Frau und ein Kind.","sr":"Na ovoj slici vidim jednu ženu i jedno dete."},{"cat":"start","personExample":true,"de":"Auf diesem Bild sehe ich eine Frau und zwei Kinder.","sr":"Na ovoj slici vidim jednu ženu i dvoje dece."},{"cat":"start","personExample":true,"de":"Auf diesem Bild sehe ich einen Mann und ein Kind.","sr":"Na ovoj slici vidim jednog muškarca i jedno dete."},{"cat":"extra","de":"Das ist alles, was ich sehe.","sr":"To je sve što vidim."},{"cat":"start","personExample":true,"de":"Ich sehe auf diesem Bild einen Mann und eine Frau.","sr":"Na ovoj slici vidim jednog muškarca i jednu ženu."},{"cat":"start","personExample":true,"de":"Ich sehe auf diesem Bild zwei Männer.","sr":"Na ovoj slici vidim dva muškarca."},{"cat":"start","personExample":true,"de":"Ich sehe auf diesem Bild zwei Frauen.","sr":"Na ovoj slici vidim dve žene."},{"cat":"start","personExample":true,"de":"Ich sehe auf diesem Bild zwei Kinder.","sr":"Na ovoj slici vidim dvoje dece."},{"cat":"start","personExample":true,"de":"Ich sehe auf diesem Bild einen Mann und ein Kind.","sr":"Na ovoj slici vidim jednog muškarca i jedno dete."},{"cat":"start","personExample":true,"de":"Ich sehe auf diesem Bild eine Frau und ein Kind.","sr":"Na ovoj slici vidim jednu ženu i jedno dete."}];
+const SAMPLE_HEADS=["1. Wie viele Personen sehen Sie?","2. Worüber sprechen Sie?","3. Wo sind diese Personen?","4. Wie sehen die Personen aus?","5. Was tragen die Personen?","6. Was sehen Sie noch?"];
+const SAMPLE_TRANSLATIONS=["Koliko osoba vidite?","O čemu razgovarate?","Gde su ove osobe?","Kako izgledaju ove osobe?","Šta nose ove osobe?","Šta još vidite?"];
+const STEP_CATS=["start","start","places","mann","clothing","extra"];
+const $=(q)=>document.querySelector(q);
+let PAGE_SIZE=6;
+let category="start",page=0,step=0,chosen=[],chosenIndex=0,runId=0,activeRole="mann",appearanceMode="age",speakingChosenPosition=-1;
+const AGES={mann:30,frau:30,kind:8};
+const AGE_ROLES={mann:{label:"Der Mann",de:"Er",sr:"On"},frau:{label:"Die Frau",de:"Sie",sr:"Ona"},kind:{label:"Das Kind",de:"Es",sr:"Ono"}};
+const AGE_INDEX={};
+function srYears(n){const last=n%10,lastTwo=n%100;return last===1&&lastTwo!==11?"godinu":last>=2&&last<=4&&(lastTwo<12||lastTwo>14)?"godine":"godina"}
+function createAge(role){const n=AGES[role],r=AGE_ROLES[role];return {cat:"age",role,de:r.de+" ist ungefähr "+n+(n===1?" Jahr":" Jahre")+" alt.",sr:r.sr+" ima otprilike "+n+" "+srYears(n)+"."}}
+for(const role of ["mann","frau","kind"]){AGE_INDEX[role]=BANK.length;BANK.push(createAge(role))}
+function renderAge(){const shown=step===3&&appearanceMode==="age";$("#agebar").hidden=!shown;if(!shown)return;
+ const role=AGE_ROLES[category],n=AGES[category],i=AGE_INDEX[category],selected=chosen.includes(i),item=BANK[i];
+ $("#agePerson").textContent=role.label;$("#ageCount").textContent=n;
+ $("#ageSentence").textContent=item.de;$("#ageTranslation").textContent=item.sr;
+ $("#ageMinus").disabled=n<=1;$("#agePlus").disabled=n>=100;
+ $("#agebar").classList.toggle("age-selected",selected);
+ $("#ageAdd").textContent=selected?"✓ Izabrano":"+ Dodaj";
+ $("#ageAdd").setAttribute("aria-pressed",String(selected));
+}
+function adjustAge(delta){if(step!==3)return;const current=AGES[category],updated=Math.max(1,Math.min(100,current+delta));if(updated===current)return;
+ stop();AGES[category]=updated;Object.assign(BANK[AGE_INDEX[category]],createAge(category));
+ renderAge();renderSample();renderChosen();
+}
+
+const HAIR_STYLE=[
+ {de:"kurze",sr:"kratku",label:"kratka"},
+ {de:"lange",sr:"dugu",label:"duga"},
+ {de:"lockige",sr:"kovrdžavu",label:"kovrdžava"},
+ {de:"glatte",sr:"ravnu",label:"ravna"},
+ {de:"wellige",sr:"talasastu",label:"talasasta"},
+ {de:"sehr kurze",sr:"veoma kratku",label:"veoma kratka"},
+ {de:"schulterlange",sr:"do ramena",label:"do ramena"},
+ {de:"",sr:"",label:"bez kose",bald:true}
+];
+const HAIR_COLORS=[
+ {de:"braune",sr:"smeđu",label:"smeđa"},
+ {de:"schwarze",sr:"crnu",label:"crna"},
+ {de:"blonde",sr:"plavu",label:"plava"},
+ {de:"graue",sr:"sedu",label:"seda"},
+ {de:"rote",sr:"crvenu",label:"crvena"},
+ {de:"weiße",sr:"belu",label:"bela"},
+ {de:"hellbraune",sr:"svetlosmeđu",label:"svetlosmeđa"},
+ {de:"dunkelbraune",sr:"tamnosmeđu",label:"tamnosmeđa"}
+];
+const HAIR_STATES={mann:{style:0,color:0},frau:{style:1,color:1},kind:{style:0,color:2}};
+const HAIR_INDEX={};
+function makeHair(role){
+ const roleData=AGE_ROLES[role],state=HAIR_STATES[role],style=HAIR_STYLE[state.style],color=HAIR_COLORS[state.color];
+ if(style.bald)return {cat:"custom-hair",role,de:roleData.de+" hat keine Haare.",sr:roleData.sr+" nema kosu."};
+ const german=roleData.de+" hat "+style.de+" "+color.de+" Haare.";
+ const serbian=roleData.sr+" ima "+(state.style===6?color.sr+" kosu do ramena":style.sr+" "+color.sr+" kosu")+".";
+ return {cat:"custom-hair",role,de:german,sr:serbian};
+}
+for(const role of ["mann","frau","kind"]){HAIR_INDEX[role]=BANK.length;BANK.push(makeHair(role))}
+const CLOTH_ITEMS=[
+ {de:"Pullover",article:"m",sr:"džemper",srType:"m",label:"džemper"},
+ {de:"Jacke",article:"f",sr:"jaknu",srType:"f",label:"jakna"},
+ {de:"T-Shirt",article:"n",sr:"majicu",srType:"f",label:"majica"},
+ {de:"Hemd",article:"n",sr:"košulju",srType:"f",label:"košulja"},
+ {de:"Hose",article:"f",sr:"pantalone",srType:"p",label:"pantalone"},
+ {de:"Jeans",article:"f",sr:"farmerke",srType:"p",label:"farmerke"},
+ {de:"Schuhe",article:"p",sr:"cipele",srType:"p",label:"cipele"},
+ {de:"Kleid",article:"n",sr:"haljinu",srType:"f",label:"haljina"},
+ {de:"Bluse",article:"f",sr:"bluzu",srType:"f",label:"bluza"},
+ {de:"Mantel",article:"m",sr:"kaput",srType:"m",label:"kaput"},
+ {de:"Mütze",article:"f",sr:"kapu",srType:"f",label:"kapa"},
+ {de:"Rock",article:"m",sr:"suknju",srType:"f",label:"suknja"},
+ {de:"Anzug",article:"m",sr:"odelo",srType:"n",label:"odelo"},
+ {de:"Schal",article:"m",sr:"šal",srType:"m",label:"šal"},
+ {de:"Hut",article:"m",sr:"šešir",srType:"m",label:"šešir"},
+ {de:"Stiefel",article:"p",sr:"čizme",srType:"p",label:"čizme"},
+ {de:"Socken",article:"p",sr:"čarape",srType:"p",label:"čarape"},
+ {de:"Handschuhe",article:"p",sr:"rukavice",srType:"p",label:"rukavice"},
+ {de:"Schlafanzug",article:"m",sr:"pidžamu",srType:"f",label:"pidžama"},
+ {de:"Sakko",article:"n",sr:"sako",srType:"m",label:"sako"},
+ {de:"Sweatshirt",article:"n",sr:"duksericu",srType:"f",label:"dukserica"},
+ {de:"Trikot",article:"n",sr:"dres",srType:"m",label:"dres"},
+ {de:"Krawatte",article:"f",sr:"kravatu",srType:"f",label:"kravata"},
+ {de:"Tasche",article:"f",sr:"torbu",srType:"f",label:"torba"},
+ {de:"Badehose",article:"f",sr:"kupaće gaće",srType:"p",label:"kupaći"}
+];
+const CLOTH_COLORS=[
+ {de:"schwarz",sr:["crni","crnu","crno","crne"],label:"crna"},
+ {de:"blau",sr:["plavi","plavu","plavo","plave"],label:"plava"},
+ {de:"weiß",sr:["beli","belu","belo","bele"],label:"bela"},
+ {de:"rot",sr:["crveni","crvenu","crveno","crvene"],label:"crvena"},
+ {de:"grün",sr:["zeleni","zelenu","zeleno","zelene"],label:"zelena"},
+ {de:"grau",sr:["sivi","sivu","sivo","sive"],label:"siva"},
+ {de:"gelb",sr:["žuti","žutu","žuto","žute"],label:"žuta"},
+ {de:"braun",sr:["braon","braon","braon","braon"],label:"braon"},
+ {de:"rosa",sr:["roze","roze","roze","roze"],label:"roze",fixed:true},
+ {de:"lila",sr:["lila","lila","lila","lila"],label:"lila",fixed:true},
+ {de:"orangefarben",sr:["narandžasti","narandžastu","narandžasto","narandžaste"],label:"narandžasta"},
+ {de:"bunt",sr:["šareni","šarenu","šareno","šarene"],label:"šarena"}
+];
+const CLOTH_STATES={mann:{item:0,color:0},frau:{item:1,color:1},kind:{item:2,color:2}};
+const CLOTH_INDEX={};
+function makeClothing(role){
+ const item=CLOTH_ITEMS[CLOTH_STATES[role].item],color=CLOTH_COLORS[CLOTH_STATES[role].color];
+ const suffix=item.article==="m"?"en":item.article==="f"?"e":item.article==="n"?"es":"e";
+ const adjective=color.de+(color.fixed?"":suffix);
+ const article=item.article==="m"?"einen ":item.article==="f"?"eine ":item.article==="n"?"ein ":"";
+ const noun=(item.article==="p"?"":"")+article+adjective+" "+item.de;
+ const who={mann:["Der Mann trägt ","Muškarac nosi "],frau:["Die Frau trägt ","Žena nosi "],kind:["Das Kind trägt ","Dete nosi "]}[role];
+ const idx={m:0,f:1,n:2,p:3}[item.srType];
+ return {cat:"custom-clothing",role,de:who[0]+noun+".",sr:who[1]+color.sr[idx]+" "+item.sr+"."};
+}
+for(const role of ["mann","frau","kind"]){CLOTH_INDEX[role]=BANK.length;BANK.push(makeClothing(role))}
+function renderModes(){
+ const show=step===3;$("#modebar").hidden=!show;
+ document.querySelectorAll("[data-mode]").forEach(b=>b.classList.toggle("active",b.dataset.mode===appearanceMode));
+}
+function renderHair(){
+ const show=step===3&&appearanceMode==="hair";$("#hairbar").hidden=!show;if(!show)return;
+ const state=HAIR_STATES[category],row=BANK[HAIR_INDEX[category]],active=chosen.includes(HAIR_INDEX[category]);
+ $("#hairStyle").textContent=HAIR_STYLE[state.style].label;
+ $("#hairColor").textContent=HAIR_STYLE[state.style].bald?"nije važno":HAIR_COLORS[state.color].label;
+ document.querySelectorAll('[data-hair-turn="color"]').forEach(b=>b.disabled=!!HAIR_STYLE[state.style].bald);
+ $("#hairSentence").textContent=row.de;$("#hairTranslation").textContent=row.sr;
+ $("#hairbar").classList.toggle("is-selected",active);
+ $("#hairAdd").textContent=active?"✓ Izabrano":"+ Dodaj";
+ $("#hairAdd").setAttribute("aria-pressed",String(active));
+}
+function renderClothing(){
+ const show=step===4;$("#clothingbar").hidden=!show;if(!show)return;
+ const state=CLOTH_STATES[activeRole],row=BANK[CLOTH_INDEX[activeRole]],active=chosen.some(i=>BANK[i].cat==="custom-clothing"&&BANK[i].role===activeRole&&BANK[i].de===row.de);
+ $("#clothingItem").textContent=CLOTH_ITEMS[state.item].label;
+ $("#clothingColor").textContent=CLOTH_COLORS[state.color].label;
+ $("#clothingSentence").textContent=row.de;$("#clothingTranslation").textContent=row.sr;
+ $("#clothingbar").classList.toggle("is-selected",active);
+ $("#clothingAdd").textContent=active?"✓ Izabrano":"+ Dodaj";
+ $("#clothingAdd").setAttribute("aria-pressed",String(active));
+}
+function toggleClothing(){
+ const item=makeClothing(activeRole);
+ const existing=chosen.find(i=>BANK[i].cat==="custom-clothing"&&BANK[i].role===activeRole&&BANK[i].de===item.de);
+ if(existing!==undefined){addOrRemove(existing)}else{
+  const i=BANK.length;BANK.push(item);addOrRemove(i);
+ }
+ renderClothing();
+}
+function turnHair(type,delta){
+ const state=HAIR_STATES[category],options=type==="style"?HAIR_STYLE:HAIR_COLORS;
+ if(type==="color"&&HAIR_STYLE[state.style].bald)return;
+ state[type]=(state[type]+delta+options.length)%options.length;
+ stop();Object.assign(BANK[HAIR_INDEX[category]],makeHair(category));
+ renderHair();renderSample();renderChosen();
+}
+function turnClothing(type,delta){
+ const state=CLOTH_STATES[activeRole],options=type==="item"?CLOTH_ITEMS:CLOTH_COLORS;
+ state[type]=(state[type]+delta+options.length)%options.length;
+ stop();Object.assign(BANK[CLOTH_INDEX[activeRole]],makeClothing(activeRole));
+ renderClothing();renderSample();renderChosen();
+}
+function escapeHTML(t){return String(t).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"','&quot;')}
+function voice(){if(!("speechSynthesis" in window))return null;const list=speechSynthesis.getVoices();return list.find(v=>/^de/i.test(v.lang)&&/google/i.test(v.name))||list.find(v=>/^de-DE/i.test(v.lang))||list.find(v=>/^de/i.test(v.lang))||null}
+function stop(){
+ runId++;
+ if("speechSynthesis" in window)speechSynthesis.cancel();
+ if(speakingChosenPosition!==-1){
+  speakingChosenPosition=-1;
+  updateSpeakingFrame();
+ }
+}
+function utter(text,callback){if(!("speechSynthesis" in window)){alert("Nemački govor nije podržan u ovom pregledaču.");return}let u=new SpeechSynthesisUtterance(text);u.lang="de-DE";u.rate=.87;u.pitch=1;const v=voice();if(v)u.voice=v;u.onend=()=>{if(callback)callback()};u.onerror=()=>{if(callback)callback()};speechSynthesis.speak(u)}
+function listen(i){
+ stop();
+ const currentRun=runId;
+ const position=chosen.indexOf(i);
+ if(position>=0){
+  chosenIndex=position;
+  speakingChosenPosition=position;
+  updateSpeakingFrame();
+ }
+ utter(BANK[i].de,()=>{
+  if(runId!==currentRun)return;
+  if(speakingChosenPosition!==-1){
+   speakingChosenPosition=-1;
+   updateSpeakingFrame();
+  }
+ });
+}
+function source(){const ids=BANK.map((_,i)=>i).filter(i=>BANK[i].cat===category);if(category==="extra"){const closing=ids.filter(i=>BANK[i].de==="Das war meine Bildbeschreibung.");return ids.filter(i=>BANK[i].de!=="Das war meine Bildbeschreibung.").concat(closing)}if(category==="start"&&step===0)return ids.slice(0,6).concat(ids.filter(i=>BANK[i].personExample));if(category==="start"&&step===1)return ids.slice(6).filter(i=>!BANK[i].personExample);return ids}
+function renderSample(){
+ $("#sampleNumber").textContent=(step+1)+".";
+ $("#samplehead").textContent=SAMPLE_HEADS[step].replace(/^\d+\.\s*/,"");
+ $("#samplesr").textContent=SAMPLE_TRANSLATIONS[step];
+ document.querySelectorAll(".step").forEach((button,index)=>{
+  const isSelected=index===step;
+  button.classList.toggle("active",isSelected);
+  button.setAttribute("aria-pressed",String(isSelected));
+  // Crvena aktivna kategorija i unutar mobilnog browsera ili iframe prikaza.
+  button.style.setProperty("background-color",isSelected?"#e11d3c":"#2466bf","important");
+  button.style.setProperty("border-color",isSelected?"#a91a32":"#15519c","important");
+  const number=button.querySelector(".num");
+  if(number)number.style.setProperty("background-color",isSelected?"#ad1630":"#4d90e4","important");
+ });
+}
+function renderList(){
+ if(step===3&&appearanceMode!=="description"){
+   $("#categoryCount").textContent=appearanceMode==="age"?"Godine":"Kosa";
+   return;
+ }
+ const box=$("#phrases");const usable=box.clientHeight;const width=box.clientWidth;
+ const ideal=width<338?73:68;
+ PAGE_SIZE=Math.max(3,Math.min(12,Math.floor(Math.max(0,usable-5)/ideal)));
+ document.documentElement.style.setProperty("--page-rows",PAGE_SIZE);
+ const data=source();const pages=Math.max(1,Math.ceil(data.length/PAGE_SIZE));page=Math.max(0,Math.min(page,pages-1));const visible=data.slice(page*PAGE_SIZE,(page+1)*PAGE_SIZE);$("#categoryCount").textContent=data.length+" rečenica";$("#pageCount").textContent="Strana "+(page+1)+" od "+pages;$("#prev").disabled=page<=0;$("#next").disabled=page>=pages-1;$("#phrases").innerHTML=visible.map(i=>{const a=BANK[i],is=chosen.includes(i);return '<div class="phrase '+(is?'selected':'')+'"><button class="add" data-add="'+i+'" aria-pressed="'+is+'"><span class="plus">'+(is?'✓':'+')+'</span><span class="phrasetxt"><span class="de">'+escapeHTML(a.de)+'</span><span class="sr">'+escapeHTML(a.sr)+'</span></span></button><button class="sound" data-sound="'+i+'" aria-label="Izgovori rečenicu">🔊</button></div>'}).join("")}
+function chosenPageSize(){const box=$("#selectedArea");return Math.max(1,Math.min(4,Math.floor(Math.max(0,box.clientHeight-6)/(box.clientWidth<330?82:72))))}
+function renderChosen(){
+ const n=chosen.length;chosenIndex=Math.min(Math.max(0,chosenIndex),Math.max(0,n-1));
+ $("#total").textContent=n+" rečenica";
+ if(!n){$("#chosenPage").textContent="Opis strana 1";$("#chosenPrev").disabled=true;$("#chosenNext").disabled=true;$("#selectedArea").innerHTML='<p class="empty">Dodaj rečenice pomoću +. Ovde će se videti više rečenica tvog opisa istovremeno.</p>';return}
+ const per=chosenPageSize(),first=Math.floor(chosenIndex/per)*per,last=Math.min(first+per,n),visible=chosen.slice(first,last);
+ $("#chosenPage").textContent="Opis strana "+(Math.floor(first/per)+1);
+ $("#chosenPrev").disabled=first===0;$("#chosenNext").disabled=last===n;
+ $("#selectedArea").style.setProperty("--chosen-rows",per);
+ $("#selectedArea").innerHTML='<div class="chosen-grid">'+visible.map((i,offset)=>{
+  const line=BANK[i],isSpeaking=speakingChosenPosition===first+offset;return '<div class="current '+(["age","custom-hair","custom-clothing"].includes(line.cat)?'dynamic-current':'')+(isSpeaking?' speaking-now':'')+'" data-chosen-position="'+(first+offset)+'"'+(isSpeaking?' aria-current="true"':'')+'><span class="index">'+(first+offset+1)+'.'+'</span><div class="sentence"><div class="de">'+escapeHTML(line.de)+'</div><div class="sr">'+escapeHTML(line.sr)+'</div></div><button class="sound" data-chosen-sound="'+i+'" aria-label="Poslušaj rečenicu">🔊</button><button class="remove" data-chosen-remove="'+i+'" aria-label="Ukloni rečenicu">×</button></div>'
+ }).join("")+'</div>'
+}
+function updateSpeakingFrame(){
+ const rows=[...document.querySelectorAll("#selectedArea .current[data-chosen-position]")];
+ const per=chosenPageSize(),wantedPage=Math.floor(chosenIndex/per);
+ if(!rows.length||Math.floor(Number(rows[0].dataset.chosenPosition)/per)!==wantedPage){renderChosen();return}
+ for(const row of rows){
+  const pos=Number(row.dataset.chosenPosition),speaking=pos===speakingChosenPosition;
+  row.classList.toggle("speaking-now",speaking);
+  if(speaking)row.setAttribute("aria-current","true");else row.removeAttribute("aria-current");
+  row.querySelector(".index").textContent=(pos+1)+".";
+ }
+}
+function addOrRemove(i){const pos=chosen.indexOf(i);if(pos<0){chosen.push(i);chosenIndex=chosen.length-1;listen(i)}else{stop();chosen.splice(pos,1);chosenIndex=Math.min(pos,chosen.length-1)}renderChosen();renderList();renderAge();renderHair();renderClothing()}
+function showRoles(){
+ const show=step===3||step===4,appearance=step===3&&appearanceMode!=="description";
+ $("#rolebar").hidden=!show;
+ const panel=$("#phrases").closest(".panel");
+ panel.classList.toggle("appearance-only",appearance);
+ $("#selectorTitle").textContent=step===3?(appearanceMode==="age"?"Izaberi godine":appearanceMode==="hair"?"Izaberi kosu":"Opis osobe"):"Izaberi rečenice";
+ document.querySelectorAll("[data-role]").forEach(b=>b.classList.toggle("active",b.dataset.role===activeRole));
+ renderModes();renderAge();renderHair();renderClothing();
+}
+function chooseStep(n){step=n;if(n===3){category=activeRole}else category=STEP_CATS[n];page=0;showRoles();renderSample();renderList()}
+function playAll(){
+ stop();
+ const my=runId,arr=[...chosen];
+ let position=0;
+ function playNext(){
+  if(my!==runId)return;
+  if(position>=arr.length){
+   speakingChosenPosition=-1;
+   updateSpeakingFrame();
+   return;
+  }
+  chosenIndex=position;
+  speakingChosenPosition=position;
+  updateSpeakingFrame();
+  utter(BANK[arr[position++]].de,playNext);
+ }
+ playNext();
+}
+$("#steps").addEventListener("click",e=>{const b=e.target.closest("[data-step]");if(b)chooseStep(Number(b.dataset.step))});
+$("#rolebar").addEventListener("click",e=>{const b=e.target.closest("[data-role]");if(!b)return;activeRole=b.dataset.role;if(step===3)category=activeRole;page=0;showRoles();renderSample();renderList()});
+$("#modebar").addEventListener("click",e=>{const b=e.target.closest("[data-mode]");if(!b)return;appearanceMode=b.dataset.mode;page=0;showRoles();renderSample();renderList()});
+$("#ageMinus").addEventListener("click",()=>adjustAge(-1));
+$("#agePlus").addEventListener("click",()=>adjustAge(1));
+$("#ageSound").addEventListener("click",()=>listen(AGE_INDEX[category]));
+$("#ageAdd").addEventListener("click",()=>addOrRemove(AGE_INDEX[category]));
+$("#hairbar").addEventListener("click",e=>{const b=e.target.closest("[data-hair-turn]");if(b)turnHair(b.dataset.hairTurn,Number(b.dataset.delta))});
+$("#hairSound").addEventListener("click",()=>listen(HAIR_INDEX[category]));
+$("#hairAdd").addEventListener("click",()=>addOrRemove(HAIR_INDEX[category]));
+$("#clothingbar").addEventListener("click",e=>{const b=e.target.closest("[data-clothing-turn]");if(b)turnClothing(b.dataset.clothingTurn,Number(b.dataset.delta))});
+$("#clothingSound").addEventListener("click",()=>listen(CLOTH_INDEX[activeRole]));
+$("#clothingAdd").addEventListener("click",toggleClothing);
+$("#phrases").addEventListener("click",e=>{let b=e.target.closest("[data-add]");if(b){addOrRemove(Number(b.dataset.add));return}b=e.target.closest("[data-sound]");if(b)listen(Number(b.dataset.sound))});
+$("#prev").addEventListener("click",()=>{page--;renderList()});
+$("#next").addEventListener("click",()=>{page++;renderList()});
+$("#chosenPrev").addEventListener("click",()=>{chosenIndex=Math.max(0,(Math.floor(chosenIndex/chosenPageSize())-1)*chosenPageSize());renderChosen()});
+$("#chosenNext").addEventListener("click",()=>{chosenIndex=Math.min(chosen.length-1,(Math.floor(chosenIndex/chosenPageSize())+1)*chosenPageSize());renderChosen()});
+$("#selectedArea").addEventListener("click",e=>{const sound=e.target.closest("[data-chosen-sound]");if(sound){listen(Number(sound.dataset.chosenSound));return}const remove=e.target.closest("[data-chosen-remove]");if(remove)addOrRemove(Number(remove.dataset.chosenRemove))});
+$("#playAll").addEventListener("click",playAll);
+$("#clear").addEventListener("click",()=>{stop();chosen=[];chosenIndex=0;renderChosen();renderList()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")stop()});
+if("speechSynthesis" in window)speechSynthesis.getVoices();
+renderSample();showRoles();renderList();renderChosen();
+// Resize layout when device orientation/available viewport changes, without introducing scrollbars.
+if("ResizeObserver" in window){new ResizeObserver(()=>renderList()).observe($("#phrases"))}
+window.addEventListener("resize",()=>{renderList();renderChosen()});
+</script>
+</body></html>
