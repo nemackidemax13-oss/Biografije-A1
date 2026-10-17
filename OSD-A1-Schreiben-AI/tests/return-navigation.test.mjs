@@ -21,6 +21,7 @@ function linksFor(returnUrl, referrer = '', ids = { demax_celina: '20', demax_ve
   const cancelled = [];
   const window = { location, history: { state: null, length: 2, go(delta) { traversals.push(delta); }, ...historyOptions },
     parent: {postMessage(...args) { requests.push(args); }}, addEventListener(type, fn) {listeners[type] = fn;} };
+  if (!ancestors.length) window.parent = window;
   const timers = [];
   vm.runInNewContext(script, { URL, URLSearchParams, document, location, window,
     clearTimeout(id) {cancelled.push(id);}, setTimeout(fn) {timers.push(fn); return timers.length;} });
@@ -90,6 +91,12 @@ test('embedded same-tab marked links still ask the authenticated parent, never t
   click(links[0]);
   assert.equal(links.requests.length, 1);
   assert.deepEqual(links.traversals, []);
+});
+test('an unrelated outer wrapper never has its joint history traversed by the exercise', () => {
+  const links = linksFor(course, course, sameTab, ['https://replit.com']);
+  assert.equal(click(links[0]), false);
+  assert.deepEqual(links.traversals, []);
+  assert.equal(links[0].target, '_self');
 });
 
 test('preview opening returns to the same preview session rather than the production login', () => {
