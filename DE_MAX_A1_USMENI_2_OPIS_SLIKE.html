@@ -53,7 +53,7 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}butto
 .selected-area{flex:1;min-height:0;display:flex;align-items:stretch;padding:4px 5px;overflow:hidden}
 .chosen-grid{width:100%;height:100%;min-height:0;display:grid;grid-template-rows:repeat(var(--chosen-rows,2),minmax(0,1fr));gap:3px}
 .current{width:100%;min-height:0;max-height:100%;display:flex;align-items:center;gap:4px;padding:2px 4px;border:1px solid #e2eaf6;background:#fcfdff;border-radius:6px;overflow:hidden}
-.current .index{font-size:10px;font-weight:900;color:#8fa1b7;flex:none;padding-top:2px}
+.current .index{width:22px;height:22px;min-width:22px;display:grid;place-items:center;align-self:center;font-size:10px;font-weight:900;color:#8fa1b7;flex:none;padding:0;border-radius:100%}
 .current .sentence{min-width:0;flex:1;overflow:hidden;align-self:center}
 .current .sentence .de{font-size:11px;line-height:1.2}
 .current .sentence .sr{font-size:9px;line-height:1.2;margin-top:2px}
@@ -61,19 +61,13 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}butto
 .current .sound{min-width:23px;min-height:23px;font-size:11px}
 /* Tokom automatskog čitanja u "Moj opis" označi upravo izgovaranu rečenicu. */
 .current.speaking-now{
- border:1px solid #e32d49!important;
- border-radius:12px;
+ border-color:#e32d49!important;
  background:#ffffff!important;
- box-shadow:inset 0 0 0 1px #e32d49,0 2px 7px #c8294922!important;
+ box-shadow:inset 0 0 0 1px #e32d49!important;
 }
-.current.speaking-now .de{color:#a61939;font-weight:950}
+.current.speaking-now .de{color:#a61939}
 .current.speaking-now .sr{color:#715969}
-.current.speaking-now .index{
- display:grid;place-items:center;align-self:center;flex:none;
- background:#df2444;color:#fff;border-radius:100%;padding:0;
- width:22px;height:22px;min-width:22px;font-size:10px;font-weight:900;
- box-shadow:0 2px 5px #bb1e3c55;
-}
+.current.speaking-now .index{background:#df2444;color:#fff}
 .current.speaking-now .sound{background:#fff;border-color:#eaa3b0;color:#b91d3c}
 
 .empty{font-size:10.5px;color:#768ca5;text-align:center;line-height:1.5;margin:auto;padding:0 8px}
@@ -119,7 +113,7 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}butto
 .choicepreview .sound{min-width:25px;min-height:25px;font-size:11px;flex:none;padding:1px}
 .choiceadd{background:#e8f7ee;border:1px solid #a8d6bd;color:#14734d;height:26px;min-width:61px;flex:none;padding:2px 5px;border-radius:7px;font-size:10px;font-weight:900}
 .choicebar.is-selected .choiceadd{background:#d6273e;border-color:#b71835;color:white}
-.current.dynamic-current{border:2px solid #ed1636;background:#fff3f5}
+.current.dynamic-current{border:1px solid #ed1636;background:#fff3f5;box-shadow:inset 0 0 0 1px #ed1636}
 /* U koraku Izgled prikazuje se isključivo odabrani interaktivni deo, bez ostalih rečenica. */
 .panel.appearance-only .phrases,.panel.appearance-only .pagination,.panel.appearance-only .load{display:none}
 .panel.appearance-only .agebar:not([hidden]),.panel.appearance-only .hairbar:not([hidden]){
@@ -428,7 +422,7 @@ function stop(){
  if("speechSynthesis" in window)speechSynthesis.cancel();
  if(speakingChosenPosition!==-1){
   speakingChosenPosition=-1;
-  renderChosen();
+  updateSpeakingFrame();
  }
 }
 function utter(text,callback){if(!("speechSynthesis" in window)){alert("Nemački govor nije podržan u ovom pregledaču.");return}let u=new SpeechSynthesisUtterance(text);u.lang="de-DE";u.rate=.87;u.pitch=1;const v=voice();if(v)u.voice=v;u.onend=()=>{if(callback)callback()};u.onerror=()=>{if(callback)callback()};speechSynthesis.speak(u)}
@@ -439,13 +433,13 @@ function listen(i){
  if(position>=0){
   chosenIndex=position;
   speakingChosenPosition=position;
-  renderChosen();
+  updateSpeakingFrame();
  }
  utter(BANK[i].de,()=>{
   if(runId!==currentRun)return;
   if(speakingChosenPosition!==-1){
    speakingChosenPosition=-1;
-   renderChosen();
+   updateSpeakingFrame();
   }
  });
 }
@@ -471,8 +465,19 @@ function renderChosen(){
  $("#chosenPrev").disabled=first===0;$("#chosenNext").disabled=last===n;
  $("#selectedArea").style.setProperty("--chosen-rows",per);
  $("#selectedArea").innerHTML='<div class="chosen-grid">'+visible.map((i,offset)=>{
-  const line=BANK[i],isSpeaking=speakingChosenPosition===first+offset;return '<div class="current '+(["age","custom-hair","custom-clothing"].includes(line.cat)?'dynamic-current':'')+(isSpeaking?' speaking-now':'')+'"'+(isSpeaking?' aria-current="true"':'')+'><span class="index">'+(isSpeaking?'▶':(first+offset+1)+'.')+'</span><div class="sentence"><div class="de">'+escapeHTML(line.de)+'</div><div class="sr">'+escapeHTML(line.sr)+'</div></div><button class="sound" data-chosen-sound="'+i+'" aria-label="Poslušaj rečenicu">🔊</button><button class="remove" data-chosen-remove="'+i+'" aria-label="Ukloni rečenicu">×</button></div>'
+  const line=BANK[i],isSpeaking=speakingChosenPosition===first+offset;return '<div class="current '+(["age","custom-hair","custom-clothing"].includes(line.cat)?'dynamic-current':'')+(isSpeaking?' speaking-now':'')+'" data-chosen-position="'+(first+offset)+'"'+(isSpeaking?' aria-current="true"':'')+'><span class="index">'+(isSpeaking?'▶':(first+offset+1)+'.')+'</span><div class="sentence"><div class="de">'+escapeHTML(line.de)+'</div><div class="sr">'+escapeHTML(line.sr)+'</div></div><button class="sound" data-chosen-sound="'+i+'" aria-label="Poslušaj rečenicu">🔊</button><button class="remove" data-chosen-remove="'+i+'" aria-label="Ukloni rečenicu">×</button></div>'
  }).join("")+'</div>'
+}
+function updateSpeakingFrame(){
+ const rows=[...document.querySelectorAll("#selectedArea .current[data-chosen-position]")];
+ const per=chosenPageSize(),wantedPage=Math.floor(chosenIndex/per);
+ if(!rows.length||Math.floor(Number(rows[0].dataset.chosenPosition)/per)!==wantedPage){renderChosen();return}
+ for(const row of rows){
+  const pos=Number(row.dataset.chosenPosition),speaking=pos===speakingChosenPosition;
+  row.classList.toggle("speaking-now",speaking);
+  if(speaking)row.setAttribute("aria-current","true");else row.removeAttribute("aria-current");
+  row.querySelector(".index").textContent=speaking?"▶":(pos+1)+".";
+ }
 }
 function addOrRemove(i){const pos=chosen.indexOf(i);if(pos<0){chosen.push(i);chosenIndex=chosen.length-1;listen(i)}else{stop();chosen.splice(pos,1);chosenIndex=Math.min(pos,chosen.length-1)}renderChosen();renderList();renderAge();renderHair();renderClothing()}
 function showRoles(){
@@ -493,12 +498,12 @@ function playAll(){
   if(my!==runId)return;
   if(position>=arr.length){
    speakingChosenPosition=-1;
-   renderChosen();
+   updateSpeakingFrame();
    return;
   }
   chosenIndex=position;
   speakingChosenPosition=position;
-  renderChosen();
+  updateSpeakingFrame();
   utter(BANK[arr[position++]].de,playNext);
  }
  playNext();
