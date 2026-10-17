@@ -10,9 +10,9 @@
 /* Ne ugnjezduj iframe u iframe: na mobilnim uredjajima unutrasnji
    iframe ne prepoznaje tastaturu pa broj reci i provera ostaju sakriveni. */
 const params=new URLSearchParams(location.search);
-params.set('v','keyboard2');
+if (!params.has('v')) params.set('v','prompt4');
 location.replace('./?'+params.toString()+location.hash);
 </script>
 </head>
-<body><main><a href="./?v=keyboard2">Otvori VEŽBAJ MEJLOVE A1</a></main></body>
+<body><main><a href="./?v=prompt4">Otvori VEŽBAJ MEJLOVE A1</a></main></body>
 </html>
