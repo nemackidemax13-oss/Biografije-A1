@@ -1230,11 +1230,11 @@ body.view-mail:not(.mobile-writing) .a1-prep-topline{display:flex;align-items:ce
 <body class="view-home">
 <div class="app">
 <section id="mailHome" aria-label="Izbor mejla">
- <div class="mail-home-hero"><a class="a1-prep-mini" href="https://de-max-a-1-aplikacija.replit.app/course/a1-priprema" target="_top" aria-label="Nazad na A1 Pripremu">← A1 Priprema</a><div class="mail-home-eyebrow">DE-MAX TUTIN · ÖSD A1</div><div class="mail-home-logo" aria-label="De-Max Tutin"><b>DE-MAX</b><small>TUTIN</small></div><div class="mail-home-eyebrow">35 MEJLOVA · A1 VEŽBANJE</div><h1>Izaberi mejl</h1><p>Odaberi zadatak i napiši odgovor na nemačkom</p></div>
+ <div class="mail-home-hero"><a class="a1-prep-mini" target="_self" aria-label="Nazad na A1 Pripremu">← A1 Priprema</a><div class="mail-home-eyebrow">DE-MAX TUTIN · ÖSD A1</div><div class="mail-home-logo" aria-label="De-Max Tutin"><b>DE-MAX</b><small>TUTIN</small></div><div class="mail-home-eyebrow">35 MEJLOVA · A1 VEŽBANJE</div><h1>Izaberi mejl</h1><p>Odaberi zadatak i napiši odgovor na nemačkom</p></div>
  <div class="mail-home-summary"><span>MEJLOVI ZA VEŽBANJE</span><span id="homeProgress">0 / 35 provereno</span></div>
  <div id="mailHomeGrid" class="mail-home-grid" aria-label="35 mejlova"></div>
 </section>
-<nav class="a1-prep-topline" aria-label="Povratak na A1 Pripremu"><a class="a1-prep-mini" href="https://de-max-a-1-aplikacija.replit.app/course/a1-priprema" target="_top">← A1 Priprema</a></nav>
+<nav class="a1-prep-topline" aria-label="Povratak na A1 Pripremu"><a class="a1-prep-mini" target="_self">← A1 Priprema</a></nav>
 <header>
   <div class="head-top"><div class="brand">De-Max Tutin</div><div class="headtag">ÖSD A1 • <span id="total">35</span> MEJLOVA</div></div>
   <div class="headnav"><button id="prev" title="Prethodni mejl">‹</button><select id="pick" aria-label="Izaberi mejl"></select><button id="pickMobile" type="button" class="pick-mobile" aria-label="Izaberi mejl" aria-haspopup="dialog">1. mejl — Baštenska zabava</button><button id="next" title="Sledeći mejl">›</button></div>
@@ -1595,14 +1595,29 @@ else renderMailGrid();
   // A1 priprema je odredište čak i ako je mejl otvoren kao zaseban tab ili iframe.
   let destination = new URL('https://de-max-a-1-aplikacija.replit.app/course/a1-priprema');
   const params = new URLSearchParams(location.search);
+  const publishedOrigin = destination.origin;
+  function trustedAppOrigin(value) {
+    try {
+      const url = new URL(value);
+      return url.protocol === 'https:' && !url.username && !url.password
+        && (url.origin === publishedOrigin || url.hostname.endsWith('.replit.dev'))
+        ? url.origin : '';
+    } catch { return ''; }
+  }
+  const referringOrigin = trustedAppOrigin(document.referrer);
+  // Older embedded launches have no query context and suppress the referrer.
+  // Chromium still exposes the immediate ancestor origin (not its private URL).
+  const parentOrigin = trustedAppOrigin(location.ancestorOrigins?.[0]);
+  if (!params.has('demax_return_url') && (parentOrigin || referringOrigin)) {
+    destination = new URL('/course/a1-priprema', parentOrigin || referringOrigin);
+  }
   // Development and published De-Max have separate login sessions. Return to
   // the origin that opened this exercise, never silently switch environments.
   try {
     const requested = new URL(params.get('demax_return_url'));
-    let referringOrigin = '';
-    try { referringOrigin = new URL(document.referrer).origin; } catch {}
-    const publishedApp = requested.origin === destination.origin;
-    const samePreview = requested.hostname.endsWith('.replit.dev') && requested.origin === referringOrigin;
+    const publishedApp = requested.origin === publishedOrigin;
+    const samePreview = requested.hostname.endsWith('.replit.dev')
+      && (requested.origin === referringOrigin || requested.origin === parentOrigin);
     if (requested.protocol === 'https:' && !requested.username && !requested.password
       && (publishedApp || samePreview)
       && /^(?:\/[A-Za-z0-9_-]+)*\/course\/a1-priprema\/?$/.test(requested.pathname)) {
@@ -1617,12 +1632,37 @@ else renderMailGrid();
     destination.searchParams.set('celina', category);
     destination.searchParams.set('vezba', material);
   }
-  // Pravi link (target=_top) izlazi iz iframe-a na jedan dodir.
-  // Ne presretati klik putem history.go: istorija u iframe-u nije pouzdana.
+  // A cross-origin child cannot navigate its intermediate parent in Chromium.
+  // Ask De-Max to return itself; never discard its authenticated frame via _top.
+  let pendingReturn = null;
+  window.addEventListener('message', event => {
+    if (event.origin !== parentOrigin || event.source !== window.parent
+      || event.data?.type !== 'demax:email-return-accepted') return;
+    clearTimeout(pendingReturn);
+    pendingReturn = null;
+  });
   document.querySelectorAll('a.a1-prep-mini').forEach(link => {
     link.href = destination.href;
-    link.target = '_top';
+    link.target = '_self';
     link.setAttribute('rel', 'noopener');
+    if (parentOrigin === destination.origin) link.addEventListener('click', event => {
+      if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+      event.preventDefault();
+      clearTimeout(pendingReturn);
+      window.parent.postMessage({type:'demax:email-return'}, parentOrigin);
+      pendingReturn = setTimeout(() => {
+        pendingReturn = null;
+        let notice = document.getElementById('demax-return-notice');
+        if (!notice) {
+          notice = document.createElement('p');
+          notice.id = 'demax-return-notice';
+          notice.setAttribute('role', 'status');
+          notice.style.cssText = 'padding:8px;background:#fff;color:#b42318;font:600 13px/1.4 system-ui';
+          link.insertAdjacentElement('afterend', notice);
+        }
+        notice.textContent = 'De-Max nije primio povratak. Zatvori mejlove i ponovo otvori ažuriranu De-Max aplikaciju.';
+      }, 1500);
+    });
   });
 })();
 </script>
