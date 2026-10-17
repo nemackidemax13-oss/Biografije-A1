@@ -1169,15 +1169,24 @@ html body #answerPanel .editorarea .foot button#check.checkbtn:enabled{
 .a1-prep-exit:focus-visible{outline:3px solid #ffca45;outline-offset:2px}
 .a1-prep-exit--writer{display:none}
 body.mobile-writing .a1-prep-exit--writer{display:inline-flex;min-height:30px;padding:4px 6px;color:#154894;border-color:#b9cceb;background:#fff;font-size:11px}
+/* Malo crveno dugme A1 Priprema: jasno vidljivo na pocetnoj i pri izboru mejla. */
+.a1-prep-mini{display:inline-flex;align-items:center;justify-content:center;max-width:max-content;min-height:27px;padding:4px 8px;border:1px solid #aa1c30;border-radius:7px;background:#c61e32;color:#fff!important;font:800 11px/1.15 system-ui,-apple-system,"Segoe UI",sans-serif;text-decoration:none;white-space:nowrap;position:relative;z-index:2}
+.a1-prep-mini:hover{background:#ac172c}
+.mail-home-hero{padding-top:48px!important}
+.mail-home-hero .a1-prep-mini{position:absolute;top:8px;left:10px}
+.a1-prep-topline{display:none}
+body.view-mail:not(.mobile-writing) .a1-prep-topline{display:flex;align-items:center;padding:4px 9px;background:#edf4ff;border-bottom:1px solid #d8e4f5}
+@media(max-width:799px){.mail-home-hero{padding-top:43px!important}}
 </style>
 </head>
 <body class="view-home">
 <div class="app">
 <section id="mailHome" aria-label="Izbor mejla">
- <div class="mail-home-hero"><div class="mail-home-eyebrow">DE-MAX TUTIN · ÖSD A1</div><div class="mail-home-logo" aria-label="De-Max Tutin"><b>DE-MAX</b><small>TUTIN</small></div><div class="mail-home-eyebrow">35 MEJLOVA · A1 VEŽBANJE</div><h1>Izaberi mejl</h1><p>Odaberi zadatak i napiši odgovor na nemačkom</p></div>
+ <div class="mail-home-hero"><a class="a1-prep-mini" href="https://de-max-a-1-aplikacija.replit.app/" target="_top" aria-label="Nazad na A1 Pripremu">← A1 Priprema</a><div class="mail-home-eyebrow">DE-MAX TUTIN · ÖSD A1</div><div class="mail-home-logo" aria-label="De-Max Tutin"><b>DE-MAX</b><small>TUTIN</small></div><div class="mail-home-eyebrow">35 MEJLOVA · A1 VEŽBANJE</div><h1>Izaberi mejl</h1><p>Odaberi zadatak i napiši odgovor na nemačkom</p></div>
  <div class="mail-home-summary"><span>MEJLOVI ZA VEŽBANJE</span><span id="homeProgress">0 / 35 provereno</span></div>
  <div id="mailHomeGrid" class="mail-home-grid" aria-label="35 mejlova"></div>
 </section>
+<nav class="a1-prep-topline" aria-label="Povratak na A1 Pripremu"><a class="a1-prep-mini" href="https://de-max-a-1-aplikacija.replit.app/" target="_top">← A1 Priprema</a></nav>
 <header>
   <div class="head-top"><div class="brand">De-Max Tutin</div><div class="headtag">ÖSD A1 • <span id="total">35</span> MEJLOVA</div></div>
   <div class="headnav"><button id="prev" title="Prethodni mejl">‹</button><select id="pick" aria-label="Izaberi mejl"></select><button id="pickMobile" type="button" class="pick-mobile" aria-label="Izaberi mejl" aria-haspopup="dialog">1. mejl — Baštenska zabava</button><button id="next" title="Sledeći mejl">›</button></div>
