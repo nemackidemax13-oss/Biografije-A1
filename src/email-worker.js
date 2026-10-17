@@ -1,7 +1,7 @@
 // DE-MAX TUTIN — OpenAI API server za 35 A1 mejlova.
 // Postavi ovaj kod kao Cloudflare Worker. NIKADA ne upisuj API kljuc u ovaj fajl.
 // U Cloudflare: Settings > Variables and Secrets > OPENAI_API_KEY (Secret).
-const SITE_ORIGINS = new Set(["https://nemackidemax13-oss.github.io", "https://biografije-a1.nemackidemax13.workers.dev"]);
+const SITE_ORIGINS = new Set(["https://nemackidemax13-oss.github.io", "https://biografije-a1.pages.dev", "https://biografije-a1.nemackidemax13.workers.dev"]);
 const TASKS_URL = "https://raw.githubusercontent.com/nemackidemax13-oss/Biografije-A1/main/OSD-A1-Schreiben-AI/tasks.json";
 const MODEL_DEFAULT = "gpt-4.1-mini";
 const TIMEOUT_MS = 25000;
