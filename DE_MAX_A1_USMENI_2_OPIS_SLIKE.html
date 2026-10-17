@@ -252,7 +252,7 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}butto
  <section class="panel compose" aria-label="Sastavljeni opis">
   <div class="paneltitle"><strong>Moj opis</strong><span class="small" id="total">0 rečenica</span></div>
   <div class="selected-area" id="selectedArea"></div>
-  <div class="compact-nav"><button id="chosenPrev" class="nav" aria-label="Prethodna izabrana rečenica">‹</button><span id="chosenPage">0 od 0</span><button id="chosenNext" class="nav" aria-label="Sledeća izabrana rečenica">›</button></div>
+  <div class="compact-nav"><button id="chosenPrev" class="nav" aria-label="Prethodna izabrana rečenica">‹</button><span id="chosenPage">Opis strana 1</span><button id="chosenNext" class="nav" aria-label="Sledeća izabrana rečenica">›</button></div>
   <div class="controls centered-controls"><button id="playAll" class="ctrl main">▶ Pusti sve</button><button id="clear" class="ctrl danger">Obriši</button></div>
  </section>
 </main>
@@ -459,9 +459,9 @@ function chosenPageSize(){const box=$("#selectedArea");return Math.max(1,Math.mi
 function renderChosen(){
  const n=chosen.length;chosenIndex=Math.min(Math.max(0,chosenIndex),Math.max(0,n-1));
  $("#total").textContent=n+" rečenica";
- if(!n){$("#chosenPage").textContent="0 od 0";$("#chosenPrev").disabled=true;$("#chosenNext").disabled=true;$("#selectedArea").innerHTML='<p class="empty">Dodaj rečenice pomoću +. Ovde će se videti više rečenica tvog opisa istovremeno.</p>';return}
+ if(!n){$("#chosenPage").textContent="Opis strana 1";$("#chosenPrev").disabled=true;$("#chosenNext").disabled=true;$("#selectedArea").innerHTML='<p class="empty">Dodaj rečenice pomoću +. Ovde će se videti više rečenica tvog opisa istovremeno.</p>';return}
  const per=chosenPageSize(),first=Math.floor(chosenIndex/per)*per,last=Math.min(first+per,n),visible=chosen.slice(first,last);
- $("#chosenPage").textContent=(first+1)+"–"+last+" od "+n;
+ $("#chosenPage").textContent="Opis strana "+(Math.floor(first/per)+1);
  $("#chosenPrev").disabled=first===0;$("#chosenNext").disabled=last===n;
  $("#selectedArea").style.setProperty("--chosen-rows",per);
  $("#selectedArea").innerHTML='<div class="chosen-grid">'+visible.map((i,offset)=>{
