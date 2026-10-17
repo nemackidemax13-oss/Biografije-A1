@@ -1205,15 +1205,18 @@ html body #answerPanel .editorarea .foot button#check.checkbtn:enabled{
   }
 }
 
-/* Jedina dopuna pocetne strane mejlova: ulaz u ÖSD A1 Test bez Replita. */
-.mail-home-test-link{display:inline-flex;align-items:center;justify-content:center;gap:5px;margin-top:12px;min-height:36px;padding:8px 16px;border:1px solid #d7e7fc;border-radius:10px;background:#fff;color:#114d99!important;text-decoration:none;font-size:13px;font-weight:900;box-shadow:0 4px 12px #102d5a25;position:relative;z-index:2}
-.mail-home-test-link:hover,.mail-home-test-link:focus-visible{background:#eef5ff}
+/* Jedna mala traka za izlaz samo kada se index.html direktno koristi kao iframe. */
+#directEmbeddedExit{display:none;flex:0 0 37px;align-items:center;padding:4px 9px;background:#f0f5ff;border-bottom:1px solid #d8e4f5;position:relative;z-index:200}
+body.is-direct-embed #directEmbeddedExit{display:flex}
+#directEmbeddedExitButton{min-height:29px;border:0;border-radius:7px;background:#c61e32;color:#fff;padding:5px 10px;font:800 12px/1.15 system-ui,-apple-system,"Segoe UI",sans-serif}
+body.is-direct-embed.view-home #mailHome{min-height:calc(100dvh - 37px)}
 </style>
 </head>
 <body class="view-home">
 <div class="app">
+<nav id="directEmbeddedExit" aria-label="Povratak u glavnu aplikaciju"><button type="button" id="directEmbeddedExitButton">← Izađi</button></nav>
 <section id="mailHome" aria-label="Izbor mejla">
- <div class="mail-home-hero"><div class="mail-home-eyebrow">DE-MAX TUTIN · ÖSD A1</div><div class="mail-home-logo" aria-label="De-Max Tutin"><b>DE-MAX</b><small>TUTIN</small></div><div class="mail-home-eyebrow">35 MEJLOVA · A1 VEŽBANJE</div><h1>Izaberi mejl</h1><p>Odaberi zadatak i napiši odgovor na nemačkom</p><a class="mail-home-test-link" href="./test-a1.html" target="_self" aria-label="Otvori kompletan ÖSD A1 Test 1">ÖSD A1 Test 1 →</a></div>
+ <div class="mail-home-hero"><div class="mail-home-eyebrow">DE-MAX TUTIN · ÖSD A1</div><div class="mail-home-logo" aria-label="De-Max Tutin"><b>DE-MAX</b><small>TUTIN</small></div><div class="mail-home-eyebrow">35 MEJLOVA · A1 VEŽBANJE</div><h1>Izaberi mejl</h1><p>Odaberi zadatak i napiši odgovor na nemačkom</p></div>
  <div class="mail-home-summary"><span>MEJLOVI ZA VEŽBANJE</span><span id="homeProgress">0 / 35 provereno</span></div>
  <div id="mailHomeGrid" class="mail-home-grid" aria-label="35 mejlova"></div>
 </section>
@@ -1679,6 +1682,35 @@ else renderMailGrid();
         window.location.assign(destination.href);
       }
     });
+  });
+})();
+</script>
+<script id="demax-direct-iframe-exit">
+(() => {
+  // iframe.html ima sopstvenu traku za izlaz; ne prikazivati je dvaput.
+  const params = new URLSearchParams(location.search);
+  if (window.parent === window || params.get('mail_embedded_wrapper') === '1') return;
+  document.body.classList.add('is-direct-embed');
+  const button = document.getElementById('directEmbeddedExitButton');
+  let returnUrl = null;
+  try {
+    const candidate = params.get('return') || document.referrer;
+    const url = new URL(candidate);
+    if ((url.protocol === 'https:' || url.protocol === 'http:')
+      && !url.username && !url.password
+      && !(url.origin === location.origin && url.pathname.startsWith('/OSD-A1-Schreiben-AI/'))) {
+      returnUrl = url;
+    }
+  } catch {}
+  button.addEventListener('click', () => {
+    // Maticalna aplikacija moze zatvoriti svoj iframe pomocu ove poruke.
+    window.parent.postMessage({type:'demax:emails:close'}, '*');
+    window.parent.postMessage({type:'demax:email-return'}, '*');
+    if (returnUrl) {
+      // Korisnicki klik omogucava top-level povratak osim kada roditelj blokira navigaciju sandbox-om.
+      try { window.top.location.assign(returnUrl.href); return; } catch {}
+    }
+    button.textContent = 'Nazad u glavnoj aplikaciji';
   });
 })();
 </script>
