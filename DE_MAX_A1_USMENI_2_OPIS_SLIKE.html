@@ -68,6 +68,23 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}butto
 .ctrl.main{background:#2060af;color:white;border-color:#2060af;flex:1.2}
 .ctrl.active{background:#eaf8ef;border-color:#aed9bf;color:#17724c}
 .ctrl.danger{color:#ba2b41;background:#fff3f5;border-color:#edc9d0;flex:.65}
+.agebar{height:83px;min-height:83px;flex:none;display:flex;flex-direction:column;gap:3px;padding:4px 5px;background:#f8fbff;border-bottom:1px solid #dbe8f6;overflow:hidden}
+.agebar[hidden]{display:none}
+.agebar.age-selected{background:#fff3f5;box-shadow:inset 0 0 0 2px #ed1636}
+.age-controls{display:flex;align-items:center;justify-content:center;gap:6px;flex:none;height:28px;min-width:0}
+.age-person{font-size:10px;font-weight:950;color:#174886;margin-right:auto;white-space:nowrap}
+.age-btn{width:29px;height:27px;border-radius:7px;border:1px solid #adc9e9;background:#eff6ff;color:#164a95;font-size:18px;font-weight:850;line-height:1;flex:none}
+.age-btn:disabled{opacity:.35;cursor:default}
+.age-number{min-width:29px;font-size:17px;text-align:center;font-weight:950;color:#173b6b}
+.age-unit{font-size:10px;color:#65809b;white-space:nowrap;margin-right:auto}
+.age-preview{display:flex;align-items:center;gap:4px;flex:1;min-height:0}
+.age-texts{display:flex;flex-direction:column;justify-content:center;flex:1;min-width:0}
+.age-texts strong{font-size:10.5px;line-height:1.13;color:#1b447b}
+.age-texts small{font-size:8.5px;line-height:1.12;color:#677f9c;margin-top:3px}
+.age-preview .sound{min-height:27px;min-width:27px;font-size:12px;padding:1px;flex:none}
+.age-add{background:#e9f7ee;color:#146a42;border:1px solid #a4d2b6;padding:3px 8px;border-radius:7px;height:28px;min-width:62px;font-size:10px;font-weight:900;flex:none}
+.agebar.age-selected .age-add{background:#d72641;color:white;border-color:#bd1935}
+.current.age-current{border:2px solid #ed1636;background:#fff4f6}
 @media(max-height:620px){.app{grid-template-rows:25px 41px 39px minmax(0,1fr) minmax(172px,34%);gap:3px;padding:3px}.step span:last-child{font-size:8px}.phrases{gap:1px;padding:2px}.phrase .de{font-size:9.5px}.phrase .sr{font-size:7.7px}.samplede{font-size:10px}.samplehead{font-size:8px}}
 @media(max-width:360px){.step span:last-child{font-size:8px}.top h1{font-size:11px}.phrase .de{font-size:10px}.phrase .sr{font-size:8px}.picker .load{min-width:70px}}
 </style></head>
@@ -89,6 +106,18 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}butto
  <section class="panel" aria-label="Izbor rečenica">
   <div class="paneltitle"><strong>Izaberi rečenice</strong><span class="small" id="categoryCount">154 rečenice</span><button class="load" id="loadExample">+ Primer</button></div>
   <div class="rolebar" id="rolebar" hidden aria-label="Izbor osobe"><button data-role="mann" class="active">Muškarac</button><button data-role="frau">Žena</button><button data-role="kind">Dete</button></div>
+  <div class="agebar" id="agebar" hidden aria-label="Interaktivni izbor godina">
+   <div class="age-controls"><span class="age-person" id="agePerson">Der Mann</span>
+    <button type="button" class="age-btn" id="ageMinus" aria-label="Smanji broj godina">−</button>
+    <span class="age-number" id="ageCount">30</span>
+    <button type="button" class="age-btn" id="agePlus" aria-label="Povećaj broj godina">+</button>
+    <span class="age-unit">godina</span>
+   </div>
+   <div class="age-preview"><div class="age-texts"><strong id="ageSentence">Er ist ungefähr 30 Jahre alt.</strong><small id="ageTranslation">On ima otprilike 30 godina.</small></div>
+    <button type="button" class="sound" id="ageSound" aria-label="Poslušaj godine">🔊</button>
+    <button type="button" class="age-add" id="ageAdd" aria-pressed="false">+ Dodaj</button>
+   </div>
+  </div>
   <div class="phrases" id="phrases" aria-live="polite"></div>
   <div class="pagination"><button id="prev" class="nav" aria-label="Prethodna stranica">‹</button><span class="pagecount" id="pageCount">Strana 1 od 4</span><button id="next" class="nav" aria-label="Sledeća stranica">›</button></div>
  </section>
@@ -109,13 +138,32 @@ const DEMO=[2,6,13,10,58,128,153];
 const $=(q)=>document.querySelector(q);
 let PAGE_SIZE=6;
 let category="start",page=0,step=0,chosen=[],chosenIndex=0,auto=true,runId=0;
+const AGES={mann:30,frau:30,kind:8};
+const AGE_ROLES={mann:{label:"Der Mann",de:"Er",sr:"On"},frau:{label:"Die Frau",de:"Sie",sr:"Ona"},kind:{label:"Das Kind",de:"Es",sr:"Ono"}};
+const AGE_INDEX={};
+function srYears(n){const last=n%10,lastTwo=n%100;return last===1&&lastTwo!==11?"godinu":last>=2&&last<=4&&(lastTwo<12||lastTwo>14)?"godine":"godina"}
+function createAge(role){const n=AGES[role],r=AGE_ROLES[role];return {cat:"age",role,de:r.de+" ist ungefähr "+n+(n===1?" Jahr":" Jahre")+" alt.",sr:r.sr+" ima otprilike "+n+" "+srYears(n)+"."}}
+for(const role of ["mann","frau","kind"]){AGE_INDEX[role]=BANK.length;BANK.push(createAge(role))}
+function renderAge(){const shown=step===3;$("#agebar").hidden=!shown;if(!shown)return;
+ const role=AGE_ROLES[category],n=AGES[category],i=AGE_INDEX[category],selected=chosen.includes(i),item=BANK[i];
+ $("#agePerson").textContent=role.label;$("#ageCount").textContent=n;
+ $("#ageSentence").textContent=item.de;$("#ageTranslation").textContent=item.sr;
+ $("#ageMinus").disabled=n<=1;$("#agePlus").disabled=n>=100;
+ $("#agebar").classList.toggle("age-selected",selected);
+ $("#ageAdd").textContent=selected?"✓ Izabrano":"+ Dodaj";
+ $("#ageAdd").setAttribute("aria-pressed",String(selected));
+}
+function adjustAge(delta){if(step!==3)return;const current=AGES[category],updated=Math.max(1,Math.min(100,current+delta));if(updated===current)return;
+ stop();AGES[category]=updated;Object.assign(BANK[AGE_INDEX[category]],createAge(category));
+ renderAge();renderSample();renderChosen();
+}
 function escapeHTML(t){return String(t).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"','&quot;')}
 function voice(){if(!("speechSynthesis" in window))return null;const list=speechSynthesis.getVoices();return list.find(v=>/^de/i.test(v.lang)&&/google/i.test(v.name))||list.find(v=>/^de-DE/i.test(v.lang))||list.find(v=>/^de/i.test(v.lang))||null}
 function stop(){runId++;if("speechSynthesis" in window)speechSynthesis.cancel()}
 function utter(text,callback){if(!("speechSynthesis" in window)){alert("Nemački govor nije podržan u ovom pregledaču.");return}let u=new SpeechSynthesisUtterance(text);u.lang="de-DE";u.rate=.87;u.pitch=1;const v=voice();if(v)u.voice=v;u.onend=()=>{if(callback)callback()};u.onerror=()=>{if(callback)callback()};speechSynthesis.speak(u)}
 function listen(i){stop();utter(BANK[i].de)}
 function source(){const ids=BANK.map((_,i)=>i).filter(i=>BANK[i].cat===category);if(category==="extra"){const closing=ids.filter(i=>BANK[i].de==="Das war meine Bildbeschreibung.");return ids.filter(i=>BANK[i].de!=="Das war meine Bildbeschreibung.").concat(closing)}return category==="start"&&step===0?ids.slice(0,6):category==="start"&&step===1?ids.slice(6):ids}
-function renderSample(){const i=category==="frau"?75:category==="kind"?98:SAMPLE_PHRASES[step],s=BANK[i];$("#samplehead").textContent=SAMPLE_HEADS[step];$("#samplede").textContent=s.de;$("#samplesr").textContent=s.sr;document.querySelectorAll(".step").forEach((x,j)=>x.classList.toggle("active",j===step))}
+function renderSample(){const i=step===3?AGE_INDEX[category]:category==="frau"?75:category==="kind"?98:SAMPLE_PHRASES[step],s=BANK[i];$("#samplehead").textContent=SAMPLE_HEADS[step];$("#samplede").textContent=s.de;$("#samplesr").textContent=s.sr;document.querySelectorAll(".step").forEach((x,j)=>x.classList.toggle("active",j===step))}
 function renderList(){const box=$("#phrases");const usable=box.clientHeight;const width=box.clientWidth;
  const ideal=width<338?44:41;
  PAGE_SIZE=Math.max(3,Math.min(12,Math.floor(Math.max(0,usable-5)/ideal)));
@@ -131,16 +179,20 @@ function renderChosen(){
  $("#chosenPrev").disabled=first===0;$("#chosenNext").disabled=last===n;
  $("#selectedArea").style.setProperty("--chosen-rows",per);
  $("#selectedArea").innerHTML='<div class="chosen-grid">'+visible.map((i,offset)=>{
-  const line=BANK[i];return '<div class="current"><span class="index">'+(first+offset+1)+'.</span><div class="sentence"><div class="de">'+escapeHTML(line.de)+'</div><div class="sr">'+escapeHTML(line.sr)+'</div></div><button class="sound" data-chosen-sound="'+i+'" aria-label="Poslušaj rečenicu">🔊</button><button class="remove" data-chosen-remove="'+i+'" aria-label="Ukloni rečenicu">×</button></div>'
+  const line=BANK[i];return '<div class="current '+(line.cat==="age"?'age-current':'')+'"><span class="index">'+(first+offset+1)+'.</span><div class="sentence"><div class="de">'+escapeHTML(line.de)+'</div><div class="sr">'+escapeHTML(line.sr)+'</div></div><button class="sound" data-chosen-sound="'+i+'" aria-label="Poslušaj rečenicu">🔊</button><button class="remove" data-chosen-remove="'+i+'" aria-label="Ukloni rečenicu">×</button></div>'
  }).join("")+'</div>'
 }
-function addOrRemove(i){const pos=chosen.indexOf(i);if(pos<0){chosen.push(i);chosenIndex=chosen.length-1;if(auto)listen(i)}else{stop();chosen.splice(pos,1);chosenIndex=Math.min(pos,chosen.length-1)}renderChosen();renderList()}
-function showRoles(){const show=step===3;$("#rolebar").hidden=!show;document.querySelectorAll("[data-role]").forEach(b=>b.classList.toggle("active",b.dataset.role===category))}
+function addOrRemove(i){const pos=chosen.indexOf(i);if(pos<0){chosen.push(i);chosenIndex=chosen.length-1;if(auto)listen(i)}else{stop();chosen.splice(pos,1);chosenIndex=Math.min(pos,chosen.length-1)}renderChosen();renderList();if(step===3)renderAge()}
+function showRoles(){const show=step===3;$("#rolebar").hidden=!show;document.querySelectorAll("[data-role]").forEach(b=>b.classList.toggle("active",b.dataset.role===category));renderAge()}
 function chooseStep(n){step=n;if(n===3){if(!["mann","frau","kind"].includes(category))category="mann"}else category=STEP_CATS[n];page=0;showRoles();renderSample();renderList()}
 function playAll(){stop();const my=runId,arr=[...chosen];let position=0;function playNext(){if(my!==runId||position>=arr.length)return;chosenIndex=position;renderChosen();utter(BANK[arr[position++]].de,playNext)}playNext()}
 $("#steps").addEventListener("click",e=>{const b=e.target.closest("[data-step]");if(b)chooseStep(Number(b.dataset.step))});
 $("#rolebar").addEventListener("click",e=>{const b=e.target.closest("[data-role]");if(!b)return;category=b.dataset.role;step=3;page=0;showRoles();renderSample();renderList()});
-$("#sampleSound").addEventListener("click",()=>listen(category==="frau"?75:category==="kind"?98:SAMPLE_PHRASES[step]));
+$("#sampleSound").addEventListener("click",()=>listen(step===3?AGE_INDEX[category]:category==="frau"?75:category==="kind"?98:SAMPLE_PHRASES[step]));
+$("#ageMinus").addEventListener("click",()=>adjustAge(-1));
+$("#agePlus").addEventListener("click",()=>adjustAge(1));
+$("#ageSound").addEventListener("click",()=>listen(AGE_INDEX[category]));
+$("#ageAdd").addEventListener("click",()=>addOrRemove(AGE_INDEX[category]));
 $("#phrases").addEventListener("click",e=>{let b=e.target.closest("[data-add]");if(b){addOrRemove(Number(b.dataset.add));return}b=e.target.closest("[data-sound]");if(b)listen(Number(b.dataset.sound))});
 $("#prev").addEventListener("click",()=>{page--;renderList()});
 $("#next").addEventListener("click",()=>{page++;renderList()});
