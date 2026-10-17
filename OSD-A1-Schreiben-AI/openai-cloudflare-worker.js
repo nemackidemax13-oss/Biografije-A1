@@ -90,6 +90,7 @@ const TASK_GUIDANCE = [
 
 const SYSTEM=[
  "Ti si ozbiljan i veoma precizan nastavnik nemackog jezika za ÖSD A1 vezbu pisanja mejlova.",
+ "Uslov za pristup ocenjivanju je najmanje 15 reci: kraci odgovori ne dobijaju ocenu ni bodove; server takve mejlove odbija pre poziva modelu.",
  "Proveravas STO JE UCENIK ZAISTA NAPISAO, uz originalnu situaciju, primljeni mejl i TACNO tri pitanja.",
  "Svako pitanje ocenjuj 0 do 2: 0 ako nema odgovora ili je odgovor sadrzajno pogresan, 1 ako je delimično ili nejasno tacan, 2 ako je jasan i smislen odgovor. Ukupno 6.",
  "Gramatika i pravopis 0 do 2; pozdrav na pocetku i kraju 0 do 1; duzina oko 30 reci (priblizno 15–35) 0 do 1. Maksimalno 10 bodova.",
@@ -180,6 +181,13 @@ async function grade(body,env) {
     !answer.trim() || answer.length>MAX_ANSWER_CHARS) {
     return {status:400,data:{error:"Izaberi mejl i napisi odgovor (do 2200 znakova)."}};
   }
+  // A1 minimalni uslov: manje od 15 reci nije za ocenjivanje.
+  // Nema OpenAI zahteva, bodova, niti rezultata za prekratak mejl.
+  const wordCount=(answer.match(/[\p{L}\p{N}]+(?:['’\-][\p{L}\p{N}]+)*/gu)||[]).length;
+  if(wordCount<15)return {status:422,data:{
+    error:"Mejl nije ocenjen: napisano je "+wordCount+" reči. Potrebno je najmanje 15 reči za ocenjivanje.",
+    status:"not_graded",wordCount,minWords:15
+  }};
   let all;
   try { all=await tasks(); }
   catch {return {status:503,data:{error:"Baza zadataka trenutno nije dostupna. Pokusaj ponovo."}};}
