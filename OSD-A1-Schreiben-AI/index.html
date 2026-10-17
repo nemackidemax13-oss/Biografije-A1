@@ -1597,7 +1597,7 @@ else renderMailGrid();
   const params = new URLSearchParams(location.search);
   const category = params.get('demax_celina');
   const material = params.get('demax_vezba');
-  const validId = value => /^[1-9]\\d{0,15}$/.test(value || '') && Number.isSafeInteger(Number(value));
+  const validId = value => /^[1-9]\d{0,15}$/.test(value || '') && Number.isSafeInteger(Number(value));
   if (validId(category) && validId(material)) {
     destination.searchParams.set('celina', category);
     destination.searchParams.set('vezba', material);
