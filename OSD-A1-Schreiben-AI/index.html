@@ -1676,6 +1676,7 @@ else renderMailGrid();
       // bookmarked, new-tab and embedded links keep their normal safe href.
       const depth = window.history?.state?.demaxReturnDepth ?? 0;
       if (params.get('demax_same_tab') !== '1'
+        || window.parent !== window
         || referringOrigin !== destination.origin
         || !validId(category) || !validId(material)
         || !Number.isSafeInteger(depth) || depth < 0
