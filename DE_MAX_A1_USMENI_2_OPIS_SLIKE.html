@@ -103,6 +103,26 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}butto
 .choiceadd{background:#e8f7ee;border:1px solid #a8d6bd;color:#14734d;height:26px;min-width:61px;flex:none;padding:2px 5px;border-radius:7px;font-size:10px;font-weight:900}
 .choicebar.is-selected .choiceadd{background:#d6273e;border-color:#b71835;color:white}
 .current.dynamic-current{border:2px solid #ed1636;background:#fff3f5}
+/* U koraku Izgled prikazuje se isključivo odabrani interaktivni deo, bez ostalih rečenica. */
+.panel.appearance-only .phrases,.panel.appearance-only .pagination,.panel.appearance-only .load{display:none}
+.panel.appearance-only .agebar:not([hidden]),.panel.appearance-only .hairbar:not([hidden]){
+  flex:1;height:auto;min-height:0;justify-content:center;gap:14px;padding:12px 10px;border-bottom:0
+}
+.panel.appearance-only .age-controls{height:38px;gap:8px}
+.panel.appearance-only .age-btn{width:40px;height:35px;font-size:23px}
+.panel.appearance-only .age-number{font-size:23px;min-width:34px}
+.panel.appearance-only .age-person{font-size:12px}
+.panel.appearance-only .age-preview,.panel.appearance-only .choicepreview{flex:none;min-height:64px}
+.panel.appearance-only .age-texts strong,.panel.appearance-only .choicetext strong{font-size:13px;line-height:1.3}
+.panel.appearance-only .age-texts small,.panel.appearance-only .choicetext small{font-size:10px}
+.panel.appearance-only .optionline{height:38px;gap:6px}
+.panel.appearance-only .optionlabel{font-size:12px;width:52px}
+.panel.appearance-only .optionarrow{width:35px;height:30px;font-size:20px}
+.panel.appearance-only .optionvalue{font-size:12px}
+.panel.appearance-only .age-preview .sound,.panel.appearance-only .choicepreview .sound{min-width:31px;min-height:31px;font-size:14px}
+.panel.appearance-only .age-add,.panel.appearance-only .choiceadd{min-width:72px;height:32px;font-size:11px}
+@media(max-height:620px){.panel.appearance-only .agebar:not([hidden]),.panel.appearance-only .hairbar:not([hidden]){gap:8px;padding:7px 8px}.panel.appearance-only .age-preview,.panel.appearance-only .choicepreview{min-height:48px}}
+
 @media(max-height:620px){.choicebar{height:105px;min-height:105px;padding:3px}.optionline{height:22px}.optionarrow{height:20px}.choicepreview .sound{min-height:23px;min-width:23px}.choiceadd{height:23px}}.app{grid-template-rows:25px 41px 39px minmax(0,1fr) minmax(172px,34%);gap:3px;padding:3px}.step span:last-child{font-size:8px}.phrases{gap:1px;padding:2px}.phrase .de{font-size:9.5px}.phrase .sr{font-size:7.7px}.samplede{font-size:10px}.samplehead{font-size:8px}}
 @media(max-width:360px){.step span:last-child{font-size:8px}.top h1{font-size:11px}.phrase .de{font-size:10px}.phrase .sr{font-size:8px}.picker .load{min-width:70px}}
 </style></head>
@@ -122,7 +142,7 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}butto
   <button class="sound" id="sampleSound" aria-label="Poslušaj primer">🔊</button>
  </section>
  <section class="panel" aria-label="Izbor rečenica">
-  <div class="paneltitle"><strong>Izaberi rečenice</strong><span class="small" id="categoryCount">154 rečenice</span><button class="load" id="loadExample">+ Primer</button></div>
+  <div class="paneltitle"><strong id="selectorTitle">Izaberi rečenice</strong><span class="small" id="categoryCount">154 rečenice</span><button class="load" id="loadExample">+ Primer</button></div>
   <div class="rolebar" id="rolebar" hidden aria-label="Izbor osobe"><button data-role="mann" class="active">Muškarac</button><button data-role="frau">Žena</button><button data-role="kind">Dete</button></div>
   <div class="modebar" id="modebar" hidden aria-label="Izbor osobina"><button data-mode="age" class="active">Godine</button><button data-mode="hair">Kosa</button></div>
   <div class="agebar" id="agebar" hidden aria-label="Interaktivni izbor godina">
@@ -324,7 +344,12 @@ function utter(text,callback){if(!("speechSynthesis" in window)){alert("Nemački
 function listen(i){stop();utter(BANK[i].de)}
 function source(){const ids=BANK.map((_,i)=>i).filter(i=>BANK[i].cat===category);if(category==="extra"){const closing=ids.filter(i=>BANK[i].de==="Das war meine Bildbeschreibung.");return ids.filter(i=>BANK[i].de!=="Das war meine Bildbeschreibung.").concat(closing)}return category==="start"&&step===0?ids.slice(0,6):category==="start"&&step===1?ids.slice(6):ids}
 function renderSample(){const i=step===3?(appearanceMode==="age"?AGE_INDEX[category]:HAIR_INDEX[category]):step===4?CLOTH_INDEX[activeRole]:SAMPLE_PHRASES[step],s=BANK[i];$("#samplehead").textContent=SAMPLE_HEADS[step];$("#samplede").textContent=s.de;$("#samplesr").textContent=s.sr;document.querySelectorAll(".step").forEach((x,j)=>x.classList.toggle("active",j===step))}
-function renderList(){const box=$("#phrases");const usable=box.clientHeight;const width=box.clientWidth;
+function renderList(){
+ if(step===3){
+   $("#categoryCount").textContent=appearanceMode==="age"?"Godine":"Kosa";
+   return;
+ }
+ const box=$("#phrases");const usable=box.clientHeight;const width=box.clientWidth;
  const ideal=width<338?44:41;
  PAGE_SIZE=Math.max(3,Math.min(12,Math.floor(Math.max(0,usable-5)/ideal)));
  document.documentElement.style.setProperty("--page-rows",PAGE_SIZE);
@@ -343,7 +368,15 @@ function renderChosen(){
  }).join("")+'</div>'
 }
 function addOrRemove(i){const pos=chosen.indexOf(i);if(pos<0){chosen.push(i);chosenIndex=chosen.length-1;if(auto)listen(i)}else{stop();chosen.splice(pos,1);chosenIndex=Math.min(pos,chosen.length-1)}renderChosen();renderList();renderAge();renderHair();renderClothing()}
-function showRoles(){const show=step===3||step===4;$("#rolebar").hidden=!show;document.querySelectorAll("[data-role]").forEach(b=>b.classList.toggle("active",b.dataset.role===activeRole));renderModes();renderAge();renderHair();renderClothing()}
+function showRoles(){
+ const show=step===3||step===4,appearance=step===3;
+ $("#rolebar").hidden=!show;
+ const panel=$("#phrases").closest(".panel");
+ panel.classList.toggle("appearance-only",appearance);
+ $("#selectorTitle").textContent=appearance?(appearanceMode==="age"?"Izaberi godine":"Izaberi kosu"):"Izaberi rečenice";
+ document.querySelectorAll("[data-role]").forEach(b=>b.classList.toggle("active",b.dataset.role===activeRole));
+ renderModes();renderAge();renderHair();renderClothing();
+}
 function chooseStep(n){step=n;if(n===3){category=activeRole}else category=STEP_CATS[n];page=0;showRoles();renderSample();renderList()}
 function playAll(){stop();const my=runId,arr=[...chosen];let position=0;function playNext(){if(my!==runId||position>=arr.length)return;chosenIndex=position;renderChosen();utter(BANK[arr[position++]].de,playNext)}playNext()}
 $("#steps").addEventListener("click",e=>{const b=e.target.closest("[data-step]");if(b)chooseStep(Number(b.dataset.step))});
