@@ -2,7 +2,7 @@
 <html lang="sr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 <meta name="theme-color" content="#0a285f">
 <title>DE-MAX Tutin • ÖSD A1 – Pisanje mejlova</title>
 <style>
@@ -1589,9 +1589,14 @@ $('answer').addEventListener('focus',()=>{
  if(document.body.classList.contains('reading-mode'))toggleReading(false);
  document.body.classList.add('is-typing');
 });
-$('answer').addEventListener('blur',()=>document.body.classList.remove('is-typing'));
+$('answer').addEventListener('blur',()=>{
+ document.body.classList.remove('is-typing');
+ mailFocusAt=0;
+ mailParentVisibleHeight=0;
+});
 $('answer').addEventListener('focus',()=>{
   if(window.matchMedia('(max-width:799px)').matches){
+    if(!mailFocusAt)mailFocusAt=Date.now();
     // Ako je ovaj prikaz unutar naseg iframe URL-a, roditeljski okvir prati tastaturu.
     if(window.parent!==window)window.parent.postMessage({type:'DEMAX_MAIL_EDITOR_FOCUS'},location.origin);
     // Direktan dodir na polje za mejl takodje otvara namenski mobilni rezim.
@@ -1636,11 +1641,35 @@ function growMailEditor(){
 $('answer').addEventListener('input',growMailEditor);
 
 /* Mobilni rezim: pisanje sa vidljivim pitanjima i iznad virtualne tastature. */
+/* Visina prostora iznad tastature. U iframe-u visualViewport cesto NE prijavi tastaturu.
+   Zato uzimamo stvarnu velicinu ako postoji, a nakon fokusiranja koristimo
+   opreznu rezervnu visinu dok roditeljska aplikacija ne prijavi resize. */
+let mailViewportBeforeKeyboard=0;
+let mailFocusAt=0;
+let mailParentVisibleHeight=0;
 function setMobileVisibleHeight(){
  if(!document.body.classList.contains('mobile-writing'))return;
- const vp=window.visualViewport;
- const height=Math.floor(vp?.height||window.innerHeight);
- const offset=Math.max(0,Math.floor(vp?.offsetTop||0));
+ const vv=window.visualViewport;
+ const inner=Math.max(1,Math.floor(window.innerHeight));
+ const visual=Math.max(1,Math.floor(vv?.height||inner));
+ const raw=Math.min(inner,visual);
+ const keyboardRect=window.navigator.virtualKeyboard?.boundingRect;
+ const apiKeyboardHeight=Math.max(0,Math.floor(keyboardRect?.height||0));
+ const baseline=Math.max(raw,mailViewportBeforeKeyboard||raw);
+ let height=raw;
+ let offset=Math.max(0,Math.floor(vv?.offsetTop||0));
+ if(apiKeyboardHeight>70)height=Math.min(height,Math.max(1,inner-apiKeyboardHeight));
+ if(mailParentVisibleHeight>100)height=Math.min(height,mailParentVisibleHeight);
+ const writingFocused=document.activeElement===$('answer');
+ const keyboardNotReported=writingFocused && mailFocusAt>0 &&
+   Date.now()-mailFocusAt>=420 && baseline-raw<80 &&
+   apiKeyboardHeight<70 && !mailParentVisibleHeight;
+ if(keyboardNotReported){
+   // Pregledaci unutar iframe-a cesto ne menjaju visualViewport.
+   // Konzervativan prostor (53% visine) drzi obe komande IZNAD tastature.
+   height=Math.min(height,Math.max(190,Math.floor(baseline*.53)));
+ }
+ height=Math.max(165,Math.floor(height));
  document.documentElement.style.setProperty('--mobile-visible-height',height+'px');
  document.documentElement.style.setProperty('--mobile-visible-top',offset+'px');
  document.body.classList.toggle('keyboard-tight',height<410);
@@ -1650,6 +1679,9 @@ function openMobileWriting(){
  if(!window.matchMedia('(max-width:799px)').matches){document.getElementById('answerPanel').scrollIntoView({behavior:'smooth'});return}
  document.body.classList.remove('reading-mode','mobile-review');
  document.body.classList.add('mobile-writing','is-typing');
+ mailViewportBeforeKeyboard=Math.max(1,Math.floor(window.visualViewport?.height||window.innerHeight),Math.floor(window.innerHeight));
+ mailFocusAt=Date.now();
+ mailParentVisibleHeight=0;
  $('writeHeading').textContent='NAPIŠI SVOJ ODGOVOR';
  setMobileVisibleHeight();
  growMailEditor();
@@ -1674,6 +1706,17 @@ $('mobileStartBottom').addEventListener('click',openMobileWriting);
 $('mobileBackToMail').addEventListener('click',()=>closeMobileWriting(false));
 $('mobileBackInline').addEventListener('click',()=>closeMobileWriting(false));
 
+// Keyboard API (Android Chrome) when the visual viewport does not shrink.
+window.navigator.virtualKeyboard?.addEventListener?.('geometrychange',setMobileVisibleHeight);
+// Parent applications can optionally send their true visible iframe height.
+window.addEventListener('message',event=>{
+ if(event.data?.type!=='DEMAX_MAIL_PARENT_VIEWPORT')return;
+ const reported=Math.floor(Number(event.data.height));
+ if(Number.isFinite(reported)&&reported>140&&reported<2000){
+   mailParentVisibleHeight=reported;
+   setMobileVisibleHeight();
+ }
+});
 window.visualViewport?.addEventListener('resize',setMobileVisibleHeight);
 window.visualViewport?.addEventListener('scroll',setMobileVisibleHeight);
 window.addEventListener('resize',()=>{
