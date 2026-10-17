@@ -8,12 +8,35 @@
   <style>
     html, body { margin:0; padding:0; width:100%; height:100%; overflow:hidden; background:#fff; }
     * { box-sizing:border-box; }
-    iframe { display:block; width:100%; height:100%; height:100dvh; border:0; background:#fff; }
+    iframe { position:fixed; top:var(--iframe-visible-top,0px); left:0; display:block; width:100%; height:var(--iframe-visible-height,100dvh); border:0; background:#fff; }
     .fallback { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; font:16px system-ui,sans-serif; background:#fff; }
   </style>
 </head>
 <body>
   <iframe title="DE-MAX – Vežbaj mejlove A1" src="./" allow="microphone; clipboard-write" loading="eager"></iframe>
+  <script>
+    // Keep the embedded email page within the actually visible space above the phone keyboard.
+    const embeddedMail = document.querySelector('iframe');
+    function fitEmbeddedMail() {
+      const viewport = window.visualViewport;
+      const visibleHeight = Math.max(1, Math.floor(viewport?.height || window.innerHeight));
+      const top = Math.max(0, Math.floor(viewport?.offsetTop || 0));
+      document.documentElement.style.setProperty('--iframe-visible-height', visibleHeight + 'px');
+      document.documentElement.style.setProperty('--iframe-visible-top', top + 'px');
+    }
+    window.visualViewport?.addEventListener('resize', fitEmbeddedMail);
+    window.visualViewport?.addEventListener('scroll', fitEmbeddedMail);
+    window.addEventListener('resize', fitEmbeddedMail);
+    embeddedMail.addEventListener('load', fitEmbeddedMail);
+    window.addEventListener('message', event => {
+      if (event.origin === location.origin && event.data?.type === 'DEMAX_MAIL_EDITOR_FOCUS') {
+        fitEmbeddedMail();
+        setTimeout(fitEmbeddedMail, 180);
+        setTimeout(fitEmbeddedMail, 550);
+      }
+    });
+    fitEmbeddedMail();
+  </script>
   <noscript><div class="fallback"><a href="./">Otvori vežbanje mejlova A1</a></div></noscript>
 </body>
 </html>
