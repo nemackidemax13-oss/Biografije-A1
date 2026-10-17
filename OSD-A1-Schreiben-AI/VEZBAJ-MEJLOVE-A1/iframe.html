@@ -1550,6 +1550,116 @@ body.view-mail:not(.mobile-writing) .a1-prep-topline{display:flex;align-items:ce
  }
 }
 
+
+/* DE-MAX 2026-10-18: svih 35 postavki staje u ekran bez skrolovanja.
+   Zeleni Piši mejl ostaje pri dnu, a potpuni nemački i srpski tekst
+   proporcionalno se uklapaju u stvarnu visinu mobilnog ekrana. */
+@media (max-width:799px) {
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) {
+  position:fixed!important;
+  inset:0!important;
+  width:100%!important;
+  height:100dvh!important;
+  max-height:100dvh!important;
+  overflow:hidden!important;
+  overscroll-behavior:none!important;
+ }
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) .app {
+  display:flex!important;
+  flex-direction:column!important;
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  max-height:100%!important;
+  overflow:hidden!important;
+ }
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) .workspace {
+  display:flex!important;
+  flex:1 1 0%!important;
+  flex-direction:column!important;
+  height:0!important;
+  min-height:0!important;
+  max-height:100%!important;
+  overflow:hidden!important;
+  overflow-y:hidden!important;
+  overscroll-behavior:none!important;
+  touch-action:none!important;
+ }
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.prompt {
+  display:flex!important;
+  flex:1 1 0%!important;
+  flex-direction:column!important;
+  min-height:0!important;
+  height:100%!important;
+  max-height:100%!important;
+  overflow:hidden!important;
+  border-bottom:0!important;
+ }
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) section.prompt .panel-title {
+  flex:0 0 auto!important;
+ }
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) .prompt #promptScroll {
+  display:block!important;
+  position:relative!important;
+  flex:1 1 0%!important;
+  width:100%!important;
+  height:0!important;
+  min-height:0!important;
+  max-height:100%!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:hidden!important;
+  overflow-y:hidden!important;
+  overscroll-behavior:none!important;
+  touch-action:none!important;
+ }
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) #promptScroll .bilingual {
+  position:absolute!important;
+  display:block!important;
+  top:2px!important;
+  left:0!important;
+  margin:0!important;
+  max-width:none!important;
+  width:100%;
+  transform-origin:top left!important;
+  will-change:transform;
+  overflow:visible!important;
+ }
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) #promptScroll .start-writing-wrap {
+  position:absolute!important;
+  display:block!important;
+  z-index:2!important;
+  left:6px!important;
+  right:6px!important;
+  bottom:0!important;
+  width:auto!important;
+  height:auto!important;
+  margin:0!important;
+  padding:3px 0 6px!important;
+  background:#fff!important;
+ }
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) #mobileStartBottom,
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) #mobileStartTop {
+  background:#18834b!important;
+  background-color:#18834b!important;
+  color:#fff!important;
+  border:0!important;
+  border-radius:8px!important;
+  font-size:14px!important;
+  font-weight:850!important;
+  box-shadow:none!important;
+  touch-action:manipulation!important;
+ }
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) #mobileStartBottom {
+  width:100%!important;
+  min-height:37px!important;
+  height:37px!important;
+ }
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) #mobileStartTop {
+  min-height:29px!important;
+ }
+}
+
 </style>
 </head>
 <body class="view-home">
@@ -1742,6 +1852,7 @@ function render(){
  $('result').innerHTML='';
  if(saved.completed[current]===$('answer').value && words($('answer').value)>=15 && saved.results[current]&&saved.results[current].text===$('answer').value)renderResult(saved.results[current].data);
  updateCount();growMailEditor();persist();
+ if(document.body.classList.contains('view-mail'))requestAnimationFrame(fitMailPromptScreen);
 }
 for(let i=0;i<MAILS.length;i++){const el=document.createElement('option');el.value=i;el.textContent=`${i+1}. mejl — ${FULL_TRANSLATIONS[i].subject}`;$('pick').appendChild(el)}
 $('total').textContent=MAILS.length;
@@ -1949,6 +2060,37 @@ window.addEventListener('resize',()=>{
 });
 
 
+
+/* Uklapanje obe jezičke verzije postavke u visinu ekrana bez skrolovanja.
+   Ne skraćuje tekst: meri pune kartice i ravnomerno skalira samo prikaz. */
+function fitMailPromptScreen(){
+ if(!window.matchMedia('(max-width:799px)').matches)return;
+ if(!document.body.classList.contains('view-mail')||
+    document.body.classList.contains('mobile-writing')||
+    document.body.classList.contains('mobile-review'))return;
+ const holder=document.getElementById('promptScroll');
+ const content=holder?.querySelector('.bilingual');
+ const action=holder?.querySelector('.start-writing-wrap');
+ if(!holder||!content||!action||holder.clientHeight<120)return;
+ const usableHeight=holder.clientHeight-action.getBoundingClientRect().height-9;
+ if(usableHeight<80)return;
+ function measure(scale){
+  content.style.width=(100/scale).toFixed(4)+'%';
+  content.style.transform='scale('+scale+')';
+  return content.getBoundingClientRect().height;
+ }
+ if(measure(1)<=usableHeight)return;
+ let low=.22,high=1;
+ for(let i=0;i<14;i++){
+  const mid=(low+high)/2;
+  if(measure(mid)>usableHeight)high=mid;
+  else low=mid;
+ }
+ measure(low);
+}
+window.addEventListener('resize',()=>requestAnimationFrame(fitMailPromptScreen));
+window.visualViewport?.addEventListener('resize',()=>requestAnimationFrame(fitMailPromptScreen));
+
 /* Izbor svih mejlova: otvaranje, povratak na pregled i čuvanje napretka. */
 function renderMailGrid(){
  const grid=$('mailHomeGrid');grid.replaceChildren();
@@ -1974,6 +2116,7 @@ function openMailFromGrid(index,addHistory=true){
  if(document.body.classList.contains('mobile-writing')||document.body.classList.contains('mobile-review'))closeMobileWriting(false);
  document.body.classList.remove('view-home');document.body.classList.add('view-mail');
  current=n;render();
+ requestAnimationFrame(()=>{fitMailPromptScreen();setTimeout(fitMailPromptScreen,160);});
  if(addHistory)history.pushState({demaxMail:n,demaxReturnDepth:(history.state?.demaxReturnDepth||0)+1},'','#mejl-'+(n+1));
  window.scrollTo({top:0,behavior:'instant'});
 }
