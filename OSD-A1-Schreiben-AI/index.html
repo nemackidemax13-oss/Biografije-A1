@@ -1161,12 +1161,30 @@ html body #answerPanel .editorarea .foot button#check.checkbtn:enabled{
   border-radius:8px!important;
  }
 }
+
+/* Povratak u aplikaciju za A1 pripreme sa pocetne strane mejlova. */
+.mail-home-hero{padding-top:51px!important}
+.a1-prep-exit{
+  position:absolute;top:10px;left:12px;z-index:3;
+  display:inline-flex;align-items:center;justify-content:center;
+  min-height:32px;padding:6px 12px;
+  font:800 12px/1.2 system-ui,-apple-system,"Segoe UI",sans-serif;
+  color:#fff;text-decoration:none;
+  background:#ffffff24;border:1px solid #ffffff9a;border-radius:9px;
+  box-shadow:0 2px 8px #0a326221;
+  white-space:nowrap;touch-action:manipulation;
+}
+.a1-prep-exit:hover,.a1-prep-exit:focus-visible{background:#ffffff35;color:#fff}
+@media(max-width:799px){
+  .mail-home-hero{padding-top:49px!important}
+  .a1-prep-exit{top:8px;left:9px;min-height:31px;font-size:11.5px;padding:6px 10px}
+}
 </style>
 </head>
 <body class="view-home">
 <div class="app">
 <section id="mailHome" aria-label="Izbor mejla">
- <div class="mail-home-hero"><div class="mail-home-eyebrow">DE-MAX TUTIN · ÖSD A1</div><div class="mail-home-logo" aria-label="De-Max Tutin"><b>DE-MAX</b><small>TUTIN</small></div><div class="mail-home-eyebrow">35 MEJLOVA · A1 VEŽBANJE</div><h1>Izaberi mejl</h1><p>Odaberi zadatak i napiši odgovor na nemačkom</p></div>
+ <div class="mail-home-hero"><a id="a1PrepExit" class="a1-prep-exit" href="#" target="_top" aria-label="Nazad na A1 pripreme">← A1 pripreme</a><div class="mail-home-eyebrow">DE-MAX TUTIN · ÖSD A1</div><div class="mail-home-logo" aria-label="De-Max Tutin"><b>DE-MAX</b><small>TUTIN</small></div><div class="mail-home-eyebrow">35 MEJLOVA · A1 VEŽBANJE</div><h1>Izaberi mejl</h1><p>Odaberi zadatak i napiši odgovor na nemačkom</p></div>
  <div class="mail-home-summary"><span>MEJLOVI ZA VEŽBANJE</span><span id="homeProgress">0 / 35 provereno</span></div>
  <div id="mailHomeGrid" class="mail-home-grid" aria-label="35 mejlova"></div>
 </section>
@@ -1521,6 +1539,31 @@ render();
 const initialMail=location.hash.match(/^#mejl-(\d+)$/);
 if(initialMail&&Number(initialMail[1])>=1&&Number(initialMail[1])<=MAILS.length)openMailFromGrid(Number(initialMail[1])-1,false);
 else renderMailGrid();
+
+/* Link 'A1 pripreme': vraca na aplikaciju koja je otvorila mejlove.
+   ?return= je opcioni parametar kad glavna aplikacija ugrađuje iframe.
+   referrer se koristi samo ako nije ova ista aplikacija. */
+(function(){
+ const link=document.getElementById('a1PrepExit');
+ if(!link)return;
+ const query=new URLSearchParams(location.search);
+ const defaultUrl='https://nemackidemax13-oss.github.io/Biografije-A1/';
+ const safeUrl=(candidate)=>{
+  try{
+   if(!candidate)return null;
+   const dest=new URL(candidate,location.href);
+   if(dest.protocol!=='https:'&&dest.protocol!=='http:')return null;
+   if(dest.origin===location.origin&&dest.pathname.startsWith('/OSD-A1-Schreiben-AI/'))return null;
+   return dest.href;
+  }catch{return null}
+ };
+ const destination=safeUrl(query.get('return'))||safeUrl(document.referrer)||defaultUrl;
+ link.href=destination;
+ link.addEventListener('click',function(){
+  // target=_top izlazi iz iframe-a kad je klik inicirao korisnik.
+  // Samostalna stranica takodje napusta ovaj modul.
+ });
+})();
 </script>
 <!-- OpenAI provera ide preko Cloudflare Workera; direktna podesavanja API kljuca nisu potrebna. -->
 </body>
