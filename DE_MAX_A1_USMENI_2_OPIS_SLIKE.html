@@ -59,6 +59,15 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}butto
 .current .sentence .sr{font-size:9px;line-height:1.2;margin-top:2px}
 .current .remove{align-self:center;flex:none;border:1px solid #f0c3cb;border-radius:6px;background:#fff1f4;color:#bf2941;font-size:13px;font-weight:900;width:23px;height:24px}
 .current .sound{min-width:23px;min-height:23px;font-size:11px}
+/* Tokom automatskog čitanja u "Moj opis" označi upravo izgovaranu rečenicu. */
+.current.speaking-now{
+ border:3px solid #e51b35!important;
+ background:#fff1d9!important;
+ box-shadow:0 0 0 1px #e51b35,inset 0 0 0 1px #fff!important;
+}
+.current.speaking-now .de{color:#ac1732;font-weight:950}
+.current.speaking-now .index{background:#d91c37;color:white;border-radius:4px;padding:3px 5px;min-width:19px;text-align:center}
+
 .empty{font-size:10.5px;color:#768ca5;text-align:center;line-height:1.5;margin:auto;padding:0 8px}
 .compact-nav{flex:none;height:23px;display:flex;justify-content:center;gap:6px;align-items:center;border-top:1px solid #edf2f9}
 .compact-nav span{font-size:9px;color:#5e7895;font-weight:800;min-width:45px;text-align:center}
@@ -186,7 +195,7 @@ const SAMPLE_PHRASES=[0,6,13,54,121,142];
 const DEMO=[2,6,13,10,58,128,153];
 const $=(q)=>document.querySelector(q);
 let PAGE_SIZE=6;
-let category="start",page=0,step=0,chosen=[],chosenIndex=0,auto=true,runId=0,activeRole="mann",appearanceMode="age";
+let category="start",page=0,step=0,chosen=[],chosenIndex=0,auto=true,runId=0,activeRole="mann",appearanceMode="age",speakingChosenPosition=-1;
 const AGES={mann:30,frau:30,kind:8};
 const AGE_ROLES={mann:{label:"Der Mann",de:"Er",sr:"On"},frau:{label:"Die Frau",de:"Sie",sr:"Ona"},kind:{label:"Das Kind",de:"Es",sr:"Ono"}};
 const AGE_INDEX={};
@@ -339,9 +348,32 @@ function turnClothing(type,delta){
 }
 function escapeHTML(t){return String(t).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"','&quot;')}
 function voice(){if(!("speechSynthesis" in window))return null;const list=speechSynthesis.getVoices();return list.find(v=>/^de/i.test(v.lang)&&/google/i.test(v.name))||list.find(v=>/^de-DE/i.test(v.lang))||list.find(v=>/^de/i.test(v.lang))||null}
-function stop(){runId++;if("speechSynthesis" in window)speechSynthesis.cancel()}
+function stop(){
+ runId++;
+ if("speechSynthesis" in window)speechSynthesis.cancel();
+ if(speakingChosenPosition!==-1){
+  speakingChosenPosition=-1;
+  renderChosen();
+ }
+}
 function utter(text,callback){if(!("speechSynthesis" in window)){alert("Nemački govor nije podržan u ovom pregledaču.");return}let u=new SpeechSynthesisUtterance(text);u.lang="de-DE";u.rate=.87;u.pitch=1;const v=voice();if(v)u.voice=v;u.onend=()=>{if(callback)callback()};u.onerror=()=>{if(callback)callback()};speechSynthesis.speak(u)}
-function listen(i){stop();utter(BANK[i].de)}
+function listen(i){
+ stop();
+ const currentRun=runId;
+ const position=chosen.indexOf(i);
+ if(position>=0){
+  chosenIndex=position;
+  speakingChosenPosition=position;
+  renderChosen();
+ }
+ utter(BANK[i].de,()=>{
+  if(runId!==currentRun)return;
+  if(speakingChosenPosition!==-1){
+   speakingChosenPosition=-1;
+   renderChosen();
+  }
+ });
+}
 function source(){const ids=BANK.map((_,i)=>i).filter(i=>BANK[i].cat===category);if(category==="extra"){const closing=ids.filter(i=>BANK[i].de==="Das war meine Bildbeschreibung.");return ids.filter(i=>BANK[i].de!=="Das war meine Bildbeschreibung.").concat(closing)}return category==="start"&&step===0?ids.slice(0,6):category==="start"&&step===1?ids.slice(6):ids}
 function renderSample(){const i=step===3?(appearanceMode==="age"?AGE_INDEX[category]:appearanceMode==="hair"?HAIR_INDEX[category]:source()[0]):step===4?CLOTH_INDEX[activeRole]:SAMPLE_PHRASES[step],s=BANK[i];$("#samplehead").textContent=SAMPLE_HEADS[step];$("#samplede").textContent=s.de;$("#samplesr").textContent=s.sr;document.querySelectorAll(".step").forEach((x,j)=>x.classList.toggle("active",j===step))}
 function renderList(){
@@ -364,7 +396,7 @@ function renderChosen(){
  $("#chosenPrev").disabled=first===0;$("#chosenNext").disabled=last===n;
  $("#selectedArea").style.setProperty("--chosen-rows",per);
  $("#selectedArea").innerHTML='<div class="chosen-grid">'+visible.map((i,offset)=>{
-  const line=BANK[i];return '<div class="current '+(["age","custom-hair","custom-clothing"].includes(line.cat)?'dynamic-current':'')+'"><span class="index">'+(first+offset+1)+'.</span><div class="sentence"><div class="de">'+escapeHTML(line.de)+'</div><div class="sr">'+escapeHTML(line.sr)+'</div></div><button class="sound" data-chosen-sound="'+i+'" aria-label="Poslušaj rečenicu">🔊</button><button class="remove" data-chosen-remove="'+i+'" aria-label="Ukloni rečenicu">×</button></div>'
+  const line=BANK[i],isSpeaking=speakingChosenPosition===first+offset;return '<div class="current '+(["age","custom-hair","custom-clothing"].includes(line.cat)?'dynamic-current':'')+(isSpeaking?' speaking-now':'')+'"'+(isSpeaking?' aria-current="true"':'')+'><span class="index">'+(isSpeaking?'▶':(first+offset+1)+'.')+'</span><div class="sentence"><div class="de">'+escapeHTML(line.de)+'</div><div class="sr">'+escapeHTML(line.sr)+'</div></div><button class="sound" data-chosen-sound="'+i+'" aria-label="Poslušaj rečenicu">🔊</button><button class="remove" data-chosen-remove="'+i+'" aria-label="Ukloni rečenicu">×</button></div>'
  }).join("")+'</div>'
 }
 function addOrRemove(i){const pos=chosen.indexOf(i);if(pos<0){chosen.push(i);chosenIndex=chosen.length-1;if(auto)listen(i)}else{stop();chosen.splice(pos,1);chosenIndex=Math.min(pos,chosen.length-1)}renderChosen();renderList();renderAge();renderHair();renderClothing()}
@@ -378,7 +410,24 @@ function showRoles(){
  renderModes();renderAge();renderHair();renderClothing();
 }
 function chooseStep(n){step=n;if(n===3){category=activeRole}else category=STEP_CATS[n];page=0;showRoles();renderSample();renderList()}
-function playAll(){stop();const my=runId,arr=[...chosen];let position=0;function playNext(){if(my!==runId||position>=arr.length)return;chosenIndex=position;renderChosen();utter(BANK[arr[position++]].de,playNext)}playNext()}
+function playAll(){
+ stop();
+ const my=runId,arr=[...chosen];
+ let position=0;
+ function playNext(){
+  if(my!==runId)return;
+  if(position>=arr.length){
+   speakingChosenPosition=-1;
+   renderChosen();
+   return;
+  }
+  chosenIndex=position;
+  speakingChosenPosition=position;
+  renderChosen();
+  utter(BANK[arr[position++]].de,playNext);
+ }
+ playNext();
+}
 $("#steps").addEventListener("click",e=>{const b=e.target.closest("[data-step]");if(b)chooseStep(Number(b.dataset.step))});
 $("#rolebar").addEventListener("click",e=>{const b=e.target.closest("[data-role]");if(!b)return;activeRole=b.dataset.role;if(step===3)category=activeRole;page=0;showRoles();renderSample();renderList()});
 $("#modebar").addEventListener("click",e=>{const b=e.target.closest("[data-mode]");if(!b)return;appearanceMode=b.dataset.mode;page=0;showRoles();renderSample();renderList()});
