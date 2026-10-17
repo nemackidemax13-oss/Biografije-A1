@@ -1182,11 +1182,11 @@ body.view-mail:not(.mobile-writing) .a1-prep-topline{display:flex;align-items:ce
 <body class="view-home">
 <div class="app">
 <section id="mailHome" aria-label="Izbor mejla">
- <div class="mail-home-hero"><a class="a1-prep-mini" href="https://de-max-a-1-aplikacija.replit.app/" target="_top" aria-label="Nazad na A1 Pripremu">← A1 Priprema</a><div class="mail-home-eyebrow">DE-MAX TUTIN · ÖSD A1</div><div class="mail-home-logo" aria-label="De-Max Tutin"><b>DE-MAX</b><small>TUTIN</small></div><div class="mail-home-eyebrow">35 MEJLOVA · A1 VEŽBANJE</div><h1>Izaberi mejl</h1><p>Odaberi zadatak i napiši odgovor na nemačkom</p></div>
+ <div class="mail-home-hero"><a class="a1-prep-mini" href="https://de-max-a-1-aplikacija.replit.app/course/a1-priprema" target="_top" aria-label="Nazad na A1 Pripremu">← A1 Priprema</a><div class="mail-home-eyebrow">DE-MAX TUTIN · ÖSD A1</div><div class="mail-home-logo" aria-label="De-Max Tutin"><b>DE-MAX</b><small>TUTIN</small></div><div class="mail-home-eyebrow">35 MEJLOVA · A1 VEŽBANJE</div><h1>Izaberi mejl</h1><p>Odaberi zadatak i napiši odgovor na nemačkom</p></div>
  <div class="mail-home-summary"><span>MEJLOVI ZA VEŽBANJE</span><span id="homeProgress">0 / 35 provereno</span></div>
  <div id="mailHomeGrid" class="mail-home-grid" aria-label="35 mejlova"></div>
 </section>
-<nav class="a1-prep-topline" aria-label="Povratak na A1 Pripremu"><a class="a1-prep-mini" href="https://de-max-a-1-aplikacija.replit.app/" target="_top">← A1 Priprema</a></nav>
+<nav class="a1-prep-topline" aria-label="Povratak na A1 Pripremu"><a class="a1-prep-mini" href="https://de-max-a-1-aplikacija.replit.app/course/a1-priprema" target="_top">← A1 Priprema</a></nav>
 <header>
   <div class="head-top"><div class="brand">De-Max Tutin</div><div class="headtag">ÖSD A1 • <span id="total">35</span> MEJLOVA</div></div>
   <div class="headnav"><button id="prev" title="Prethodni mejl">‹</button><select id="pick" aria-label="Izaberi mejl"></select><button id="pickMobile" type="button" class="pick-mobile" aria-label="Izaberi mejl" aria-haspopup="dialog">1. mejl — Baštenska zabava</button><button id="next" title="Sledeći mejl">›</button></div>
@@ -1212,7 +1212,7 @@ body.view-mail:not(.mobile-writing) .a1-prep-topline{display:flex;align-items:ce
     <div class="panel-title"><strong id="writeHeading">2. NAPIŠI SVOJ ODGOVOR</strong><button class="mobile-jump" id="mobileBackToMail" type="button">← Postavka</button><span class="limit-note">A1 • oko 30 reči • do 10 bodova</span></div>
     <div class="editorarea"><div class="editor-top"><span class="save-flag">Čuva se automatski</span></div><textarea id="answer" spellcheck="true" lang="de" placeholder="Napiši odgovor na sva tri pitanja.&#10;&#10;Liebe Grüße&#10;…" aria-label="Ovde upiši mejl na nemačkom"></textarea>
       <div class="paired-card task-paired" aria-label="Pitanja i uputstvo za mejl">
-        <div class="paired-heading"><span id="questionsHead">PITANJA • 1. MEJL</span><a class="a1-prep-exit a1-prep-exit--writer" href="https://de-max-a-1-aplikacija.replit.app/" target="_top" aria-label="Nazad na vežbe A1 Pripreme">← Vežbe</a><button id="mobileBackInline" type="button" aria-label="Vrati se na postavku mejla">← Postavka</button></div>
+        <div class="paired-heading"><span id="questionsHead">PITANJA • 1. MEJL</span><a class="a1-prep-exit a1-prep-exit--writer" href="https://de-max-a-1-aplikacija.replit.app/course/a1-priprema" target="_top" aria-label="Nazad na vežbe A1 Pripreme">← Vežbe</a><button id="mobileBackInline" type="button" aria-label="Vrati se na postavku mejla">← Postavka</button></div>
         <div id="pairs-instruction" class="paired-lines"></div>
         <div id="pairs-questions-intro" class="paired-lines"></div>
         <div id="pairs-qs" class="paired-lines question-lines"></div>
@@ -1542,5 +1542,24 @@ else renderMailGrid();
 
 </script>
 <!-- OpenAI provera ide preko Cloudflare Workera; direktna podesavanja API kljuca nisu potrebna. -->
+<script id="demax-exercise-return">
+(function () {
+  // Menu IDs are not credentials. The destination remains fixed to De-Max,
+  // where the existing sign-in and course-permission checks still apply.
+  const destination = new URL('https://de-max-a-1-aplikacija.replit.app/course/a1-priprema');
+  const params = new URLSearchParams(location.search);
+  const category = params.get('demax_celina');
+  const material = params.get('demax_vezba');
+  const validId = value => /^[1-9]\d{0,15}$/.test(value || '') && Number.isSafeInteger(Number(value));
+  if (validId(category) && validId(material)) {
+    destination.searchParams.set('celina', category);
+    destination.searchParams.set('vezba', material);
+  }
+  document.querySelectorAll('a.a1-prep-mini, a.a1-prep-exit').forEach(link => {
+    link.href = destination.href;
+    link.target = '_top';
+  });
+})();
+</script>
 </body>
 </html>
