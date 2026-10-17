@@ -1703,6 +1703,12 @@ body.view-mail:not(.mobile-writing) .a1-prep-topline{display:flex;align-items:ce
   }
 }
 
+
+/* Novi pokušaj istog zadatka nakon AI ispravke. */
+.retry-actions{display:flex;align-items:center;justify-content:center;margin:13px 0 4px}
+.retry-mail-btn{background:#18834b!important;color:#fff!important;border:0;border-radius:9px;font:850 13px system-ui,-apple-system,sans-serif;min-height:39px;padding:9px 15px;cursor:pointer;max-width:100%;touch-action:manipulation}
+.retry-mail-btn:focus-visible{outline:3px solid #97dab4;outline-offset:2px}
+
 </style>
 </head>
 <body class="view-home">
@@ -1843,10 +1849,32 @@ function renderResult(r){
  <div class="corrected" lang="de">${escapeHtml(correction)}</div>
  <div class="change-hint">${changed?'Prikazana je automatski ispravljena verzija tvog mejla.':'Tekst je prikazan bez dodatnih automatskih izmena.'}</div>
  <div class="feedback-heading">Komentar provere</div><div class="feedback">${escapeHtml(feedbackText)}</div>
+ <div class="retry-actions"><button type="button" id="retryMail" class="retry-mail-btn">↻ Vežbaj ponovo isti mejl</button></div>
  ${isAI?'':'<p class="help">Osnovna provera ne može pouzdano da otkrije sve gramatičke i sadržajne greške. Za potpuniju AI ispravku potreban je povezan serverski servis.</p>'}`;
  $('answerPanel').classList.add('has-result');
  if(document.body.classList.contains('mobile-writing'))closeMobileWriting(true);
 }
+/* Ponavljanje je moguće neograničeno, nezavisno od prethodne ocene.
+   Briše se samo pokušaj izabranog mejla, ostali mejlovi ostaju sačuvani. */
+function retryCurrentMail(){
+ const index=current;
+ delete saved.drafts[index];
+ delete saved.results[index];
+ delete saved.completed[index];
+ $('answer').value='';
+ $('result').replaceChildren();
+ $('answerPanel').classList.remove('has-result');
+ updateCount();
+ persist();
+ if(window.matchMedia('(max-width:799px)').matches)openMobileWriting();
+ else{
+   $('answer').focus();
+   $('answerPanel').scrollIntoView({block:'nearest',behavior:'smooth'});
+ }
+}
+$('result').addEventListener('click',event=>{
+ if(event.target.closest('#retryMail'))retryCurrentMail();
+});
 function updateCount(){
  let c=words($('answer').value);
  $('count').textContent=c+' / 30 reči';
@@ -1893,7 +1921,7 @@ function render(){
  $('promptScroll').scrollTop=0;
  $('answerPanel').classList.remove('has-result');
  $('result').innerHTML='';
- if(saved.completed[current]===$('answer').value && words($('answer').value)>=15 && saved.results[current]&&saved.results[current].text===$('answer').value)renderResult(saved.results[current].data);
+ // Raniji rezultat ne otvara automatski ekran provere: učenik uvek može opet pisati isti mejl.
  updateCount();growMailEditor();persist();
  if(document.body.classList.contains('view-mail'))requestAnimationFrame(fitMailPromptScreen);
 }
@@ -2150,10 +2178,10 @@ function renderMailGrid(){
   if(checked)finished++;
   const button=document.createElement('button');button.type='button';
   button.className='mail-card'+(checked?' is-done':'');
-  button.setAttribute('aria-label','Otvori '+(i+1)+'. mejl');
+  button.setAttribute('aria-label','Otvori i vežbaj ponovo '+(i+1)+'. mejl');
   const ico=document.createElement('span');ico.className='mail-card-icon';ico.textContent=checked?'✅':'✉️';ico.setAttribute('aria-hidden','true');
   const title=document.createElement('span');title.className='mail-card-title';title.textContent=(i+1)+'. mejl';
-  const progress=document.createElement('span');progress.className='mail-card-progress';progress.textContent=checked?'Proveren':count+' / 30 reči';
+  const progress=document.createElement('span');progress.className='mail-card-progress';progress.textContent=checked?'Proveren · ponovi':count+' / 30 reči';
   button.append(ico,title,progress);button.addEventListener('click',()=>openMailFromGrid(i));grid.appendChild(button);
  }
  $('homeProgress').textContent=finished+' / '+MAILS.length+' provereno';
