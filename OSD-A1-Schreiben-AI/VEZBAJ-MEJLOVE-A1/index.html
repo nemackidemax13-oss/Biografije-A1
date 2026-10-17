@@ -1660,6 +1660,49 @@ body.view-mail:not(.mobile-writing) .a1-prep-topline{display:flex;align-items:ce
  }
 }
 
+
+/* 18.10.2026 — Postavke pune širine, malo veći font, bez skrolovanja.
+   Dinamičko uklapanje visine radi posebno za svih 35 mejlova. */
+@media (max-width:799px) {
+  html body.view-mail:not(.mobile-writing):not(.mobile-review) section.prompt {
+    padding-left:0!important;
+    padding-right:0!important;
+  }
+  html body.view-mail:not(.mobile-writing):not(.mobile-review) #promptScroll {
+    padding-left:0!important;
+    padding-right:0!important;
+    scrollbar-width:none!important;
+  }
+  html body.view-mail:not(.mobile-writing):not(.mobile-review) #promptScroll .bilingual {
+    left:0!important;
+    right:auto!important;
+    margin-left:0!important;
+    margin-right:0!important;
+    padding:0 1px!important;
+    box-sizing:border-box!important;
+    transform-origin:top left!important;
+  }
+  html body.view-mail:not(.mobile-writing):not(.mobile-review) #promptScroll .paired-card {
+    max-width:none!important;
+    width:100%!important;
+    margin-left:0!important;
+    margin-right:0!important;
+    padding-left:7px!important;
+    padding-right:7px!important;
+  }
+  html body.view-mail:not(.mobile-writing):not(.mobile-review) #promptScroll .sentence-de {
+    font-size:13px!important;
+    line-height:1.23!important;
+  }
+  html body.view-mail:not(.mobile-writing):not(.mobile-review) #promptScroll .sentence-sr {
+    font-size:12.5px!important;
+    line-height:1.2!important;
+  }
+  html body.view-mail:not(.mobile-writing):not(.mobile-review) #promptScroll .paired-card .paired-heading {
+    font-size:11px!important;
+  }
+}
+
 </style>
 </head>
 <body class="view-home">
@@ -2075,7 +2118,11 @@ function fitMailPromptScreen(){
  const usableHeight=holder.clientHeight-action.getBoundingClientRect().height-9;
  if(usableHeight<80)return;
  function measure(scale){
-  content.style.width=(100/scale).toFixed(4)+'%';
+  // .bilingual ranije ima width:100% !important: običan style.width
+  // nije mogao da ga nadjača, pa je postavka ostajala uska ulevo.
+  // Obrnuta sirina i skala daju tacno punu fizicku sirinu ekrana.
+  content.style.setProperty('width',(100/scale).toFixed(4)+'%','important');
+  content.style.setProperty('max-width','none','important');
   content.style.transform='scale('+scale+')';
   return content.getBoundingClientRect().height;
  }
