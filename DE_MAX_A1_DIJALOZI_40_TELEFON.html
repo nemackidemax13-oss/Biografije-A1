@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#153f75">
+<title>DE-MAX Tutin – A1 dijalozi za 40 situacija</title>
+<style>
+:root{color-scheme:light;--ink:#173452;--navy:#133c70;--blue:#2467bf;--line:#d8e4f2;--muted:#647990;--red:#d42845;--green:#168357;--soft:#f4f8ff}
+*{box-sizing:border-box}html,body{height:100%;margin:0}body{font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:#e9f2ff;color:var(--ink);display:flex;justify-content:center;overscroll-behavior:none}button,input{font:inherit}button{cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #ffba3e;outline-offset:1px}
+.app{position:relative;width:min(100vw,530px);height:100dvh;min-height:0;background:#fff;display:grid;grid-template-rows:auto auto auto minmax(0,1fr) auto;overflow:hidden;box-shadow:0 10px 50px #173c6b2c}
+header{display:flex;align-items:center;gap:8px;padding:calc(6px + env(safe-area-inset-top)) 9px 7px;background:linear-gradient(115deg,#ffed8a,#ffcc43);border-bottom:1px solid #dca92c}
+.logo{color:#ca243d;font-weight:1000;font-size:17px;font-style:italic;letter-spacing:-1.3px;white-space:nowrap}.logo small{display:block;font-style:normal;color:#345278;font-size:7px;letter-spacing:1px;text-align:center}
+.heading{flex:1;min-width:0}.heading h1{font-size:14px;line-height:1.15;margin:0;font-weight:900}.heading p{font-size:10px;margin:2px 0 0;font-weight:700;color:#644c23}
+.back{display:grid;place-items:center;flex:none;min-width:55px;height:32px;border-radius:8px;background:#174980;color:#fff;text-decoration:none;font-size:11px;font-weight:800}
+.scene-bar{padding:8px;display:grid;grid-template-columns:36px 1fr 36px;gap:6px;background:var(--soft);border-bottom:1px solid var(--line)}
+.arrow{background:#e2edff;color:#17498d;border:1px solid #c4d7f3;border-radius:10px;font-size:23px;font-weight:900}
+.current{display:flex;align-items:center;justify-content:center;text-align:left;gap:10px;min-width:0;background:#fff;border:1px solid #cbd9eb;padding:6px 8px;border-radius:10px;color:var(--ink)}
+.scene-emoji{font-size:27px;flex:none}.current-text{min-width:0;flex:1}.current-text strong{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.current-text small{display:block;font-size:11px;color:#57728f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chevron{font-weight:900;color:#2868be;font-size:18px}
+.toptabs{display:flex;gap:5px;padding:6px 7px 7px;background:#fff;border-bottom:1px solid var(--line)}.tab{flex:1;min-width:0;border:1px solid #d8e4f1;border-radius:9px;background:#f3f7fc;padding:7px 2px;font-size:11px;font-weight:900;color:#425e80}.tab.active{background:var(--blue);border-color:var(--blue);color:#fff}
+.workspace{overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#bacdea transparent;padding:9px 8px 14px;background:linear-gradient(#fbfdff,#f0f6fe)}
+.hint{font-size:11px;color:#64809b;font-weight:700;margin:1px 3px 8px;display:flex;gap:6px;justify-content:space-between;align-items:center}.hint b{color:#275b9b}.option-label{display:flex;align-items:center;gap:5px;white-space:nowrap}
+.line{position:relative;background:#fff;border:1px solid #dde7f4;border-radius:11px;padding:9px 8px;margin:0 0 7px;box-shadow:0 2px 6px #1c4c8208;border-left:4px solid #3379c7;transition:background .15s,border-color .15s}.line.speakerB{border-left-color:#d9793e;background:#fffcf9}.line.active{outline:2px solid #e4334d;outline-offset:-2px;background:#fff5f7}.linehead{display:flex;align-items:center;gap:5px;margin:0 0 5px}.speaker{font-weight:900;font-size:10px;text-transform:uppercase;letter-spacing:.2px;color:#2b66ae}.speakerB .speaker{color:#af5c24}.counter{font-size:10px;color:#8c9db0;margin-left:auto}
+.words{font-size:14px;line-height:1.34;font-weight:750;color:#173655;word-wrap:break-word}.translation{margin-top:4px;color:#7a6269;font-size:11.5px;line-height:1.3}.lineactions{display:flex;gap:6px;justify-content:flex-end;margin-top:7px}
+.mini{border:1px solid #d2e1f3;border-radius:8px;background:#ecf4ff;color:#174f97;min-width:43px;height:29px;padding:0 9px;font-size:12px;font-weight:850}.mini.star{background:#fff8e4;border-color:#efd999;color:#715c16}.mini.star.saved{background:#ffe08b;color:#664400}.mini.reveal{color:#ba3450;background:#fff2f5}
+.hidden-answer .words,.hidden-answer .translation{display:none}
+.empty{margin:25px auto;text-align:center;color:#526b88;padding:16px}.empty strong{display:block;margin-bottom:8px}
+footer{z-index:2;padding:7px 8px calc(7px + env(safe-area-inset-bottom));background:#fff;border-top:1px solid #cfdeef;box-shadow:0 -6px 16px #22467410}
+.actions{display:grid;grid-template-columns:1.5fr 1fr .75fr .85fr;gap:5px}.ctrl{border:1px solid #c5d8ee;color:#1e508c;border-radius:9px;background:#eef5ff;min-height:39px;padding:6px 3px;font-size:11px;font-weight:900}.ctrl.main{background:#168557;color:#fff;border-color:#168557}.ctrl.danger{color:#b32d46;background:#fff1f3;border-color:#f0b8c2}
+.status{font-size:10px;line-height:1.2;color:#697e97;margin:5px 2px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.overlay{position:absolute;z-index:10;inset:0;background:#122b48a8;display:flex;justify-content:center;align-items:flex-end;padding:12px 8px calc(12px + env(safe-area-inset-bottom))}
+.overlay[hidden]{display:none}.sheet{background:#fff;border-radius:18px 18px 10px 10px;width:100%;height:min(80dvh,700px);display:flex;flex-direction:column;overflow:hidden;box-shadow:0 12px 38px #0a193b3d}
+.sheet-head{display:flex;justify-content:space-between;align-items:center;padding:12px 13px 7px}.sheet-head strong{font-size:15px}.close{border:0;border-radius:8px;background:#eef4ff;color:#184b88;width:34px;height:34px;font-size:24px;font-weight:700}
+.search{margin:2px 11px 10px;padding:10px 12px;border:1px solid #becfe3;border-radius:10px;outline:none;background:#f8fbff;color:#173857;font-size:15px}
+.scene-list{min-height:0;overflow-y:auto;padding:0 10px 10px;overscroll-behavior:contain}
+.scene-item{width:100%;display:flex;align-items:center;gap:10px;border:1px solid #e1e9f3;background:#fff;padding:9px;margin:0 0 5px;border-radius:10px;text-align:left;color:#193b5e;font-size:13px}.scene-item.now{background:#eaf4ff;border-color:#7ca9e3}.scene-item .em{font-size:23px}.scene-item span:nth-child(2){flex:1}.scene-item small{display:block;color:#6b829f;font-size:10px;margin-top:2px}.num-chip{color:#4875a8;font-weight:800;font-size:11px}
+@media(min-width:600px){.app{height:min(95dvh,950px);margin:auto;border-radius:18px;box-shadow:0 18px 70px #122b4860}.words{font-size:15.5px}.translation{font-size:12.5px}.line{padding:11px}.current-text strong{font-size:16px}}
+@media(max-height:560px){.scene-bar{padding:4px}.current{padding:3px}.scene-emoji{font-size:19px}.toptabs{padding:4px}.tab{padding:5px}.line{padding:6px}.lineactions{margin-top:4px}.actions .ctrl{min-height:33px}header{padding-top:3px;padding-bottom:3px}}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+<header><div class="logo">DE-MAX<small>TUTIN</small></div><div class="heading"><h1>A1 · Dijalozi (40 situacija)</h1><p>ÖSD / telc · razgovor • slušanje • prevod</p></div><a class="back" target="_top" href="DE_MAX_A1_USMENI_2_OPIS_SLIKE_TELEFON.html">← Opis</a></header>
+<div class="scene-bar">
+<button class="arrow" type="button" id="prev" aria-label="Prethodna situacija">‹</button>
+<button class="current" type="button" id="choose" aria-label="Izaberi situaciju"><span class="scene-emoji" id="emo"></span><span class="current-text"><strong id="sceneName"></strong><small id="sceneMeta"></small></span><span class="chevron">⌄</span></button>
+<button class="arrow" type="button" id="next" aria-label="Sledeća situacija">›</button>
+</div>
+<div class="toptabs" role="tablist" aria-label="Način vežbanja"><button class="tab active" id="tab-dialog" type="button">💬 Dijalog</button><button class="tab" id="tab-extra" type="button">＋ Dodatne</button><button class="tab" id="tab-mine" type="button">★ Moj dijalog</button><button class="tab" id="tab-practice" type="button">🎯 Vežbaj</button></div>
+<div class="workspace" id="workspace" tabindex="0" aria-label="Rečenice dijaloga"><div id="lines"></div></div>
+<footer><div class="actions"><button type="button" class="ctrl main" id="play">▶ Pusti redom</button><button type="button" class="ctrl" id="pause">⏸ Pauza</button><button type="button" class="ctrl danger" id="stop">■ Stop</button><button type="button" class="ctrl" id="speed">1,0×</button></div><div class="status" id="status" role="status">Izaberi situaciju i pokreni slušanje.</div></footer>
+<div class="overlay" id="overlay" hidden><div class="sheet" role="dialog" aria-label="Izbor situacije" aria-modal="true"><div class="sheet-head"><strong>Izaberi situaciju · 1–40</strong><button class="close" type="button" id="close" aria-label="Zatvori">×</button></div><input id="search" class="search" placeholder="Pretraži situacije i rečenice…" type="search" autocomplete="off"><div class="scene-list" id="sceneList"></div></div></div>
+</div>
+<script src="DE_MAX_A1_DIJALOZI_40_DATA_01.js?v=20261018"></script>
+<script src="DE_MAX_A1_DIJALOZI_40_DATA_02.js?v=20261018"></script>
+<script>
+"use strict";
+(function(){
+const scenes=(window.DEMAX_SCENES||[]).slice().sort((a,b)=>a.n-b.n);
+const $=id=>document.getElementById(id), escape=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const synth=window.speechSynthesis||null;
+const rates=[0.82,1,1.13],labels=["Sporo","1,0×","Brže"];
+let speedIndex=1,sceneIndex=0,tab="dialog",current=-1,playing=false,paused=false,epoch=0,showTranslations=true,revealed=new Set(),saved={},activeRows=[],listener=null;
+try{saved=JSON.parse(localStorage.getItem("demax-a1-40-saved")||"{}")||{}}catch(e){saved={}}
+function save(){try{localStorage.setItem("demax-a1-40-saved",JSON.stringify(saved))}catch(e){}}
+function scene(){return scenes[sceneIndex]}
+function key(p){return p[0]+"\u0001"+p[1]}
+function chosen(){return saved[scene().n]||[]}
+function viewRows(){if(tab==="extra")return scene().extra.map((p,i)=>({p,i,from:"extra"}));if(tab==="mine")return chosen().map((p,i)=>({p,i,from:"mine"}));return scene().dialog.map((p,i)=>({p,i,from:"dialog"}))}
+function setStatus(t){$("status").textContent=t}
+function voice(){
+ const vs=synth?.getVoices()||[],de=vs.filter(v=>(v.lang||"").toLowerCase().startsWith("de"));
+ return de.find(v=>/google deutsch/i.test(v.name))||de.find(v=>/natural|premium|enhanced/i.test(v.name))||de.find(v=>(v.lang||"").toLowerCase()==="de-de")||de[0]||null;
+}
+function stop(){
+ epoch++;playing=false;paused=false;current=-1;
+ if(synth){synth.cancel()}
+ $("pause").textContent="⏸ Pauza";$("play").textContent="▶ Pusti redom";
+ document.querySelectorAll(".line.active").forEach(x=>x.classList.remove("active"));
+}
+function highlight(i){
+ document.querySelectorAll(".line.active").forEach(x=>x.classList.remove("active"));
+ current=i;
+ const item=$("line"+i);
+ if(item){item.classList.add("active");item.scrollIntoView({block:"nearest",behavior:"smooth"})}
+}
+function speak(i,all=false,session=epoch){
+ if(!synth){setStatus("Izgovor nije dostupan u ovom pregledaču.");return}
+ if(session!==epoch)return;
+ const rows=activeRows;
+ if(i>=rows.length){stop();setStatus("Slušanje je završeno.");return}
+ const de=rows[i].p[0];
+ highlight(i);
+ setStatus("Slušanje: "+(i+1)+" / "+rows.length+" · "+de);
+ const u=new SpeechSynthesisUtterance(de);
+ u.lang="de-DE";u.rate=rates[speedIndex];u.pitch=1;const v=voice();if(v)u.voice=v;
+ u.onend=()=>{if(session!==epoch)return;if(all&&playing){window.setTimeout(()=>{if(session===epoch&&!paused)speak(i+1,true,session);else if(session===epoch&&paused)listener=()=>speak(i+1,true,session)},260)}else if(!all){highlight(-1)}};
+ u.onerror=()=>{if(session===epoch){stop();setStatus("Izgovor nije uspeo. Dodirni ponovo zvučnik.")}};
+ synth.speak(u);
+}
+function playAll(){
+ stop();activeRows=viewRows();if(!activeRows.length){setStatus("Ovde nema izabranih rečenica.");return}
+ playing=true;$("play").textContent="▶ Od početka";speak(0,true,epoch)
+}
+function playSingle(i){stop();activeRows=viewRows();speak(i,false,epoch)}
+function render(){
+ stop();revealed.clear();
+ const s=scene();
+ if(!s){$("sceneName").textContent="Nema podataka";setStatus("Dijalozi nisu učitani.");return}
+ $("emo").textContent=s.emoji;$("sceneName").textContent=s.n+". "+s.sr;
+ $("sceneMeta").textContent=s.de+" · "+s.roles;
+ for(const mode of ["dialog","extra","mine","practice"]){$("tab-"+mode).classList.toggle("active",tab===mode)}
+ const rows=viewRows();activeRows=rows;
+ const isSaved=p=>chosen().some(x=>key(x)===key(p));
+ let out='<div class="hint"><span><b>'+rows.length+' rečenica</b> · '+(tab==="practice"?"Dodirni „Prikaži odgovor“":tab==="mine"?"Tvoj izbor":s.roles)+'</span><label class="option-label"><input id="translationToggle" type="checkbox" '+(showTranslations?"checked":"")+'> Prevod</label></div>';
+ if(!rows.length)out='<div class="empty"><strong>Još nema izabranih rečenica.</strong>Idi na Dijalog ili Dodatne i dodaj rečenice pomoću dugmeta ★.</div>';
+ else rows.forEach(({p,i,from})=>{
+  const letter=tab==="extra"?"":(i%2?"B":"A");
+  const hide=tab==="practice"&&(i%2===1)&&!revealed.has(i);
+  out+='<article class="line '+(letter==="B"?"speakerB ":"")+(hide?"hidden-answer":"")+'" id="line'+i+'"><div class="linehead"><span class="speaker">'+(tab==="extra"?"Dodatna rečenica":tab==="mine"?"Moj izbor":"Osoba "+letter)+'</span><span class="counter">'+(i+1)+' / '+rows.length+'</span></div>';
+  if(hide)out+='<div class="words" style="display:block;color:#aa6584;font-size:12px">Odgovori naglas na nemačkom, pa prikaži odgovor.</div>';
+  out+='<div class="words">'+escape(p[0])+'</div>'+(showTranslations?'<div class="translation">'+escape(p[1])+'</div>':'');
+  out+='<div class="lineactions">'+(hide?'<button class="mini reveal" data-reveal="'+i+'" type="button">👁 Prikaži</button>':'')+'<button class="mini" data-sound="'+i+'" type="button" title="Poslušaj">🔊</button><button class="mini star '+(isSaved(p)?"saved":"")+'" data-save="'+i+'" type="button" title="Dodaj ili ukloni iz Moj dijalog">'+(isSaved(p)?"★ Dodato":"☆ Dodaj")+'</button></div></article>'
+ });
+ $("lines").innerHTML=out;$("workspace").scrollTop=0;
+ const chk=$("translationToggle");if(chk)chk.onchange=()=>{showTranslations=chk.checked;render()};
+ setStatus(s.n+" / 40 · "+s.de+" · "+rows.length+" rečenica");
+ try{history.replaceState(null,"",location.pathname+"?s="+s.n)}catch(e){}
+}
+function setScene(i){sceneIndex=(i+scenes.length)%scenes.length;tab="dialog";closeChoose();render()}
+function setTab(t){tab=t;render()}
+function saveRow(i){const p=viewRows()[i]?.p;if(!p)return;const arr=chosen().slice(),k=key(p),at=arr.findIndex(x=>key(x)===k);if(at>=0)arr.splice(at,1);else arr.push(p);saved[scene().n]=arr;save();let mode=tab;render();setStatus(at>=0?"Rečenica uklonjena iz Moj dijalog.":"Rečenica dodata u Moj dijalog.")}
+function sceneSelector(){
+ const q=$("search").value.toLocaleLowerCase("sr").trim();
+ const selected=scenes.filter(s=>!q||[s.sr,s.de,s.roles,...s.dialog.flat(),...s.extra.flat()].join(" ").toLocaleLowerCase("sr").includes(q));
+ $("sceneList").innerHTML=selected.map(s=>'<button type="button" class="scene-item '+(s.n===scene().n?"now":"")+'" data-scene="'+s.n+'"><span class="em">'+escape(s.emoji)+'</span><span><b>'+escape(s.sr)+'</b><small>'+escape(s.de)+'</small></span><span class="num-chip">'+s.n+' / 40</span></button>').join("")||'<p class="empty">Nema rezultata pretrage.</p>'
+}
+function openChoose(){$("overlay").hidden=false;$("search").value="";sceneSelector();$("search").focus()}
+function closeChoose(){$("overlay").hidden=true}
+$("choose").onclick=openChoose;$("close").onclick=closeChoose;
+$("overlay").addEventListener("click",e=>{if(e.target===$("overlay"))closeChoose()});
+$("search").addEventListener("input",sceneSelector);
+$("sceneList").addEventListener("click",e=>{const b=e.target.closest("[data-scene]");if(b)setScene(Number(b.dataset.scene)-1)});
+$("prev").onclick=()=>setScene(sceneIndex-1);$("next").onclick=()=>setScene(sceneIndex+1);
+for(const mode of ["dialog","extra","mine","practice"]) $("tab-"+mode).onclick=()=>setTab(mode);
+$("lines").addEventListener("click",e=>{
+ const b=e.target.closest("button");if(!b)return;
+ if(b.dataset.sound!==undefined)playSingle(Number(b.dataset.sound));
+ else if(b.dataset.save!==undefined)saveRow(Number(b.dataset.save));
+ else if(b.dataset.reveal!==undefined){revealed.add(Number(b.dataset.reveal));let div=$("line"+b.dataset.reveal);div?.classList.remove("hidden-answer");b.remove()}
+});
+$("play").onclick=playAll;
+$("stop").onclick=()=>{stop();setStatus("Slušanje je zaustavljeno.")};
+$("pause").onclick=()=>{
+ if(!synth)return;
+ if(!playing){setStatus("Prvo dodirni „Pusti redom“.");return}
+ if(!paused){synth.pause();paused=true;$("pause").textContent="▶ Nastavi";setStatus("Pauzirano.");}
+ else{paused=false;synth.resume();$("pause").textContent="⏸ Pauza";setStatus("Slušanje se nastavlja.");if(listener){let fn=listener;listener=null;fn()}}
+};
+$("speed").onclick=()=>{speedIndex=(speedIndex+1)%rates.length;$("speed").textContent=labels[speedIndex];setStatus("Brzina izgovora: "+labels[speedIndex])};
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){if(!$("overlay").hidden)closeChoose();else stop()}});
+if(synth){synth.getVoices();synth.addEventListener?.("voiceschanged",()=>synth.getVoices())}
+const start=Number(new URLSearchParams(location.search).get("s"));if(Number.isInteger(start)&&start>=1&&start<=scenes.length)sceneIndex=start-1;
+render();
+})();
+</script>
+</body>
+</html>
