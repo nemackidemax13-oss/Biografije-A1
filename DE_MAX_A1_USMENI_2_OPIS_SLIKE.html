@@ -61,12 +61,26 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}butto
 .current .sound{min-width:23px;min-height:23px;font-size:11px}
 /* Tokom automatskog čitanja u "Moj opis" označi upravo izgovaranu rečenicu. */
 .current.speaking-now{
- border:3px solid #e51b35!important;
- background:#fff1d9!important;
- box-shadow:0 0 0 1px #e51b35,inset 0 0 0 1px #fff!important;
+ border:2px solid #e32d49!important;
+ border-radius:12px;
+ background:linear-gradient(115deg,#fff7f6 0%,#ffeaee 100%)!important;
+ box-shadow:0 0 0 2px #e32d492a,0 4px 14px #c8294933,inset 3px 0 0 #e32d49!important;
+ animation:reading-frame-glow 2.2s ease-in-out infinite;
 }
-.current.speaking-now .de{color:#ac1732;font-weight:950}
-.current.speaking-now .index{background:#d91c37;color:white;border-radius:4px;padding:3px 5px;min-width:19px;text-align:center}
+.current.speaking-now .de{color:#a61939;font-weight:950}
+.current.speaking-now .sr{color:#715969}
+.current.speaking-now .index{
+ display:grid;place-items:center;align-self:center;flex:none;
+ background:#df2444;color:#fff;border-radius:100%;padding:0;
+ width:22px;height:22px;min-width:22px;font-size:10px;font-weight:900;
+ box-shadow:0 2px 5px #bb1e3c55;
+}
+.current.speaking-now .sound{background:#fff;border-color:#eaa3b0;color:#b91d3c}
+@keyframes reading-frame-glow{
+ 0%,100%{box-shadow:0 0 0 2px #e32d492a,0 4px 14px #c8294933,inset 3px 0 0 #e32d49}
+ 50%{box-shadow:0 0 0 3px #e32d4945,0 5px 17px #c8294945,inset 3px 0 0 #e32d49}
+}
+@media(prefers-reduced-motion:reduce){.current.speaking-now{animation:none}}
 
 .empty{font-size:10.5px;color:#768ca5;text-align:center;line-height:1.5;margin:auto;padding:0 8px}
 .compact-nav{flex:none;height:23px;display:flex;justify-content:center;gap:6px;align-items:center;border-top:1px solid #edf2f9}
