@@ -16,9 +16,9 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}butto
 .brand small{font-size:8px;color:#274064;font-style:normal;letter-spacing:.1px}
 .top h1{margin:0;border-left:1px solid #ceb748;padding-left:7px;min-width:0;font-size:12px;font-weight:850;color:#1c3c64;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .steps{min-height:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:4px}
-.step{min-width:0;min-height:0;display:flex;align-items:center;gap:4px;background:#f2f7ff;border:1px solid #d4e3f7;color:#1c4c86;border-radius:7px;text-align:left;padding:2px 4px;overflow:hidden}
-.step.active{background:#e9f2ff;border-color:#4c85ce;box-shadow:inset 0 0 0 1px #4c85ce}
-.step .num{width:16px;height:16px;flex:none;display:grid;place-items:center;background:#fff;color:#225aa7;border-radius:5px;font-size:10px;font-weight:900}
+.step{min-width:0;min-height:0;display:flex;align-items:center;gap:4px;background:#2466bf;border:1px solid #15519c;color:#fff;border-radius:7px;text-align:left;padding:2px 4px;overflow:hidden}
+.step.active{background:#0e438c;border-color:#092f67;box-shadow:inset 0 0 0 1px #79b6ff}
+.step .num{width:16px;height:16px;flex:none;display:grid;place-items:center;background:#4d90e4;color:#fff;border-radius:5px;font-size:10px;font-weight:900}
 .step span:last-child{font-size:9px;font-weight:800;line-height:1.12;max-width:100%;min-width:0}
 .example{border:1px solid #cbdcef;border-radius:8px;background:#f7faff;min-height:0;padding:4px 7px;display:grid;grid-template-columns:minmax(0,1fr) 31px;gap:5px;align-items:center;overflow:hidden}
 .sample-content{min-width:0;align-self:center;overflow:hidden}
@@ -186,6 +186,11 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}butto
 .compact-nav span{font-size:10.5px}
 .controls{height:34px}
 .ctrl{height:28px;font-size:11px}
+/* Dugmad "Pusti sve" i "Obriši" malo veća, zajedno centrirana. */
+.controls.centered-controls{height:36px;justify-content:center;gap:9px;padding:3px 6px}
+.controls.centered-controls .ctrl{flex:0 0 auto;height:30px;font-size:11.5px}
+.controls.centered-controls .ctrl.main{width:118px}
+.controls.centered-controls .ctrl.danger{width:84px}
 .age-texts strong,.choicetext strong{font-size:12.5px;line-height:1.25}
 .age-texts small,.choicetext small{font-size:10.5px;line-height:1.2}
 .optionlabel{font-size:11px}
@@ -262,7 +267,7 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}butto
   <div class="paneltitle"><strong>Moj opis</strong><span class="small" id="total">0 rečenica</span></div>
   <div class="selected-area" id="selectedArea"></div>
   <div class="compact-nav"><button id="chosenPrev" class="nav" aria-label="Prethodna izabrana rečenica">‹</button><span id="chosenPage">0 od 0</span><button id="chosenNext" class="nav" aria-label="Sledeća izabrana rečenica">›</button></div>
-  <div class="controls"><span class="ctrl main" aria-hidden="true" style="visibility:hidden;pointer-events:none"></span><button id="stop" class="ctrl">■ Stop</button><button id="clear" class="ctrl danger">Obriši</button></div>
+  <div class="controls centered-controls"><button id="playAll" class="ctrl main">▶ Pusti sve</button><button id="clear" class="ctrl danger">Obriši</button></div>
  </section>
 </main>
 <script>
@@ -528,7 +533,7 @@ $("#chosenPrev").addEventListener("click",()=>{chosenIndex=Math.max(0,(Math.floo
 $("#chosenNext").addEventListener("click",()=>{chosenIndex=Math.min(chosen.length-1,(Math.floor(chosenIndex/chosenPageSize())+1)*chosenPageSize());renderChosen()});
 $("#selectedArea").addEventListener("click",e=>{const sound=e.target.closest("[data-chosen-sound]");if(sound){listen(Number(sound.dataset.chosenSound));return}const remove=e.target.closest("[data-chosen-remove]");if(remove)addOrRemove(Number(remove.dataset.chosenRemove))});
 $("#loadExample").addEventListener("click",()=>{stop();chosen=[...DEMO];chosenIndex=0;renderChosen();renderList()});
-$("#stop").addEventListener("click",stop);
+$("#playAll").addEventListener("click",playAll);
 $("#clear").addEventListener("click",()=>{stop();chosen=[];chosenIndex=0;renderChosen();renderList()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape")stop()});
 if("speechSynthesis" in window)speechSynthesis.getVoices();
