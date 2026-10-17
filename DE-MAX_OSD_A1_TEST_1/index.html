@@ -606,13 +606,39 @@
   white-space:nowrap;
  }
 }
+
+/* Pitanja iznad jedinstvenog polja, sa proverom neposredno iznad mobilne tastature. */
+.rafaela-write-screen .rafaela-questions{flex:0 0 auto;background:#edf5ff;border:1px solid #c7d8ed;border-radius:9px;padding:7px 9px;margin:0 0 6px}
+.rafaela-write-screen .rafaela-questions p{margin:0;padding:3px 0;font-size:12px;line-height:1.26;color:#153d71;font-weight:800}
+.rafaela-write-screen .rafaela-full-draft{display:block;flex:1 1 0;min-height:125px;width:100%;border:1.5px solid #abc5e4;border-radius:9px;padding:10px;font-size:16px;line-height:1.44;resize:none;overflow:auto;background:white;color:#183451}
+.rafaela-write-screen .rafaela-full-draft:focus{border-color:#3d80bd;outline:none}
+.rafaela-write-screen .rafaela-wordline{font-size:11px;font-weight:850;color:#187b45;padding:5px 0}
+.rafaela-write-screen #rafAI{background:#168247;border-color:#168247;color:white}
+#rafaelaKeyboardWords[hidden],#rafaelaKeyboardCheck[hidden]{display:none!important}
+@media(max-width:599px){
+ .rafaela-write-screen .rafaela-questions{padding:4px 7px;margin-bottom:5px}
+ .rafaela-write-screen .rafaela-questions p{font-size:11.5px;line-height:1.18;padding:2px 0}
+ .rafaela-write-screen .rafaela-full-draft{min-height:0;padding:7px}
+ #shell.keyboard-open .main.rafaela-page{display:flex!important;flex-direction:column;min-height:0;overflow:hidden!important}
+ #shell.keyboard-open .rafaela-write-screen{display:flex!important;flex:1 1 0;min-height:0}
+ #shell.keyboard-open .rafaela-write-screen .card.rafaela-compose{display:flex!important;flex:1 1 0;min-height:0;flex-direction:column;overflow:hidden;padding:5px 7px}
+ #shell.keyboard-open .rafaela-write-screen .rafaela-questions{display:block!important;flex:0 0 auto;margin-bottom:5px}
+ #shell.keyboard-open .rafaela-write-screen .rafaela-full-draft{display:block!important;flex:1 1 0!important;min-height:0!important;height:auto!important;max-height:none!important;overflow:auto;font-size:16px!important;line-height:1.3!important}
+ #shell.keyboard-open .rafaela-write-screen .rafaela-wordline{display:none}
+ #shell.keyboard-open #keyboardToolbar.mail-keyboard{display:flex!important;align-items:center!important;gap:8px!important;min-height:44px!important;padding:5px 8px max(5px,env(safe-area-inset-bottom))!important;background:#eff8f2!important}
+ #shell.keyboard-open #keyboardToolbar.mail-keyboard #keyboardCaption,
+ #shell.keyboard-open #keyboardToolbar.mail-keyboard #keyboardNext,
+ #shell.keyboard-open #keyboardToolbar.mail-keyboard #keyboardDone{display:none!important}
+ #shell.keyboard-open #rafaelaKeyboardWords{display:block!important;flex:1 1 auto;min-width:0;font-size:12px!important;font-weight:900;color:#16733e;white-space:nowrap}
+ #shell.keyboard-open #rafaelaKeyboardCheck{display:inline-flex!important;align-items:center;justify-content:center;flex:0 0 auto;min-height:34px!important;padding:7px 12px!important;border:0;border-radius:9px;background:#168247;color:white;font-size:12px!important;font-weight:900;white-space:nowrap}
+}
 </style></head>
 <body>
 <div id="shell">
   <header class="top"><div class="identity"><div class="brand"><div class="logo">D•M</div><div><div class="brand-name">DE-MAX TUTIN</div><div class="brand-sub">ÖSD A1 · Ispitna simulacija</div></div></div><div class="top-right"><div class="pg" id="pageLabel">01 / 15</div><small id="sectionLabel">TEST 1</small></div></div><div class="bar"><div class="fill" id="progress"></div></div></header>
   <div class="fixed-audio-dock" id="fixedAudioDock" hidden></div>
   <main class="main" id="main" aria-live="polite"></main>
-  <div class="keyboard-toolbar" id="keyboardToolbar" hidden><span id="keyboardCaption">✎ Unos odgovora</span><button type="button" id="keyboardFormAll" hidden>▦ Ceo formular</button><button type="button" id="keyboardNext" hidden>Dalje →</button><button type="button" id="keyboardDone">✓ Potvrdi</button></div>
+  <div class="keyboard-toolbar" id="keyboardToolbar" hidden><span id="keyboardCaption">✎ Unos odgovora</span><span id="rafaelaKeyboardWords" hidden>0 reči</span><button type="button" id="rafaelaKeyboardCheck" hidden>Proveri mejl</button><button type="button" id="keyboardFormAll" hidden>▦ Ceo formular</button><button type="button" id="keyboardNext" hidden>Dalje →</button><button type="button" id="keyboardDone">✓ Potvrdi</button></div>
   <footer class="bottom"><button class="btn btn-back" id="back">← Nazad</button><button class="btn btn-next" id="next">Počni →</button></footer>
   <div class="toast" id="toast" role="status"></div>
 </div>
@@ -761,7 +787,11 @@ ${heading('Schreiben · Aufgabe 1','5 bodova','')}
 
 const RAFAELA_OPENING='Liebe Rafaela,\nvielen Dank für dein E-Mail. Hier die wichtigsten Informationen zu meiner Berlin-Reise:';
 function rafaelaData(){if(!storage.rafaela)storage.rafaela={one:'',two:'',three:'',name:''};return storage.rafaela;}
-function rafaelaText(){const x=rafaelaData();return [RAFAELA_OPENING,x.one.trim(),x.two.trim(),x.three.trim(),'Liebe Grüße',x.name.trim()||storage.name.trim()].filter(Boolean).join('\n');}
+function rafaelaDraft(){const x=rafaelaData();if(typeof x.draft==='string')return x.draft;if(![x.one,x.two,x.three,x.name].some(v=>String(v||'').trim()))return '';return [RAFAELA_OPENING,x.one.trim(),x.two.trim(),x.three.trim(),'Liebe Grüße',x.name.trim()||storage.name.trim()].filter(Boolean).join('\n');}
+function rafaelaWordCount(){return rafaelaDraft().trim().split(/\s+/).filter(Boolean).length;}
+function rafaelaText(){const x=rafaelaData();return typeof x.draft==='string'?x.draft:[RAFAELA_OPENING,x.one.trim(),x.two.trim(),x.three.trim(),'Liebe Grüße',x.name.trim()||storage.name.trim()].filter(Boolean).join('\n');}
+function setRafaelaDraft(value){const x=rafaelaData();x.draft=String(value).slice(0,2800);storage.email=x.draft;storage.emailGrade='';storage.rafaelaReview=null;save();const count=rafaelaWordCount();for(const id of ['rafaelaWords','rafaelaKeyboardWords']){const el=document.getElementById(id);if(el)el.textContent=id==='rafaelaWords'?String(count):count+' reči';}const status=document.getElementById('rafaelaStatus');if(status)status.textContent='Mejl je sačuvan.';const review=document.getElementById('rafaelaReview');if(review)review.textContent='';}
+
 function setRafaela(k,v){if(!['one','two','three','name'].includes(k))return;rafaelaData()[k]=String(v).slice(0,500);storage.email=rafaelaText();storage.emailGrade='';storage.rafaelaReview=null;save();const p=document.getElementById('rafaelaPreview');if(p)p.textContent=rafaelaText();const n=document.getElementById('rafaelaWords');if(n)n.textContent=rafaelaText().split(/\s+/).filter(Boolean).length;const status=document.getElementById('rafaelaStatus');if(status)status.textContent='Odgovori su sačuvani.';const review=document.getElementById('rafaelaReview');if(review)review.textContent='';}
 function mailPrompt(){
  return `${heading('Schreiben · Aufgabe 2','10 bodova','Odgovorite Rafaeli na mejl. Napišite oko 30 reči, odgovorite na sva pitanja i završite pozdravom.')}
@@ -772,40 +802,36 @@ function mailPrompt(){
  </section>`;
 }
 function mail(){
- const x=rafaelaData();
  return `${heading('Schreiben · Aufgabe 2','10 bodova','Odgovorite na tri pitanja i potpišite mejl.')}
  <div class="rafaela-exam rafaela-write-screen">
- <div class="card rafaela-compose"><div class="rafaela-start">Liebe Rafaela,<br>vielen Dank für dein E-Mail. Hier die wichtigsten Informationen zu meiner Berlin-Reise:</div>
- <label for="raf1">1. An welchem Tag und um wie viel Uhr kommst du?</label>
- <textarea id="raf1" class="rafaela-entry" rows="1" spellcheck="true" maxlength="500" placeholder="Odgovor na nemačkom" oninput="setRafaela('one',this.value)">${h(x.one)}</textarea>
- <label for="raf2">2. Wie lange möchtest du bleiben?</label>
- <textarea id="raf2" class="rafaela-entry" rows="1" spellcheck="true" maxlength="500" placeholder="Odgovor na nemačkom" oninput="setRafaela('two',this.value)">${h(x.two)}</textarea>
- <label for="raf3">3. Wen bringst du mit?</label>
- <textarea id="raf3" class="rafaela-entry" rows="1" spellcheck="true" maxlength="500" placeholder="Odgovor na nemačkom" oninput="setRafaela('three',this.value)">${h(x.three)}</textarea>
- <div class="rafaela-name"><label for="rafName">Liebe Grüße</label><input id="rafName" type="text" enterkeyhint="done" value="${h(x.name)}" placeholder="Potpis" oninput="setRafaela('name',this.value)"></div>
- <details class="rafaela-draft"><summary>Vaš mejl · <span id="rafaelaWords">${rafaelaText().split(/\s+/).filter(Boolean).length}</span> reči</summary><pre id="rafaelaPreview">${h(rafaelaText())}</pre></details>
- <div class="rafaela-buttons"><button type="button" class="btn btn-next" id="rafAI" onclick="checkRafaela()">✦ OpenAI provera</button><button type="button" class="btn btn-plain" onclick="reviewRafaelaFields()">Proveri 3 odgovora</button></div>
+ <div class="card rafaela-compose">
+ <div class="rafaela-questions" aria-label="Pitanja za mejl">
+ <p>1. An welchem Tag und um wie viel Uhr kommst du?</p>
+ <p>2. Wie lange möchtest du bleiben?</p>
+ <p>3. Wen bringst du mit?</p></div>
+ <textarea id="rafEmail" class="rafaela-full-draft" spellcheck="true" maxlength="2800" placeholder="Napiši mejl na nemačkom..." aria-label="Napiši ceo mejl na nemačkom" oninput="setRafaelaDraft(this.value)">${h(rafaelaDraft())}</textarea>
+ <div class="rafaela-wordline">Napisano: <span id="rafaelaWords">${rafaelaWordCount()}</span> reči</div>
+ <div class="rafaela-buttons"><button type="button" class="btn btn-next" id="rafAI" onclick="checkRafaela()">Proveri mejl</button><button type="button" class="btn btn-plain" onclick="reviewRafaelaFields()">Proveri 3 odgovora</button></div>
  <p class="rafaela-status" id="rafaelaStatus">${RAFAELA_CHECK_ENDPOINT?'AI provera je spremna.':'Za OpenAI proveru potrebno je povezati zaštićeni server na Replitu. Uneti odgovori se već čuvaju.'}</p>
  <div id="rafaelaReview">${storage.rafaelaReview?rafaelaAIResult(storage.rafaelaReview):''}</div>
  <p class="rafaela-disclaimer">AI bodovi do 10 su vežbovna procena, nisu zvanična ÖSD ocena.</p>
- </div>
- </div>`;
+ </div></div>`;
 }
-function reviewRafaelaFields(){const x=rafaelaData(),missing=[];if(!x.one.trim())missing.push('dan i vreme dolaska');if(!x.two.trim())missing.push('dužina boravka');if(!x.three.trim())missing.push('koga dovodiš');const status=document.getElementById('rafaelaStatus');if(status)status.textContent=missing.length?'Nedostaje: '+missing.join(', ')+'.':'Sva tri pitanja imaju odgovor. Proveri gramatiku, pozdrav i potpis.';}
+function reviewRafaelaFields(){const status=document.getElementById('rafaelaStatus');if(status)status.textContent=rafaelaDraft().trim()?'Proveri da li mejl odgovara na sva tri pitanja i ima pozdrav i potpis.':'Najpre napiši mejl na nemačkom.';}
 function rafaelaAIResult(x){return `<div class="rafaela-ai-result"><b>OpenAI procena: ${h(x.score)}/10</b><p>${h(x.summary||'')}</p>${(x.checks||[]).map((v,i)=>`<p>${i+1}. ${v.answered?'✓':'✕'} ${h(v.feedback||'')}</p>`).join('')}<b>Ispravljen predlog:</b><pre>${h(x.corrected_email||'')}</pre></div>`;}
 async function checkRafaela(){
  const x=rafaelaData(),status=document.getElementById('rafaelaStatus');
- if(!x.one.trim()||!x.two.trim()||!x.three.trim()){reviewRafaelaFields();return;}
+ if(!rafaelaDraft().trim()){reviewRafaelaFields();return;}
  if(!RAFAELA_CHECK_ENDPOINT){if(status)status.textContent='OpenAI API još nije povezan. OPENAI_API_KEY stavi samo na server u Replit Secrets, nikada na GitHub.';return;}
- const btn=document.getElementById('rafAI');btn.disabled=true;btn.textContent='Proveravam…';
+ const btn=document.getElementById('rafAI');if(btn){btn.disabled=true;btn.textContent='Proveravam…';}
  try{
-  const response=await fetch(RAFAELA_CHECK_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:rafaelaText(),answers:{arrival:x.one,duration:x.two,companion:x.three,signature:x.name}})});
+  const response=await fetch(RAFAELA_CHECK_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:rafaelaText(),answers:typeof x.draft==='string'?{arrival:x.draft.slice(0,500),duration:x.draft.slice(0,500),companion:x.draft.slice(0,500),signature:x.name}:{arrival:x.one,duration:x.two,companion:x.three,signature:x.name}})});
   const result=await response.json();if(!response.ok)throw Error(result.error||'Greška servera');
   if(!Number.isInteger(result.score)||result.score<0||result.score>10||!Array.isArray(result.checks))throw Error('Nepotpun odgovor provere');
   storage.rafaelaReview=result;storage.emailGrade=String(result.score);save();document.getElementById('rafaelaReview').innerHTML=rafaelaAIResult(result);
   if(status)status.textContent='Provera završena. Bodovi mejla dodati su u završni rezultat.';
  }catch(error){if(status)status.textContent='Provera nije uspela: '+(error.message||error)+'. Tekst je sačuvan.';}
- finally{btn.disabled=false;btn.textContent='✦ OpenAI provera';}
+ finally{if(btn){btn.disabled=false;btn.textContent='Proveri mejl';}}
 }
 function norm(s){return String(s??'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[.,\s/\-]/g,'');}
 function countMatches(prefix,keys){return keys.reduce((a,x,i)=>a+(String(get(prefix+'_'+i))===String(x)?1:0),0);}
@@ -903,8 +929,10 @@ const keyboardDone=document.getElementById('keyboardDone');
 const keyboardNext=document.getElementById('keyboardNext');
 const keyboardFormAll=document.getElementById('keyboardFormAll');
 const keyboardCaption=document.getElementById('keyboardCaption');
+const rafaelaKeyboardWords=document.getElementById('rafaelaKeyboardWords');
+const rafaelaKeyboardCheck=document.getElementById('rafaelaKeyboardCheck');
 const shell=document.getElementById('shell');
-const isExamTextInput=el=>el&&el.matches&&el.matches('#main input[type="text"],#main input[type="number"],#main input[type="tel"],#main textarea.rafaela-entry')&&(page===9||page===12||page===14);
+const isExamTextInput=el=>el&&el.matches&&el.matches('#main input[type="text"],#main input[type="number"],#main input[type="tel"],#main textarea.rafaela-entry,#main textarea.rafaela-full-draft')&&(page===9||page===12||page===14);
 function updateMobileViewport(){
  if(window.visualViewport&&window.innerWidth<600){
   document.documentElement.style.setProperty('--app-viewport-height',Math.max(200,Math.round(window.visualViewport.height))+'px');
@@ -924,10 +952,13 @@ function activateKeyboardLayout(){
  shell.classList.add('keyboard-open');
  keyboardToolbar.hidden=false;
  keyboardToolbar.classList.toggle('form-keyboard',page===9||page===12);
- keyboardNext.hidden=page!==14;
+ keyboardToolbar.classList.toggle('mail-keyboard',page===14);
+ rafaelaKeyboardWords.hidden=page!==14;rafaelaKeyboardCheck.hidden=page!==14;
+ if(page===14)rafaelaKeyboardWords.textContent=rafaelaWordCount()+' reči';
+ keyboardNext.hidden=true;
  keyboardFormAll.hidden=page!==9&&page!==12;
  keyboardFormAll.textContent=page===9?'▦ Cela vežba':'▦ Ceo formular';
- keyboardCaption.hidden=page===9||page===12;
+ keyboardCaption.hidden=page===9||page===12||page===14;
  updateMailKeyboardCaption();
  updateMobileViewport();
  requestAnimationFrame(revealFocusedInput);
@@ -935,7 +966,7 @@ function activateKeyboardLayout(){
  setTimeout(revealFocusedInput,380);
 }
 function closeKeyboardLayout(){
- shell.classList.remove('keyboard-open');keyboardToolbar.hidden=true;keyboardToolbar.classList.remove('form-keyboard');keyboardNext.hidden=true;keyboardFormAll.hidden=true;
+ shell.classList.remove('keyboard-open');keyboardToolbar.hidden=true;keyboardToolbar.classList.remove('form-keyboard','mail-keyboard');keyboardNext.hidden=true;keyboardFormAll.hidden=true;rafaelaKeyboardWords.hidden=true;rafaelaKeyboardCheck.hidden=true;
  keyboardFormAll.textContent='▦ Ceo formular';
  keyboardCaption.hidden=false;
  keyboardCaption.textContent='✎ Unos odgovora';
@@ -943,10 +974,10 @@ function closeKeyboardLayout(){
 }
 function updateMailKeyboardCaption(){
  if(page!==14){keyboardCaption.textContent='✎ Unos odgovora';return;}
- const ids=['raf1','raf2','raf3','rafName'];
- const i=ids.indexOf(document.activeElement?.id);
- keyboardCaption.textContent=i===3?'✎ Mejl · potpis':'✎ Mejl · sva 3 odgovora';
+ keyboardCaption.textContent='✎ Mejl · '+rafaelaWordCount()+' reči';
 }
+rafaelaKeyboardCheck.addEventListener('pointerdown',e=>e.preventDefault());
+rafaelaKeyboardCheck.addEventListener('click',()=>{if(page!==14)return;if(document.activeElement instanceof HTMLElement)document.activeElement.blur();closeKeyboardLayout();checkRafaela();});
 keyboardFormAll.addEventListener('pointerdown',e=>e.preventDefault());
 keyboardFormAll.addEventListener('click',()=>{
  if(page!==9&&page!==12)return;
