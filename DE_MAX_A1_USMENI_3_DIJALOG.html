@@ -115,7 +115,7 @@ const synth='speechSynthesis' in window ? window.speechSynthesis:null;
 let mode='dialogue',page=0,active=-1,auto=false,token=0,rate=.94,isPaused=false,currentUtterance=null;
 const escapeHTML=s=>String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
 const data=()=>mode==='dialogue'?DIALOGUE:EXTRAS;
-const perPage=()=>mode==='dialogue'?PAGE_SIZE_DIALOGUE:PAGE_SIZE_EXTRAS;
+const pageRanges=()=>mode==='dialogue'?[[0,6],[6,12],[12,19]]:[[0,8],[8,16],[16,24]];
 function stopAudio(quiet=false){
  token++;auto=false;isPaused=false;currentUtterance=null;if(synth)synth.cancel();
  document.querySelectorAll('.card.active').forEach(e=>e.classList.remove('active'));
@@ -129,8 +129,8 @@ function getVoice(){
  ||choices.find(v=>/google/i.test(v.name))||choices.find(v=>/microsoft/i.test(v.name))||choices[0]||null;
 }
 function render(){
- const items=data(),step=perPage(),start=page*step;
- const visible=items.slice(start,start+step);
+ const items=data(),ranges=pageRanges(),bounds=ranges[page]||ranges[0],start=bounds[0],end=bounds[1];
+ const visible=items.slice(start,end);
  $('viewTitle').textContent=mode==='dialogue'?'Dijalog – rezervacija sobe':'Dodatne rečenice tokom dijaloga';
  $('viewSubtitle').textContent=mode==='dialogue'?'Naizmenično: recepcionerka i gošća':'24 izraza za razgovor i vežbanje';
  $('extrasButton').textContent=mode==='dialogue'?'+ Dodatne rečenice':'← Vrati dijalog';
@@ -153,14 +153,14 @@ function render(){
  card.querySelector('button').addEventListener('click',()=>playFrom(idx,false));
  pages.append(card);
  });
- $('counter').textContent=(start+1)+'–'+Math.min(start+step,items.length)+' / '+items.length;
- $('pageLabel').textContent='Strana '+(page+1)+' / '+Math.ceil(items.length/step);
- $('prevPage').disabled=page<=0;$('nextPage').disabled=(page+1)*step>=items.length;
+ $('counter').textContent=(start+1)+'–'+end+' / '+items.length;
+ $('pageLabel').textContent='Strana '+(page+1)+' / '+ranges.length;
+ $('prevPage').disabled=page<=0;$('nextPage').disabled=page>=ranges.length-1;
  $('previousLine').disabled=active<=0;$('nextLine').disabled=active>=items.length-1;
 }
 function mark(index){
  active=index;
- const newPage=Math.floor(index/perPage());
+ const newPage=pageRanges().findIndex(range=>index>=range[0]&&index<range[1]);
  if(newPage!==page){page=newPage;render();}
  else {document.querySelectorAll('.card.active').forEach(e=>e.classList.remove('active'));const el=$('line-'+index);if(el)el.classList.add('active')}
  const el=$('line-'+index);if(el)el.scrollIntoView({block:'nearest',behavior:'smooth'});
@@ -184,7 +184,7 @@ function utterance(index,t){
 }
 function playFrom(index,all){
  if(!synth){$('status').textContent='Na uređaju nije dostupan sintetizator govora';return}
- stopAudio(true);auto=all;page=Math.floor(index/perPage());render();const t=token;utterance(index,t);
+ stopAudio(true);auto=all;page=pageRanges().findIndex(range=>index>=range[0]&&index<range[1]);render();const t=token;utterance(index,t);
 }
 $('playAll').addEventListener('click',()=>playFrom(0,true));
 $('pause').addEventListener('click',()=>{
@@ -196,7 +196,7 @@ $('stop').addEventListener('click',()=>stopAudio());
 $('previousLine').addEventListener('click',()=>playFrom(Math.max(0,active<=0?0:active-1),false));
 $('nextLine').addEventListener('click',()=>playFrom(Math.min(data().length-1,active<0?0:active+1),false));
 $('prevPage').addEventListener('click',()=>{stopAudio(true);if(page>0)page--;active=-1;render();$('pages').scrollTop=0;$('status').textContent='Izaberi rečenicu ili pusti redom';});
-$('nextPage').addEventListener('click',()=>{stopAudio(true);if((page+1)*perPage()<data().length)page++;active=-1;render();$('pages').scrollTop=0;$('status').textContent='Izaberi rečenicu ili pusti redom';});
+$('nextPage').addEventListener('click',()=>{stopAudio(true);if(page<pageRanges().length-1)page++;active=-1;render();$('pages').scrollTop=0;$('status').textContent='Izaberi rečenicu ili pusti redom';});
 $('extrasButton').addEventListener('click',()=>{stopAudio(true);mode=mode==='dialogue'?'extras':'dialogue';page=0;active=-1;render();$('pages').scrollTop=0;$('status').textContent=mode==='extras'?'Dodatne rečenice – klikni na zvučnik':'Dijalog – rezervacija sobe';});
 $('speed').addEventListener('click',()=>{
  if(rate>.99){rate=.8;$('speed').textContent='Sporo';}
