@@ -228,6 +228,32 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}butto
  .panel.clothing-only .choicepreview{min-height:48px}
 }
 
+/* Pretraga je dostupna preko kružne lupe desno u traci sa pitanjima. */
+.app{position:relative}
+.example{position:relative;padding-right:43px}
+.search-launch{position:absolute;top:50%;right:6px;transform:translateY(-50%);width:30px;height:30px;min-width:30px;display:grid;place-items:center;border:2px solid #d71f3a;border-radius:50%;background:#fff;color:#bb1530;padding:2px;box-shadow:0 1px 4px #153f7633}
+.search-launch:active{background:#ffedf0}
+.search-dialog[hidden]{display:none!important}
+.search-dialog{position:absolute;z-index:60;left:5px;right:5px;top:102px;bottom:5px;min-height:0;display:flex;flex-direction:column;overflow:hidden;border:2px solid #c4d7ee;border-radius:10px;background:white;box-shadow:0 12px 35px #102e5170}
+.search-header{display:flex;align-items:center;justify-content:space-between;flex:none;height:42px;gap:10px;padding:4px 9px;background:#eaf3ff;color:#184b89}
+.search-header strong{font-size:14px}
+.search-close{width:31px;height:31px;flex:none;border:1px solid #d41e39;border-radius:8px;background:#e11d3c;color:white;font-size:24px;font-weight:850;line-height:1}
+.search-controls{display:flex;align-items:center;gap:7px;flex:none;padding:7px;background:#f7faff;border-bottom:1px solid #dce6f3}
+.search-controls input{flex:1;min-width:0;width:100%;height:36px;border:1px solid #b9cee9;border-radius:7px;background:#fff;color:#173352;font:500 14px system-ui,sans-serif;padding:6px 9px;outline-offset:1px}
+.search-controls input:focus{outline:2px solid #397bcc}
+.search-controls span{flex:none;white-space:nowrap;color:#52749c;font-size:10px;font-weight:750}
+.search-results{min-height:0;flex:1;display:flex;flex-direction:column;gap:6px;padding:7px;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.search-empty{margin:12px 4px;color:#56728f;font-size:13px;line-height:1.5}
+.search-result{display:flex;align-items:center;gap:5px;min-height:58px;flex:none;border:1px solid #d7e4f4;border-radius:7px;background:#fff;padding:3px}
+.search-result.selected{border:2px solid #df1e39;background:#fff1f3}
+.search-result-add{flex:1;min-width:0;border:0;background:transparent;text-align:left;display:flex;align-items:center;gap:6px;padding:5px 2px;color:#164474}
+.search-result-add .search-plus{flex:none;width:20px;height:20px;background:#e7f0ff;color:#1855a5;border-radius:5px;display:grid;place-items:center;font-weight:900}
+.search-result.selected .search-plus{background:#e11d3c;color:#fff}
+.search-result-text{min-width:0;display:flex;flex-direction:column;gap:3px}
+.search-result-text strong{font-size:12px;line-height:1.22;overflow-wrap:anywhere}
+.search-result-text small{font-size:10px;color:#5d7693;line-height:1.22;overflow-wrap:anywhere}
+.search-result-sound{width:31px;height:32px;flex:none;border:1px solid #b9cee9;border-radius:7px;background:#eaf4ff;color:#205a9f;font-size:14px}
+@media(max-height:520px){.search-dialog{top:88px}.search-header{height:34px}.search-controls{padding:4px}}
 /* Crvene strelice samo za izbor odevnog predmeta i boje u 5. Odeća. */
 .clothingbar .optionarrow{background-color:#e11d3c!important;border-color:#a91a32!important;color:#fff!important}
 .clothingbar .optionarrow:active{background-color:#ad1630!important}
@@ -247,6 +273,12 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}butto
  </nav>
  <section class="example" aria-label="Ispitno pitanje i prevod">
   <div class="sample-content"><span class="sample-number" id="sampleNumber">1.</span><div class="samplehead" id="samplehead">Wie viele Personen sehen Sie?</div><div class="samplesr" id="samplesr">Koliko osoba vidite?</div></div>
+  <button type="button" id="openSearch" class="search-launch" aria-label="Pretraži rečenice" aria-controls="searchDialog" aria-expanded="false" title="Pretraga rečenica"><svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.2" fill="none" stroke="currentColor" stroke-width="2.3"/><path d="m15.2 15.2 5 5" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/></svg></button>
+ </section>
+ <section class="search-dialog" id="searchDialog" role="dialog" aria-modal="true" aria-label="Pretraga rečenica" hidden>
+  <div class="search-header"><strong>Pretraga rečenica</strong><button type="button" class="search-close" id="closeSearch" aria-label="Zatvori pretragu">×</button></div>
+  <div class="search-controls"><input type="search" id="searchInput" placeholder="Reč na nemačkom ili srpskom…" autocomplete="off" spellcheck="false" aria-label="Traži rečenicu"/><span id="searchCount" aria-live="polite">Unesi reč</span></div>
+  <div class="search-results" id="searchResults"><p class="search-empty">Upiši reč da pronađeš i dodaš rečenicu u „Moj opis“.</p></div>
  </section>
  <section class="panel" aria-label="Izbor rečenica">
   <div class="paneltitle"><strong id="selectorTitle">Izaberi rečenice</strong><span class="small" id="categoryCount">194 rečenice</span></div>
@@ -746,6 +778,7 @@ const CLOTH_COLORS=[
  {de:"grau",sr:["sivi","sivu","sivo","sive"],label:"siva"},
  {de:"gelb",sr:["žuti","žutu","žuto","žute"],label:"žuta"},
  {de:"braun",sr:["braon","braon","braon","braon"],label:"braon"},
+ {de:"beig",sr:["bež","bež","bež","bež"],label:"bež"},
  {de:"rosa",sr:["roze","roze","roze","roze"],label:"roze",fixed:true},
  {de:"lila",sr:["lila","lila","lila","lila"],label:"lila",fixed:true},
  {de:"orangefarben",sr:["narandžasti","narandžastu","narandžasto","narandžaste"],label:"narandžasta"},
@@ -839,6 +872,38 @@ function listen(i){
  });
 }
 function source(){const ids=BANK.map((_,i)=>i).filter(i=>BANK[i].cat===category);if(category==="extra"){const closing=ids.filter(i=>BANK[i].de==="Das war meine Bildbeschreibung.");return ids.filter(i=>BANK[i].de!=="Das war meine Bildbeschreibung.").concat(closing)}if(category==="start"&&step===0)return ids.slice(0,6).concat(ids.filter(i=>BANK[i].personExample));if(category==="start"&&step===1)return ids.slice(6).filter(i=>!BANK[i].personExample);return ids}
+
+/* Pretraga statičkih rečenica po nemačkom i srpskom; ostaje lokalna i radi i u iframe-u. */
+const SEARCHABLE_CATEGORIES=new Set(["start","extra","places","mann","frau","kind"]);
+const SEARCH_INDEX=BANK.map((entry,i)=>({entry,i})).filter(({entry})=>SEARCHABLE_CATEGORIES.has(entry.cat));
+function searchNormalize(text){
+ return String(text).toLowerCase().replace(/ß/g,"ss").normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim();
+}
+function renderSearchResults(){
+ const input=$("#searchInput"),q=searchNormalize(input.value),target=$("#searchResults"),count=$("#searchCount");
+ if(!q){count.textContent="Unesi reč";target.innerHTML='<p class="search-empty">Upiši reč na nemačkom ili srpskom da pronađeš rečenicu.</p>';return}
+ const words=q.split(/\s+/).filter(Boolean);
+ const results=SEARCH_INDEX.filter(({entry})=>{const content=searchNormalize(entry.de+" "+entry.sr);return words.every(w=>content.includes(w))});
+ const visible=results.slice(0,60);
+ count.textContent=results.length+" pronađeno";
+ target.innerHTML=visible.length?visible.map(({entry,i})=>{
+  const isSelected=chosen.includes(i);
+  return '<div class="search-result '+(isSelected?'selected':'')+'"><button type="button" class="search-result-add" data-search-add="'+i+'" aria-pressed="'+isSelected+'"><span class="search-plus">'+(isSelected?'✓':'+')+'</span><span class="search-result-text"><strong>'+escapeHTML(entry.de)+'</strong><small>'+escapeHTML(entry.sr)+'</small></span></button><button type="button" class="search-result-sound" data-search-sound="'+i+'" aria-label="Poslušaj rečenicu">🔊</button></div>'
+ }).join(""):'<p class="search-empty">Nema pronađenih rečenica. Probaj drugu reč.</p>';
+ if(results.length>visible.length)count.textContent=results.length+" (prvih "+visible.length+")";
+}
+function openSentenceSearch(){
+ $("#searchDialog").hidden=false;
+ $("#openSearch").setAttribute("aria-expanded","true");
+ renderSearchResults();
+ $("#searchInput").focus({preventScroll:true});
+}
+function closeSentenceSearch(){
+ $("#searchDialog").hidden=true;
+ $("#openSearch").setAttribute("aria-expanded","false");
+ $("#openSearch").focus({preventScroll:true});
+}
+
 function renderSample(){
  $("#sampleNumber").textContent=(step+1)+".";
  $("#samplehead").textContent=SAMPLE_HEADS[step].replace(/^\d+\.\s*/,"");
@@ -943,7 +1008,18 @@ $("#chosenNext").addEventListener("click",()=>{chosenIndex=Math.min(chosen.lengt
 $("#selectedArea").addEventListener("click",e=>{const sound=e.target.closest("[data-chosen-sound]");if(sound){listen(Number(sound.dataset.chosenSound));return}const remove=e.target.closest("[data-chosen-remove]");if(remove)addOrRemove(Number(remove.dataset.chosenRemove))});
 $("#playAll").addEventListener("click",playAll);
 $("#clear").addEventListener("click",()=>{stop();chosen=[];chosenIndex=0;renderChosen();renderList()});
-document.addEventListener("keydown",e=>{if(e.key==="Escape")stop()});
+$("#openSearch").addEventListener("click",openSentenceSearch);
+$("#closeSearch").addEventListener("click",closeSentenceSearch);
+$("#searchInput").addEventListener("input",renderSearchResults);
+$("#searchResults").addEventListener("click",e=>{
+ const add=e.target.closest("[data-search-add]");
+ if(add){addOrRemove(Number(add.dataset.searchAdd));renderSearchResults();return}
+ const sound=e.target.closest("[data-search-sound]");
+ if(sound)listen(Number(sound.dataset.searchSound));
+});
+document.addEventListener("keydown",e=>{
+ if(e.key==="Escape"){if(!$("#searchDialog").hidden){e.preventDefault();closeSentenceSearch()}else stop()}
+});
 if("speechSynthesis" in window)speechSynthesis.getVoices();
 renderSample();showRoles();renderList();renderChosen();
 // Resize layout when device orientation/available viewport changes, without introducing scrollbars.
