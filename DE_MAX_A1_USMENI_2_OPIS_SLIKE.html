@@ -288,13 +288,21 @@ function renderHair(){
 }
 function renderClothing(){
  const show=step===4;$("#clothingbar").hidden=!show;if(!show)return;
- const state=CLOTH_STATES[activeRole],row=BANK[CLOTH_INDEX[activeRole]],active=chosen.includes(CLOTH_INDEX[activeRole]);
+ const state=CLOTH_STATES[activeRole],row=BANK[CLOTH_INDEX[activeRole]],active=chosen.some(i=>BANK[i].cat==="custom-clothing"&&BANK[i].role===activeRole&&BANK[i].de===row.de);
  $("#clothingItem").textContent=CLOTH_ITEMS[state.item].label;
  $("#clothingColor").textContent=CLOTH_COLORS[state.color].label;
  $("#clothingSentence").textContent=row.de;$("#clothingTranslation").textContent=row.sr;
  $("#clothingbar").classList.toggle("is-selected",active);
  $("#clothingAdd").textContent=active?"✓ Izabrano":"+ Dodaj";
  $("#clothingAdd").setAttribute("aria-pressed",String(active));
+}
+function toggleClothing(){
+ const item=makeClothing(activeRole);
+ const existing=chosen.find(i=>BANK[i].cat==="custom-clothing"&&BANK[i].role===activeRole&&BANK[i].de===item.de);
+ if(existing!==undefined){addOrRemove(existing)}else{
+  const i=BANK.length;BANK.push(item);addOrRemove(i);
+ }
+ renderClothing();
 }
 function turnHair(type,delta){
  const state=HAIR_STATES[category],options=type==="style"?HAIR_STYLE:HAIR_COLORS;
@@ -351,7 +359,7 @@ $("#hairSound").addEventListener("click",()=>listen(HAIR_INDEX[category]));
 $("#hairAdd").addEventListener("click",()=>addOrRemove(HAIR_INDEX[category]));
 $("#clothingbar").addEventListener("click",e=>{const b=e.target.closest("[data-clothing-turn]");if(b)turnClothing(b.dataset.clothingTurn,Number(b.dataset.delta))});
 $("#clothingSound").addEventListener("click",()=>listen(CLOTH_INDEX[activeRole]));
-$("#clothingAdd").addEventListener("click",()=>addOrRemove(CLOTH_INDEX[activeRole]));
+$("#clothingAdd").addEventListener("click",toggleClothing);
 $("#phrases").addEventListener("click",e=>{let b=e.target.closest("[data-add]");if(b){addOrRemove(Number(b.dataset.add));return}b=e.target.closest("[data-sound]");if(b)listen(Number(b.dataset.sound))});
 $("#prev").addEventListener("click",()=>{page--;renderList()});
 $("#next").addEventListener("click",()=>{page++;renderList()});
