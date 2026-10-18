@@ -8,7 +8,39 @@
       "Was geben wir unserer Lehrerin?",
       "Was können wir nach dem Essen noch machen?"
     ],
-    "recipient": "Metin"
+    "recipient": "Metin",
+    "checkingRules": [
+      {
+        "required": [
+          "food",
+          "drink"
+        ],
+        "perspective": "ich",
+        "verbInfinitive": "können",
+        "answerVerb": "kann",
+        "verbType": "modal",
+        "actionVerbs": [
+          "mitbringen"
+        ]
+      },
+      {
+        "required": [],
+        "perspective": "wir",
+        "verbInfinitive": "geben",
+        "answerVerb": "geben",
+        "verbType": "simple"
+      },
+      {
+        "required": [],
+        "perspective": "wir",
+        "verbInfinitive": "können",
+        "answerVerb": "können",
+        "verbType": "modal",
+        "actionVerbs": [
+          "machen"
+        ]
+      }
+    ]
   },
   {
     "subject": "Zajednička kupovina",
@@ -19,7 +51,38 @@
       "Wo gibt es gute Geschäfte?",
       "Wie können wir einkaufen fahren?"
     ],
-    "recipient": "Magda"
+    "recipient": "Magda",
+    "checkingRules": [
+      {
+        "required": [
+          "day",
+          "clock"
+        ],
+        "perspective": "ich",
+        "verbInfinitive": "haben",
+        "answerVerb": "habe",
+        "verbType": "simple",
+        "a1Example": "Ich habe am Samstag um 15 Uhr Zeit."
+      },
+      {
+        "required": [],
+        "perspective": "neutral",
+        "verbInfinitive": "geben",
+        "answerVerb": "gibt",
+        "verbType": "simple"
+      },
+      {
+        "required": [],
+        "perspective": "wir",
+        "verbInfinitive": "können",
+        "answerVerb": "können",
+        "verbType": "modal",
+        "actionVerbs": [
+          "einkaufen",
+          "fahren"
+        ]
+      }
+    ]
   },
   {
     "subject": "Venčanje u Berlinu",
@@ -30,7 +93,30 @@
       "Wann hast du Zeit?",
       "Wie kommen wir nach Berlin?"
     ],
-    "recipient": "Herbert"
+    "recipient": "Herbert",
+    "checkingRules": [
+      {
+        "required": [],
+        "perspective": "wir",
+        "verbInfinitive": "kaufen",
+        "answerVerb": "kaufen",
+        "verbType": "simple"
+      },
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "haben",
+        "answerVerb": "habe",
+        "verbType": "simple"
+      },
+      {
+        "required": [],
+        "perspective": "wir",
+        "verbInfinitive": "kommen",
+        "answerVerb": "kommen",
+        "verbType": "simple"
+      }
+    ]
   },
   {
     "subject": "Gradski festival",
@@ -41,7 +127,41 @@
       "Wen möchtest du mitbringen?",
       "Was willst du danach machen?"
     ],
-    "recipient": "Helena"
+    "recipient": "Helena",
+    "checkingRules": [
+      {
+        "required": [
+          "day"
+        ],
+        "perspective": "ich",
+        "verbInfinitive": "können",
+        "answerVerb": "kann",
+        "verbType": "modal",
+        "actionVerbs": [
+          "gehen"
+        ]
+      },
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "möchten",
+        "answerVerb": "möchte",
+        "verbType": "modal",
+        "actionVerbs": [
+          "mitbringen"
+        ]
+      },
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "wollen",
+        "answerVerb": "will",
+        "verbType": "modal",
+        "actionVerbs": [
+          "machen"
+        ]
+      }
+    ]
   },
   {
     "subject": "Kurs nemačkog jezika",
@@ -52,7 +172,39 @@
       "Wo kann ich ein Deutschbuch kaufen?",
       "Was können wir nach dem Lernen machen?"
     ],
-    "recipient": "die E-Mail"
+    "recipient": "die E-Mail",
+    "checkingRules": [
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "möchten",
+        "answerVerb": "möchte",
+        "verbType": "modal",
+        "actionVerbs": [
+          "gehen"
+        ]
+      },
+      {
+        "required": [],
+        "perspective": "du",
+        "verbInfinitive": "können",
+        "answerVerb": "kannst",
+        "verbType": "modal",
+        "actionVerbs": [
+          "kaufen"
+        ]
+      },
+      {
+        "required": [],
+        "perspective": "wir",
+        "verbInfinitive": "können",
+        "answerVerb": "können",
+        "verbType": "modal",
+        "actionVerbs": [
+          "machen"
+        ]
+      }
+    ]
   },
   {
     "subject": "Kupovina poklona",
@@ -63,7 +215,37 @@
       "An welchem Tag und um wie viel Uhr hast du Zeit?",
       "Wo treffen wir uns?"
     ],
-    "recipient": "Anna"
+    "recipient": "Anna",
+    "checkingRules": [
+      {
+        "required": [],
+        "perspective": "wir",
+        "verbInfinitive": "können",
+        "answerVerb": "können",
+        "verbType": "modal",
+        "actionVerbs": [
+          "kaufen"
+        ]
+      },
+      {
+        "required": [
+          "day",
+          "clock"
+        ],
+        "perspective": "ich",
+        "verbInfinitive": "haben",
+        "answerVerb": "habe",
+        "verbType": "simple",
+        "a1Example": "Ich habe am Samstag um 15 Uhr Zeit."
+      },
+      {
+        "required": [],
+        "perspective": "wir",
+        "verbInfinitive": "treffen",
+        "answerVerb": "treffen",
+        "verbType": "simple"
+      }
+    ]
   },
   {
     "subject": "Odlazak na jelo",
@@ -74,7 +256,35 @@
       "Was isst du gerne?",
       "Wer kommt noch mit?"
     ],
-    "recipient": "die E-Mail"
+    "recipient": "die E-Mail",
+    "checkingRules": [
+      {
+        "required": [
+          "clock"
+        ],
+        "perspective": "ich",
+        "verbInfinitive": "können",
+        "answerVerb": "kann",
+        "verbType": "modal",
+        "actionVerbs": [
+          "kommen"
+        ]
+      },
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "essen",
+        "answerVerb": "esse",
+        "verbType": "simple"
+      },
+      {
+        "required": [],
+        "perspective": "neutral",
+        "verbInfinitive": "mitkommen",
+        "answerVerb": "kommt ... mit",
+        "verbType": "separable"
+      }
+    ]
   },
   {
     "subject": "Izlet u planine",
@@ -85,7 +295,35 @@
       "Was bringst du zum Essen mit?",
       "Wer kommt noch mit?"
     ],
-    "recipient": "die E-Mail"
+    "recipient": "die E-Mail",
+    "checkingRules": [
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "möchten",
+        "answerVerb": "möchte",
+        "verbType": "modal",
+        "actionVerbs": [
+          "mitkommen"
+        ]
+      },
+      {
+        "required": [
+          "food"
+        ],
+        "perspective": "ich",
+        "verbInfinitive": "mitbringen",
+        "answerVerb": "bringe ... mit",
+        "verbType": "separable"
+      },
+      {
+        "required": [],
+        "perspective": "neutral",
+        "verbInfinitive": "mitkommen",
+        "answerVerb": "kommt ... mit",
+        "verbType": "separable"
+      }
+    ]
   },
   {
     "subject": "Pohađanje kursa kuvanja",
@@ -96,7 +334,33 @@
       "Was möchtest du kochen lernen?",
       "Wie fahren wir zum Kursort?"
     ],
-    "recipient": "die E-Mail"
+    "recipient": "die E-Mail",
+    "checkingRules": [
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "haben",
+        "answerVerb": "habe",
+        "verbType": "simple"
+      },
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "möchten",
+        "answerVerb": "möchte",
+        "verbType": "modal",
+        "actionVerbs": [
+          "lernen"
+        ]
+      },
+      {
+        "required": [],
+        "perspective": "wir",
+        "verbInfinitive": "fahren",
+        "answerVerb": "fahren",
+        "verbType": "simple"
+      }
+    ]
   },
   {
     "subject": "Planiranje izleta",
@@ -107,7 +371,35 @@
       "Was bringst du zum Essen und Trinken mit?",
       "Kommst du alleine?"
     ],
-    "recipient": "die E-Mail"
+    "recipient": "die E-Mail",
+    "checkingRules": [
+      {
+        "required": [
+          "day"
+        ],
+        "perspective": "ich",
+        "verbInfinitive": "haben",
+        "answerVerb": "habe",
+        "verbType": "simple"
+      },
+      {
+        "required": [
+          "food",
+          "drink"
+        ],
+        "perspective": "ich",
+        "verbInfinitive": "mitbringen",
+        "answerVerb": "bringe ... mit",
+        "verbType": "separable"
+      },
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "kommen",
+        "answerVerb": "komme",
+        "verbType": "simple"
+      }
+    ]
   },
   {
     "subject": "Poziv na rođendan",
@@ -118,7 +410,40 @@
       "Wen möchtest du einladen?",
       "Was willst du zum Essen anbieten?"
     ],
-    "recipient": "die E-Mail"
+    "recipient": "die E-Mail",
+    "checkingRules": [
+      {
+        "required": [
+          "clock"
+        ],
+        "perspective": "neutral",
+        "verbInfinitive": "beginnen",
+        "answerVerb": "beginnt",
+        "verbType": "simple"
+      },
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "möchten",
+        "answerVerb": "möchte",
+        "verbType": "modal",
+        "actionVerbs": [
+          "einladen"
+        ]
+      },
+      {
+        "required": [
+          "food"
+        ],
+        "perspective": "ich",
+        "verbInfinitive": "wollen",
+        "answerVerb": "will",
+        "verbType": "modal",
+        "actionVerbs": [
+          "anbieten"
+        ]
+      }
+    ]
   },
   {
     "subject": "Tvoje putovanje u Minhen",
@@ -129,7 +454,35 @@
       "Wie lange möchtest du bleiben?",
       "Was isst du gerne?"
     ],
-    "recipient": "die E-Mail"
+    "recipient": "die E-Mail",
+    "checkingRules": [
+      {
+        "required": [
+          "clock"
+        ],
+        "perspective": "ich",
+        "verbInfinitive": "kommen",
+        "answerVerb": "komme",
+        "verbType": "simple"
+      },
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "möchten",
+        "answerVerb": "möchte",
+        "verbType": "modal",
+        "actionVerbs": [
+          "bleiben"
+        ]
+      },
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "essen",
+        "answerVerb": "esse",
+        "verbType": "simple"
+      }
+    ]
   },
   {
     "subject": "Organizovanje rođendanske proslave",
@@ -140,7 +493,38 @@
       "Was können wir meinem Sohn zum Geburtstag kaufen?",
       "Wo kann man tolle Torten kaufen?"
     ],
-    "recipient": "die E-Mail"
+    "recipient": "die E-Mail",
+    "checkingRules": [
+      {
+        "required": [
+          "day"
+        ],
+        "perspective": "ich",
+        "verbInfinitive": "haben",
+        "answerVerb": "habe",
+        "verbType": "simple"
+      },
+      {
+        "required": [],
+        "perspective": "wir",
+        "verbInfinitive": "können",
+        "answerVerb": "können",
+        "verbType": "modal",
+        "actionVerbs": [
+          "kaufen"
+        ]
+      },
+      {
+        "required": [],
+        "perspective": "man",
+        "verbInfinitive": "können",
+        "answerVerb": "kannst",
+        "verbType": "modal",
+        "actionVerbs": [
+          "kaufen"
+        ]
+      }
+    ]
   },
   {
     "subject": "Planiranje izleta",
@@ -151,7 +535,34 @@
       "Was bringst du zum Essen mit?",
       "An welchem Tag hast du Zeit?"
     ],
-    "recipient": "die E-Mail"
+    "recipient": "die E-Mail",
+    "checkingRules": [
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "mitkommen",
+        "answerVerb": "komme ... mit",
+        "verbType": "separable"
+      },
+      {
+        "required": [
+          "food"
+        ],
+        "perspective": "ich",
+        "verbInfinitive": "mitbringen",
+        "answerVerb": "bringe ... mit",
+        "verbType": "separable"
+      },
+      {
+        "required": [
+          "day"
+        ],
+        "perspective": "ich",
+        "verbInfinitive": "haben",
+        "answerVerb": "habe",
+        "verbType": "simple"
+      }
+    ]
   },
   {
     "subject": "Kurs kuvanja",
@@ -162,7 +573,35 @@
       "Was möchtest du gerne kochen lernen?",
       "Wie fahren wir dort hin?"
     ],
-    "recipient": "die E-Mail"
+    "recipient": "die E-Mail",
+    "checkingRules": [
+      {
+        "required": [
+          "day"
+        ],
+        "perspective": "ich",
+        "verbInfinitive": "haben",
+        "answerVerb": "habe",
+        "verbType": "simple"
+      },
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "möchten",
+        "answerVerb": "möchte",
+        "verbType": "modal",
+        "actionVerbs": [
+          "lernen"
+        ]
+      },
+      {
+        "required": [],
+        "perspective": "wir",
+        "verbInfinitive": "fahren",
+        "answerVerb": "fahren",
+        "verbType": "simple"
+      }
+    ]
   },
   {
     "subject": "Planiranje putovanja",
@@ -173,7 +612,36 @@
       "Wie können wir reisen?",
       "Welches Land können wir besuchen?"
     ],
-    "recipient": "die E-Mail"
+    "recipient": "die E-Mail",
+    "checkingRules": [
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "haben",
+        "answerVerb": "habe",
+        "verbType": "simple"
+      },
+      {
+        "required": [],
+        "perspective": "wir",
+        "verbInfinitive": "können",
+        "answerVerb": "können",
+        "verbType": "modal",
+        "actionVerbs": [
+          "reisen"
+        ]
+      },
+      {
+        "required": [],
+        "perspective": "wir",
+        "verbInfinitive": "können",
+        "answerVerb": "können",
+        "verbType": "modal",
+        "actionVerbs": [
+          "besuchen"
+        ]
+      }
+    ]
   },
   {
     "subject": "Odlazak u bioskop",
@@ -184,7 +652,35 @@
       "Wo sollen wir uns treffen?",
       "Wen bringst du mit?"
     ],
-    "recipient": "die E-Mail"
+    "recipient": "die E-Mail",
+    "checkingRules": [
+      {
+        "required": [
+          "clock"
+        ],
+        "perspective": "ich",
+        "verbInfinitive": "haben",
+        "answerVerb": "habe",
+        "verbType": "simple"
+      },
+      {
+        "required": [],
+        "perspective": "wir",
+        "verbInfinitive": "sollen",
+        "answerVerb": "sollen",
+        "verbType": "modal",
+        "actionVerbs": [
+          "treffen"
+        ]
+      },
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "mitbringen",
+        "answerVerb": "bringe ... mit",
+        "verbType": "separable"
+      }
+    ]
   },
   {
     "subject": "Putovanje u stranu zemlju",
@@ -195,7 +691,30 @@
       "Welches Land findest du interessant?",
       "Was machst du am Wochenende?"
     ],
-    "recipient": "die E-Mail"
+    "recipient": "die E-Mail",
+    "checkingRules": [
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "haben",
+        "answerVerb": "habe",
+        "verbType": "simple"
+      },
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "finden",
+        "answerVerb": "finde",
+        "verbType": "simple"
+      },
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "machen",
+        "answerVerb": "mache",
+        "verbType": "simple"
+      }
+    ]
   },
   {
     "subject": "Jelo i kupovina",
@@ -206,7 +725,38 @@
       "Wo kann ich ein neues Handy kaufen?",
       "Was möchtest du gerne essen?"
     ],
-    "recipient": "die E-Mail"
+    "recipient": "die E-Mail",
+    "checkingRules": [
+      {
+        "required": [
+          "clock"
+        ],
+        "perspective": "ich",
+        "verbInfinitive": "haben",
+        "answerVerb": "habe",
+        "verbType": "simple"
+      },
+      {
+        "required": [],
+        "perspective": "du",
+        "verbInfinitive": "können",
+        "answerVerb": "kannst",
+        "verbType": "modal",
+        "actionVerbs": [
+          "kaufen"
+        ]
+      },
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "möchten",
+        "answerVerb": "möchte",
+        "verbType": "modal",
+        "actionVerbs": [
+          "essen"
+        ]
+      }
+    ]
   },
   {
     "subject": "Zabava za polaznike kursa",
@@ -217,7 +767,41 @@
       "Kannst du etwas zum Essen mitbringen?",
       "Wen möchtest du einladen?"
     ],
-    "recipient": "die E-Mail"
+    "recipient": "die E-Mail",
+    "checkingRules": [
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "können",
+        "answerVerb": "kann",
+        "verbType": "modal",
+        "actionVerbs": [
+          "kommen"
+        ]
+      },
+      {
+        "required": [
+          "food"
+        ],
+        "perspective": "ich",
+        "verbInfinitive": "können",
+        "answerVerb": "kann",
+        "verbType": "modal",
+        "actionVerbs": [
+          "mitbringen"
+        ]
+      },
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "möchten",
+        "answerVerb": "möchte",
+        "verbType": "modal",
+        "actionVerbs": [
+          "einladen"
+        ]
+      }
+    ]
   },
   {
     "subject": "Odlazak na izlet",
@@ -228,7 +812,37 @@
       "Was können wir gemeinsam unternehmen?",
       "Wen bringst du mit?"
     ],
-    "recipient": "die E-Mail"
+    "recipient": "die E-Mail",
+    "checkingRules": [
+      {
+        "required": [
+          "day",
+          "clock"
+        ],
+        "perspective": "ich",
+        "verbInfinitive": "haben",
+        "answerVerb": "habe",
+        "verbType": "simple",
+        "a1Example": "Ich habe am Samstag um 15 Uhr Zeit."
+      },
+      {
+        "required": [],
+        "perspective": "wir",
+        "verbInfinitive": "können",
+        "answerVerb": "können",
+        "verbType": "modal",
+        "actionVerbs": [
+          "unternehmen"
+        ]
+      },
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "mitbringen",
+        "answerVerb": "bringe ... mit",
+        "verbType": "separable"
+      }
+    ]
   },
   {
     "subject": "Kupovina odeće",
@@ -239,7 +853,39 @@
       "Möchtest du dir auch etwas kaufen?",
       "Wo können wir neue Sommerkleidung kaufen?"
     ],
-    "recipient": "die E-Mail"
+    "recipient": "die E-Mail",
+    "checkingRules": [
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "können",
+        "answerVerb": "kann",
+        "verbType": "modal",
+        "actionVerbs": [
+          "treffen"
+        ]
+      },
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "möchten",
+        "answerVerb": "möchte",
+        "verbType": "modal",
+        "actionVerbs": [
+          "kaufen"
+        ]
+      },
+      {
+        "required": [],
+        "perspective": "wir",
+        "verbInfinitive": "können",
+        "answerVerb": "können",
+        "verbType": "modal",
+        "actionVerbs": [
+          "kaufen"
+        ]
+      }
+    ]
   },
   {
     "subject": "Aktivnosti u slobodno vreme",
@@ -250,7 +896,37 @@
       "Was können wir am Wochenende machen?",
       "Wen fragen wir noch?"
     ],
-    "recipient": "die E-Mail"
+    "recipient": "die E-Mail",
+    "checkingRules": [
+      {
+        "required": [
+          "day",
+          "clock"
+        ],
+        "perspective": "ich",
+        "verbInfinitive": "haben",
+        "answerVerb": "habe",
+        "verbType": "simple",
+        "a1Example": "Ich habe am Samstag um 15 Uhr Zeit."
+      },
+      {
+        "required": [],
+        "perspective": "wir",
+        "verbInfinitive": "können",
+        "answerVerb": "können",
+        "verbType": "modal",
+        "actionVerbs": [
+          "machen"
+        ]
+      },
+      {
+        "required": [],
+        "perspective": "wir",
+        "verbInfinitive": "fragen",
+        "answerVerb": "fragen",
+        "verbType": "simple"
+      }
+    ]
   },
   {
     "subject": "Kupovina nameštaja",
@@ -261,7 +937,36 @@
       "Wann kannst du mich treffen?",
       "Wer möchte meine alten Möbel kaufen?"
     ],
-    "recipient": "die E-Mail"
+    "recipient": "die E-Mail",
+    "checkingRules": [
+      {
+        "required": [],
+        "perspective": "du",
+        "verbInfinitive": "können",
+        "answerVerb": "kannst",
+        "verbType": "modal",
+        "actionVerbs": [
+          "kaufen"
+        ]
+      },
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "können",
+        "answerVerb": "kann",
+        "verbType": "modal",
+        "actionVerbs": [
+          "treffen"
+        ]
+      },
+      {
+        "required": [],
+        "perspective": "neutral",
+        "verbInfinitive": "kaufen",
+        "answerVerb": "kaufen",
+        "verbType": "simple"
+      }
+    ]
   },
   {
     "subject": "Poseta tvom gradu",
@@ -272,7 +977,36 @@
       "Wo können wir uns treffen?",
       "Was können wir machen?"
     ],
-    "recipient": "die E-Mail"
+    "recipient": "die E-Mail",
+    "checkingRules": [
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "haben",
+        "answerVerb": "habe",
+        "verbType": "simple"
+      },
+      {
+        "required": [],
+        "perspective": "wir",
+        "verbInfinitive": "können",
+        "answerVerb": "können",
+        "verbType": "modal",
+        "actionVerbs": [
+          "treffen"
+        ]
+      },
+      {
+        "required": [],
+        "perspective": "wir",
+        "verbInfinitive": "können",
+        "answerVerb": "können",
+        "verbType": "modal",
+        "actionVerbs": [
+          "machen"
+        ]
+      }
+    ]
   },
   {
     "subject": "Venčanje moje sestre",
@@ -283,7 +1017,33 @@
       "Was wirst du anziehen?",
       "Wie fahren wir zur Hochzeit?"
     ],
-    "recipient": "die E-Mail"
+    "recipient": "die E-Mail",
+    "checkingRules": [
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "haben",
+        "answerVerb": "habe",
+        "verbType": "simple"
+      },
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "werden",
+        "answerVerb": "werde",
+        "verbType": "future",
+        "actionVerbs": [
+          "anziehen"
+        ]
+      },
+      {
+        "required": [],
+        "perspective": "wir",
+        "verbInfinitive": "fahren",
+        "answerVerb": "fahren",
+        "verbType": "simple"
+      }
+    ]
   },
   {
     "subject": "Kupovina poklona",
@@ -294,7 +1054,39 @@
       "Wo kann ich ein Geschenk kaufen?",
       "Wo und wann treffen wir uns?"
     ],
-    "recipient": "die E-Mail"
+    "recipient": "die E-Mail",
+    "checkingRules": [
+      {
+        "required": [],
+        "perspective": "du",
+        "verbInfinitive": "sollen",
+        "answerVerb": "sollst",
+        "verbType": "modal",
+        "actionVerbs": [
+          "kaufen"
+        ]
+      },
+      {
+        "required": [],
+        "perspective": "du",
+        "verbInfinitive": "können",
+        "answerVerb": "kannst",
+        "verbType": "modal",
+        "actionVerbs": [
+          "kaufen"
+        ]
+      },
+      {
+        "required": [
+          "place",
+          "time"
+        ],
+        "perspective": "wir",
+        "verbInfinitive": "treffen",
+        "answerVerb": "treffen",
+        "verbType": "simple"
+      }
+    ]
   },
   {
     "subject": "Bavljenje sportom",
@@ -305,7 +1097,35 @@
       "Was brauchen wir?",
       "An welchem Tag hast du Zeit?"
     ],
-    "recipient": "die E-Mail"
+    "recipient": "die E-Mail",
+    "checkingRules": [
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "möchten",
+        "answerVerb": "möchte",
+        "verbType": "modal",
+        "actionVerbs": [
+          "machen"
+        ]
+      },
+      {
+        "required": [],
+        "perspective": "wir",
+        "verbInfinitive": "brauchen",
+        "answerVerb": "brauchen",
+        "verbType": "simple"
+      },
+      {
+        "required": [
+          "day"
+        ],
+        "perspective": "ich",
+        "verbInfinitive": "haben",
+        "answerVerb": "habe",
+        "verbType": "simple"
+      }
+    ]
   },
   {
     "subject": "Kupovina odeće",
@@ -316,7 +1136,33 @@
       "Wo treffen wir uns?",
       "Möchtest du auch etwas kaufen?"
     ],
-    "recipient": "die E-Mail"
+    "recipient": "die E-Mail",
+    "checkingRules": [
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "haben",
+        "answerVerb": "habe",
+        "verbType": "simple"
+      },
+      {
+        "required": [],
+        "perspective": "wir",
+        "verbInfinitive": "treffen",
+        "answerVerb": "treffen",
+        "verbType": "simple"
+      },
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "möchten",
+        "answerVerb": "möchte",
+        "verbType": "modal",
+        "actionVerbs": [
+          "kaufen"
+        ]
+      }
+    ]
   },
   {
     "subject": "Da radimo nešto zajedno",
@@ -327,7 +1173,33 @@
       "Was machst du gerne in deiner Freizeit?",
       "Wo können wir uns treffen?"
     ],
-    "recipient": "die E-Mail"
+    "recipient": "die E-Mail",
+    "checkingRules": [
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "haben",
+        "answerVerb": "habe",
+        "verbType": "simple"
+      },
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "machen",
+        "answerVerb": "mache",
+        "verbType": "simple"
+      },
+      {
+        "required": [],
+        "perspective": "wir",
+        "verbInfinitive": "können",
+        "answerVerb": "können",
+        "verbType": "modal",
+        "actionVerbs": [
+          "treffen"
+        ]
+      }
+    ]
   },
   {
     "subject": "Rođendanska proslava",
@@ -338,7 +1210,36 @@
       "Wer kommt noch mit?",
       "Was möchtest du anziehen?"
     ],
-    "recipient": "die E-Mail"
+    "recipient": "die E-Mail",
+    "checkingRules": [
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "können",
+        "answerVerb": "kann",
+        "verbType": "modal",
+        "actionVerbs": [
+          "kommen"
+        ]
+      },
+      {
+        "required": [],
+        "perspective": "neutral",
+        "verbInfinitive": "mitkommen",
+        "answerVerb": "kommt ... mit",
+        "verbType": "separable"
+      },
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "möchten",
+        "answerVerb": "möchte",
+        "verbType": "modal",
+        "actionVerbs": [
+          "anziehen"
+        ]
+      }
+    ]
   },
   {
     "subject": "Tvoje putovanje u Hamburg",
@@ -349,7 +1250,37 @@
       "Wie lange möchtest du bleiben?",
       "Wen bringst du mit?"
     ],
-    "recipient": "die E-Mail"
+    "recipient": "die E-Mail",
+    "checkingRules": [
+      {
+        "required": [
+          "day",
+          "clock"
+        ],
+        "perspective": "ich",
+        "verbInfinitive": "kommen",
+        "answerVerb": "komme",
+        "verbType": "simple",
+        "a1Example": "Ich komme am Samstag um 15 Uhr."
+      },
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "möchten",
+        "answerVerb": "möchte",
+        "verbType": "modal",
+        "actionVerbs": [
+          "bleiben"
+        ]
+      },
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "mitbringen",
+        "answerVerb": "bringe ... mit",
+        "verbType": "separable"
+      }
+    ]
   },
   {
     "subject": "Poseta gradu",
@@ -360,7 +1291,38 @@
       "Welches Restaurant findest du gut?",
       "Was können wir nach dem Essen noch machen?"
     ],
-    "recipient": "die E-Mail"
+    "recipient": "die E-Mail",
+    "checkingRules": [
+      {
+        "required": [
+          "day"
+        ],
+        "perspective": "ich",
+        "verbInfinitive": "können",
+        "answerVerb": "kann",
+        "verbType": "modal",
+        "actionVerbs": [
+          "gehen"
+        ]
+      },
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "finden",
+        "answerVerb": "finde",
+        "verbType": "simple"
+      },
+      {
+        "required": [],
+        "perspective": "wir",
+        "verbInfinitive": "können",
+        "answerVerb": "können",
+        "verbType": "modal",
+        "actionVerbs": [
+          "machen"
+        ]
+      }
+    ]
   },
   {
     "subject": "Planiranje rođendanske proslave",
@@ -371,7 +1333,36 @@
       "Was können wir ihm kaufen?",
       "Wen laden wir ein?"
     ],
-    "recipient": "die E-Mail"
+    "recipient": "die E-Mail",
+    "checkingRules": [
+      {
+        "required": [],
+        "perspective": "wir",
+        "verbInfinitive": "sollen",
+        "answerVerb": "sollen",
+        "verbType": "modal",
+        "actionVerbs": [
+          "organisieren"
+        ]
+      },
+      {
+        "required": [],
+        "perspective": "wir",
+        "verbInfinitive": "können",
+        "answerVerb": "können",
+        "verbType": "modal",
+        "actionVerbs": [
+          "kaufen"
+        ]
+      },
+      {
+        "required": [],
+        "perspective": "wir",
+        "verbInfinitive": "einladen",
+        "answerVerb": "laden ... ein",
+        "verbType": "separable"
+      }
+    ]
   },
   {
     "subject": "Tvoje putovanje u Minhen",
@@ -382,6 +1373,39 @@
       "Wie lange möchtest du bleiben?",
       "Was möchtest du gerne essen?"
     ],
-    "recipient": "die E-Mail"
+    "recipient": "die E-Mail",
+    "checkingRules": [
+      {
+        "required": [
+          "day",
+          "clock"
+        ],
+        "perspective": "ich",
+        "verbInfinitive": "kommen",
+        "answerVerb": "komme",
+        "verbType": "simple",
+        "a1Example": "Ich komme am Samstag um 15 Uhr."
+      },
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "möchten",
+        "answerVerb": "möchte",
+        "verbType": "modal",
+        "actionVerbs": [
+          "bleiben"
+        ]
+      },
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "möchten",
+        "answerVerb": "möchte",
+        "verbType": "modal",
+        "actionVerbs": [
+          "essen"
+        ]
+      }
+    ]
   }
 ]
