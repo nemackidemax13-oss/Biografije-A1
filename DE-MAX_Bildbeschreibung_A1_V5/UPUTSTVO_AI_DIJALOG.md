@@ -19,7 +19,7 @@ https://nemackidemax13-oss.github.io/Biografije-A1/DE-MAX_Bildbeschreibung_A1_V5
 3. U Editor Workera kopirajte ceo sadržaj fajla:
    https://github.com/nemackidemax13-oss/Biografije-A1/blob/main/DE-MAX_Bildbeschreibung_A1_V5/openai-dijalog-worker.js
 4. Kliknite **Deploy**.
-5. U podešavanjima novog Workera pronađite **Variables and Secrets** (nekad Settings → Variables and Secrets), dodajte tajnu (Secret) sa imenom `OPENAI_API_KEY` i vrednošću svog OpenAI API ključa. Ponovo aktivirajte izmene ako to Cloudflare traži.
+5. U podešavanjima novog Workera pronađite **Variables and Secrets** (nekad Settings → Variables and Secrets), dodajte tajnu (Secret) sa imenom **`nivoA1`** i kao vrednost unesite svoj pravi OpenAI API ključ (počinje obično sa `sk-`). Podržano je i rezervno ime `OPENAI_API_KEY`. Ponovo aktivirajte izmene ako to Cloudflare traži.
 6. Kopirajte HTTPS URL novog Workera, npr. `https://demax-a1-dijalog.NALOG.workers.dev` (primer; vaš URL je drugačiji).
 7. U A1 aplikaciji kliknite **⚙** → nalepite URL → **Sačuvaj i proveri**.
 8. Izaberite sliku → **Počni dijalog** → odgovarajte mikrofonom ili tastaturom.
