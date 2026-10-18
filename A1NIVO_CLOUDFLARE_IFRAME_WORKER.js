@@ -262,30 +262,40 @@ function isRealEvidence(answer,evidence){
  const e=evidenceKey(evidence);
  return e.length>=4 && evidenceKey(answer).includes(e);
 }
+/* Proveri perspektivu i gramatičku konstrukciju iz baze,
+   ali ne zahtevaj sve alternativne infinitive odjednom. */
 function followsVerbRule(evidence,rule){
  if(!rule?.answerVerb)return true;
- const text=String(evidence).toLocaleLowerCase("de")
-  .replace(/\bkoennen\b/g,"können").replace(/\bmoechte\b/g,"möchte")
-  .replace(/\bmoechten\b/g,"möchten");
- const expected=String(rule.answerVerb).toLocaleLowerCase("de").split("...").map(x=>x.trim()).filter(Boolean);
- const first=expected[0];
- if(rule.perspective==="neutral"&&rule.verbInfinitive==="mitkommen"){
-  return /\b(?:kommt|kommen|komme)\b[\s\S]{0,100}\bmit\b/iu.test(text);
+ const sentence=String(evidence||"").normalize("NFC")
+  .replace(/\bkoennen\b/gi,"können").replace(/\bmoechte\b/gi,"möchte")
+  .replace(/\bmoechten\b/gi,"möchten").replace(/\bmuessen\b/gi,"müssen");
+ const expected=String(rule.answerVerb).split("...").map(x=>x.trim()).filter(Boolean);
+ const finite=expected[0];
+ const suffix=expected[1]||"";
+ const matchWord=w=>new RegExp("(?<![\\p{L}])"+w+"(?![\\p{L}])","iu");
+ const subject=["ich","du","wir","man"].includes(rule.perspective)?rule.perspective:"";
+ const subjectVerb=subject?new RegExp("(?<![\\p{L}])"+subject+
+    "(?![\\p{L}])[\\s\\S]{0,85}(?<![\\p{L}])"+finite+"(?![\\p{L}])","iu"):matchWord(finite);
+ if(rule.verbType==="separable"){
+  const base=rule.verbInfinitive||"";
+  const modalSubject=subject||null;
+  const direct=subjectVerb.test(sentence) && (!suffix || matchWord(suffix).test(sentence));
+  const modalInfinitive=base && modalSubject &&
+   new RegExp("(?<![\\p{L}])"+modalSubject+
+     "(?![\\p{L}])[\\s\\S]{0,80}(?<![\\p{L}])"+
+     "(?:kann|können|möchte|möchten|will|wollen|muss|müssen|soll|sollen)"+
+     "(?![\\p{L}])[\\s\\S]{0,100}(?<![\\p{L}])"+base+"(?![\\p{L}])","iu").test(sentence);
+  return Boolean(direct||modalInfinitive);
  }
- if(rule.perspective==="neutral"&&rule.verbInfinitive==="möchten"){
-  return /\b(?:möchte|möchten|moechte|moechten)\b/iu.test(text) &&
-    (rule.actionVerbs||[]).every(act=>new RegExp("(?<![\\p{L}])"+act+"(?![\\p{L}])","iu").test(text));
+ if(!subjectVerb.test(sentence))return false;
+ if(rule.verbType==="modal"){
+  // Oblik modal + infinitiv: ne mora svaki predloženi glagol iz baze
+  // biti prisutan (npr. Wir können spazieren gehen je pravilan odgovor).
+  const remaining=sentence.slice(Math.max(0,sentence.toLocaleLowerCase("de").indexOf(finite.toLocaleLowerCase("de"))+finite.length));
+  const infinitive=/(?<![\p{L}])(?:mitbringen|mitkommen|mitnehmen|einkaufen|einladen|anbieten|anziehen|organisieren|besuchen|schreiben|kaufen|fahren|gehen|machen|kommen|lernen|kochen|bringen|nehmen|essen|trinken|haben|sein|schwimmen|spielen|treffen|sehen|bleiben|fragen|reisen|wandern|joggen|geben|feiern|helfen|suchen|arbeiten|fahren|verbringen)(?![\p{L}])/iu;
+  return infinitive.test(remaining);
  }
- const prefix=rule.perspective==="ich"?"ich":rule.perspective==="du"?"du":rule.perspective==="wir"?"wir":null;
- const word=(x)=>"(?<![\\p{L}])"+x+"(?![\\p{L}])";
- const verb=new RegExp(word(first),"iu");
- if(!verb.test(text))return false;
- if(prefix){
-  if(!new RegExp(word(prefix)+"[\\s\\S]{0,45}"+word(first),"iu").test(text))return false;
- }
- if(expected.length>1&&!new RegExp(word(expected[1]),"iu").test(text))return false;
- const actions=Array.isArray(rule.actionVerbs)?rule.actionVerbs:[];
- return actions.every(action=>new RegExp(word(action),"iu").test(text));
+ return true;
 }
 function databaseGuard(task,index,i,evidence,answer){
  const question=task.questions[i],rule=task.checkingRules?.[i];
