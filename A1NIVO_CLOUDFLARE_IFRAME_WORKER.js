@@ -213,6 +213,16 @@ function contentGuard(question,evidence,index,questionIndex){
  const food=both||/zum\s+Essen|Was\s+isst\s+du\s+gerne|Was\s+möchtest\s+du\s+(?:gerne\s+)?essen|Was\s+willst\s+du\s+zum\s+Essen/iu.test(q);
  const drink=both||/zum\s+Trinken|Was\s+trinkst\s+du/iu.test(q);
  const hasFood=EVAL_FOOD.test(a),hasDrink=EVAL_DRINK.test(a);
+ // Dva dela pitanja moraju biti pokrivena kad se traze tacan dan i sat.
+ // Izostanak jednog dela ne znaci da je odgovor potpuno pogresan.
+ const dayAndClock=/an\s+welchem\s+Tag.+um\s+wie\s+viel\s+Uhr|an\s+welchem\s+Tag\s+kommst\s+du.+um\s+wie\s+viel\s+Uhr/iu.test(q);
+ if(dayAndClock){
+  const hasDay=/(?<![\p{L}])(?:Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag|morgen|übermorgen|uebermorgen|heute|Wochenende)(?![\p{L}])|\bam\s+\d{1,2}\.\s*(?:\d{1,2}\.|Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)/iu.test(a);
+  const hasClock=/\b(?:um|gegen|ab)\s*\d{1,2}(?:(?::|\.)\d{2})?\b|\b\d{1,2}\s*(?:Uhr|uhr)\b|\b\d{1,2}:\d{2}\b/iu.test(a);
+  if(!hasDay&&!hasClock)return {max:0,feedback:"Traže se i dan i tačan sat. Oba nedostaju."};
+  if(!hasDay||!hasClock)return {max:1,feedback:"Pitanje traži i dan i sat. Dodaj ono što nedostaje, npr. am Dienstag um 15 Uhr."};
+ }
+
  if(both&&!hasFood&&!hasDrink)return {max:0,feedback:"Traže se i jelo i piće. Nisi naveo/la nijedno konkretno."};
  if(both&&(!hasFood||!hasDrink))return {max:1,feedback:"Potrebno je navesti i jelo i piće, na primer Brot und Wasser."};
  if(food&&!drink&&hasDrink&&!hasFood)return {max:0,feedback:"Pitanje traži jelo, a naveo/la si piće. Primer: Ich bringe Brot mit."};
@@ -229,7 +239,7 @@ function questionRequirements(task){
  return task.questions.map((q,i)=>{
   const both=/zum\s+Essen\s+und\s+Trinken/iu.test(q);
   return (i+1)+". "+q+" | "+(both?
-  "TRAŽE SE konkretnO jelo I konkretno piće u odgovoru.":
+  "TRAŽE SE konkretno jelo I konkretno piće u odgovoru.":
   /zum\s+Essen/iu.test(q)?"TRAŽI SE hrana, samo piće ne važi.":
   /zum\s+Trinken/iu.test(q)?"TRAŽI SE piće, samo hrana ne važi.":
   /an\s+welchem\s+Tag.+um\s+wie\s+viel\s+Uhr/iu.test(q)?"TRAŽE SE i dan i sat.":
