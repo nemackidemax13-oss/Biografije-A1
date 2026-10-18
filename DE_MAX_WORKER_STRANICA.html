@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="sr"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>DE-MAX · Cloudflare Worker kod</title>
+<style>
+:root{--navy:#173b75;--orange:#ec851c;--green:#17824d;--line:#d9e4f0}
+*{box-sizing:border-box}body{margin:0;color:#1c3353;background:#edf3fb;font:15px system-ui,-apple-system,Segoe UI,Arial,sans-serif}
+main{max-width:1000px;margin:auto;padding:16px 14px 40px}header{background:var(--navy);color:white;padding:18px 20px;border-radius:14px;margin-bottom:14px}h1{font-size:22px;margin:0 0 5px}header p{margin:0;color:#c9def6;font-size:13px}
+.card{background:white;border:1px solid var(--line);padding:18px;border-radius:13px;margin-top:12px}h2{font-size:17px;margin:0 0 8px}
+small,.tip{color:#526b87;font-size:13px;line-height:1.5}.tip{background:#fff9e9;border-left:3px solid #e7aa3d;padding:10px;border-radius:6px;margin:11px 0}
+.actions{display:flex;flex-wrap:wrap;gap:9px;margin:13px 0}button,.btn{appearance:none;border:0;display:inline-flex;align-items:center;justify-content:center;padding:12px 15px;border-radius:10px;font:700 14px system-ui,Arial;cursor:pointer;text-decoration:none;color:white;background:var(--navy)}button.primary{background:var(--green)}.btn.secondary{background:var(--orange)}button.ghost{background:#e6eef9;color:#173b75}
+textarea{width:100%;min-height:385px;resize:vertical;border:1px solid #a9bed9;background:#0d1930;color:#f3f7fd;border-radius:10px;padding:12px;font:12px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre;tab-size:2}
+ol{padding-left:23px;margin:8px 0 0}li{margin:8px 0}#notice{color:#168451;font-weight:750;font-size:13px;min-height:19px}@media(max-width:600px){main{padding:8px}header{border-radius:8px}.card{padding:12px}.actions>*{flex:1 1 100%}textarea{min-height:330px}}
+</style></head><body>
+<main><header><h1>DE-MAX · Worker za A1 dijaloge</h1><p>40 situacija · nemački A1 · profesor · srpski prevod · mikrofon</p></header>
+<section class="card"><h2>1. Kopiraj kompletan Worker</h2>
+<p class="tip"><b>Važno:</b> Sačuvaj kopiju postojećeg koda u Cloudflare pre zamene. Ovo je kompletna nova verzija za dve rute <code>/api/a1-dialog</code> i <code>/api/a1-transcribe</code>. Ako postoje još neke tvoje rute, one bi se zamenom izgubile.</p>
+<div class="actions"><button class="primary" id="copy">📋 Kopiraj kompletan kod</button><button class="ghost" id="download">⬇ Sačuvaj worker.js</button><a class="btn secondary" href="https://dash.cloudflare.com/304d240a3f53aa534296410face14265/workers/services/edit/usmenia1prvideo/production" target="_blank" rel="noopener">☁ Otvori Cloudflare Worker</a></div>
+<div id="notice" role="status"></div>
+<textarea id="code" spellcheck="false" aria-label="JavaScript Worker kod">/**
+ * DE-MAX | Cloudflare Worker za A1 dijaloge i nemački govor.
+ * U Cloudflare &gt; Worker usmenia1prvideo &gt; Edit code zalepi CEO ovaj fajl.
+ * Secret: Settings &gt; Variables and Secrets &gt; OPENAI_API_KEY (ne stavljaj ključ u kod).
+ * Rute: GET /health, POST /api/a1-dialog, POST /api/a1-transcribe, OPTIONS.
+ * Napomena: nemoj zameniti Worker ako u njemu postoje DRUGE rute koje koristiš.
+ */
+
+const CHAT_MODEL = &#x27;gpt-4.1-mini&#x27;;
+const TRANSCRIBE_MODEL = &#x27;gpt-4o-mini-transcribe&#x27;;
+const MAX_AUDIO_BYTES = 10 * 1024 * 1024;
+const MAX_DIALOG_BYTES = 14000;
+
+// Poreklo zahteva je GitHub Pages, čak i kada je stranica u Replit iframe-u.
+const ALLOWED_ORIGINS = new Set([
+  &#x27;https://nemackidemax13-oss.github.io&#x27;,
+  &#x27;https://biografije-a1.pages.dev&#x27;,
+  &#x27;https://biografije-a1.nemackidemax13.workers.dev&#x27;,
+  &#x27;https://de-max-a-1-aplikacija.replit.app&#x27;
+]);
+
+// Broj scene = broj fotografije u postojećoj DE-MAX aplikaciji.
+// Uloge se preuzimaju sa scene; nema izmišljanja detalja koje ne vidimo.
+const SCENES = [
+  [&#x27;in der Natur&#x27;, &#x27;Freund&#x27;, &#x27;Freundin&#x27;, &#x27;šetnja, priroda, vreme, planovi&#x27;],
+  [&#x27;in der Bäckerei&#x27;, &#x27;Verkäuferin&#x27;, &#x27;Kunde&#x27;, &#x27;kupovina hleba i peciva, količina i cena&#x27;],
+  [&#x27;in der Werkstatt&#x27;, &#x27;Mechaniker&#x27;, &#x27;Kundin&#x27;, &#x27;problem, popravka i cena&#x27;],
+  [&#x27;in der Wohnung&#x27;, &#x27;Techniker&#x27;, &#x27;Kundin&#x27;, &#x27;kućni kvar, termin i popravka&#x27;],
+  [&#x27;in der Küche&#x27;, &#x27;Freund&#x27;, &#x27;Freundin&#x27;, &#x27;kuvanje, namirnice i pomoć&#x27;],
+  [&#x27;in der Boutique&#x27;, &#x27;Verkäuferin&#x27;, &#x27;Kundin&#x27;, &#x27;odeća, veličina, boja i cena&#x27;],
+  [&#x27;in der Apotheke&#x27;, &#x27;Apothekerin&#x27;, &#x27;Kunde&#x27;, &#x27;jednostavne tegobe i lek u apoteci&#x27;],
+  [&#x27;in der Metzgerei&#x27;, &#x27;Verkäufer&#x27;, &#x27;Kundin&#x27;, &#x27;meso, količina i cena&#x27;],
+  [&#x27;in der Bibliothek&#x27;, &#x27;Bibliothekarin&#x27;, &#x27;Schüler&#x27;, &#x27;pozajmljivanje knjige i radno vreme&#x27;],
+  [&#x27;in der Schule&#x27;, &#x27;Lehrerin&#x27;, &#x27;Schüler&#x27;, &#x27;školski zadatak, predmeti i raspored&#x27;],
+  [&#x27;im Café&#x27;, &#x27;Frau&#x27;, &#x27;Mann&#x27;, &#x27;piće, narudžbina i razgovor&#x27;],
+  [&#x27;im Garten&#x27;, &#x27;Frau&#x27;, &#x27;Kind&#x27;, &#x27;bašta, biljke i aktivnosti&#x27;],
+  [&#x27;im Supermarkt&#x27;, &#x27;Verkäufer&#x27;, &#x27;Kundin&#x27;, &#x27;namirnice, gde se nalaze proizvodi i cena&#x27;],
+  [&#x27;im Wald&#x27;, &#x27;Freund&#x27;, &#x27;Freund&#x27;, &#x27;šetnja šumom i vreme&#x27;],
+  [&#x27;im Hotel&#x27;, &#x27;Rezeptionistin&#x27;, &#x27;Gast&#x27;, &#x27;rezervacija, broj noćenja, jednokrevetna ili dvokrevetna soba, cena, kartica&#x27;],
+  [&#x27;im Buchladen&#x27;, &#x27;Verkäuferin&#x27;, &#x27;Kunde&#x27;, &#x27;knjiga, autor, cena&#x27;],
+  [&#x27;im Blumenladen&#x27;, &#x27;Verkäuferin&#x27;, &#x27;Kundin&#x27;, &#x27;cveće, boja, poklon i cena&#x27;],
+  [&#x27;im Zug&#x27;, &#x27;Kontrolleur&#x27;, &#x27;Fahrgast&#x27;, &#x27;karta, odredište, kontrola&#x27;],
+  [&#x27;im Wartezimmer&#x27;, &#x27;Patientin&#x27;, &#x27;Patient&#x27;, &#x27;čekanje kod lekara, termin i jednostavne tegobe&#x27;],
+  [&#x27;im Zimmer&#x27;, &#x27;Mutter&#x27;, &#x27;Kind&#x27;, &#x27;soba, pospremanje i igra&#x27;],
+  [&#x27;im Fitnessstudio&#x27;, &#x27;Trainer&#x27;, &#x27;Kundin&#x27;, &#x27;trening, vežbe i učestalost&#x27;],
+  [&#x27;im Büro&#x27;, &#x27;Kollegin&#x27;, &#x27;Kollege&#x27;, &#x27;posao, vreme, sastanak&#x27;],
+  [&#x27;im Krankenhaus&#x27;, &#x27;Ärztin&#x27;, &#x27;Patient&#x27;, &#x27;jednostavne zdravstvene tegobe, termin, savet bez rizične terapije&#x27;],
+  [&#x27;im Schwimmbad&#x27;, &#x27;Trainerin&#x27;, &#x27;Kind&#x27;, &#x27;plivanje, vežba, bezbedno ponašanje&#x27;],
+  [&#x27;im Park&#x27;, &#x27;Frau&#x27;, &#x27;Mann&#x27;, &#x27;šetnja, odmor i vreme&#x27;],
+  [&#x27;im Schuhladen&#x27;, &#x27;Verkäufer&#x27;, &#x27;Kundin&#x27;, &#x27;cipele, veličina, boja, cena&#x27;],
+  [&#x27;im Auto&#x27;, &#x27;Fahrer&#x27;, &#x27;Beifahrerin&#x27;, &#x27;put, pravac i vreme vožnje&#x27;],
+  [&#x27;im Bus&#x27;, &#x27;Fahrer&#x27;, &#x27;Fahrgast&#x27;, &#x27;karta, stanica, cena i odredište&#x27;],
+  [&#x27;im Kino&#x27;, &#x27;Freundin&#x27;, &#x27;Freund&#x27;, &#x27;izbor filma, vreme i karte&#x27;],
+  [&#x27;zu Hause&#x27;, &#x27;Mutter&#x27;, &#x27;Tochter&#x27;, &#x27;kuća, zadaci, planovi&#x27;],
+  [&#x27;neben dem Fluss&#x27;, &#x27;Freund&#x27;, &#x27;Freundin&#x27;, &#x27;reka, šetnja i vreme&#x27;],
+  [&#x27;am Bahnhof&#x27;, &#x27;Mitarbeiter&#x27;, &#x27;Reisende&#x27;, &#x27;vozni red, peron, cena i karta&#x27;],
+  [&#x27;am Strand&#x27;, &#x27;Freundin&#x27;, &#x27;Freund&#x27;, &#x27;plaža, vreme i odmor&#x27;],
+  [&#x27;am Flughafen&#x27;, &#x27;Mitarbeiterin&#x27;, &#x27;Reisender&#x27;, &#x27;let, prijava, prtljag i pasoš&#x27;],
+  [&#x27;am Meer&#x27;, &#x27;Mann&#x27;, &#x27;Frau&#x27;, &#x27;more, odmor i aktivnosti&#x27;],
+  [&#x27;am See&#x27;, &#x27;Vater&#x27;, &#x27;Kind&#x27;, &#x27;jezero, igra i aktivnosti&#x27;],
+  [&#x27;auf dem Markt&#x27;, &#x27;Verkäuferin&#x27;, &#x27;Kunde&#x27;, &#x27;voće, povrće, količina i cena&#x27;],
+  [&#x27;auf der Straße&#x27;, &#x27;Frau&#x27;, &#x27;Mann&#x27;, &#x27;pravac, adresa i snalaženje&#x27;],
+  [&#x27;an der Rezeption&#x27;, &#x27;Rezeptionistin&#x27;, &#x27;Gast&#x27;, &#x27;soba, trajanje boravka, cena i plaćanje&#x27;],
+  [&#x27;an der Kasse&#x27;, &#x27;Kassiererin&#x27;, &#x27;Kunde&#x27;, &#x27;račun, plaćanje i kusur&#x27;]
+];
+
+function clean(value, max = 700) {
+  return String(value ?? &#x27;&#x27;).replace(/\u0000/g, &#x27;&#x27;).trim().slice(0, max);
+}
+function json(body, status = 200, origin = &#x27;&#x27;) {
+  const headers = {
+    &#x27;Content-Type&#x27;: &#x27;application/json; charset=utf-8&#x27;,
+    &#x27;Cache-Control&#x27;: &#x27;no-store&#x27;,
+    &#x27;X-Content-Type-Options&#x27;: &#x27;nosniff&#x27;,
+    &#x27;Vary&#x27;: &#x27;Origin&#x27;
+  };
+  if (ALLOWED_ORIGINS.has(origin)) {
+    headers[&#x27;Access-Control-Allow-Origin&#x27;] = origin;
+    headers[&#x27;Access-Control-Allow-Methods&#x27;] = &#x27;GET, POST, OPTIONS&#x27;;
+    headers[&#x27;Access-Control-Allow-Headers&#x27;] = &#x27;Content-Type&#x27;;
+    headers[&#x27;Access-Control-Max-Age&#x27;] = &#x27;3600&#x27;;
+  }
+  return new Response(JSON.stringify(body), { status, headers });
+}
+
+function instruction(scene, professor, candidate) {
+  const [place, , , topics] = scene;
+  const formal = !/^(Freund|Freundin|Mutter|Vater|Tochter|Kind|Frau|Mann|Kollegin|Kollege)$/.test(professor)
+    &amp;&amp; !/^(Freund|Freundin|Mutter|Vater|Tochter|Kind|Frau|Mann|Kollegin|Kollege)$/.test(candidate);
+  return `Du bist &quot;Prof&quot;, ein freundlicher, geduldiger Gesprächspartner beim DE-MAX A1-Sprechtraining.
+ORT: ${place}. THEMEN: ${topics}.
+DEINE ROLLE: ${professor}. KANDIDATENROLLE: ${candidate}.
+
+DIALOGREGELN:
+- Führe ein natürliches, authentisches Gespräch auf DEUTSCH, ausschließlich GER A1, mit korrekter einfacher Grammatik und situationspassenden Fragen.
+- Spiele ausschließlich DEINE Rolle. Der Kandidat spielt die andere Rolle. Keine Rollenwechsel ohne Anfrage.
+- Achte genau auf Ort, Kontext und frühere Antworten. Erfinde keine sichtbaren Details einer Fotografie: du kennst nur Situation und Rollen.
+- Sage pro Schritt meist 1 kurzen Satz und genau EINE klare, einfache Frage (meist 4 bis 12 Wörter). Keine langen Erklärungen.
+- Form der Anrede: ${formal ? &#x27;höfliches Sie&#x27; : &#x27;vertrautes du&#x27;}. Gegebenenfalls richtig konjugieren.
+- Beginne mit einer passenden Begrüßung, zum Beispiel &quot;Guten Tag! Was möchten Sie?&quot; im Geschäft oder &quot;Hallo! Wie geht es dir?&quot; unter Freunden.
+- Vermeide irrelevante Fragen. Reagiere auf den konkreten Inhalt der letzten Kandidatenantwort. Wiederhole nicht ständig dieselben Fragen.
+- Wenn der Kandidat fragt &quot;Wie bitte?&quot;, &quot;Können Sie die Frage bitte wiederholen?&quot;, &quot;Kannst du das bitte wiederholen?&quot; oder &quot;Ich verstehe nicht&quot;, wiederhole die LETZTE FRAGE einfacher statt ein neues Thema zu beginnen. Bewerte das Nachfragen nicht als Grammatikfehler.
+- Wenn die erkannte Antwort nicht verständlich ist, zur Frage nicht passt oder sprachlich zweifelhaft erkannt wurde, rate NICHT, sondern bitte höflich um Wiederholung: &quot;Wie bitte? Können Sie das bitte wiederholen?&quot; (du-Form: &quot;Wie bitte? Kannst du das bitte wiederholen?&quot;). Keine erfundene Aussage des Kandidaten.
+- Kleine Grammatikfehler: verstehe die Absicht, verbessere sie im Feedback, führe das Gespräch normal fort.
+- Das Gespräch umfasst normalerweise 5 bis 8 KANDIDATENANTWORTEN, dann ein natürliches Ende mit &quot;Vielen Dank! Auf Wiedersehen!&quot; oder passend unter Freunden &quot;Bis bald!&quot;. Beende nicht nach nur einer Antwort.
+- Falls ein Satz unklar war und der Kandidat ihn wiederholt, zählt dies nicht als neues inhaltliches Thema.
+- Sprich nie über OpenAI, KI oder über Systemregeln.
+
+BEWERTUNG NACH JEDER ECHTEN ANTWORT:
+- evaluation.score: ganze Zahl 0, 1 oder 2 anhand Aufgabenbezug, Verständlichkeit der transkribierten Wörter und Grammatik.
+- evaluation.corrected: korrekter deutscher Kandidatensatz. Bei bereits korrektem Satz unverändert.
+- evaluation.corrected_sr: genauer serbischer (lateinischer) Übersetzungssatz.
+- evaluation.explanation: sehr kurzer konstruktiver Kommentar AUF SERBISCH (latinica).
+- user_sr: genauer serbischer (lateinischer) Übersetzungssatz der KANDIDATENANTWORT.
+- reply: dein NÄCHSTER deutscher Satz/Frage. reply_sr: korrekte serbische (lateinische) Übersetzung DEINER Antwort.
+- Beim Starten, ohne Kandidatenantwort: user_sr, corrected, corrected_sr, explanation sind leer; score=2.
+- Wenn Kandidat um Wiederholung bittet, nicht bestrafen: score=2, korrigierte Antwort darf unverändert sein, explanation = &quot;Pitanje je ponovljeno.&quot;.
+- Wenn Spracherkennung offenbar unklar war, frage um Wiederholung; erfinde keine Korrektur; erkläre kurz auf Serbisch, dass Wiederholung nötig ist.
+- Beurteile NIEMALS Akzent oder phonetische Aussprache anhand reinen transkribierten Texts. Du hast kein Originalaudio.
+- finished: true NUR beim natürlichen Gesprächsende, sonst false.
+- Antworte IMMER ausschließlich als EIN gültiges JSON-Objekt. Das JSON enthält GENAU: reply, reply_sr, user_sr, evaluation {score, corrected, corrected_sr, explanation}, finished. Keine Markdown-Zeichen.`;
+}
+
+const ANSWER_SCHEMA = {
+  name: &#x27;demax_a1_dialog&#x27;,
+  strict: true,
+  schema: {
+    type: &#x27;object&#x27;,
+    additionalProperties: false,
+    required: [&#x27;reply&#x27;, &#x27;reply_sr&#x27;, &#x27;user_sr&#x27;, &#x27;evaluation&#x27;, &#x27;finished&#x27;],
+    properties: {
+      reply: { type: &#x27;string&#x27; },
+      reply_sr: { type: &#x27;string&#x27; },
+      user_sr: { type: &#x27;string&#x27; },
+      evaluation: {
+        type: &#x27;object&#x27;,
+        additionalProperties: false,
+        required: [&#x27;score&#x27;, &#x27;corrected&#x27;, &#x27;corrected_sr&#x27;, &#x27;explanation&#x27;],
+        properties: {
+          score: { type: &#x27;integer&#x27; },
+          corrected: { type: &#x27;string&#x27; },
+          corrected_sr: { type: &#x27;string&#x27; },
+          explanation: { type: &#x27;string&#x27; }
+        }
+      },
+      finished: { type: &#x27;boolean&#x27; }
+    }
+  }
+};
+
+async function withTimeout(url, init, ms) {
+  const controller = new AbortController();
+  const timer = setTimeout(() =&gt; controller.abort(), ms);
+  try { return await fetch(url, { ...init, signal: controller.signal }); }
+  finally { clearTimeout(timer); }
+}
+
+async function dialog(request, env, origin) {
+  const len = Number(request.headers.get(&#x27;content-length&#x27;) || 0);
+  if (len &gt; MAX_DIALOG_BYTES) return json({ error: &#x27;Zahtev je predugačak.&#x27; }, 413, origin);
+  let body;
+  try { body = await request.json(); } catch { return json({ error: &#x27;Neispravan JSON zahtev.&#x27; }, 400, origin); }
+  const idx = Number(body?.scene);
+  if (!Number.isInteger(idx) || idx &lt; 1 || idx &gt; SCENES.length) return json({ error: &#x27;Nepoznata situacija.&#x27; }, 400, origin);
+  const action = body.action === &#x27;start&#x27; ? &#x27;start&#x27; : body.action === &#x27;turn&#x27; ? &#x27;turn&#x27; : null;
+  if (!action) return json({ error: &#x27;Nepoznata akcija.&#x27; }, 400, origin);
+  const sc = SCENES[idx - 1];
+  const slot = Number(body.userRoleIndex) === 0 ? 0 : 1;
+  const candidate = sc[slot + 1];
+  const professor = sc[(slot === 0 ? 1 : 0) + 1];
+  const answer = clean(body.answer, 500);
+  if (action === &#x27;turn&#x27; &amp;&amp; !answer) return json({ error: &#x27;Nedostaje odgovor.&#x27; }, 400, origin);
+  if (!env.OPENAI_API_KEY) return json({ error: &#x27;OPENAI_API_KEY nije podešen u Cloudflare Secrets.&#x27; }, 503, origin);
+
+  const history = Array.isArray(body.history) ? body.history.slice(-16) : [];
+  const historyMessages = history.filter(x =&gt; x &amp;&amp; [&#x27;user&#x27;, &#x27;assistant&#x27;].includes(x.role) &amp;&amp; typeof x.content === &#x27;string&#x27;)
+    .map(x =&gt; ({ role: x.role, content: clean(x.content, 500) })).filter(x =&gt; x.content);
+  const messages = [
+    { role: &#x27;system&#x27;, content: instruction(sc, professor, candidate) },
+    ...historyMessages,
+    { role: &#x27;user&#x27;, content: action === &#x27;start&#x27;
+      ? &#x27;Beginne den Dialog jetzt. Begrüße den Kandidaten in deiner Rolle und stelle die erste einfache Frage. Nur JSON.&#x27;
+      : `Kandidatenantwort (als Sprache erkannt oder eingetippt): ${answer}\nAntworte situationsgerecht. Falls etwas unverständlich ist: &quot;Wie bitte? Können Sie das bitte wiederholen?&quot;. Nur JSON.` }
+  ];
+
+  let upstream;
+  try {
+    upstream = await withTimeout(&#x27;https://api.openai.com/v1/chat/completions&#x27;, {
+      method: &#x27;POST&#x27;,
+      headers: { &#x27;Authorization&#x27;: `Bearer ${env.OPENAI_API_KEY}`, &#x27;Content-Type&#x27;: &#x27;application/json&#x27; },
+      body: JSON.stringify({
+        model: env.DEMAX_CHAT_MODEL || CHAT_MODEL,
+        messages,
+        temperature: 0.4,
+        max_completion_tokens: 420,
+        response_format: { type: &#x27;json_schema&#x27;, json_schema: ANSWER_SCHEMA }
+      })
+    }, 26000);
+  } catch (err) {
+    return json({ error: err?.name === &#x27;AbortError&#x27; ? &#x27;AI nije odgovorio na vreme.&#x27; : &#x27;AI servis nije dostupan.&#x27; }, 504, origin);
+  }
+  const data = await upstream.json().catch(() =&gt; null);
+  if (!upstream.ok) {
+    // Ne prosleđuj korisniku interne detalje ili tajne iz poruke servisa.
+    return json({ error: `AI dijalog nije dostupan (HTTP ${upstream.status}).` }, 502, origin);
+  }
+  let parsed;
+  try { parsed = JSON.parse(data?.choices?.[0]?.message?.content || &#x27;&#x27;); }
+  catch { return json({ error: &#x27;AI nije vratio ispravan odgovor.&#x27; }, 502, origin); }
+  if (!parsed || typeof parsed.reply !== &#x27;string&#x27; || !parsed.reply.trim()) return json({ error: &#x27;AI nije vratio sledeće pitanje.&#x27; }, 502, origin);
+  const ev = parsed.evaluation || {};
+  const result = {
+    reply: clean(parsed.reply, 300),
+    reply_sr: clean(parsed.reply_sr, 600),
+    user_sr: action === &#x27;start&#x27; ? &#x27;&#x27; : clean(parsed.user_sr, 600),
+    evaluation: action === &#x27;start&#x27;
+      ? { score: 2, corrected: &#x27;&#x27;, corrected_sr: &#x27;&#x27;, explanation: &#x27;&#x27; }
+      : {
+        score: Math.max(0, Math.min(2, Math.round(Number(ev.score) || 0))),
+        corrected: clean(ev.corrected, 350),
+        corrected_sr: clean(ev.corrected_sr, 500),
+        explanation: clean(ev.explanation, 500)
+      },
+    finished: action === &#x27;start&#x27; ? false : Boolean(parsed.finished)
+  };
+  return json(result, 200, origin);
+}
+
+async function transcribe(request, env, origin) {
+  const declared = Number(request.headers.get(&#x27;content-length&#x27;) || 0);
+  if (declared &gt; MAX_AUDIO_BYTES + 100000) return json({ error: &#x27;Snimak je prevelik.&#x27; }, 413, origin);
+  let form;
+  try { form = await request.formData(); } catch { return json({ error: &#x27;Neispravan audio zahtev.&#x27; }, 400, origin); }
+  const file = form.get(&#x27;file&#x27;);
+  if (!file || typeof file.arrayBuffer !== &#x27;function&#x27; || !file.size) return json({ error: &#x27;Audio fajl nije poslat.&#x27; }, 400, origin);
+  if (file.size &gt; MAX_AUDIO_BYTES) return json({ error: &#x27;Snimak je prevelik (maksimum 10 MB).&#x27; }, 413, origin);
+  const name = clean(file.name || &#x27;&#x27;, 120);
+  const ext = (name.split(&#x27;.&#x27;).pop() || &#x27;&#x27;).toLowerCase();
+  const allowed = [&#x27;webm&#x27;, &#x27;mp4&#x27;, &#x27;m4a&#x27;, &#x27;mp3&#x27;, &#x27;wav&#x27;, &#x27;ogg&#x27;, &#x27;mpeg&#x27;, &#x27;mpga&#x27;, &#x27;flac&#x27;];
+  if (!allowed.includes(ext)) return json({ error: &#x27;Nepodržani audio format.&#x27; }, 415, origin);
+  if (!env.OPENAI_API_KEY) return json({ error: &#x27;OPENAI_API_KEY nije podešen.&#x27; }, 503, origin);
+
+  const output = new FormData();
+  output.append(&#x27;model&#x27;, env.DEMAX_TRANSCRIBE_MODEL || TRANSCRIBE_MODEL);
+  output.append(&#x27;language&#x27;, &#x27;de&#x27;);
+  output.append(&#x27;response_format&#x27;, &#x27;json&#x27;);
+  output.append(&#x27;prompt&#x27;, &#x27;Deutsch, Niveau A1: einfache Dialoge in Bäckerei, Hotel, Geschäft, Schule, Bus, Bahnhof. Bitte wortgetreu auf Deutsch transkribieren.&#x27;);
+  output.append(&#x27;file&#x27;, file, name || `aufnahme.${ext}`);
+  let upstream;
+  try {
+    upstream = await withTimeout(&#x27;https://api.openai.com/v1/audio/transcriptions&#x27;, {
+      method: &#x27;POST&#x27;,
+      headers: { Authorization: `Bearer ${env.OPENAI_API_KEY}` },
+      body: output
+    }, 29000);
+  } catch (err) {
+    return json({ error: err?.name === &#x27;AbortError&#x27; ? &#x27;Prepoznavanje govora je isteklo.&#x27; : &#x27;Servis za nemački govor nije dostupan.&#x27; }, 504, origin);
+  }
+  const data = await upstream.json().catch(() =&gt; null);
+  if (!upstream.ok) return json({ error: `Prepoznavanje govora nije uspelo (HTTP ${upstream.status}).` }, 502, origin);
+  return json({ text: clean(data?.text, 1200), language: &#x27;de&#x27; }, 200, origin);
+}
+
+export default {
+  async fetch(request, env) {
+    const url = new URL(request.url);
+    const origin = request.headers.get(&#x27;Origin&#x27;) || &#x27;&#x27;;
+    if (origin &amp;&amp; !ALLOWED_ORIGINS.has(origin)) return json({ error: &#x27;Poreklo nije dozvoljeno.&#x27; }, 403, origin);
+    if (request.method === &#x27;OPTIONS&#x27;) {
+      if (!origin || !ALLOWED_ORIGINS.has(origin)) return new Response(null, { status: 403 });
+      const r = json({}, 200, origin);
+      return new Response(null, { status: 204, headers: r.headers });
+    }
+    if ((url.pathname === &#x27;/&#x27; || url.pathname === &#x27;/health&#x27;) &amp;&amp; request.method === &#x27;GET&#x27;) {
+      return json({
+        service: &#x27;demax-a1-dialog&#x27;, worker: &#x27;a1usmeni&#x27;, online: true,
+        configured: Boolean(env.OPENAI_API_KEY), dialogEnabled: true,
+        transcriptionEnabled: true, method: &#x27;POST&#x27;, endpoint: &#x27;/api/a1-dialog&#x27;, scenes: SCENES.length
+      }, 200, origin);
+    }
+    if (url.pathname === &#x27;/api/a1-dialog&#x27; &amp;&amp; request.method === &#x27;POST&#x27;) return dialog(request, env, origin);
+    if (url.pathname === &#x27;/api/a1-transcribe&#x27; &amp;&amp; request.method === &#x27;POST&#x27;) return transcribe(request, env, origin);
+    return json({ error: &#x27;Nepoznata ruta.&#x27; }, 404, origin);
+  }
+};
+</textarea>
+</section>
+<section class="card"><h2>2. Ubaci u Cloudflare</h2><ol>
+<li>Otvori <b>Cloudflare Worker → usmenia1prvideo → Edit code</b>.</li>
+<li>Sačuvaj postojeći kod kao rezervnu kopiju, pa nalepi kopirani kod u <b>worker.js</b> (zameni sadržaj, ne dodaj HTML iframe).</li>
+<li>Proveri u <b>Settings → Variables and Secrets</b> da postoji Secret tačnog naziva <code>OPENAI_API_KEY</code>. Nikada ga ne upisuj u JavaScript fajl.</li>
+<li>Klikni <b>Bereitstellen / Deploy</b>, a zatim proveri status na linku ispod.</li>
+</ol><div class="actions"><a class="btn" href="https://usmenia1prvideo.nemackidemax13.workers.dev/health" target="_blank" rel="noopener">✅ Proveri Worker status</a></div>
+<p class="tip">Ako mikrofon u aplikaciji prepozna govor pogrešno, profesor može tražiti ponavljanje. Međutim, Worker dobija prepoznati tekst, pa ne može pouzdano oceniti akcenat iz samog teksta.</p>
+</section></main>
+<script>
+const area=document.getElementById('code');
+const notice=document.getElementById('notice');
+document.getElementById('copy').onclick=async()=>{
+ try { await navigator.clipboard.writeText(area.value); notice.textContent='Kod je kopiran. Nalepi ga u Cloudflare editor.'; }
+ catch(e){area.focus();area.select();try{document.execCommand('copy');notice.textContent='Kod je označen i kopiran (ili pritisni Ctrl+C).';}catch(_e){notice.textContent='Kod je označen: pritisni Ctrl+C ili Copy.';}}
+};
+document.getElementById('download').onclick=()=>{
+ const blob=new Blob([area.value],{type:'text/javascript;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='DE_MAX_A1_WORKER_KOMPLET.js';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000);
+};
+</script></body></html>
