@@ -105,6 +105,41 @@ export default {
   if(request.method==="GET"&&["/","/health","/api/a1-dialog"].includes(u.pathname.replace(/\/$/,"")||"/"))
    return reply({service:"demax-a1-dijalog",online:true,configured:!!(env.nivoA1 || env.OPENAI_API_KEY),worker:"a1usmeni",dialogEnabled:true,method:"POST",endpoint:"/api/a1-dialog",scenes:40},200,origin);
   if(!ALLOWED_ORIGINS.has(origin))return reply({error:"Nepoznat izvor zahteva."},403,origin);
+
+  // Speech fallback for iPhone/Android and embedded browsers without Web Speech.
+  // Audio is submitted only after the student grants microphone permission.
+  if(request.method==="POST"&&u.pathname==="/api/a1-transcribe"){
+   const apiKey=env.nivoA1||env.OPENAI_API_KEY;
+   if(!apiKey)return reply({error:"OpenAI ključ nije podešen."},503,origin);
+   if(rateLimited((request.headers.get("CF-Connecting-IP")||"unknown")+"-audio"))
+    return reply({error:"Previše zahteva za prepoznavanje govora."},429,origin);
+   const length=Number(request.headers.get("Content-Length")||0);
+   if(length>3200000)return reply({error:"Audio je prevelik (najviše 3 MB)."},413,origin);
+   try{
+    const data=await request.formData();
+    const blob=data.get("file");
+    if(!blob||typeof blob.arrayBuffer!=="function"||!blob.size||blob.size>3200000)
+     return reply({error:"Pošalji audio fajl do 3 MB."},400,origin);
+    const mime=(blob.type||"").toLowerCase();
+    if(!/^audio\/(webm|mp4|mpeg|mp3|ogg|wav|x-wav|aac|m4a)(;|$)/.test(mime))
+     return reply({error:"Format audio snimka nije podržan."},415,origin);
+    const extension=mime.includes("mp4")?"mp4":mime.includes("ogg")?"ogg":mime.includes("wav")?"wav":mime.includes("aac")?"aac":"webm";
+    const form=new FormData();
+    form.append("model","gpt-4o-mini-transcribe");
+    form.append("language","de");
+    form.append("file",blob,"a1-odgovor."+extension);
+    const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),27000);
+    try{
+     const resp=await fetch("https://api.openai.com/v1/audio/transcriptions",{
+      method:"POST",headers:{"Authorization":"Bearer "+apiKey},body:form,signal:controller.signal
+     });
+     const result=await resp.json().catch(()=>({}));
+     if(!resp.ok)
+      return reply({error:resp.status===401?"OpenAI ključ nije ispravan.":resp.status===429?"OpenAI kvota ili ograničenje zahteva.":"Prepoznavanje govora nije uspelo (HTTP "+resp.status+")."},502,origin);
+     return reply({text:textClean(result.text,500)},200,origin);
+    }finally{clearTimeout(timer);}
+   }catch(e){return reply({error:e.name==="AbortError"?"Prepoznavanje govora je isteklo.":"Nije moguće obraditi audio snimak."},502,origin);}
+  }
   if(request.method!=="POST"||!["/","/api/a1-dialog"].includes(u.pathname))
    return reply({error:"Za dijalog koristi POST /api/a1-dialog."},404,origin);
   const apiKey=env.nivoA1 || env.OPENAI_API_KEY;
