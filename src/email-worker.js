@@ -39,13 +39,13 @@ function limited(ip) {
 }
 async function tasks() {
   if (tasksCache && Date.now()<cacheExpiry) return tasksCache;
-  const resp=await fetch(TASKS_URL,{headers:{"Accept":"application/json"},cf:{cacheEverything:true,cacheTtl:3600}});
+  const resp=await fetch(TASKS_URL,{headers:{"Accept":"application/json"},cf:{cacheEverything:true,cacheTtl:300}});
   if (!resp.ok) throw Error("Zadaci nisu dostupni.");
   const body=await resp.json();
   if (!Array.isArray(body)||body.length!==35 || body.some(t=>!Array.isArray(t.questions)||t.questions.length!==3)) {
     throw Error("Baza 35 zadataka nije ispravna.");
   }
-  tasksCache=body; cacheExpiry=Date.now()+3600000;
+  tasksCache=body; cacheExpiry=Date.now()+300000;
   return body;
 }
 const TASK_GUIDANCE = [
@@ -139,6 +139,8 @@ function hasA1Closing(text){
 }
 
 const SYSTEM=[
+ "OBAVEZNO PRAVILO IZ checkingRules BAZE: Svako od 105 pitanja ima predvidjen glagol, oblik i trazene podatke. Za hast du Zeit koristi Ich habe ... Zeit; za kannst du koristi Ich kann + isti infinitiv; za moechtest du koristi Ich möchte + isti infinitiv; za pitanja sa razdvojivim glagolom koristi isti razdvojivi (bringst ... mit -> ich bringe ... mit) a uz modal infinitiv (kannst ... mitbringen -> ich kann ... mitbringen). Ako odgovor za An welchem Tag und um wie viel Uhr hast du Zeit? nema i dan i sat, nikad ne dodeljuj 2/2. Drugi glagol koji je znacenjski slican nije pun odgovor u ovoj vezbi. Pravilo je didakticko, ne tvrdnja o drugim validnim izrazima van vezbe. Ispravi i prevedi odgovor bez izmisljanja dana i sata.",
+
  "Ti si ozbiljan i veoma precizan nastavnik nemackog jezika za ÖSD A1 vezbu pisanja mejlova.",
  "ODGOVOR ISKLJUCIVO PREMA BAZI: obavezni izvor je bas izabrani zadatak (SITUACIJA, PRIMLJENI MEJL, TRI PITANJA). Navedi bodove zasebno za pitanje 1, 2 i 3, na osnovu UCENIKOVOG stvarnog odgovora. Ucitano pitanje NIJE dokaz da je kandidat odgovorio.",
  "PREVOD ISPRAVLJENOG MEJLA: uz polje correctedText VRATI translationSr kao KOMPLETAN, prirodan i znacenjski TACAN prevod CELOG correctedText na SRPSKI LATINICOM, recenicu po recenicu i redosledom iz ispravljenog mejla. Prevedi svaku dodatu ili ispravljenu recenicu, ukljucujuci pozdrave i modalne glagole; ne izostavljaj, ne dodaj cinjenice, osobe, mesto, dan ili sat. Prevedi Viele Grüße kao 'Srdačan pozdrav', Liebe Grüße kao 'Srdačan pozdrav', Bis bald kao 'Vidimo se uskoro'. Oslovljavanja i imena sacuvaj.",
@@ -239,16 +241,74 @@ function contentGuard(question,evidence,index,questionIndex){
  }
  return null;
 }
+
+/* Nezavisna proverа odgovora prema checkingRules iz tasks.json. */
+const A1_DAY=/(?<![\p{L}])(?:montag|dienstag|mittwoch|donnerstag|freitag|samstag|sonntag|heute|morgen|übermorgen|uebermorgen)(?![\p{L}])|\b(?:am|den)\s+\d{1,2}\.\s*(?:\d{1,2}\.?|januar|februar|märz|april|mai|juni|juli|august|september|oktober|november|dezember)/iu;
+const A1_HOUR=/(?<![\p{L}])(?:um|ab|gegen)\s*(?:\d{1,2}(?:[.:]\d{2})?\s*(?:uhr)?|halb\s+(?:eins|zwei|drei|vier|fünf|sechs|sieben|acht|neun|zehn|elf|zwölf))\b|\b\d{1,2}:\d{2}\b|\b\d{1,2}\s+uhr\b/iu;
+const A1_PLACE=/(?<![\p{L}])(?:am|im|in\s+der|in\s+dem|bei|vor|hinter|neben|auf\s+dem|zu\s+hause)\s+(?:bahnhof|kino|schule|park|café|cafe|restaurant|markt|platz|supermarkt|garten|stadt|zentrum|hotel|eingang|haus|dir|mir|[\p{L}-]+)/iu;
+function evidenceKey(value){
+ return String(value||"").normalize("NFC").toLocaleLowerCase("de").replace(/[^\p{L}\p{N}]+/gu," ").trim();
+}
+function isRealEvidence(answer,evidence){
+ const e=evidenceKey(evidence);
+ return e.length>=4 && evidenceKey(answer).includes(e);
+}
+function followsVerbRule(evidence,rule){
+ if(!rule?.answerVerb)return true;
+ const text=String(evidence).toLocaleLowerCase("de")
+  .replace(/\bkoennen\b/g,"können").replace(/\bmoechte\b/g,"möchte")
+  .replace(/\bmoechten\b/g,"möchten");
+ const expected=String(rule.answerVerb).toLocaleLowerCase("de").split("...").map(x=>x.trim()).filter(Boolean);
+ const first=expected[0];
+ if(rule.perspective==="neutral"&&rule.verbInfinitive==="mitkommen"){
+  return /\b(?:kommt|kommen|komme)\b[\s\S]{0,100}\bmit\b/iu.test(text);
+ }
+ const prefix=rule.perspective==="ich"?"ich":rule.perspective==="du"?"du":rule.perspective==="wir"?"wir":null;
+ const word=(x)=>"(?<![\\p{L}])"+x+"(?![\\p{L}])";
+ const verb=new RegExp(word(first),"iu");
+ if(!verb.test(text))return false;
+ if(prefix){
+  if(!new RegExp(word(prefix)+"[\\s\\S]{0,45}"+word(first),"iu").test(text))return false;
+ }
+ if(expected.length>1&&!new RegExp(word(expected[1]),"iu").test(text))return false;
+ const actions=Array.isArray(rule.actionVerbs)?rule.actionVerbs:[];
+ return actions.every(action=>new RegExp(word(action),"iu").test(text));
+}
+function databaseGuard(task,index,i,evidence,answer){
+ const question=task.questions[i],rule=task.checkingRules?.[i];
+ if(!isRealEvidence(answer,evidence))return {max:0,feedback:"Nema dokaza da si odgovorio/la na ovo pitanje. Tekst iz postavke nije odgovor."};
+ if(!rule)return contentGuard(question,evidence,index,i);
+ const required=Array.isArray(rule.required)?rule.required:[];
+ const absent=required.filter(x=>!(x==="day"?A1_DAY.test(evidence):
+  x==="clock"?A1_HOUR.test(evidence):
+  x==="time"?(A1_DAY.test(evidence)||A1_HOUR.test(evidence)):
+  x==="place"?A1_PLACE.test(evidence):
+  x==="food"?EVAL_FOOD.test(evidence):
+  x==="drink"?EVAL_DRINK.test(evidence):true));
+ const label={day:"dan",clock:"sat",time:"vreme",place:"mesto",food:"jelo",drink:"piće"};
+ let cap=2;const tips=[];
+ if(absent.length){
+  cap=absent.length===required.length?0:1;
+  tips.push("Nedostaje "+absent.map(x=>label[x]||x).join(" i ")+". Pitanje traži "+required.map(x=>label[x]||x).join(" i ")+".");
+ }
+ if(!followsVerbRule(evidence,rule)){
+  cap=Math.min(cap,1);
+  tips.push("Koristi ISTI glagol iz pitanja: "+(rule.perspective==="neutral"?"":rule.perspective.toUpperCase()+" ")+rule.answerVerb+
+  (rule.actionVerbs?.length?" + "+rule.actionVerbs.join(", "):"")+".");
+ }
+ const old=contentGuard(question,evidence,index,i);
+ if(old&&old.max<cap){cap=old.max;tips.push(old.feedback);}
+ return cap<2?{max:cap,feedback:tips.join(" ")}:null;
+}
 function questionRequirements(task){
  return task.questions.map((q,i)=>{
-  const both=/zum\s+Essen\s+und\s+Trinken/iu.test(q);
-  return (i+1)+". "+q+" | "+(both?
-  "TRAŽE SE konkretno jelo I konkretno piće u odgovoru.":
-  /zum\s+Essen/iu.test(q)?"TRAŽI SE hrana, samo piće ne važi.":
-  /zum\s+Trinken/iu.test(q)?"TRAŽI SE piće, samo hrana ne važi.":
-  /an\s+welchem\s+Tag.+um\s+wie\s+viel\s+Uhr/iu.test(q)?"TRAŽE SE i dan i sat.":
-  /wo\s+und\s+wann/iu.test(q)?"TRAŽE SE i mesto i vreme.":
-  "Traži se relevantan konkretan odgovor, a ne ključna reč van konteksta.");
+  const r=task.checkingRules?.[i];
+  if(!r)return (i+1)+". "+q+" | traži smislen i potpun odgovor.";
+  const labels={day:"dan",clock:"tačan sat",time:"vreme",place:"mesto",food:"jelo",drink:"piće"};
+  return (i+1)+". "+q+" | OBAVEZNO "+(r.required.length?r.required.map(x=>labels[x]||x).join(" i "):"smislen odgovor")+
+    " | PERSPEKTIVA "+r.perspective+" | ISTI GLAGOL "+r.verbInfinitive+" → "+r.answerVerb+
+    (r.actionVerbs?.length?" + infinitiv "+r.actionVerbs.join(", "):"")+
+    (r.a1Example?" | SAMO A1 PRIMER, NE FIKSNI TERMIN: "+r.a1Example:"");
  }).join("\n");
 }
 
@@ -363,7 +423,7 @@ async function grade(body,env) {
   const points=parsed.points.map(x=>clamp(x,2));
   const ruleWarnings=[];
   for(let i=0;i<3;i++){
-    const guard=contentGuard(task.questions[i],parsed.questionEvidence[i],index,i);
+    const guard=databaseGuard(task,index,i,parsed.questionEvidence[i],answer);
     if(guard && points[i]>guard.max){
       points[i]=guard.max;
       ruleWarnings.push({index:i,message:guard.feedback});
@@ -402,10 +462,10 @@ async function grade(body,env) {
     }).slice(0,18).map(x=>({original:x.original.slice(0,350),corrected:x.corrected.slice(0,350),explanationSr:x.explanationSr.slice(0,850)})),
     questionFeedback:parsed.questionFeedback.map((x,i)=>{
       const rule=ruleWarnings.find(item=>item.index===i);
-      return rule ? rule.message : String(x).slice(0,400);
+      return rule ? (String(x).trim()+' '+rule.message).trim().slice(0,820) : String(x).slice(0,600);
     }),
     questionEvidence:parsed.questionEvidence.map(x=>String(x).slice(0,220)),
-    taskIndex:index,verificationVersion:"a1-translation-sentence-feedback-v3",
+    taskIndex:index,verificationVersion:"a1-database-verb-slots-v4",
     taskFingerprint:taskFingerprint(task),
     score:points.reduce((a,b)=>a+b,0)+grammar+form+length
   }};
