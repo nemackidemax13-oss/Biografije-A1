@@ -1822,11 +1822,52 @@ PAT.time=new RegExp(PAT.day.source+'|'+PAT.clock.source,'i');
 PAT['day-time']=PAT.time;PAT['yes-time']=new RegExp(PAT['yes-no'].source+'|'+PAT.time.source,'i');
 PAT['bring-food']=new RegExp(PAT.food.source+'|'+PAT.drink.source,'i');
 PAT['meeting-time']=new RegExp(PAT['meeting-place'].source+'|'+PAT.time.source,'i');
+/* Ucenik moze pisati i bez nemacke tastature: smisao se prepoznaje,
+   nedostajuci umlauti se prikazuju ispravljeni, a ae/oe/ue su zamene. */
+const A1_MISSING_UMLAUTS=[
+ ['konnen','können'],['mussen','müssen'],['durfen','dürfen'],['mogen','mögen'],
+ ['fur','für'],['uber','über'],['naturlich','natürlich'],
+ ['spater','später'],['fruh','früh'],['gluck','Glück'],
+ ['gemuse','Gemüse'],['kase','Käse'],['fruhstuck','Frühstück'],
+ ['grusse','Grüße'],['wunsche','wünsche'],['wunschen','wünschen'],
+ ['schuler','Schüler'],['schulerin','Schülerin'],
+ ['funf','fünf'],['zwolf','zwölf'],['grun','grün'],
+ ['gemutlich','gemütlich'],['zuruck','zurück'],
+ ['kuche','Küche'],['tur','Tür'],['buro','Büro'],
+ ['moglich','möglich'],['offnen','öffnen']
+];
+function missingA1Umlauts(text){
+ const errors=[];
+ for(const [wrong,right] of A1_MISSING_UMLAUTS){
+  const pattern=new RegExp('(?<![\\p{L}])'+wrong+'(?![\\p{L}])','giu');
+  for(const match of String(text).matchAll(pattern)){
+   const from=match[0];
+   const to=/^[A-ZÄÖÜ]/.test(from)?right[0].toLocaleUpperCase('de')+right.slice(1):right;
+   errors.push({from,to,index:match.index});
+  }
+ }
+ // "mochte" je nekada preterit; vracaj "möchte" samo u jasnoj zelji.
+ const wishes=/(?<![\p{L}])mochte(?=\s+(?:gerne?\b|(?:(?:\p{L}+\s+){0,5})(?:gehen|kommen|fahren|kaufen|machen|essen|trinken|lernen|mitbringen|besuchen|einladen|spielen|schreiben|bleiben|sehen)\b))/giu;
+ for(const match of String(text).matchAll(wishes)){
+  errors.push({from:match[0],to:'möchte',index:match.index});
+ }
+ return errors.sort((a,b)=>a.index-b.index);
+}
+function correctA1Umlauts(text){
+ let result=String(text);
+ const errors=missingA1Umlauts(result);
+ for(let i=errors.length-1;i>=0;i--){
+  const e=errors[i];
+  result=result.slice(0,e.index)+e.to+result.slice(e.index+e.from.length);
+ }
+ return result;
+}
+
 function correctSportExpression(text){
  return String(text??'').replace(/\bSport\s+spielen\b/gi,'Sport machen');
 }
 function correctGerman(text){
- let t=text.replace(/\r\n/g,'\n').replace(/[ \t]{2,}/g,' ');
+ let t=correctA1Umlauts(text).replace(/\r\n/g,'\n').replace(/[ \t]{2,}/g,' ');
  t=correctSportExpression(t);
  const fix=[[/\bich haben\b/gi,'ich habe'],[/\bich bin zeit\b/gi,'ich habe Zeit'],[/\bich habe keine auto\b/gi,'ich habe kein Auto'],[/\bich habe zeit\b/gi,'ich habe Zeit'],[/\bich komme mit bus\b/gi,'ich komme mit dem Bus'],[/\bmit der bus\b/gi,'mit dem Bus'],[/\bmit dem zug\b/gi,'mit dem Zug'],[/\bmit auto\b/gi,'mit dem Auto'],[/\bwir kann\b/gi,'wir können'],[/\bdu kann\b/gi,'du kannst'],[/\bich mocht(e)?\b/gi,'ich möchte'],[/\bich mochte gerne\b/gi,'ich möchte gerne'],[/\bich wolle\b/gi,'ich will'],[/\bwir gehen mit dem auto\b/gi,'wir fahren mit dem Auto'],[/\bich komm\b/gi,'ich komme'],[/\bich hab\b/gi,'ich habe'],[/\bich freue mich auf dich sehen\b/gi,'ich freue mich, dich zu sehen'],[/\bdu und ich kann\b/gi,'du und ich können'],[/\bich gehe nach kino\b/gi,'ich gehe ins Kino']];
  for(const [regex,repl] of fix)t=t.replace(regex,repl);
@@ -1846,9 +1887,12 @@ function renderResult(r){
  const len=Math.max(0,Math.min(1,Number(r.length)||0));
  const score=Math.max(0,Math.min(10,pts.reduce((a,b)=>a+b,0)+grammar+form+len));
  const original=$('answer').value;
- const correction=correctSportExpression(r.correctedText||original).trim();
+ const correction=correctA1Umlauts(correctSportExpression(r.correctedText||original)).trim();
  const sportTip=/\bSport\s+spielen\b/i.test(original)&&!/\bSport\s+(machen|spielen)\b/i.test(r.feedback||'')?'Izraz „Sport spielen“ ispravlja se u „Sport machen“ (npr. „Ich kann Sport machen“).':'';
- const feedbackText=[r.feedback||'',sportTip].filter(Boolean).join('\n');
+ const missed=missingA1Umlauts(original);
+ const umlautTip=missed.length&&!/umlaut/i.test(String(r.feedback||''))?
+  'Umlauti: Razumeo sam napisane reči, ali standardno se piše: '+[...new Set(missed.map(e=>'„'+e.from+'“ → „'+e.to+'“'))].slice(0,8).join(', ')+'. Rečenice su prepoznate, a pisanje slova možeš da popraviš.':'';
+ const feedbackText=[r.feedback||'',sportTip,umlautTip].filter(Boolean).join('\n');
  const changed=correction!==original.trim();
  $('result').innerHTML=`<div class="result-title"><span>REZULTAT PROVERE</span><span class="ai-label">${isAI?'AI provera':'Osnovna automatska provera'}</span></div>
  <div class="scorebox"><div class="score">${score.toLocaleString('sr-RS')}<small> / 10 bodova</small></div><div class="score-caption">Ocena za vežbanje — nije zvanična ÖSD ocena</div></div>
