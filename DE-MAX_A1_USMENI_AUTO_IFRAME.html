@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#113a77">
-<title>DE-MAX ÖSD A1 · Automatski mikrofon · iPhone i Android</title>
+<title>DE-MAX · Dijalozi A1 · iPhone i Android</title>
 <meta name="description" content="40 fotografija, razgovor na nemačkom preko mikrofona, ispravke i ocenjivanje A1 uz OpenAI.">
 <style>
 :root{--ink:#123a70;--blue:#1763c0;--red:#e52d49;--green:#148e62;--line:#d6e3f3;--pale:#f3f7ff;--muted:#647c9d}
@@ -200,11 +200,37 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 .roles span.role-red{background:#e52d49;border-color:#d32642;color:white}
 .photo{margin-left:1px;margin-right:1px;border-radius:9px}
 
+
+/* DE-MAX · Dijalozi: uvek uključen izgovor, uža zaglavna traka, čitljivije kartice */
+.top{height:35px;min-height:35px;justify-content:center;padding:0 8px}
+.top .brand{flex:1;min-width:0;text-align:center}
+.top .brand b{font-size:16px;line-height:1.1;font-weight:900;letter-spacing:.3px}
+.messages{margin-left:3px;margin-right:3px;padding:6px;min-height:124px}
+.messages .bubble{border-radius:12px}
+.messages .bubble+.bubble{margin-top:6px}
+.messages .bubble .message-header{min-height:26px;padding:3px 8px}
+.messages .bubble .message-body{padding:8px 11px 9px}
+.messages .bubble .message-body .de{font-size:14.5px;line-height:1.34}
+.messages .bubble .message-body .sr{font-size:12px;line-height:1.32;margin-top:3px}
+.app.dialog-tighter .messages .bubble .message-body{padding:5px 8px 6px}
+.app.dialog-tighter .messages .bubble .message-body .de{font-size:13px;line-height:1.26}
+.app.dialog-tighter .messages .bubble .message-body .sr{font-size:11.5px;line-height:1.25}
+@media(max-height:540px){
+ .top{height:32px;min-height:32px}
+ .messages{min-height:100px}
+ .messages .bubble .message-body .de{font-size:13.5px}
+ .messages .bubble .message-body .sr{font-size:11.5px}
+}
+@media(max-width:360px){
+ .messages .bubble .message-body .de{font-size:13.5px}
+ .messages .bubble .message-body .sr{font-size:11.5px}
+}
+
 </style>
 </head>
 <body>
 <main class="app">
- <header class="top"><div class="brand"><b>DE-MAX · ÖSD A1</b><small>40 SLIKA · AUTOMATSKI POKRENI · A1</small></div><button class="iconbtn" id="audioBtn" aria-label="Automatski izgovor" title="Automatski izgovor">🔊</button></header>
+ <header class="top"><div class="brand"><b>Dijalozi</b></div></header>
  <nav class="scenehead"><button class="arr" id="prev" aria-label="Prethodna slika">‹</button><div class="sceneinfo"><strong id="sceneTitle">Učitavanje…</strong><small id="sceneCount">1 / 40</small></div><button class="arr" id="next" aria-label="Sledeća slika">›</button></nav>
  <div class="photo"><img id="sceneImage" alt="Fotografija situacije za usmeni A1"></div>
  <div class="roles"><span id="myRole">Ja: Kunde</span><button class="switch" id="swap" title="Zameni uloge" aria-label="Zameni uloge">⇄</button><span class="ai" id="aiRole">AI: Verkäuferin</span></div>
@@ -742,10 +768,6 @@ $("mic").addEventListener("click",async()=>{
  clearListenTimer();
  stopVoice();
  if(!state.recording&&!state.busy&&!state.awaitNext)mic(false);
-});
-$("audioBtn").addEventListener("click",()=>{
- state.speaker=!state.speaker;$("audioBtn").textContent=state.speaker?"🔊":"🔇";
- if(!state.speaker){stopVoice();waitForMic(400);}
 });
 $("closeFinal").addEventListener("click",()=>{$("finalModal").hidden=true;});
 $("repeatFinal").addEventListener("click",()=>{$("finalModal").hidden=true;reset();});
