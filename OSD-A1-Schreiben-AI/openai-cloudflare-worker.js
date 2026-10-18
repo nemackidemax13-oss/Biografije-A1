@@ -266,6 +266,10 @@ function followsVerbRule(evidence,rule){
  if(rule.perspective==="neutral"&&rule.verbInfinitive==="mitkommen"){
   return /\b(?:kommt|kommen|komme)\b[\s\S]{0,100}\bmit\b/iu.test(text);
  }
+ if(rule.perspective==="neutral"&&rule.verbInfinitive==="möchten"){
+  return /\b(?:möchte|möchten|moechte|moechten)\b/iu.test(text) &&
+    (rule.actionVerbs||[]).every(act=>new RegExp("(?<![\\p{L}])"+act+"(?![\\p{L}])","iu").test(text));
+ }
  const prefix=rule.perspective==="ich"?"ich":rule.perspective==="du"?"du":rule.perspective==="wir"?"wir":null;
  const word=(x)=>"(?<![\\p{L}])"+x+"(?![\\p{L}])";
  const verb=new RegExp(word(first),"iu");
