@@ -104,7 +104,7 @@ const state={
  sessionId:0,voiceToken:0,speaking:false,pendingListen:null,
  recognitionId:0,noSpeechRetries:0,localPositions:[],localIndex:0,api:DEFAULT_API
 };
-try{const saved=localStorage.getItem(STORE)||"";state.api=saved.startsWith("https://a1usmeni.nemackidemax13.workers.dev")?saved:DEFAULT_API;}catch(e){state.api=DEFAULT_API;}
+try{const saved=localStorage.getItem(STORE)||"";if(saved){const target=new URL(saved);if(target.protocol==="https:"&&!target.hostname.startsWith("a1nivo.")&&!target.username&&!target.password)state.api=target.origin;}}catch(e){state.api=DEFAULT_API;}
 const clean=t=>String(t||"").trim();
 const scene=()=>scenes[state.index];
 const userSlot=()=>state.swap?0:1;
