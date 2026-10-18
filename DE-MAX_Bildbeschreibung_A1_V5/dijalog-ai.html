@@ -77,9 +77,9 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 </main>
 <section class="modal" id="config" hidden>
  <div class="panel"><h3>⚙ OpenAI povezivanje</h3>
-  <p>Za AI dijalog potrebna je <b>Cloudflare Worker</b> adresa. API ključ se čuva isključivo na serveru, nikad u ovoj stranici.</p>
-  <label for="apiUrl">URL Cloudflare Workera</label><input id="apiUrl" type="url" placeholder="https://ime-workera.vaš-nalog.workers.dev/">
-  <p>Sačuvaj adresu nakon objavljivanja priloženog fajla <b>openai-dijalog-worker.js</b> u Cloudflare Workers i dodavanja tajne <b>OPENAI_API_KEY</b>.</p>
+  <p>Za AI dijalog koristi se postojeći <b>a1nivo</b> Cloudflare Worker. API ključ ostaje u postojećoj serverskoj tajni i nikada se ne unosi u ovu stranicu.</p>
+  <label for="apiUrl">URL Cloudflare Workera</label><input id="apiUrl" type="url" placeholder="https://a1nivo.nemackidemax13.workers.dev">
+  <p>Adresa je već podešena na <b>a1nivo.nemackidemax13.workers.dev</b>. U Cloudflare treba objaviti objedinjeni Worker kod iz GitHuba. Postojeću tajnu <b>OPENAI_API_KEY</b> nemoj menjati.</p>
   <div class="row"><button id="closeConfig">Otkaži</button><button class="save" id="saveConfig">Sačuvaj i proveri</button></div>
  </div>
 </section>
@@ -93,7 +93,7 @@ const scenes=Array.isArray(window.DEMAX_SCENES)?window.DEMAX_SCENES:[];
 const $=id=>document.getElementById(id);
 const state={index:0,swap:false,busy:false,started:false,history:[],grades:[],speaker:true,rec:null,recording:false,api:""};
 const STORE="demax_a1_dialog_worker_url";
-try{state.api=localStorage.getItem(STORE)||"";}catch(e){}
+try{state.api=localStorage.getItem(STORE)||"https://a1nivo.nemackidemax13.workers.dev";}catch(e){state.api="https://a1nivo.nemackidemax13.workers.dev";}
 function clean(t){return String(t||"").trim();}
 function s(){return scenes[state.index];}
 function roleUser(){return s().roles[state.swap?0:1]||"Gast";}
@@ -115,7 +115,7 @@ function setFeedback(e){if(!e){$("feedback").hidden=true;return;}const score=Mat
 async function request(action,utterance){if(!state.api){$("config").hidden=false;throw Error("Prvo poveži Cloudflare Worker u podešavanjima ⚙.");}
  const ctl=new AbortController();const timer=setTimeout(()=>ctl.abort(),32000);
  const payload={action:action,scene:state.index+1,userRole:roleUser(),aiRole:roleAI(),answer:utterance||"",history:state.history.slice(-16)};
- try{const resp=await fetch(state.api,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload),signal:ctl.signal,mode:"cors",cache:"no-store"});let data;try{data=await resp.json();}catch(e){throw Error("Server nije vratio JSON odgovor.");}if(!resp.ok)throw Error(data.error||"AI server HTTP "+resp.status);if(!data||typeof data.reply!=="string")throw Error("Nepotpun odgovor AI servera.");return data;}finally{clearTimeout(timer);}}
+ try{const resp=await fetch(state.api.replace(/\/+$/,"")+"/api/a1-dialog",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload),signal:ctl.signal,mode:"cors",cache:"no-store"});let data;try{data=await resp.json();}catch(e){throw Error("Server nije vratio JSON odgovor.");}if(!resp.ok)throw Error(data.error||"AI server HTTP "+resp.status);if(!data||typeof data.reply!=="string")throw Error("Nepotpun odgovor AI servera.");return data;}finally{clearTimeout(timer);}}
 async function start(){if(state.busy||state.started)return;setBusy(true);status("AI priprema početno A1 pitanje…");try{const d=await request("start","");$("messages").innerHTML="";add("ai",d.reply);state.history.push({role:"assistant",content:d.reply});state.started=true;$("start").textContent="✓ Dijalog aktivan";status("Tvoj red. Odgovori na nemačkom.");if(state.speaker)speak(d.reply);}catch(e){status(e.name==="AbortError"?"AI nije odgovorio. Proveri vezu.":e.message,true);}finally{setBusy(false);}}
 async function send(){if(state.busy)return;if(!state.started){status("Prvo pritisni „Počni dijalog“.",true);return;}const answer=clean($("answer").value);if(answer.length<2){status("Izgovori ili napiši odgovor.",true);return;}
  stopMic();stopVoice();setBusy(true);$("answer").value="";add("me",answer);status("OpenAI proverava odgovor i nastavlja razgovor…");
@@ -129,7 +129,7 @@ async function mic(){if(state.busy)return;const SR=window.SpeechRecognition||win
  rec.onerror=function(e){status("Mikrofon: "+e.error+". Pokušaj ponovo ili kucaj.",true);};
  rec.onend=function(){state.recording=false;$("mic").classList.remove("on");if(interim&&!finalText) $("answer").value=interim;status("Govor je unet. Proveri tekst i pritisni ➤.");};
  rec.start();state.recording=true;$("mic").classList.add("on");status("🎙 Slušam nemački. Pritisni mikrofon za kraj.");}catch(e){status("Mikrofon nije dostupan: "+e.message,true);}}
-async function checkUrl(u){let url;try{url=new URL(u);}catch(e){throw Error("Unesi ispravnu URL adresu.");}if(url.protocol!=="https:")throw Error("Potrebna je HTTPS adresa.");if(url.username||url.password||url.search||url.hash)throw Error("URL ne sme da sadrži lozinku, parametre ili #.");const base=url.href.replace(/\/+$/,"");const ctl=new AbortController();const t=setTimeout(()=>ctl.abort(),12000);try{const r=await fetch(base+"/health",{method:"GET",signal:ctl.signal,mode:"cors",cache:"no-store"});if(!r.ok)throw Error("Worker nije dostupan (HTTP "+r.status+").");const data=await r.json();if(data.service!=="demax-a1-dijalog")throw Error("Ova adresa nije DE-MAX AI dijalog Worker.");return base;}finally{clearTimeout(t);}}
+async function checkUrl(u){let url;try{url=new URL(u);}catch(e){throw Error("Unesi ispravnu URL adresu.");}if(url.protocol!=="https:")throw Error("Potrebna je HTTPS adresa.");if(url.username||url.password||url.search||url.hash)throw Error("URL ne sme da sadrži lozinku, parametre ili #.");const base=url.href.replace(/\/+$/,"");const ctl=new AbortController();const t=setTimeout(()=>ctl.abort(),12000);try{const r=await fetch(base+"/health",{method:"GET",signal:ctl.signal,mode:"cors",cache:"no-store"});if(!r.ok)throw Error("Worker nije dostupan (HTTP "+r.status+").");const data=await r.json();if(data.dialogEnabled!==true)throw Error("Worker još nema A1 dijalog rutu. Objavi objedinjeni a1nivo kod u Cloudflare.");return base;}finally{clearTimeout(t);}}
 $("prev").addEventListener("click",()=>newScene(state.index-1));$("next").addEventListener("click",()=>newScene(state.index+1));
 $("swap").addEventListener("click",()=>{state.swap=!state.swap;render();});
 $("start").addEventListener("click",start);$("send").addEventListener("click",send);$("retry").addEventListener("click",clearSession);$("end").addEventListener("click",finish);$("mic").addEventListener("click",mic);
