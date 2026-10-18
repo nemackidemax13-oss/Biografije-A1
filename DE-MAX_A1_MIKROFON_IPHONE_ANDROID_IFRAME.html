@@ -2,7 +2,7 @@
 <style>*{box-sizing:border-box}body{background:#edf4fb;margin:0;padding:12px;font:15px/1.5 system-ui,Arial,sans-serif;color:#183d69}main{max-width:730px;margin:auto;background:white;border:1px solid #d5e1f2;box-shadow:0 8px 22px #162f5415;padding:20px;border-radius:16px}h1{font-size:21px;margin:0 0 8px}.btn,button{display:block;width:100%;margin:10px 0;padding:14px 10px;border:0;border-radius:11px;background:#147d55;color:#fff;font-weight:900;font-size:15px;text-align:center;text-decoration:none}.blue{background:#175dab}.gray{background:#eef3fa;color:#265781;border:1px solid #cce0ee}.note{background:#fff7e8;border:1px solid #ebdbb9;border-radius:9px;padding:11px;font-size:13px;margin:12px 0}textarea{width:100%;height:110px;border-radius:8px;border:1px solid #c5d6e8;padding:8px;font:12px/1.4 monospace;resize:vertical}small{display:block;color:#5e7591;margin:8px 0}.code{font-weight:800;color:#23649a}#status{font-size:13px;font-weight:750;color:#187450;min-height:20px}h2{font-size:16px;margin-top:22px}ol{padding-left:23px}li{margin:7px 0}@media(max-width:500px){main{padding:14px;border-radius:10px}}</style></head><body><main>
 <h1>DE-MAX A1 · Mikrofon za iPhone i Android</h1>
 <p>Jednom pritisni <b>Počni razgovor</b> i dozvoli mikrofon. Posle svakog AI pitanja aplikacija pokušava automatski da sluša. Ako pregledač blokira mikrofon u iframe prikazu, otvori direktnu stranicu.</p>
-<a class="btn" href="https://nemackidemax13-oss.github.io/Biografije-A1/DE-MAX_A1_USMENI_AI.html?v=mobilni-mikrofon-20261018" target="_blank" rel="noopener">OTVORI A1 USMENI DIREKTNO</a>
+<a class="btn" href="https://nemackidemax13-oss.github.io/Biografije-A1/DE-MAX_A1_USMENI_AI.html?autostart=1&v=20261018-auto1" target="_blank" rel="noopener">OTVORI A1 USMENI DIREKTNO</a>
 <a class="btn blue" href="https://nemackidemax13-oss.github.io/Biografije-A1/DE-MAX_A1_USMENI_IFRAME_MOBILNI.html" target="_blank" rel="noopener">OTVORI A1 USMENI U IFRAME</a>
 <h2>Iframe kod za tvoju aplikaciju</h2><button id="copyIframe" type="button">KOPIRAJ IFRAME KOD</button>
 <textarea id="embed" readonly spellcheck="false"></textarea>
@@ -14,7 +14,7 @@
 <div class="note"><b>U Cloudflareu:</b> usmenia1prvideo → Edit code → klikni unutar worker.js → Ctrl+A → Delete → Ctrl+V → Deploy. Ne dodaj kod ispod starog i ne menjaj Secret nivoA1.</div>
 <small>iPhone/Safari i Android/Chrome različito ograničavaju automatski mikrofon. Pregledač može zahtevati novi dodir i korisničku dozvolu. Bez toga nije moguće garantovati aktivaciju u svakoj aplikaciji.</small>
 </main><script>
-const EMBED="<iframe src=\"https://nemackidemax13-oss.github.io/Biografije-A1/DE-MAX_A1_USMENI_AI.html?v=mobilni-mikrofon-20261018\" title=\"DE-MAX ÖSD A1 usmeni AI\" allow=\"microphone; autoplay\" style=\"display:block;width:100%;height:100dvh;min-height:600px;border:0;border-radius:12px\" loading=\"eager\"></iframe>";
+const EMBED="<iframe src=\"https://nemackidemax13-oss.github.io/Biografije-A1/DE-MAX_A1_USMENI_AI.html?autostart=1&v=20261018-auto1\" title=\"DE-MAX ÖSD A1 usmeni AI\" allow=\"microphone; autoplay\" style=\"display:block;width:100%;height:100dvh;min-height:600px;border:0;border-radius:12px\" loading=\"eager\"></iframe>";
 const URL="https://raw.githubusercontent.com/nemackidemax13-oss/Biografije-A1/main/DE-MAX_Bildbeschreibung_A1_V5/openai-dijalog-worker.js";
 document.getElementById("embed").value=EMBED;
 document.getElementById("copyIframe").addEventListener("click",async()=>{
