@@ -20,7 +20,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 .scenehead{padding:7px 10px;display:flex;align-items:center;gap:8px;flex:none;background:white;border-bottom:1px solid var(--line)}
 .arr{border:1px solid #ffd0d6;color:var(--red);background:#fff5f6;width:38px;height:36px;border-radius:10px;font-size:25px;font-weight:900}
 .sceneinfo{min-width:0;flex:1;text-align:center}.sceneinfo strong{display:block;font-size:14px;line-height:1.23;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sceneinfo small{display:block;color:var(--muted);font-size:10px}
-.photo{margin:7px 9px 4px;min-height:0;height:clamp(152px,30dvh,300px);flex:none;display:flex;justify-content:center;align-items:center;border:1px solid var(--line);border-radius:13px;background:white;position:relative;overflow:hidden}
+.photo{margin:4px 5px 3px;min-height:0;height:clamp(190px,42dvh,410px);flex:none;display:flex;justify-content:center;align-items:center;border:1px solid var(--line);border-radius:13px;background:white;position:relative;overflow:hidden}
 .photo img{width:100%;height:100%;object-fit:contain}
 .photo .openimg{position:absolute;bottom:6px;right:6px;background:#fffefaec;border:1px solid var(--line);border-radius:8px;font-size:11px;font-weight:800;color:var(--blue);padding:6px}
 .roles{padding:3px 10px 7px;display:flex;gap:6px;align-items:center;flex:none}
@@ -59,20 +59,21 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 .panel a{color:var(--blue);font-weight:700}
 .finalbox{font-size:14px;line-height:1.8}
 .finalbox strong{font-size:22px;color:var(--green)}
-@media(max-height:680px){.top{height:42px}.scenehead{padding:4px 8px}.photo{height:clamp(130px,25dvh,205px);margin-top:4px}.roles{padding-bottom:4px}.roles span{padding:5px}.actions{padding-bottom:4px}.actions button{min-height:30px}.feedback{max-height:53px}.bubble{font-size:12px;padding:7px}.inputrow textarea{min-height:41px}}
+@media(max-height:680px){.top{height:42px}.scenehead{padding:4px 8px}.photo{height:clamp(158px,37dvh,265px);margin-top:3px}.roles{padding-bottom:4px}.roles span{padding:5px}.actions{padding-bottom:4px}.actions button{min-height:30px}.feedback{max-height:53px}.bubble{font-size:12px;padding:7px}.inputrow textarea{min-height:41px}}
 @media(min-width:700px){.app{border:5px solid white;border-radius:17px;height:min(100dvh,930px)}}
+@media(max-height:540px){.photo{height:31dvh;min-height:120px}.feedback{max-height:48px}.actions button{min-height:27px}.scenehead{padding:3px 7px}}
 </style>
 </head>
 <body>
 <main class="app">
- <header class="top"><div class="brand"><b>DE-MAX · ÖSD A1</b><small>RAZGOVOR NA OSNOVU SLIKE · OPENAI</small></div><button class="iconbtn" id="audioBtn" aria-label="Automatski izgovor" title="Automatski izgovor">🔊</button><button class="iconbtn" id="configBtn" aria-label="Podešavanje OpenAI veze">⚙</button></header>
+ <header class="top"><div class="brand"><b>DE-MAX · ÖSD A1</b><small>40 SLIKA · AUTOMATSKI MIKROFON · A1</small></div><button class="iconbtn" id="audioBtn" aria-label="Automatski izgovor" title="Automatski izgovor">🔊</button><button class="iconbtn" id="configBtn" aria-label="Podešavanje OpenAI veze">⚙</button></header>
  <nav class="scenehead"><button class="arr" id="prev" aria-label="Prethodna slika">‹</button><div class="sceneinfo"><strong id="sceneTitle">Učitavanje…</strong><small id="sceneCount">1 / 40</small></div><button class="arr" id="next" aria-label="Sledeća slika">›</button></nav>
  <div class="photo"><img id="sceneImage" alt="Fotografija situacije za usmeni A1"><button class="openimg" id="enlarge">⤢ Uvećaj</button></div>
  <div class="roles"><span id="myRole">Ja: Kunde</span><button class="switch" id="swap" title="Zameni uloge" aria-label="Zameni uloge">⇄</button><span class="ai" id="aiRole">AI: Verkäuferin</span></div>
- <div class="actions"><button class="primary" id="start">▶ Počni dijalog</button><button id="end">✓ Rezultat</button><button class="alert" id="retry">↻ Ponovo</button></div>
+ <div class="actions"><button class="primary" id="start">▶ Počni razgovor</button><button id="end">✓ Rezultat</button><button class="alert" id="retry">↻ Ponovo</button></div>
  <section class="messages" id="messages" aria-live="polite"><p class="empty">Izaberi sliku i pritisni „Počni dijalog“. Razgovaraj sa AI osobom na nemačkom. Učenik i AI igraju uloge prema slici.</p></section>
  <div class="feedback" id="feedback" hidden><b id="feedbackTitle"></b><p id="feedbackBody"></p></div>
- <div class="status"><span id="status">Mikrofon: spreman · Jezik: nemački (de-DE)</span><em id="counter">0 odgovora</em></div>
+ <div class="status"><span id="status">Pritisni Počni razgovor i dozvoli mikrofon</span><em id="counter">0 odgovora</em></div>
  <div class="inputrow"><textarea id="answer" rows="2" placeholder="Govori ili napiši odgovor na nemačkom…" aria-label="Odgovor na nemačkom" maxlength="500"></textarea><button id="mic" class="mic" title="Uključi ili zaustavi mikrofon" aria-label="Mikrofon">🎙</button><button id="send" class="send" title="Pošalji odgovor" aria-label="Pošalji odgovor">➤</button></div>
 </main>
 <section class="modal" id="config" hidden>
@@ -86,61 +87,245 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 <section class="modal" id="imageModal" hidden><div class="panel" style="width:min(96vw,650px);max-height:98dvh"><button id="closeImage" style="float:right">✕</button><img id="largeImage" style="width:100%;height:auto;max-height:85dvh;object-fit:contain" alt="Uvećana slika"></div></section>
 <section class="modal" id="finalModal" hidden><div class="panel"><h3>Rezultat · ÖSD A1 dijalog</h3><div class="finalbox" id="finalDetails"></div><p>Ocenjuje se razumljivost teksta dobijenog iz govora, sadržaj, gramatika i prikladnost za situaciju. <b>Izgovor i akcenat se ne ocenjuju automatski.</b> Ovo je vežba, ne zvaničan ÖSD rezultat.</p><div class="row"><button id="closeFinal">Zatvori</button><button id="repeatFinal" class="save">Vežbaj ponovo</button></div></div></section>
 <script src="./scenes.js"></script>
+<script src="./dialogs-fallback.js"></script>
 <script>
 (function(){
 "use strict";
 const scenes=Array.isArray(window.DEMAX_SCENES)?window.DEMAX_SCENES:[];
+const offline=window.DEMAX_FALLBACK_DIALOGS||{};
 const $=id=>document.getElementById(id);
-const state={index:0,swap:false,busy:false,started:false,history:[],grades:[],speaker:true,rec:null,recording:false,api:""};
+const DEFAULT_API="https://a1nivo.nemackidemax13.workers.dev";
 const STORE="demax_a1_dialog_worker_url";
-try{state.api=localStorage.getItem(STORE)||"https://a1nivo.nemackidemax13.workers.dev";}catch(e){state.api="https://a1nivo.nemackidemax13.workers.dev";}
-function clean(t){return String(t||"").trim();}
-function s(){return scenes[state.index];}
-function roleUser(){return s().roles[state.swap?0:1]||"Gast";}
-function roleAI(){return s().roles[state.swap?1:0]||"Partner";}
-function esc(t){return clean(t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
-function status(t,err){$("status").textContent=t;$("status").style.color=err?"#bd3447":"#58759a";}
-function setBusy(v){state.busy=v;$("start").disabled=v;$("send").disabled=v;$("mic").disabled=v;$("swap").disabled=v;$("prev").disabled=v;$("next").disabled=v;}
-function add(type,text){const wrap=document.createElement("div");wrap.className="bubble "+type;let markup="<small>"+(type==="ai"?"AI · "+esc(roleAI()):type==="me"?"Učenik · "+esc(roleUser()):"Provera")+"</small>";
- if(type==="ai")markup+='<button class="speak" aria-label="Poslušaj" title="Poslušaj">🔊</button>';markup+=esc(text);wrap.innerHTML=markup;
- if(type==="ai")wrap.querySelector("button").addEventListener("click",()=>speak(text));$("messages").appendChild(wrap);$("messages").scrollTop=$("messages").scrollHeight;}
-function speak(t){if(!("speechSynthesis" in window)||!clean(t))return;window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang="de-DE";u.rate=.91;u.pitch=1;const voices=window.speechSynthesis.getVoices();const german=voices.filter(v=>/^de[-_]/i.test(v.lang));u.voice=german.find(v=>/google/i.test(v.name))||german.find(v=>/natural|premium/i.test(v.name))||german[0]||null;window.speechSynthesis.speak(u);}
-function stopVoice(){if("speechSynthesis" in window)window.speechSynthesis.cancel();}
-function stopMic(){if(state.rec&&state.recording){try{state.rec.stop();}catch(e){}}state.recording=false;$("mic").classList.remove("on");}
-function clearSession(){stopMic();stopVoice();state.started=false;state.history=[];state.grades=[];$("answer").value="";$("messages").innerHTML='<p class="empty">Pritisni „Počni dijalog“ i odgovaraj punim A1 rečenicama. AI će razgovarati u ulozi druge osobe sa slike.</p>';$("feedback").hidden=true;$("counter").textContent="0 odgovora";status("Spremno za novu vežbu.");$("start").textContent="▶ Počni dijalog";}
-function render(){if(!scenes.length){status("Nije učitana baza slika (scenes.js).",true);return;}const x=s();$("sceneTitle").textContent=x.de;$("sceneCount").textContent=(state.index+1)+" / "+scenes.length+" · "+x.sr;$("sceneImage").src=x.img;$("sceneImage").alt="Situacija "+x.no+" – "+x.de;$("myRole").textContent="Ja: "+roleUser();$("aiRole").textContent="AI: "+roleAI();clearSession();}
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+const state={
+ index:0,swap:false,busy:false,started:false,finished:false,
+ history:[],grades:[],mode:"online",speaker:true,
+ rec:null,recording:false,autoMic:true,autoMicAllowed:false,
+ sessionId:0,voiceToken:0,speaking:false,pendingListen:null,
+ recognitionId:0,noSpeechRetries:0,localPositions:[],localIndex:0,api:DEFAULT_API
+};
+try{state.api=localStorage.getItem(STORE)||DEFAULT_API;}catch(e){}
+const clean=t=>String(t||"").trim();
+const scene=()=>scenes[state.index];
+const userSlot=()=>state.swap?0:1;
+const aiSlot=()=>state.swap?1:0;
+const userRole=()=>scene().roles[userSlot()]||"Gast";
+const aiRole=()=>scene().roles[aiSlot()]||"Partner";
+const esc=t=>clean(t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function status(t,err){$("status").textContent=t;$("status").style.color=err?"#c4324a":"#58759a";}
+function busy(v){state.busy=v;for(const id of ["start","send","swap","prev","next"])$(id).disabled=v;$("mic").disabled=v||!state.started;}
+function clearListenTimer(){if(state.pendingListen){clearTimeout(state.pendingListen);state.pendingListen=null;}}
+function stopVoice(){state.voiceToken++;state.speaking=false;if("speechSynthesis" in window)try{window.speechSynthesis.cancel();}catch(e){}}
+function stopMic(){state.recognitionId++;if(state.rec){state.rec.onend=null;state.rec.onresult=null;state.rec.onerror=null;try{state.rec.abort();}catch(e){}state.rec=null;}state.recording=false;$("mic").classList.remove("on");}
+function reset(){
+ state.sessionId++;clearListenTimer();stopMic();stopVoice();state.started=false;state.finished=false;
+ state.history=[];state.grades=[];state.mode="online";state.localIndex=0;state.localPositions=[];
+ state.noSpeechRetries=0;$("answer").value="";
+ $("messages").innerHTML='<p class="empty">Pritisni „Počni razgovor“. Posle pitanja mikrofon će se sam uključiti ako pregledač dozvoli. Možeš i da kucaš.</p>';
+ $("feedback").hidden=true;$("counter").textContent="0 odgovora";
+ $("start").textContent="▶ Počni razgovor";status("Spremno. Pritisni „Počni razgovor“ i dozvoli mikrofon.");busy(false);
+}
+function render(){
+ if(!scenes.length){status("Greška: baza fotografija nije učitana.",true);return;}
+ const x=scene();$("sceneTitle").textContent=x.de;$("sceneCount").textContent=(state.index+1)+" / "+scenes.length+" · "+x.sr;
+ $("sceneImage").src=x.img;$("sceneImage").alt="A1 situacija: "+x.de;
+ $("myRole").textContent="Ja: "+userRole();$("aiRole").textContent="AI: "+aiRole();reset();
+}
 function newScene(i){if(state.busy)return;state.index=(i+scenes.length)%scenes.length;state.swap=false;render();}
-function setFeedback(e){if(!e){$("feedback").hidden=true;return;}const score=Math.max(0,Math.min(2,Number(e.score)||0));$("feedback").hidden=false;$("feedback").className="feedback "+(score===2?"good":score===0?"bad":"");$("feedbackTitle").textContent="Provera: "+score+" / 2";
- let msg=clean(e.explanation);if(e.corrected&&clean(e.corrected))msg+="  ✓ "+clean(e.corrected);$("feedbackBody").textContent=msg;}
-async function request(action,utterance){if(!state.api){$("config").hidden=false;throw Error("Prvo poveži Cloudflare Worker u podešavanjima ⚙.");}
- const ctl=new AbortController();const timer=setTimeout(()=>ctl.abort(),32000);
- const payload={action:action,scene:state.index+1,userRole:roleUser(),aiRole:roleAI(),answer:utterance||"",history:state.history.slice(-16)};
- try{const resp=await fetch(state.api.replace(/\/+$/,"")+"/api/a1-dialog",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload),signal:ctl.signal,mode:"cors",cache:"no-store"});let data;try{data=await resp.json();}catch(e){throw Error("Server nije vratio JSON odgovor.");}if(!resp.ok)throw Error(data.error||"AI server HTTP "+resp.status);if(!data||typeof data.reply!=="string")throw Error("Nepotpun odgovor AI servera.");return data;}finally{clearTimeout(timer);}}
-async function start(){if(state.busy||state.started)return;setBusy(true);status("AI priprema početno A1 pitanje…");try{const d=await request("start","");$("messages").innerHTML="";add("ai",d.reply);state.history.push({role:"assistant",content:d.reply});state.started=true;$("start").textContent="✓ Dijalog aktivan";status("Tvoj red. Odgovori na nemačkom.");if(state.speaker)speak(d.reply);}catch(e){status(e.name==="AbortError"?"AI nije odgovorio. Proveri vezu.":e.message,true);}finally{setBusy(false);}}
-async function send(){if(state.busy)return;if(!state.started){status("Prvo pritisni „Počni dijalog“.",true);return;}const answer=clean($("answer").value);if(answer.length<2){status("Izgovori ili napiši odgovor.",true);return;}
- stopMic();stopVoice();setBusy(true);$("answer").value="";add("me",answer);status("OpenAI proverava odgovor i nastavlja razgovor…");
- const previous=state.history.slice();
- try{const d=await request("turn",answer);state.history.push({role:"user",content:answer},{role:"assistant",content:d.reply});let e=d.evaluation||{};let score=Math.max(0,Math.min(2,Math.round(Number(e.score)||0)));state.grades.push(score);setFeedback(e);$("counter").textContent=state.grades.length+" odgovora";add("ai",d.reply);status("Provereno. "+(d.finished?"Dijalog je završen; otvori rezultat.":"Odgovori na sledeće pitanje."));if(state.speaker)speak(d.reply);}catch(e){state.history=previous;const bubbles=$("messages").querySelectorAll(".bubble.me");if(bubbles.length)bubbles[bubbles.length-1].remove();$("answer").value=answer;status(e.name==="AbortError"?"Vreme čekanja isteklo. Pokušaj ponovo.":e.message,true);}finally{setBusy(false);}}
-function finish(){stopMic();stopVoice();const n=state.grades.length;const sum=state.grades.reduce((a,b)=>a+b,0);const pct=n?Math.round(sum/(n*2)*100):0;const label=n?("Prosečno "+(sum/n).toFixed(1)+" / 2 po odgovoru"):"Nema ocenjenih odgovora.";
- $("finalDetails").innerHTML="<strong>"+pct+"%</strong> · "+n+" odgovora<br>"+esc(label)+"<br>"+(n<5?"Za potpuniju vežbu preporučuje se najmanje 5 odgovora.":"Završio/la si vežbu ove situacije.");$("finalModal").hidden=false;}
-async function mic(){if(state.busy)return;const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){status("Ovaj pregledač ne podržava prepoznavanje govora. Koristi Chrome ili upiši odgovor.",true);return;}
- if(state.recording){stopMic();return;}stopVoice();try{const rec=new SR();state.rec=rec;rec.lang="de-DE";rec.interimResults=true;rec.continuous=true;rec.maxAlternatives=1;
- let finalText=clean($("answer").value),interim="";rec.onresult=function(ev){interim="";for(let i=ev.resultIndex;i<ev.results.length;i++){const piece=clean(ev.results[i][0].transcript);if(ev.results[i].isFinal)finalText+=(finalText?" ":"")+piece;else interim+=(interim?" ":"")+piece;}$("answer").value=clean(finalText+" "+interim);};
- rec.onerror=function(e){status("Mikrofon: "+e.error+". Pokušaj ponovo ili kucaj.",true);};
- rec.onend=function(){state.recording=false;$("mic").classList.remove("on");if(interim&&!finalText) $("answer").value=interim;status("Govor je unet. Proveri tekst i pritisni ➤.");};
- rec.start();state.recording=true;$("mic").classList.add("on");status("🎙 Slušam nemački. Pritisni mikrofon za kraj.");}catch(e){status("Mikrofon nije dostupan: "+e.message,true);}}
-async function checkUrl(u){let url;try{url=new URL(u);}catch(e){throw Error("Unesi ispravnu URL adresu.");}if(url.protocol!=="https:")throw Error("Potrebna je HTTPS adresa.");if(url.username||url.password||url.search||url.hash)throw Error("URL ne sme da sadrži lozinku, parametre ili #.");const base=url.href.replace(/\/+$/,"");const ctl=new AbortController();const t=setTimeout(()=>ctl.abort(),12000);try{const r=await fetch(base+"/health",{method:"GET",signal:ctl.signal,mode:"cors",cache:"no-store"});if(!r.ok)throw Error("Worker nije dostupan (HTTP "+r.status+").");const data=await r.json();if(data.dialogEnabled!==true)throw Error("Worker još nema A1 dijalog rutu. Objavi objedinjeni a1nivo kod u Cloudflare.");return base;}finally{clearTimeout(t);}}
-$("prev").addEventListener("click",()=>newScene(state.index-1));$("next").addEventListener("click",()=>newScene(state.index+1));
+function bubble(type,t){
+ const wrap=document.createElement("div");wrap.className="bubble "+type;
+ const head=type==="ai"?"Partner · "+esc(aiRole()):type==="me"?"Učenik · "+esc(userRole()):"Informacija";
+ wrap.innerHTML="<small>"+head+"</small>"+(type==="ai"?'<button class="speak" title="Poslušaj ponovo" aria-label="Ponovi glas">🔊</button>':"")+esc(t);
+ if(type==="ai")wrap.querySelector("button").addEventListener("click",()=>say(t,true));
+ const box=$("messages");box.appendChild(wrap);box.scrollTop=box.scrollHeight;
+}
+function note(t){bubble("note",t);}
+function feedback(e){
+ const score=Math.max(0,Math.min(2,Math.round(Number(e.score)||0)));
+ $("feedback").hidden=false;$("feedback").className="feedback "+(score===2?"good":score===0?"bad":"");
+ $("feedbackTitle").textContent="OpenAI provera: "+score+" / 2";
+ $("feedbackBody").textContent=[clean(e.explanation),clean(e.corrected)?("Ispravno: "+clean(e.corrected)):""].filter(Boolean).join(" · ")||"Razumljiv A1 odgovor.";
+}
+function waitForMic(delay){
+ clearListenTimer();if(!state.started||state.finished||state.busy||!state.autoMic||!SR)return;
+ if(!state.autoMicAllowed){status("Klikni 🎙 da dozvoliš mikrofon ili napiši odgovor.");return;}
+ const session=state.sessionId;
+ state.pendingListen=setTimeout(()=>{state.pendingListen=null;if(session===state.sessionId&&!state.busy&&!state.speaking&&!state.recording)mic(true);},delay||280);
+}
+function say(t,listenAfter){
+ clearListenTimer();stopMic();stopVoice();
+ if(!state.speaker||!("speechSynthesis" in window)){if(listenAfter)waitForMic(280);return;}
+ const token=state.voiceToken,session=state.sessionId;
+ try{
+   const utter=new SpeechSynthesisUtterance(t);utter.lang="de-DE";utter.rate=.91;utter.pitch=1;
+   const voices=window.speechSynthesis.getVoices(),de=voices.filter(v=>/^de[-_]/i.test(v.lang));
+   utter.voice=de.find(v=>/google/i.test(v.name))||de.find(v=>/natural|premium/i.test(v.name))||de[0]||null;
+   state.speaking=true;
+   const done=()=>{if(token!==state.voiceToken||session!==state.sessionId)return;state.speaking=false;if(listenAfter)waitForMic(400);};
+   utter.onend=done;utter.onerror=done;
+   window.speechSynthesis.speak(utter);
+ }catch(e){state.speaking=false;if(listenAfter)waitForMic(450);}
+}
+function askMicPermission(){
+ if(!SR){status("Pregledač nema glasovno prepoznavanje: koristi Chrome ili upiši odgovor.",true);return;}
+ if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){state.autoMicAllowed=true;return;}
+ // Called directly during the student's click, satisfying browser gesture requirements.
+ try{navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
+   for(const track of stream.getTracks())track.stop();state.autoMicAllowed=true;
+   if(state.started&&!state.speaking&&!state.busy&&!state.recording)waitForMic(450);
+ }).catch(()=>{state.autoMicAllowed=false;status("Dozvoli mikrofon u pregledaču ili koristi tastaturu.",true);});}
+ catch(e){state.autoMicAllowed=false;}
+}
+function mic(automatic=false){
+ if(state.busy||!state.started||state.finished)return;
+ if(!SR){status("Mikrofon nije podržan. Koristi Chrome na HTTPS adresi ili napiši odgovor.",true);return;}
+ if(state.recording){stopMic();status("Snimanje zaustavljeno. Pritisni ➤ ili nastavi govor.");return;}
+ if(automatic&&!state.autoMicAllowed)return;
+ clearListenTimer();stopVoice();stopMic();
+ const currentId=state.recognitionId,session=state.sessionId;
+ let rec;try{rec=new SR();}catch(e){status("Prepoznavanje govora nije dostupno.",true);return;}
+ state.rec=rec;rec.lang="de-DE";rec.interimResults=true;rec.continuous=false;rec.maxAlternatives=1;
+ let finalText=clean($("answer").value),interim="",hasResult=false,voiceError="";
+ rec.onresult=ev=>{
+   if(state.recognitionId!==currentId||session!==state.sessionId)return;
+   interim="";
+   for(let i=ev.resultIndex;i<ev.results.length;i++){
+     const chunk=clean(ev.results[i][0].transcript);if(!chunk)continue;
+     if(ev.results[i].isFinal){finalText+=(finalText?" ":"")+chunk;hasResult=true;}
+     else interim+=(interim?" ":"")+chunk;
+   }
+   $("answer").value=clean(finalText+" "+interim);
+ };
+ rec.onerror=ev=>{voiceError=ev.error||"unknown";if(["not-allowed","service-not-allowed","audio-capture"].includes(voiceError))state.autoMicAllowed=false;};
+ rec.onend=()=>{
+   if(state.recognitionId!==currentId||session!==state.sessionId)return;
+   state.rec=null;state.recording=false;$("mic").classList.remove("on");
+   const t=clean($("answer").value);
+   if(hasResult&&t.length>1&&!state.busy&&state.started){
+     state.noSpeechRetries=0;status("Govor prepoznat · automatski šaljem odgovor…");
+     state.pendingListen=setTimeout(()=>{state.pendingListen=null;if(session===state.sessionId&&!state.busy)send();},620);
+   }else if(voiceError==="no-speech"&&state.noSpeechRetries<1&&state.autoMicAllowed){
+     state.noSpeechRetries++;status("Nisam čuo odgovor, ponovo uključujem mikrofon…");waitForMic(850);
+   }else if(voiceError){
+     status("Mikrofon: "+voiceError+". Pritisni 🎙 ili napiši odgovor.",true);
+   }else status("Mikrofon je spreman. Pritisni 🎙 ili napiši odgovor.");
+ };
+ try{rec.start();state.recording=true;state.autoMicAllowed=true;$("mic").classList.add("on");status("🎙 Slušam nemački… govori sada.");}
+ catch(e){state.rec=null;state.recording=false;$("mic").classList.remove("on");status("Pregledač je blokirao automatski mikrofon. Klikni 🎙.",true);}
+}
+async function health(){
+ const ctl=new AbortController(),timeout=setTimeout(()=>ctl.abort(),4500);
+ try{const r=await fetch(state.api.replace(/\/+$/,"")+"/health",{signal:ctl.signal,cache:"no-store",mode:"cors"});if(!r.ok)return false;
+  const data=await r.json();return data.dialogEnabled===true||data.service==="demax-a1-dijalog";
+ }catch(e){return false;}finally{clearTimeout(timeout);}
+}
+async function request(action,answer){
+ const ctl=new AbortController(),timeout=setTimeout(()=>ctl.abort(),26000);
+ const body={action,scene:state.index+1,userRoleIndex:userSlot(),userRole:userRole(),aiRole:aiRole(),
+   answer:answer||"",history:state.history.slice(-16)};
+ try{const base=state.api.replace(/\/+$/,"");
+  const endpoint=base+"/api/a1-dialog";const response=await fetch(endpoint,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body),signal:ctl.signal,cache:"no-store",mode:"cors"});
+  const payload=await response.json().catch(()=>({}));
+  if(!response.ok)throw Error(payload.error||"AI server HTTP "+response.status);
+  if(!payload||typeof payload.reply!=="string"||!clean(payload.reply))throw Error("AI nije vratio odgovor.");
+  return payload;
+ }finally{clearTimeout(timeout);}
+}
+function localPrepare(){
+ const rows=offline[String(state.index+1)]||[];
+ const indices=[];for(let i=0;i<rows.length;i++)if(i%2===aiSlot()&&rows[i].includes("?"))indices.push(i);
+ if(!indices.length)for(let i=0;i<rows.length;i++)if(i%2===aiSlot())indices.push(i);
+ state.localPositions=indices;state.localIndex=0;state.mode="local";
+}
+function localNext(){
+ const rows=offline[String(state.index+1)]||[];
+ if(state.localIndex>=state.localPositions.length)return{reply:"Vielen Dank. Auf Wiedersehen!",finished:true};
+ return{reply:rows[state.localPositions[state.localIndex++]]||"Guten Tag! Was möchten Sie machen?",finished:false};
+}
+async function start(){
+ if(state.busy||state.started||!scenes.length)return;
+ // This browser click allows the microphone permission prompt before network requests.
+ state.noSpeechRetries=0;askMicPermission();busy(true);status("Povezujem razgovor…");
+ let q="",warn="";
+ try{
+   if(await health()){
+      const data=await request("start","");q=data.reply;state.mode="online";
+   }else{localPrepare();q=localNext().reply;warn="Cloudflare još nema aktivan OpenAI dijalog. Pokrenuta je lokalna vežba sa postojećim A1 rečenicama, bez AI ocenjivanja.";}
+ }catch(e){localPrepare();q=localNext().reply;warn="OpenAI trenutno nije odgovorio. Aktivna je lokalna vežba bez AI provere. Za OpenAI objavi objedinjeni a1nivo Worker."; }
+ if(!q)q="Guten Tag! Was möchten Sie?";
+ $("messages").innerHTML="";state.started=true;state.finished=false;
+ if(warn)note(warn);
+ bubble("ai",q);state.history.push({role:"assistant",content:q});$("start").textContent=state.mode==="online"?"✓ OpenAI aktivan":"✓ Lokalna vežba";
+ status(state.mode==="online"?"AI pita; mikrofon se automatski uključuje posle izgovora.":"Lokalni dijalog · bez OpenAI ocenjivanja");
+ busy(false);say(q,true);
+}
+async function send(){
+ if(state.busy||!state.started||state.finished){if(!state.started)status("Prvo klikni „Počni razgovor“.",true);return;}
+ const answer=clean($("answer").value);if(answer.length<2){status("Izgovori ili napiši nemački odgovor.",true);return;}
+ clearListenTimer();stopMic();stopVoice();busy(true);$("answer").value="";bubble("me",answer);
+ const previous=state.history.slice();let next=null;
+ if(state.mode==="online"){
+  try{next=await request("turn",answer);
+   state.history.push({role:"user",content:answer},{role:"assistant",content:next.reply});
+   const score=Math.max(0,Math.min(2,Math.round(Number(next.evaluation?.score)||0)));
+   state.grades.push(score);feedback(next.evaluation||{score:0});
+   $("counter").textContent=state.grades.length+" AI ocena";
+  }catch(e){localPrepare();note("Veza sa OpenAI je prekinuta. Nastavljamo lokalnu A1 vežbu, bez daljeg AI ocenjivanja.");next=localNext();}
+ }else{
+  const lines=offline[String(state.index+1)]||[];
+  const lastPos=state.localPositions[state.localIndex-1],suggestion=Number.isInteger(lastPos)?clean(lines[lastPos+1]):"";
+  if(suggestion)note("Primer odgovora: "+suggestion+" · Ovo nije OpenAI ocena.");
+  next=localNext();
+ }
+ if(state.mode==="local")state.history.push({role:"user",content:answer},{role:"assistant",content:next.reply});
+ bubble("ai",next.reply);
+ state.finished=!!next.finished;
+ busy(false);if(state.finished){status("Dijalog završen. Otvori Rezultat.");say(next.reply,false);}
+ else{status(state.mode==="online"?"OpenAI odgovor i provera su spremni.":"Lokalna A1 vežba · odgovor nije AI ocenjen.");say(next.reply,true);}
+}
+function finish(){
+ clearListenTimer();stopMic();stopVoice();const n=state.grades.length,sum=state.grades.reduce((a,b)=>a+b,0);
+ if(n){const percent=Math.round(sum/(2*n)*100);
+   $("finalDetails").innerHTML="<strong>"+percent+"%</strong> · "+n+" AI ocenjenih odgovora<br>Prosečno "+(sum/n).toFixed(1)+" / 2 po odgovoru."+
+    (state.mode==="local"?"<br><b>Preostali odgovori nisu AI ocenjeni (lokalna vežba).</b>":"");
+ }else $("finalDetails").innerHTML="<strong>Vežba završena</strong><br>Lokalni dijalog radi, ali OpenAI nije bio povezan, pa nema automatskog ocenjivanja.";
+ $("finalModal").hidden=false;
+}
+async function checkUrl(value){
+ let u;try{u=new URL(value);}catch(e){throw Error("Neispravna Worker adresa.");}
+ if(u.protocol!=="https:"||u.search||u.hash||u.username||u.password)throw Error("Unesi čistu HTTPS Worker adresu.");
+ const base=u.href.replace(/\/+$/,""),controller=new AbortController(),t=setTimeout(()=>controller.abort(),9500);
+ try{const r=await fetch(base+"/health",{signal:controller.signal,mode:"cors",cache:"no-store"});if(!r.ok)throw Error("Server nije odgovorio.");
+ const d=await r.json();if(!d.dialogEnabled&&d.service!=="demax-a1-dijalog")throw Error("Worker radi, ali A1 dijalog još nije objavljen.");
+ return base;}finally{clearTimeout(t);}
+}
+$("prev").addEventListener("click",()=>newScene(state.index-1));
+$("next").addEventListener("click",()=>newScene(state.index+1));
 $("swap").addEventListener("click",()=>{state.swap=!state.swap;render();});
-$("start").addEventListener("click",start);$("send").addEventListener("click",send);$("retry").addEventListener("click",clearSession);$("end").addEventListener("click",finish);$("mic").addEventListener("click",mic);
-$("audioBtn").addEventListener("click",()=>{state.speaker=!state.speaker;$("audioBtn").textContent=state.speaker?"🔊":"🔇";if(!state.speaker)stopVoice();});
+$("start").addEventListener("click",start);$("send").addEventListener("click",send);
+$("retry").addEventListener("click",reset);$("end").addEventListener("click",finish);
+$("mic").addEventListener("click",()=>{state.autoMicAllowed=true;mic(false);});
+$("audioBtn").addEventListener("click",()=>{
+ state.speaker=!state.speaker;$("audioBtn").textContent=state.speaker?"🔊":"🔇";
+ if(!state.speaker){stopVoice();waitForMic(400);}
+});
 $("configBtn").addEventListener("click",()=>{$("apiUrl").value=state.api;$("config").hidden=false;});
 $("closeConfig").addEventListener("click",()=>{$("config").hidden=true;});
-$("saveConfig").addEventListener("click",async()=>{const b=$("saveConfig");b.disabled=true;b.textContent="Proveravam…";try{const base=await checkUrl(clean($("apiUrl").value));state.api=base;try{localStorage.setItem(STORE,base);}catch(e){}$("config").hidden=true;status("Povezano sa DE-MAX AI serverom.");}catch(e){status(e.message,true);alert(e.message);}finally{b.disabled=false;b.textContent="Sačuvaj i proveri";}});
-$("enlarge").addEventListener("click",()=>{$("largeImage").src=s().img;$("imageModal").hidden=false;});$("closeImage").addEventListener("click",()=>{$("imageModal").hidden=true;});
-$("closeFinal").addEventListener("click",()=>{$("finalModal").hidden=true;});$("repeatFinal").addEventListener("click",()=>{$("finalModal").hidden=true;clearSession();});
-$("answer").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();}});
-render();if(!state.api)status("Za OpenAI proveru poveži Worker u ⚙ podešavanjima.");
+$("saveConfig").addEventListener("click",async()=>{
+ const b=$("saveConfig");b.disabled=true;b.textContent="Proveravam…";
+ try{const base=await checkUrl(clean($("apiUrl").value));state.api=base;
+  try{localStorage.setItem(STORE,base);}catch(e){}
+  $("config").hidden=true;status("OpenAI Worker je spreman.");}
+ catch(e){status(e.message,true);alert(e.message);}
+ finally{b.disabled=false;b.textContent="Sačuvaj i proveri";}
+});
+$("enlarge").addEventListener("click",()=>{$("largeImage").src=scene().img;$("imageModal").hidden=false;});
+$("closeImage").addEventListener("click",()=>{$("imageModal").hidden=true;});
+$("closeFinal").addEventListener("click",()=>{$("finalModal").hidden=true;});
+$("repeatFinal").addEventListener("click",()=>{$("finalModal").hidden=true;reset();});
+$("answer").addEventListener("keydown",ev=>{if(ev.key==="Enter"&&!ev.shiftKey){ev.preventDefault();send();}});
+$("sceneImage").addEventListener("error",()=>status("Slika nije dostupna. Proveri internet.",true));
+render();
 })();
 </script>
 </body>
