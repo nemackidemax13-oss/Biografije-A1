@@ -263,6 +263,10 @@ function followsVerbRule(evidence,rule){
  if(rule.perspective==="neutral"&&rule.verbInfinitive==="mitkommen"){
   return /\b(?:kommt|kommen|komme)\b[\s\S]{0,100}\bmit\b/iu.test(text);
  }
+ if(rule.perspective==="neutral"&&rule.verbInfinitive==="möchten"){
+  return /\b(?:möchte|möchten|moechte|moechten)\b/iu.test(text) &&
+    (rule.actionVerbs||[]).every(act=>new RegExp("(?<![\\p{L}])"+act+"(?![\\p{L}])","iu").test(text));
+ }
  const prefix=rule.perspective==="ich"?"ich":rule.perspective==="du"?"du":rule.perspective==="wir"?"wir":null;
  const word=(x)=>"(?<![\\p{L}])"+x+"(?![\\p{L}])";
  const verb=new RegExp(word(first),"iu");
@@ -600,7 +604,7 @@ export default {
   async fetch(request,env) {
     const url=new URL(request.url), origin=request.headers.get("Origin");
     if (request.method==="GET" && url.pathname==="/health")
-      return json({status:"ok",openaiConfigured:Boolean(env.OPENAI_API_KEY),tasks:35,provider:"OpenAI",rulesVersion:"a1-translation-sentence-feedback-v3",iframeEnabled:true},200,origin);
+      return json({status:"ok",openaiConfigured:Boolean(env.OPENAI_API_KEY),tasks:35,provider:"OpenAI",rulesVersion:"a1-database-verb-slots-v4",iframeEnabled:true},200,origin);
     if(request.method==="GET" && A1_IFRAME_PATHS.has(url.pathname))
       return serveA1Iframe(url.pathname);
     if(url.pathname!=="/api/check-email" && url.pathname!=="/api/rafaela-review")
