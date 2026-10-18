@@ -124,19 +124,41 @@ function render(){
  $("myRole").textContent="Ja: "+userRole();$("aiRole").textContent="AI: "+aiRole();reset();
 }
 function newScene(i){if(state.busy)return;state.index=(i+scenes.length)%scenes.length;state.swap=false;render();}
-function bubble(type,t){
+function translatedFromBank(text){
+ const rows=offline[String(state.index+1)]||[],translations=offlineSr[String(state.index+1)]||[];
+ const norm=clean(text).toLocaleLowerCase("de");
+ const index=rows.findIndex(v=>clean(v).toLocaleLowerCase("de")===norm);
+ return index>=0?clean(translations[index]):"";
+}
+function missingTranslation(){
+ return state.mode==="online"?"Prevod će se prikazati kada objaviš ažurirani OpenAI Worker.":"Prevod nije dostupan u lokalnoj vežbi.";
+}
+function bubble(type,de,sr){
  const wrap=document.createElement("div");wrap.className="bubble "+type;
- const head=type==="ai"?"Partner · "+esc(aiRole()):type==="me"?"Učenik · "+esc(userRole()):"Informacija";
- wrap.innerHTML="<small>"+head+"</small>"+(type==="ai"?'<button class="speak" title="Poslušaj ponovo" aria-label="Ponovi glas">🔊</button>':"")+esc(t);
- if(type==="ai")wrap.querySelector("button").addEventListener("click",()=>say(t,true));
+ const title=type==="ai"?"Partner · "+esc(aiRole()):type==="me"?"Učenik · "+esc(userRole()):"Informacija";
+ if(type==="note"){
+  wrap.innerHTML="<small>"+title+"</small>"+esc(de);
+ }else{
+  const translated=clean(sr)||translatedFromBank(de)||missingTranslation();
+  wrap.innerHTML="<small>"+title+"</small>"+(type==="ai"?'<button class="speak" title="Poslušaj nemački" aria-label="Ponovi izgovor">🔊</button>':"")+'<div class="de" lang="de">'+esc(de)+'</div><div class="sr" lang="sr">'+esc(translated)+'</div>';
+  if(type==="ai")wrap.querySelector(".speak").addEventListener("click",()=>say(de,true));
+ }
  const box=$("messages");box.appendChild(wrap);box.scrollTop=box.scrollHeight;
+ return wrap;
+}
+function setTranslation(el,translation,original){
+ if(!el)return;
+ const sr=el.querySelector(".sr");
+ if(sr)sr.textContent=clean(translation)||translatedFromBank(original)||missingTranslation();
 }
 function note(t){bubble("note",t);}
 function feedback(e){
  const score=Math.max(0,Math.min(2,Math.round(Number(e.score)||0)));
  $("feedback").hidden=false;$("feedback").className="feedback "+(score===2?"good":score===0?"bad":"");
  $("feedbackTitle").textContent="OpenAI provera: "+score+" / 2";
- $("feedbackBody").textContent=[clean(e.explanation),clean(e.corrected)?("Ispravno: "+clean(e.corrected)):""].filter(Boolean).join(" · ")||"Razumljiv A1 odgovor.";
+ const comment=clean(e.explanation),corrected=clean(e.corrected),translated=clean(e.corrected_sr);
+ $("feedbackBody").innerHTML=(comment?'<div class="sr">'+esc(comment)+'</div>':"")+
+  (corrected?'<div class="fixedlabel">Ispravljena rečenica:</div><div class="de" lang="de">'+esc(corrected)+'</div><div class="sr" lang="sr">'+esc(translated||"Prevod ispravke se prikazuje nakon ažuriranja Workera.")+'</div>':"");
 }
 function waitForMic(delay){
  clearListenTimer();if(!state.started||state.finished||state.busy||!state.autoMic||!SR)return;
@@ -230,9 +252,10 @@ function localPrepare(){
  state.localPositions=indices;state.localIndex=0;state.mode="local";
 }
 function localNext(){
- const rows=offline[String(state.index+1)]||[];
- if(state.localIndex>=state.localPositions.length)return{reply:"Vielen Dank. Auf Wiedersehen!",finished:true};
- return{reply:rows[state.localPositions[state.localIndex++]]||"Guten Tag! Was möchten Sie machen?",finished:false};
+ const rows=offline[String(state.index+1)]||[],sr=offlineSr[String(state.index+1)]||[];
+ if(state.localIndex>=state.localPositions.length)return{reply:"Vielen Dank. Auf Wiedersehen!",reply_sr:"Hvala lepo. Doviđenja!",finished:true};
+ const i=state.localPositions[state.localIndex++];
+ return{reply:rows[i]||"Guten Tag! Was möchten Sie machen?",reply_sr:sr[i]||"",finished:false};
 }
 async function start(){
  if(state.busy||state.started||!scenes.length)return;
