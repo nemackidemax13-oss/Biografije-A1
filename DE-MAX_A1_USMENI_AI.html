@@ -188,7 +188,7 @@ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
 const AUTO_START=/(?:[?&])autostart=1(?:&|$)/.test(window.location?.search||"");
 const state={index:0,swap:false,busy:false,started:false,finished:false,history:[],grades:[],attempts:[],currentQuestion:null,mode:"online",speaker:true,
  rec:null,recording:false,autoMic:true,autoMicAllowed:false,sessionId:0,voiceToken:0,speaking:false,pendingListen:null,awaitNext:false,pendingQuestion:null,nextTimer:null,
- recognitionId:0,noSpeechRetries:0,localPositions:[],localIndex:0,api:DEFAULT_API,nativeFailed:false,micStream:null,mediaRecorder:null,monitor:null,recordTimer:null,audioCtx:null,voiceWatchdog:null,permissionRequest:null};
+ recognitionId:0,noSpeechRetries:0,localPositions:[],localIndex:0,api:DEFAULT_API,nativeFailed:false,micStream:null,mediaRecorder:null,monitor:null,recordTimer:null,audioCtx:null,voiceWatchdog:null,permissionRequest:null,audioReady:null,audioProbe:null,speechTimeout:null};
 const clean=t=>String(t||"").trim();
 const scene=()=>scenes[state.index];
 const userSlot=()=>state.swap?0:1;
@@ -265,6 +265,27 @@ function feedback(e){
  $("feedbackBody").innerHTML=(comment?'<div class="sr">'+esc(comment)+'</div>':"")+
   (corrected?'<div class="fixedlabel">Ispravljena rečenica:</div><div class="de" lang="de">'+esc(corrected)+'</div><div class="sr" lang="sr">'+esc(translated||"Prevod ispravke se prikazuje nakon ažuriranja Workera.")+'</div>':"");
 }
+function reliableAudio(){return state.audioReady===true && typeof window.MediaRecorder==="function" && !!navigator.mediaDevices?.getUserMedia;}
+async function checkAudioRoute(){
+ if(state.audioReady!==null)return state.audioReady;
+ if(state.audioProbe)return state.audioProbe;
+ const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),4500);
+ state.audioProbe=(async()=>{
+  try{
+   const res=await fetch(state.api+"/api/a1-transcribe",{method:"POST",body:new FormData(),signal:ctrl.signal,mode:"cors",cache:"no-store"});
+   state.audioReady=[400,413,415].includes(res.status);
+  }catch(e){state.audioReady=false;}
+  finally{clearTimeout(timer);state.audioProbe=null;}
+  return state.audioReady;
+ })();
+ return state.audioProbe;
+}
+function voiceUnavailable(){
+ status(state.audioReady===false?
+ "🎙 Mikrofon radi, ali nema prepoznatog teksta. Cloudflare Worker usmenia1prvideo možda nema aktiviranu rutu /api/a1-transcribe. Do objave dopunjenog Workera upiši odgovor.":
+ "🎙 Govor nije prepoznat. Pokušaj ponovo ili napiši odgovor.",true);
+}
+
 function waitForMic(delay){
  clearListenTimer();if(!state.started||state.finished||state.busy||state.awaitNext||!state.autoMic||(!SR&&typeof window.MediaRecorder!=="function"))return;
  if(!state.autoMicAllowed){autoLaunchVisible("Dodirni 🎙 za dozvolu mikrofona.");status("Klikni 🎙 za dozvolu, ili otvori direktni link u Safari/Chrome.");return;}
@@ -337,6 +358,7 @@ function askMicPermission(){
  return state.permissionRequest;
 }
 function stopMic(){
+ if(state.speechTimeout){clearTimeout(state.speechTimeout);state.speechTimeout=null;}
  state.recognitionId++;
  if(state.rec){state.rec.onend=state.rec.onerror=state.rec.onresult=null;try{state.rec.abort();}catch(e){}state.rec=null;}
  if(state.mediaRecorder){const r=state.mediaRecorder;r.onstop=r.ondataavailable=r.onerror=null;try{if(r.state!=="inactive")r.stop();}catch(e){}state.mediaRecorder=null;}
@@ -394,7 +416,7 @@ async function recordFallback(automatic){
  };
  try{rec.start(200);}catch(e){state.mediaRecorder=null;status("Snimanje nije moglo da počne.",true);return;}
  state.recording=true;$("mic").classList.add("on");$("mic").textContent="■";autoLaunchHide();
- status("🎙 Slušam nemački. Govori, pa napravi kratku pauzu ili dodirni ■ za završetak.");
+ status("🎙 Snimam nemački. Govori jasno, pa napravi kratku pauzu da pošaljem snimak na prepoznavanje.");
  // Silence detection using microphone amplitude, with an upper limit for any device.
  const AC=window.AudioContext||window.webkitAudioContext;
  if(AC){
@@ -409,12 +431,12 @@ async function recordFallback(automatic){
     analyser.getByteTimeDomainData(values);let sum=0;
     for(const sample of values){const a=(sample-128)/128;sum+=a*a;}
     const rms=Math.sqrt(sum/values.length),now=Date.now();
-    if(rms>.025){if(++frames>=2){heard=true;last=now;}}
-    if((heard&&now-last>1550)||(!heard&&now-first>12500))try{rec.stop();}catch(e){}
+    if(rms>.012){if(++frames>=2){if(!heard)status("🎙 Čujem glas. Kada završiš govor, napravi kratku pauzu.");heard=true;last=now;}}
+    if((heard&&now-last>1650)||(!heard&&now-first>11500))try{rec.stop();}catch(e){}
    },150);
   }catch(e){if(state.audioCtx){try{state.audioCtx.close();}catch(x){}state.audioCtx=null;}}
  }
- state.recordTimer=setTimeout(()=>{if(rec.state==="recording")try{rec.stop();}catch(e){}},22000);
+ state.recordTimer=setTimeout(()=>{if(rec.state==="recording")try{rec.stop();}catch(e){}},18500);
 }
 function mic(automatic=false){
  if(state.busy||!state.started||state.finished||state.awaitNext)return;
@@ -424,7 +446,7 @@ function mic(automatic=false){
  }
  if(automatic&&!state.autoMicAllowed)return;
  clearListenTimer();stopVoice();stopMic();
- if(!SR||state.nativeFailed){recordFallback(automatic);return;}
+ if(reliableAudio()||!SR||state.nativeFailed){recordFallback(automatic);return;}
  const id=state.recognitionId,session=state.sessionId;
  let rec;try{rec=new SR();}catch(e){state.nativeFailed=true;recordFallback(automatic);return;}
  state.rec=rec;rec.lang="de-DE";rec.interimResults=!(/iPhone|iPad|iPod/.test(navigator.userAgent||""));rec.continuous=false;rec.maxAlternatives=1;
@@ -447,18 +469,30 @@ function mic(automatic=false){
  rec.onend=()=>{
   if(id!==state.recognitionId||session!==state.sessionId)return;
   state.rec=null;state.recording=false;$("mic").classList.remove("on");$("mic").textContent="🎙";
+  if(state.speechTimeout){clearTimeout(state.speechTimeout);state.speechTimeout=null;}
   const text=clean($("answer").value);
   if(text.length>1&&(hasResult||text!==clean(finalText))&&!state.busy){
    state.noSpeechRetries=0;
    status("Govor je prepoznat · šaljem odgovor…");
    state.pendingListen=setTimeout(()=>{state.pendingListen=null;if(session===state.sessionId&&!state.busy&&!state.awaitNext)send();},450);
-  }else if(state.nativeFailed&&state.micStream?.active){
+  }else if(state.nativeFailed&&reliableAudio()&&state.micStream?.active){
    status("Koristim rezervni mikrofon za iPhone/Android…");recordFallback(true);
   }else if(state.autoMicAllowed&&state.noSpeechRetries<1&&problem!=="not-allowed"){
    state.noSpeechRetries++;waitForMic(850);
-  }else status("Mikrofon: "+(problem||"nema prepoznatog govora")+". Klikni 🎙 ili napiši odgovor.");
+  }else voiceUnavailable();
  };
- try{rec.start();state.recording=true;state.autoMicAllowed=true;$("mic").classList.add("on");$("mic").textContent="■";autoLaunchHide();status("🎙 Automatski slušam nemački…");}
+ try{
+  rec.start();state.recording=true;state.autoMicAllowed=true;$("mic").classList.add("on");$("mic").textContent="■";
+  status("🎙 Slušam nemački i čekam prepoznate reči…");
+  const token=state.sessionId,recId=id;
+  state.speechTimeout=setTimeout(()=>{
+   state.speechTimeout=null;
+   if(token!==state.sessionId||recId!==state.recognitionId||!state.recording)return;
+   if(clean($("answer").value)||hasResult)return;
+   state.nativeFailed=true;stopMic();
+   if(reliableAudio())recordFallback(true);else voiceUnavailable();
+  },7500);
+ }
  catch(e){state.rec=null;state.recording=false;state.nativeFailed=true;$("mic").textContent="🎙";recordFallback(automatic);}
 }
 
@@ -540,10 +574,11 @@ function questionPanel(data){
 }
 async function start(){
  if(state.busy||state.started||!scenes.length)return;
- state.noSpeechRetries=0;askMicPermission();busy(true);status("Povezujem razgovor…");
+ state.noSpeechRetries=0;askMicPermission();const audioCheck=checkAudioRoute();busy(true);status("Povezujem razgovor…");
  let next={reply:"",reply_sr:""},warn="";
  try{next=await request("start","");state.mode="online";}
  catch(e){localPrepare();next=localNext();warn="OpenAI nije odgovorio ("+clean(e.message)+"). Pokrenuta je lokalna vežba bez AI ocenjivanja.";}
+ await audioCheck;
  state.started=true;state.finished=false;
  questionPanel(next);
  if(warn)status(warn,true);
