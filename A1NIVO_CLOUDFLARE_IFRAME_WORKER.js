@@ -499,10 +499,12 @@ async function grade(body,env) {
     }),
     "OTKRIVENE GREŠKE KOJE MORAŠ ISPRAVITI U NEMAČKOM TEKSTU:\n"+correctionIssues.join("\n")
    ].join("\n\n");
+   const repairController=new AbortController();
+   const repairTimer=setTimeout(()=>repairController.abort(),14000);
    try{
     const repaired=await fetch("https://api.openai.com/v1/chat/completions",{
      method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+env.OPENAI_API_KEY},
-     signal:controller.signal,
+     signal:repairController.signal,
      body:JSON.stringify({model:env.OPENAI_MODEL||MODEL_DEFAULT,temperature:0,
       max_completion_tokens:2400,response_format:repairFormat,
       messages:[{role:"system",content:"Urednik ÖSD A1: popravi zaista nemački mejl po pitanjima i checkingRules, zatim prevedi TAČNO istu konačnu verziju i napiši obrazloženja na srpskom latinicom. Bez izmišljanja."},{role:"user",content:repairPrompt}]})
@@ -521,7 +523,7 @@ async function grade(body,env) {
        }
      }
     }
-   }catch{}
+   }catch{}finally{clearTimeout(repairTimer)}
   }
   if(correctionIssues.length){
    return {status:502,data:{error:"AI nije pouzdano ispravio nemačke rečenice prema pitanjima iz baze. Mejlu nisu dodeljeni novi bodovi; pokušaj ponovo."}};
