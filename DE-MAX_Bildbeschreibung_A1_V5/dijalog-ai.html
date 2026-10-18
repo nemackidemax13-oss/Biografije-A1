@@ -190,7 +190,7 @@ const offlineSr=window.DEMAX_FALLBACK_TRANSLATIONS||{};
 const $=id=>document.getElementById(id);
 const DEFAULT_API="https://usmenia1prvideo.nemackidemax13.workers.dev";
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-const AUTO_START=(()=>{try{return new URLSearchParams(window.location?.search||"").get("autostart")==="1";}catch(e){return false;}})();
+const AUTO_START=/(?:[?&])autostart=1(?:&|$)/.test(window.location?.search||"");
 const state={index:0,swap:false,busy:false,started:false,finished:false,history:[],grades:[],attempts:[],currentQuestion:null,mode:"online",speaker:true,
  rec:null,recording:false,autoMic:true,autoMicAllowed:false,sessionId:0,voiceToken:0,speaking:false,pendingListen:null,awaitNext:false,pendingQuestion:null,nextTimer:null,
  recognitionId:0,noSpeechRetries:0,localPositions:[],localIndex:0,api:DEFAULT_API,nativeFailed:false,micStream:null,mediaRecorder:null,monitor:null,recordTimer:null,audioCtx:null,voiceWatchdog:null};
@@ -605,9 +605,10 @@ $("mic").addEventListener("click",()=>{
  mic(false);
 });
 $("autoLaunchButton").addEventListener("click",()=>{
- if(!state.started){start();return;}
- if(state.awaitNext)return;
+ // Start permission within this user gesture, even when the AI question is loading.
  if(!state.autoMicAllowed)askMicPermission();
+ if(!state.started){if(!state.busy)start();return;}
+ if(state.awaitNext)return;
  if(state.recording){autoLaunchHide();return;}
  // A physical tap helps iPhone Safari unlock playback and microphone.
  if(state.currentQuestion?.de){stopVoice();say(state.currentQuestion.de,true);}
