@@ -131,8 +131,18 @@ function correctKnownUmlauts(text){
  return t;
 }
 
+
+/* Pozdrav na kraju ÖSD A1 mejla, sa tolerancijom na tastature bez umlauta. */
+function hasA1Closing(text){
+ const s=String(text||"").replace(/\r/g,"").trim();
+ return /(?:liebe\s+gr(?:ü|ue|u)(?:ß|ss)e|viele\s+gr(?:ü|ue|u)(?:ß|ss)e|bis\s+bald)\s*[!,.]?(?:\s*\n\s*[\p{L}][\p{L}' -]{0,45})?\s*$/iu.test(s);
+}
+
 const SYSTEM=[
  "Ti si ozbiljan i veoma precizan nastavnik nemackog jezika za ÖSD A1 vezbu pisanja mejlova.",
+ "ZAVRSNI POZDRAV: Na kraju mejla prihvati 'Liebe Grüße', 'Bis bald' ili 'Viele Grüße'. Prepoznaj i 'Liebe Grusse', 'Viele Gruesse' bez umlauta, ali u correctedText popravi pravopis. Pozdrav usred tela mejla nije zavrsni pozdrav.",
+ "Ako ucenik na kraju NEMA podrzan pozdrav, obavezno napomeni na srpskom 'Nedostaje završni pozdrav. Na kraju dodaj: Liebe Grüße, Bis bald ili Viele Grüße.' U correctedText dodaj 'Viele Grüße'. Smanji formu na 0, ne bodove za sadrzaj pitanja.",
+ "VRATI SAZETE KOMENTARE: questionFeedback tacno tri kratke recenice na srpskom latinicom, svaka do 145 znakova, po jedna za svako pitanje. Navedi tacno sta je dobro ili sta treba ispraviti uz stvarni dan, sat, mesto i jelo kada je relevantno. Polje feedback najvise 240 znakova i samo najvaznije gramaticke/pravopisne napomene i nedostajuci zavrsni pozdrav; ne dupliraj ista objasnjenja. Polje correctedText je ceo ispravljeni A1 mejl na nemackom.",
  "OBAVEZAN JEZIK IZLAZA: POLJA feedback I questionFeedback (SVA TRI KOMENTARA) PIŠI ISKLJUČIVO NA SRPSKOM JEZIKU, LATINIČNIM PISMOM. Ovo važi za sve pohvale, objašnjenja, NAPOMENE, upozorenja o pogrešnom danu, vremenu, mestu, piću/hrani, zamenicama, modalnim glagolima, razdvojivim glagolima, interpunkciji i bodovima.",
  "Nemački u komentaru dozvoljen je SAMO kao kratki primer, doslovni citat učenikove greške ili ispravan nemački izraz uz objašnjenje na srpskom. Nemoj pisati zaključke, uputstva ili povratne informacije na nemačkom, engleskom niti ćirilicom. Piši razumljivo za učenika srpskog govornog područja.",
  "POLJE correctedText MORA OSTATI ISKLJUČIVO NA NEMAČKOM, sa ispravljenim A1 mejlom. Ne ubacuj srpska objašnjenja ili prevode u correctedText. Jezik polja feedback i questionFeedback ne zavisi od jezika učenikovog mejla.",
@@ -284,9 +294,11 @@ async function grade(body,env) {
   const points=parsed.points.map(x=>clamp(x,2));
   const foodNotes=checkFoodAnswers(task,answer,points);
   let grammar=clamp(parsed.grammar,2);
-  const form=clamp(parsed.form,1), length=clamp(parsed.length,1);
+  const signoffMissing=!hasA1Closing(answer);
+  const form=signoffMissing?0:clamp(parsed.form,1), length=clamp(parsed.length,1);
   const sportError=/\bSport\s+spielen\b/i.test(answer);
   let corrected=correctKnownUmlauts(parsed.correctedText.replace(/\bSport\s+spielen\b/gi,"Sport machen")).slice(0,2400);
+  if(signoffMissing&&!hasA1Closing(corrected))corrected=(corrected.trim()+"\n\nViele Grüße").slice(0,2400);
   let feedback=String(parsed.feedback||"").slice(0,2400);
   const umlautMissing=detectMissingUmlauts(answer);
   if(umlautMissing.length){
@@ -296,6 +308,7 @@ async function grade(body,env) {
       feedback+="\nUmlauti: Prepoznao sam reči bez nemačkih slova. Pravilno se piše: "+examples.join(", ")+". Sadržaj odgovora se zbog samog izostavljenog umlauta ne poništava.";
   }
   if(foodNotes.length)feedback+=("\nNAPOMENA — sadržaj: "+foodNotes.join(" "));
+  if(signoffMissing&&!/nedostaje.{0,25}pozdrav|završni pozdrav/i.test(feedback))feedback+="\nNedostaje završni pozdrav. Na kraju mejla dodaj: Liebe Grüße, Bis bald ili Viele Grüße.";
   if(sportError) {
     grammar=Math.min(grammar,1);
     if(!/Sport\s+(?:spielen|machen)/i.test(feedback))
