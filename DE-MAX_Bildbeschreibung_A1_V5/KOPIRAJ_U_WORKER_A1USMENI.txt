@@ -125,8 +125,11 @@ export default {
      return reply({error:"Format audio snimka nije podržan."},415,origin);
     const extension=mime.includes("mp4")?"mp4":mime.includes("ogg")?"ogg":mime.includes("wav")?"wav":mime.includes("aac")?"aac":"webm";
     const form=new FormData();
-    form.append("model","gpt-4o-mini-transcribe");
+    form.append("model","gpt-4o-transcribe");
+    // Do not autodetect English: all student answers in this app are German.
     form.append("language","de");
+    form.append("prompt","Dies ist eine mündliche ÖSD-A1-Prüfungsübung auf DEUTSCH. Transkribiere nur die tatsächlich gesprochenen Wörter wortgetreu auf Deutsch, mit korrekter deutscher Schreibweise und Umlauten (ä, ö, ü, ß). Niemals ins Englische oder Serbische übersetzen. Alltagssituationen: Bäckerei, Café, Hotel, Supermarkt, Arzt, Bahnhof.");
+    form.append("response_format","json");
     form.append("file",blob,"a1-odgovor."+extension);
     const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),27000);
     try{
