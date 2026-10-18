@@ -158,6 +158,36 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 .advance button:disabled{opacity:.62;background:#93aebc;cursor:wait}
 .advance button:not(:disabled):active{background:#086941;transform:translateY(1px)}
 @media(max-height:620px){.advance{padding:5px 8px;min-height:39px;margin-top:4px}.advance span{font-size:10px}.advance button{height:31px}}
+
+/* DE-MAX: sažeti nemački govor i prevod odmah ispod rečenice.
+   Kada učenik odgovori, polje za unos se oslobađa da se vide obe rečenice. */
+.messages{overflow-y:hidden;scroll-behavior:auto;padding:5px;gap:4px}
+.messages .bubble+.bubble{margin-top:4px}
+.messages .bubble .message-header{min-height:24px;padding:2px 7px;gap:5px}
+.messages .bubble .message-chip{padding:2px 5px;font-size:8px}
+.messages .bubble .message-who{font-size:9px}
+.messages .bubble .speak{width:25px;height:23px;font-size:14px}
+.messages .bubble .message-body{padding:5px 8px 6px}
+.messages .bubble .message-body .de{font-size:12.5px;line-height:1.28;font-weight:800}
+.messages .bubble .message-body .sr{font-size:11px;line-height:1.28;color:#171b22;margin-top:2px;white-space:pre-wrap}
+.messages .bubble .translation-box{margin:0;padding:0;border:0}
+.messages .bubble .translation-label{display:none}
+.app.dialog-has-answer .answer-title,
+.app.dialog-has-answer .inputrow{display:none}
+.app.dialog-has-answer .photo{height:clamp(110px,22dvh,202px)}
+.app.dialog-tight .photo{height:clamp(95px,17dvh,160px)}
+.app.dialog-tighter .photo{height:clamp(78px,13dvh,124px)}
+.app.dialog-tighter .roles{padding-top:1px;padding-bottom:2px}
+.app.dialog-tighter .actions{padding-bottom:3px}
+.app.dialog-tighter .messages .bubble .message-body{padding:3px 6px 4px}
+.app.dialog-tighter .messages .bubble .message-header{min-height:22px;padding:1px 6px}
+.app.dialog-tighter .messages .bubble .message-body .de{font-size:11.8px;line-height:1.22}
+.app.dialog-tighter .messages .bubble .message-body .sr{font-size:10.5px;line-height:1.2}
+.app.dialog-overflow .messages{overflow-y:auto}
+@media(max-width:360px){
+ .messages .bubble .message-body .de{font-size:12px}
+ .messages .bubble .message-body .sr{font-size:10.5px}
+}
 </style>
 </head>
 <body>
@@ -212,6 +242,7 @@ function reset(){
  
  state.started=false;state.finished=false;state.history=[];state.grades=[];state.attempts=[];$("answer").disabled=false;$("send").disabled=false;
  state.currentQuestion=null;state.mode="online";state.localIndex=0;state.localPositions=[];state.noSpeechRetries=0;
+ document.querySelector(".app").classList.remove("dialog-has-answer","dialog-tight","dialog-tighter","dialog-overflow");
  $("answer").value="";
  $("messages").innerHTML='<p class="empty">Pritisni „Počni razgovor“. Na ekranu će se prikazivati jedno pitanje i tvoje polje za odgovor.</p>';
  $("feedback").hidden=true;$("counter").textContent="0 odgovora";
@@ -245,17 +276,33 @@ function bubble(type,de,sr){
   const translated=clean(sr)||translatedFromBank(de)||missingTranslation();
   const who=type==="ai"?"AI":"UČENIK";
   wrap.innerHTML='<div class="message-header"><span class="message-chip">'+who+'</span><span class="message-who">'+title+'</span><button class="speak" title="Poslušaj nemački" aria-label="Izgovori nemačku rečenicu">🔊</button></div>'+
-   '<div class="message-body"><div class="de" lang="de">'+esc(de)+'</div><div class="translation-box"><div class="translation-label">PREVOD</div><div class="sr" lang="sr">'+esc(translated)+'</div></div></div>';
+   '<div class="message-body"><div class="de" lang="de">'+esc(de)+'</div><div class="sr" lang="sr">'+esc(translated)+'</div></div>';
   wrap.querySelector(".speak").addEventListener("click",()=>say(de,false));
  }
  const box=$("messages");box.appendChild(wrap);
- box.scrollTop=box.scrollHeight;
+ if(type==="me"){document.querySelector(".app").classList.add("dialog-has-answer");}
+ requestAnimationFrame(fitDialog);
  return wrap;
+}
+function fitDialog(){
+ const app=document.querySelector(".app"),box=$("messages");
+ if(!app||!box)return;
+ app.classList.remove("dialog-tight","dialog-tighter","dialog-overflow");
+ if(!box.querySelector(".bubble.me")){
+  app.classList.remove("dialog-has-answer");
+  return;
+ }
+ app.classList.add("dialog-has-answer");
+ if(box.scrollHeight>box.clientHeight+2)app.classList.add("dialog-tight");
+ if(box.scrollHeight>box.clientHeight+2)app.classList.add("dialog-tighter");
+ // Samo izuzetno dugački odgovori mogu se skrolovati, da tekst ne bude odsečen.
+ if(box.scrollHeight>box.clientHeight+2)app.classList.add("dialog-overflow");
 }
 function setTranslation(el,translation,original){
  if(!el)return;
  const sr=el.querySelector(".sr");
  if(sr)sr.textContent=clean(translation)||translatedFromBank(original)||missingTranslation();
+ requestAnimationFrame(fitDialog);
 }
 function note(t){bubble("note",t);}
 function feedback(e){
@@ -566,6 +613,7 @@ function proceed(){
  say(state.currentQuestion.de,true);
 }
 function questionPanel(data){
+ document.querySelector(".app").classList.remove("dialog-has-answer","dialog-tight","dialog-tighter","dialog-overflow");
  const de=clean(data?.reply)||"Guten Tag! Was möchten Sie?";
  const sr=clean(data?.reply_sr)||translatedFromBank(de)||missingTranslation();
  state.currentQuestion={de,sr};
@@ -638,6 +686,7 @@ async function send(){
  // Ne prikazuj sledeće pitanje automatski: učenik prvo vidi svoj odgovor i prevod.
  // Dugme postaje aktivno posle kratke pauze, a naredno pitanje tek na njegov klik.
  prepareNextQuestion(next,result);
+ requestAnimationFrame(fitDialog);
 }
 function finish(){
  clearListenTimer();stopMic();stopVoice();
@@ -697,6 +746,7 @@ function resumeListeningIfAllowed(){
  }
  waitForMic(600);
 }
+window.addEventListener("resize",()=>requestAnimationFrame(fitDialog));
 window.addEventListener?.("pageshow",resumeListeningIfAllowed);
 window.addEventListener?.("focus",()=>{if(document.visibilityState==="visible")resumeListeningIfAllowed();});
 document.addEventListener?.("visibilitychange",()=>{if(document.visibilityState==="visible")resumeListeningIfAllowed();});
