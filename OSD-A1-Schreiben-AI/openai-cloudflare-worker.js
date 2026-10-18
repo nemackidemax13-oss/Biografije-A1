@@ -88,12 +88,59 @@ const TASK_GUIDANCE = [
   "Anika ocekuje posetu u Minhenu 'uskoro', bez fiksnog dana/sata. Voljela bi da skuva ono sto kandidat voli; kandidat slobodno bira jelo. Ne izmisljaj obaveznu hranu, datum ili trajanje boravka."
 ];
 
+
+/* Prepoznavanje uobicajenih izostavljenih umlauta bez promene znacenja.
+   Oblici ae/oe/ue priznaju se kao uobicajena zamena pri kucanju. */
+const UMLAUT_WORDS=[
+ ["konnen","können"],["mussen","müssen"],["durfen","dürfen"],
+ ["mogen","mögen"],["fur","für"],["uber","über"],
+ ["naturlich","natürlich"],["spater","später"],["fruh","früh"],
+ ["gluck","Glück"],["gemuse","Gemüse"],["kase","Käse"],
+ ["fruhstuck","Frühstück"],["wunsche","wünsche"],["wunschen","wünschen"],
+ ["schuler","Schüler"],["schulerin","Schülerin"],["funf","fünf"],
+ ["zwolf","zwölf"],["grun","grün"],["gemutlich","gemütlich"],
+ ["zuruck","zurück"],["kuche","Küche"],["tur","Tür"],
+ ["buro","Büro"],["moglich","möglich"],["offnen","öffnen"],
+ ["schwimmen","schwimmen"],["groser","größer"],["grosser","größer"]
+];
+function detectMissingUmlauts(text){
+ const found=[];
+ for(const [wrong,correct] of UMLAUT_WORDS){
+  if(wrong===correct)continue;
+  const re=new RegExp("(?<![\\p{L}])"+wrong+"(?![\\p{L}])","giu");
+  for(const m of String(text).matchAll(re)){
+   const original=m[0];
+   const corrected=/^[A-ZÄÖÜ]/.test(original)
+     ?correct[0].toLocaleUpperCase("de")+correct.slice(1):correct;
+   found.push({original,corrected,index:m.index});
+  }
+ }
+ // "mochte" i "wurde" mogu biti ispravne reci u preteritu;
+ // samo nauceni kontekst sigurno signalizira modalnu zelju.
+ const wishes=/(?<![\p{L}])mochte(?=\s+(?:gerne?\b|(?:(?:\p{L}+\s+){0,5})(?:gehen|kommen|fahren|kaufen|machen|essen|trinken|lernen|mitbringen|besuchen|einladen|spielen|schreiben|bleiben|sehen)\b))/giu;
+ for(const m of String(text).matchAll(wishes)){
+  found.push({original:m[0],corrected:"möchte",index:m.index});
+ }
+ return found.sort((a,b)=>a.index-b.index);
+}
+function correctKnownUmlauts(text){
+ let t=String(text);
+ const edits=detectMissingUmlauts(t);
+ for(let i=edits.length-1;i>=0;i--){
+  const e=edits[i];
+  t=t.slice(0,e.index)+e.corrected+t.slice(e.index+e.original.length);
+ }
+ return t;
+}
+
 const SYSTEM=[
  "Ti si ozbiljan i veoma precizan nastavnik nemackog jezika za ÖSD A1 vezbu pisanja mejlova.",
  "OBAVEZAN JEZIK IZLAZA: POLJA feedback I questionFeedback (SVA TRI KOMENTARA) PIŠI ISKLJUČIVO NA SRPSKOM JEZIKU, LATINIČNIM PISMOM. Ovo važi za sve pohvale, objašnjenja, NAPOMENE, upozorenja o pogrešnom danu, vremenu, mestu, piću/hrani, zamenicama, modalnim glagolima, razdvojivim glagolima, interpunkciji i bodovima.",
  "Nemački u komentaru dozvoljen je SAMO kao kratki primer, doslovni citat učenikove greške ili ispravan nemački izraz uz objašnjenje na srpskom. Nemoj pisati zaključke, uputstva ili povratne informacije na nemačkom, engleskom niti ćirilicom. Piši razumljivo za učenika srpskog govornog područja.",
  "POLJE correctedText MORA OSTATI ISKLJUČIVO NA NEMAČKOM, sa ispravljenim A1 mejlom. Ne ubacuj srpska objašnjenja ili prevode u correctedText. Jezik polja feedback i questionFeedback ne zavisi od jezika učenikovog mejla.",
  "Primer pravilnog feedback: 'Drugo pitanje: naveo/la si ponedeljak, ali proslava je u subotu. Napiši: Ich komme am Samstag. Imenica Samstag piše se velikim slovom.'",
+ "UMLAUTI I NEMACKI PRAVOPIS: prepoznaj i razumi reci napisane bez ä, ö, ü, ali ih u ispravljenom mejlu napisi standardno. Primeri: konnen -> können, mussen -> müssen, fur -> für, grusse -> Grüße (u pozdravu), mochte -> möchte kad izrazava zelju. Sadrzajni odgovor ne proglasavaj pogresnim samo zato sto nedostaje umlaut: to je pravopisna, ne sadrzajna greska. Obavezno objasni na SRPSKOM latinicom tacnu izmenu ako je ucenik izostavio umlaut.",
+ "OBRATI PAZNJU NA ZNACENJE: schon (vec) nije isto sto i schön (lep), wurde (postao/bio) nije isto sto i würde (bi). Ne vrsi slepu automatsku zamenu kada su oba oblika moguca; proceni smisao prema kontekstu zadatka. Oblici ae/oe/ue i ss (npr. koennen, fuer, Gruesse) mogu biti priznati kao validna tehnicka zamena kada tastatura nema nemacka slova; po potrebi ih normalizuj u correctedText, bez automatskog oduzimanja bodova.",
  "Uslov za pristup ocenjivanju je najmanje 15 reci: kraci odgovori ne dobijaju ocenu ni bodove; server takve mejlove odbija pre poziva modelu.",
  "Proveravas STO JE UCENIK ZAISTA NAPISAO, uz originalnu situaciju, primljeni mejl i TACNO tri pitanja.",
  "Svako pitanje ocenjuj 0 do 2: 0 ako nema odgovora ili je odgovor sadrzajno pogresan, 1 ako je delimično ili nejasno tacan, 2 ako je jasan i smislen odgovor. Ukupno 6.",
@@ -244,8 +291,15 @@ async function grade(body,env) {
   let grammar=clamp(parsed.grammar,2);
   const form=clamp(parsed.form,1), length=clamp(parsed.length,1);
   const sportError=/\bSport\s+spielen\b/i.test(answer);
-  let corrected=parsed.correctedText.replace(/\bSport\s+spielen\b/gi,"Sport machen").slice(0,2400);
+  let corrected=correctKnownUmlauts(parsed.correctedText.replace(/\bSport\s+spielen\b/gi,"Sport machen")).slice(0,2400);
   let feedback=String(parsed.feedback||"").slice(0,2400);
+  const umlautMissing=detectMissingUmlauts(answer);
+  if(umlautMissing.length){
+    const examples=[...new Set(umlautMissing.map(e=>"„"+e.original+"“ → „"+e.corrected+"“"))].slice(0,8);
+    const explained=String(feedback).toLowerCase();
+    if(!/umlaut|umlauta|umlaut[a-z]*|ä|ö|ü|dijakrit/i.test(explained))
+      feedback+="\nUmlauti: Prepoznao sam reči bez nemačkih slova. Pravilno se piše: "+examples.join(", ")+". Sadržaj odgovora se zbog samog izostavljenog umlauta ne poništava.";
+  }
   if(foodNotes.length)feedback+=("\nNAPOMENA — sadržaj: "+foodNotes.join(" "));
   if(sportError) {
     grammar=Math.min(grammar,1);
