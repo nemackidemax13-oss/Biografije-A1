@@ -1925,7 +1925,12 @@ function renderResult(r){
  if(missingClosing&&!hasA1Closing(correction))correction+='\n\nViele Grüße';
  const notes=Array.isArray(r.questionFeedback)&&r.questionFeedback.length===3
    ?r.questionFeedback:MAILS[current].questions.map(q=>'Proveri da li si odgovorio/la na pitanje: '+q);
- const items=notes.map((note,i)=>'<div class="review-question"><b>'+(i+1)+'.</b> '+escapeHtml(Number(r.points?.[i])===2?shortReview(note,175):String(note).slice(0,780))+'</div>').join('');
+ const items=notes.map((note,i)=>{
+  const explanation=String(note||'').trim();
+  // Pitanja ocenjujemo redom, bez ponavljanja cele nemacke ispravke.
+  const brief=Number(r.points?.[i])===2?shortReview(explanation,175):explanation.slice(0,780);
+  return '<div class="review-question"><b>'+(i+1)+'. pitanje:</b> '+escapeHtml(brief)+'</div>';
+ }).join('');
  const sportTip=/\bSport\s+spielen\b/i.test(original)&&!/Sport\s+(?:machen|spielen)/i.test(r.feedback||'')
   ?'Za opšti sport koristi „Sport machen“.':'';
  const umlautErrors=missingA1Umlauts(original);
@@ -1941,10 +1946,11 @@ function renderResult(r){
   r.sentenceFeedback.filter(x=>x&&x.explanationSr&&x.original&&x.corrected):[];
  // Stvarne greske objasni unutar postojeceg KOMENTARA,
  // bez dodatnog dugmeta, prozora ili naslova "Detaljne ispravke recenica".
- const sentenceComment=sentenceNotes.map(x=>{
-  const from=String(x.original).trim(),to=String(x.corrected).trim();
+ const sentenceComment=sentenceNotes.map((x,i)=>{
+  // Ispravljene recenice su VEC u polju "ISPRAVLJEN MEJL".
+  // U komentaru prikazuj ISKLJUCIVO obrazlozenje na srpskom.
   const why=String(x.explanationSr).replace(/\s+/g,' ').trim();
-  return '<div class="review-note review-sentence-note"><b>„'+escapeHtml(from)+'“ → „'+escapeHtml(to)+'“.</b> '+escapeHtml(why)+'</div>';
+  return '<div class="review-note review-sentence-note"><b>Objašnjenje '+(i+1)+':</b> '+escapeHtml(why)+'</div>';
  }).join('');
 
 
@@ -1954,7 +1960,7 @@ function renderResult(r){
    <div class="corrected" lang="de">${escapeHtml(correction)}</div>
    <div class="translation-label">TAČAN PREVOD ISPRAVLJENOG MEJLA</div>
    <div class="translated" lang="sr-Latn">${escapeHtml(String(r.translationSr||'').trim()||'Prevod nije dostupan: potrebno je ažurirati OpenAI proveru na Cloudflare.')}</div>
-   <div class="feedback-heading">KOMENTAR PROVERE</div>
+   <div class="feedback-heading">OBJAŠNJENJA NA SRPSKOM</div>
    <div class="review-comment" lang="sr-Latn">
       ${items}
       ${parts}
