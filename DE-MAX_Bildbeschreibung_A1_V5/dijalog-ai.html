@@ -158,10 +158,6 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 .advance button:disabled{opacity:.62;background:#93aebc;cursor:wait}
 .advance button:not(:disabled):active{background:#086941;transform:translateY(1px)}
 @media(max-height:620px){.advance{padding:5px 8px;min-height:39px;margin-top:4px}.advance span{font-size:10px}.advance button{height:31px}}
-.auto-launch{margin:5px 8px 1px;padding:6px 8px;border:1px solid #abd5ec;background:#eaf7fe;border-radius:10px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex:none}
-.auto-launch span{flex:1;min-width:0;font-size:11px;color:#225277;font-weight:750;line-height:1.3}
-.auto-launch button{background:#168451;color:white;font-size:12px;font-weight:850;border:0;border-radius:8px;padding:9px 8px;white-space:nowrap;min-height:34px}
-@media(max-height:620px){.auto-launch{padding:4px 6px}.auto-launch span{font-size:10px}.auto-launch button{min-height:30px;padding:6px}}
 </style>
 </head>
 <body>
@@ -175,7 +171,6 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
  <div class="feedback" id="feedback" hidden><b id="feedbackTitle"></b><div id="feedbackBody"></div></div>
  <div class="status"><span id="status">Pritisni Počni razgovor i dozvoli mikrofon</span><em id="counter">0 odgovora</em></div>
  <div class="advance" id="advance" hidden><span id="advanceText">Odgovor je sačuvan.</span><button type="button" id="nextQuestion" disabled>Dalje →</button></div>
- <div id="autoLaunch" class="auto-launch" hidden><span id="autoLaunchText">Pokrećem razgovor i mikrofon…</span><button id="autoLaunchButton" type="button">🎙 Aktiviraj mikrofon</button></div>
  <div class="answer-title">TVOJ ODGOVOR · NEMAČKI</div><div class="inputrow"><textarea id="answer" rows="2" placeholder="Govori ili napiši odgovor na nemačkom…" aria-label="Odgovor na nemačkom" maxlength="500"></textarea><button id="mic" class="mic" title="Uključi ili zaustavi mikrofon" aria-label="Mikrofon">🎙</button><button id="send" class="send" title="Pošalji odgovor" aria-label="Pošalji odgovor">➤</button></div>
 </main>
 <section class="modal" id="finalModal" hidden><div class="panel"><h3>Rezultat · ÖSD A1 dijalog</h3><div class="finalbox" id="finalDetails"></div><p>Ocena se odnosi na razumljivost, gramatiku i odgovor prema situaciji. Izgovor i akcenat se ne ocenjuju automatski. Ovo je vežba, ne zvaničan ÖSD rezultat.</p><div class="row"><button id="closeFinal">Zatvori</button><button id="repeatFinal" class="save">Vežbaj ponovo</button></div></div></section>
@@ -202,8 +197,8 @@ const userRole=()=>scene().roles[userSlot()]||"Gast";
 const aiRole=()=>scene().roles[aiSlot()]||"Partner";
 const esc=t=>clean(t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function status(t,err){$("status").textContent=t;$("status").style.color=err?"#c4324a":"#58759a";}
-function autoLaunchVisible(t){if(!AUTO_START)return;$("autoLaunch").hidden=false;$("autoLaunchText").textContent=t||"Dodirni 🎙 ako pregledač zahteva dozvolu.";}
-function autoLaunchHide(){if(AUTO_START)$("autoLaunch").hidden=true;}
+function autoLaunchVisible(t){} // Dodatna traka mikrofona uklonjena.
+function autoLaunchHide(){}
 function busy(v){state.busy=v;for(const id of ["start","send","swap","prev","next"])$(id).disabled=v||((id==="send")&&state.awaitNext);$("mic").disabled=v||!state.started||state.awaitNext;}
 function clearListenTimer(){if(state.pendingListen){clearTimeout(state.pendingListen);state.pendingListen=null;}}
 function stopVoice(){state.voiceToken++;state.speaking=false;if(state.voiceWatchdog){clearTimeout(state.voiceWatchdog);state.voiceWatchdog=null;}if("speechSynthesis" in window)try{window.speechSynthesis.cancel();}catch(e){}}
@@ -213,7 +208,7 @@ function reset(){
  if(state.nextTimer){clearTimeout(state.nextTimer);state.nextTimer=null;}
  state.awaitNext=false;state.pendingQuestion=null;
  $("advance").hidden=true;$("nextQuestion").disabled=true;$("nextQuestion").textContent="Dalje →";
- if(AUTO_START)autoLaunchVisible("Dodirni 🎙 ako pregledač zahteva dozvolu.");
+ 
  state.started=false;state.finished=false;state.history=[];state.grades=[];state.attempts=[];$("answer").disabled=false;$("send").disabled=false;
  state.currentQuestion=null;state.mode="online";state.localIndex=0;state.localPositions=[];state.noSpeechRetries=0;
  $("answer").value="";
@@ -312,8 +307,8 @@ function askMicPermission(){
  try{
   request=navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
  }catch(e){
-  status("Pristup mikrofonu nije odobren. Dodirni „Aktiviraj mikrofon“ i izaberi Dozvoli.",true);
-  autoLaunchVisible("Dodirni zeleno dugme, zatim izaberi „Dozvoli“.");
+  status("Pristup mikrofonu nije odobren. Pritisni 🎙 pored odgovora i izaberi Dozvoli.",true);
+  autoLaunchVisible("Pritisni 🎙 pored odgovora i izaberi „Dozvoli“.");
   return Promise.resolve(false);
  }
  state.permissionRequest=Promise.resolve(request).then(stream=>{
@@ -647,17 +642,6 @@ $("mic").addEventListener("click",async()=>{
  stopVoice();
  if(!state.recording&&!state.busy&&!state.awaitNext)mic(false);
 });
-$("autoLaunchButton").addEventListener("click",async()=>{
- if(state.recording){autoLaunchHide();return;}
- if(!state.started&&!state.busy){start();return;}
- const permitted=await askMicPermission();
- if(!permitted)return;
- autoLaunchHide();
- if(!state.started||state.busy||state.awaitNext||state.finished)return;
- clearListenTimer();
- stopVoice();
- if(!state.recording)mic(false);
-});
 $("audioBtn").addEventListener("click",()=>{
  state.speaker=!state.speaker;$("audioBtn").textContent=state.speaker?"🔊":"🔇";
  if(!state.speaker){stopVoice();waitForMic(400);}
@@ -668,7 +652,7 @@ $("answer").addEventListener("keydown",ev=>{if(ev.key==="Enter"&&!ev.shiftKey){e
 $("sceneImage").addEventListener("error",()=>status("Slika nije dostupna. Proveri internet.",true));
 render();
 if(AUTO_START){
- autoLaunchVisible("Pokrećem razgovor. Ako je potrebno, dodirni 🎙 za mikrofon.");
+ 
  setTimeout(()=>{if(!state.started&&!state.busy)start();},110);
 }
 })();
