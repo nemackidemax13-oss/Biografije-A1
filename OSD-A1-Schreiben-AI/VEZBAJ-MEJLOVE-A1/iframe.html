@@ -2068,7 +2068,7 @@ $('check').onclick=async()=>{
  try {
   if(!WORKER_READY)throw Error('Cloudflare OpenAI server nije podešen.');
   const controller=new AbortController();
-  const timer=setTimeout(()=>controller.abort(),44000);
+  const timer=setTimeout(()=>controller.abort(),65000);
   let response;
   try {
    response=await fetch(WORKER_API_URL,{
@@ -2095,10 +2095,11 @@ $('check').onclick=async()=>{
      !Array.isArray(payload.points)||payload.points.length!==3 ||
      !Array.isArray(payload.questionFeedback)||payload.questionFeedback.length!==3 ||
      !Array.isArray(payload.questionEvidence)||payload.questionEvidence.length!==3 ||
+     !Array.isArray(payload.correctedEvidence)||payload.correctedEvidence.length!==3 ||
      typeof payload.correctedText!=='string'||!payload.correctedText.trim() ||
      typeof payload.translationSr!=='string'||!payload.translationSr.trim() ||
      !Array.isArray(payload.sentenceFeedback)){
-   throw Error('Cloudflare a1nivo koristi staru proveru ili pogrešnu bazu mejlova. Dok se novi Worker ne objavi, ocena neće biti prikazana.');
+   throw Error('Cloudflare a1nivo koristi staru ili nepotpunu proveru. Potrebna je nova AI verzija sa proverom zamenica i ispravljenih rečenica prema bazi svih 35 mejlova.');
   }
   if(current===idx&&$('answer').value===answerText){
    const data={...payload,mode:'ai'};
