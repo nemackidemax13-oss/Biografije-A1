@@ -259,42 +259,58 @@ function localNext(){
 }
 async function start(){
  if(state.busy||state.started||!scenes.length)return;
- // This browser click allows the microphone permission prompt before network requests.
  state.noSpeechRetries=0;askMicPermission();busy(true);status("Povezujem razgovor…");
- let q="",warn="";
+ let answer={reply:"",reply_sr:""},warn="";
  try{
-   const data=await request("start","");q=data.reply;state.mode="online";
- }catch(e){localPrepare();q=localNext().reply;warn="OpenAI trenutno nije odgovorio. Aktivna je lokalna vežba bez AI provere. Za OpenAI objavi objedinjeni a1nivo Worker."; }
- if(!q)q="Guten Tag! Was möchten Sie?";
+   answer=await request("start","");
+   state.mode="online";
+ }catch(e){
+   localPrepare();answer=localNext();
+   warn="OpenAI trenutno nije odgovorio ("+clean(e.message)+"). Pokrenuta je lokalna vežba bez AI ocenjivanja.";
+ }
+ const q=clean(answer.reply)||"Guten Tag! Was möchten Sie?";
  $("messages").innerHTML="";state.started=true;state.finished=false;
  if(warn)note(warn);
- bubble("ai",q);state.history.push({role:"assistant",content:q});$("start").textContent=state.mode==="online"?"✓ OpenAI aktivan":"✓ Lokalna vežba";
- status(state.mode==="online"?"AI pita; mikrofon se automatski uključuje posle izgovora.":"Lokalni dijalog · bez OpenAI ocenjivanja");
+ bubble("ai",q,answer.reply_sr);
+ state.history.push({role:"assistant",content:q});
+ $("start").textContent=state.mode==="online"?"✓ OpenAI aktivan":"✓ Lokalna vežba";
+ status(state.mode==="online"?"Saslušaj nemački i odgovori glasom ili tekstom.":"Lokalna vežba · bez OpenAI ocenjivanja");
  busy(false);say(q,true);
 }
 async function send(){
  if(state.busy||!state.started||state.finished){if(!state.started)status("Prvo klikni „Počni razgovor“.",true);return;}
  const answer=clean($("answer").value);if(answer.length<2){status("Izgovori ili napiši nemački odgovor.",true);return;}
- clearListenTimer();stopMic();stopVoice();busy(true);$("answer").value="";bubble("me",answer);
- const previous=state.history.slice();let next=null;
+ clearListenTimer();stopMic();stopVoice();busy(true);$("answer").value="";
+ const mine=bubble("me",answer,"");
+ let next=null;
  if(state.mode==="online"){
-  try{next=await request("turn",answer);
+  try{
+   next=await request("turn",answer);
+   setTranslation(mine,next.user_sr,answer);
    state.history.push({role:"user",content:answer},{role:"assistant",content:next.reply});
    const score=Math.max(0,Math.min(2,Math.round(Number(next.evaluation?.score)||0)));
-   state.grades.push(score);feedback(next.evaluation||{score:0});
+   state.grades.push(score);
+   feedback(next.evaluation||{score:0});
    $("counter").textContent=state.grades.length+" AI ocena";
-  }catch(e){localPrepare();note("Veza sa OpenAI je prekinuta. Nastavljamo lokalnu A1 vežbu, bez daljeg AI ocenjivanja.");next=localNext();}
+  }catch(e){
+   localPrepare();setTranslation(mine,"",answer);
+   note("OpenAI trenutno nije dostupan ("+clean(e.message)+"). Nastavljamo lokalno, bez novih AI ocena.");
+   next=localNext();
+  }
  }else{
-  const lines=offline[String(state.index+1)]||[];
-  const lastPos=state.localPositions[state.localIndex-1],suggestion=Number.isInteger(lastPos)?clean(lines[lastPos+1]):"";
-  if(suggestion)note("Primer odgovora: "+suggestion+" · Ovo nije OpenAI ocena.");
+  setTranslation(mine,"",answer);
+  const lines=offline[String(state.index+1)]||[],srs=offlineSr[String(state.index+1)]||[];
+  const lastPos=state.localPositions[state.localIndex-1];
+  const suggested=Number.isInteger(lastPos)?clean(lines[lastPos+1]):"";
+  if(suggested)note("Primer: "+suggested+(srs[lastPos+1]?" — "+srs[lastPos+1]:"")+" · Nije AI ocena.");
   next=localNext();
  }
  if(state.mode==="local")state.history.push({role:"user",content:answer},{role:"assistant",content:next.reply});
- bubble("ai",next.reply);
+ bubble("ai",next.reply,next.reply_sr);
  state.finished=!!next.finished;
- busy(false);if(state.finished){status("Dijalog završen. Otvori Rezultat.");say(next.reply,false);}
- else{status(state.mode==="online"?"OpenAI odgovor i provera su spremni.":"Lokalna A1 vežba · odgovor nije AI ocenjen.");say(next.reply,true);}
+ busy(false);
+ if(state.finished){status("Dijalog je završen. Otvori rezultat.");say(next.reply,false);}
+ else{status(state.mode==="online"?"Odgovor je proveren. Saslušaj sledeće pitanje.":"Lokalna vežba · nije AI ocenjeno.");say(next.reply,true);}
 }
 function finish(){
  clearListenTimer();stopMic();stopVoice();const n=state.grades.length,sum=state.grades.reduce((a,b)=>a+b,0);
