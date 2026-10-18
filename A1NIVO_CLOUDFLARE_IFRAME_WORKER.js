@@ -567,7 +567,8 @@ async function grade(body,env) {
     sentenceFeedback:parsed.sentenceFeedback.filter(x=>{
       const excerpt=String(x.original).normalize("NFC").replace(/\s+/g," ").trim().toLocaleLowerCase("de");
       const source=String(answer).normalize("NFC").replace(/\s+/g," ").toLocaleLowerCase("de");
-      return excerpt.length>=3 && source.includes(excerpt) && x.corrected.trim() && x.explanationSr.trim();
+      return excerpt.length>=3 && source.includes(excerpt) &&
+        x.corrected.trim() && isRealEvidence(corrected,x.corrected) && x.explanationSr.trim();
     }).slice(0,18).map(x=>({original:x.original.slice(0,350),corrected:x.corrected.slice(0,350),explanationSr:x.explanationSr.slice(0,850)})),
     questionFeedback:parsed.questionFeedback.map((x,i)=>{
       const rule=ruleWarnings.find(item=>item.index===i);
