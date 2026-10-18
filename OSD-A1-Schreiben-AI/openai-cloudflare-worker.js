@@ -433,8 +433,8 @@ async function grade(body,env) {
   const ruleWarnings=[];
   for(let i=0;i<3;i++){
     const guard=databaseGuard(task,index,i,parsed.questionEvidence[i],answer);
-    if(guard && points[i]>guard.max){
-      points[i]=guard.max;
+    if(guard){
+      points[i]=Math.min(points[i],guard.max);
       ruleWarnings.push({index:i,message:guard.feedback});
     }
   }
@@ -471,7 +471,7 @@ async function grade(body,env) {
     }).slice(0,18).map(x=>({original:x.original.slice(0,350),corrected:x.corrected.slice(0,350),explanationSr:x.explanationSr.slice(0,850)})),
     questionFeedback:parsed.questionFeedback.map((x,i)=>{
       const rule=ruleWarnings.find(item=>item.index===i);
-      return rule ? (String(x).trim()+' '+rule.message).trim().slice(0,820) : String(x).slice(0,600);
+      return rule ? rule.message.slice(0,820) : String(x).slice(0,600);
     }),
     questionEvidence:parsed.questionEvidence.map(x=>String(x).slice(0,220)),
     taskIndex:index,verificationVersion:"a1-database-verb-slots-v4",
