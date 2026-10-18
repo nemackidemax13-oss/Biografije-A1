@@ -158,6 +158,10 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 .advance button:disabled{opacity:.62;background:#93aebc;cursor:wait}
 .advance button:not(:disabled):active{background:#086941;transform:translateY(1px)}
 @media(max-height:620px){.advance{padding:5px 8px;min-height:39px;margin-top:4px}.advance span{font-size:10px}.advance button{height:31px}}
+.auto-launch{margin:5px 8px 1px;padding:6px 8px;border:1px solid #abd5ec;background:#eaf7fe;border-radius:10px;display:flex;align-items:center;justify-content:space-between;gap:8px;flex:none}
+.auto-launch span{flex:1;min-width:0;font-size:11px;color:#225277;font-weight:750;line-height:1.3}
+.auto-launch button{background:#168451;color:white;font-size:12px;font-weight:850;border:0;border-radius:8px;padding:9px 8px;white-space:nowrap;min-height:34px}
+@media(max-height:620px){.auto-launch{padding:4px 6px}.auto-launch span{font-size:10px}.auto-launch button{min-height:30px;padding:6px}}
 </style>
 </head>
 <body>
@@ -171,6 +175,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
  <div class="feedback" id="feedback" hidden><b id="feedbackTitle"></b><div id="feedbackBody"></div></div>
  <div class="status"><span id="status">Pritisni Počni razgovor i dozvoli mikrofon</span><em id="counter">0 odgovora</em></div>
  <div class="advance" id="advance" hidden><span id="advanceText">Odgovor je sačuvan.</span><button type="button" id="nextQuestion" disabled>Dalje →</button></div>
+ <div id="autoLaunch" class="auto-launch" hidden><span id="autoLaunchText">Pokrećem razgovor i mikrofon…</span><button id="autoLaunchButton" type="button">🎙 Aktiviraj mikrofon</button></div>
  <div class="answer-title">TVOJ ODGOVOR · NEMAČKI</div><div class="inputrow"><textarea id="answer" rows="2" placeholder="Govori ili napiši odgovor na nemačkom…" aria-label="Odgovor na nemačkom" maxlength="500"></textarea><button id="mic" class="mic" title="Uključi ili zaustavi mikrofon" aria-label="Mikrofon">🎙</button><button id="send" class="send" title="Pošalji odgovor" aria-label="Pošalji odgovor">➤</button></div>
 </main>
 <section class="modal" id="finalModal" hidden><div class="panel"><h3>Rezultat · ÖSD A1 dijalog</h3><div class="finalbox" id="finalDetails"></div><p>Ocena se odnosi na razumljivost, gramatiku i odgovor prema situaciji. Izgovor i akcenat se ne ocenjuju automatski. Ovo je vežba, ne zvaničan ÖSD rezultat.</p><div class="row"><button id="closeFinal">Zatvori</button><button id="repeatFinal" class="save">Vežbaj ponovo</button></div></div></section>
@@ -185,6 +190,7 @@ const offlineSr=window.DEMAX_FALLBACK_TRANSLATIONS||{};
 const $=id=>document.getElementById(id);
 const DEFAULT_API="https://usmenia1prvideo.nemackidemax13.workers.dev";
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+const AUTO_START=(()=>{try{return new URLSearchParams(window.location?.search||"").get("autostart")==="1";}catch(e){return false;}})();
 const state={index:0,swap:false,busy:false,started:false,finished:false,history:[],grades:[],attempts:[],currentQuestion:null,mode:"online",speaker:true,
  rec:null,recording:false,autoMic:true,autoMicAllowed:false,sessionId:0,voiceToken:0,speaking:false,pendingListen:null,awaitNext:false,pendingQuestion:null,nextTimer:null,
  recognitionId:0,noSpeechRetries:0,localPositions:[],localIndex:0,api:DEFAULT_API,nativeFailed:false,micStream:null,mediaRecorder:null,monitor:null,recordTimer:null,audioCtx:null,voiceWatchdog:null};
@@ -196,6 +202,8 @@ const userRole=()=>scene().roles[userSlot()]||"Gast";
 const aiRole=()=>scene().roles[aiSlot()]||"Partner";
 const esc=t=>clean(t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function status(t,err){$("status").textContent=t;$("status").style.color=err?"#c4324a":"#58759a";}
+function autoLaunchVisible(t){if(!AUTO_START)return;$("autoLaunch").hidden=false;$("autoLaunchText").textContent=t||"Dodirni 🎙 ako pregledač zahteva dozvolu.";}
+function autoLaunchHide(){if(AUTO_START)$("autoLaunch").hidden=true;}
 function busy(v){state.busy=v;for(const id of ["start","send","swap","prev","next"])$(id).disabled=v||((id==="send")&&state.awaitNext);$("mic").disabled=v||!state.started||state.awaitNext;}
 function clearListenTimer(){if(state.pendingListen){clearTimeout(state.pendingListen);state.pendingListen=null;}}
 function stopVoice(){state.voiceToken++;state.speaking=false;if(state.voiceWatchdog){clearTimeout(state.voiceWatchdog);state.voiceWatchdog=null;}if("speechSynthesis" in window)try{window.speechSynthesis.cancel();}catch(e){}}
@@ -205,6 +213,7 @@ function reset(){
  if(state.nextTimer){clearTimeout(state.nextTimer);state.nextTimer=null;}
  state.awaitNext=false;state.pendingQuestion=null;
  $("advance").hidden=true;$("nextQuestion").disabled=true;$("nextQuestion").textContent="Dalje →";
+ if(AUTO_START)autoLaunchVisible("Dodirni 🎙 ako pregledač zahteva dozvolu.");
  state.started=false;state.finished=false;state.history=[];state.grades=[];state.attempts=[];$("answer").disabled=false;$("send").disabled=false;
  state.currentQuestion=null;state.mode="online";state.localIndex=0;state.localPositions=[];state.noSpeechRetries=0;
  $("answer").value="";
@@ -263,7 +272,7 @@ function feedback(e){
 }
 function waitForMic(delay){
  clearListenTimer();if(!state.started||state.finished||state.busy||state.awaitNext||!state.autoMic||(!SR&&typeof window.MediaRecorder!=="function"))return;
- if(!state.autoMicAllowed){status("Klikni 🎙 za dozvolu, ili otvori direktni link u Safari/Chrome.");return;}
+ if(!state.autoMicAllowed){autoLaunchVisible("Dodirni 🎙 za dozvolu mikrofona.");status("Klikni 🎙 za dozvolu, ili otvori direktni link u Safari/Chrome.");return;}
  const session=state.sessionId;
  state.pendingListen=setTimeout(()=>{state.pendingListen=null;if(session===state.sessionId&&!state.busy&&!state.speaking&&!state.recording)mic(true);},delay||280);
 }
@@ -295,7 +304,7 @@ function askMicPermission(){
    if(!state.started&&!state.busy){stream.getTracks().forEach(t=>t.stop());return;}
    releaseMicStream();state.micStream=stream;state.autoMicAllowed=true;
    if(state.started&&!state.busy&&!state.speaking&&!state.awaitNext&&!state.recording)waitForMic(450);
-  }).catch(()=>{state.autoMicAllowed=false;status("Dozvoli mikrofon u pregledaču. Ako je blokiran u aplikaciji, koristi direktni link.",true);});
+  }).catch(()=>{state.autoMicAllowed=false;autoLaunchVisible("Dozvoli mikrofon u Safari/Chrome pregledaču.");status("Dozvoli mikrofon u pregledaču. Ako je blokiran u aplikaciji, koristi direktni link.",true);});
  }catch(e){status("Mikrofon nije dostupan u ovom prikazu.",true);}
 }
 function stopMic(){
@@ -312,7 +321,7 @@ async function recordFallback(automatic){
   status("Ovaj pregledač ne podržava rezervno snimanje. Otvori direktno u Safari/Chrome ili upiši odgovor.",true);return;
  }
  if(!state.micStream?.active){
-  if(automatic){status("Dodirni 🎙 da dozvoliš mikrofon, ili otvori direktni link.",true);return;}
+  if(automatic){autoLaunchVisible("Dodirni 🎙 da dozvoliš mikrofon.");status("Dodirni 🎙 da dozvoliš mikrofon, ili otvori direktni link.",true);return;}
   try{state.micStream=await navigator.mediaDevices.getUserMedia({audio:true});state.autoMicAllowed=true;}
   catch(e){status("Mikrofon nije dozvoljen. Proveri dozvole ili otvori direktni link.",true);return;}
  }
@@ -355,7 +364,7 @@ async function recordFallback(automatic){
   finally{clearTimeout(deadline);}
  };
  try{rec.start(200);}catch(e){state.mediaRecorder=null;status("Snimanje nije moglo da počne.",true);return;}
- state.recording=true;$("mic").classList.add("on");$("mic").textContent="■";
+ state.recording=true;$("mic").classList.add("on");$("mic").textContent="■";autoLaunchHide();
  status("🎙 Slušam nemački. Govori, pa napravi kratku pauzu ili dodirni ■ za završetak.");
  // Silence detection using microphone amplitude, with an upper limit for any device.
  const AC=window.AudioContext||window.webkitAudioContext;
@@ -420,7 +429,7 @@ function mic(automatic=false){
    state.noSpeechRetries++;waitForMic(850);
   }else status("Mikrofon: "+(problem||"nema prepoznatog govora")+". Klikni 🎙 ili napiši odgovor.");
  };
- try{rec.start();state.recording=true;state.autoMicAllowed=true;$("mic").classList.add("on");$("mic").textContent="■";status("🎙 Automatski slušam nemački…");}
+ try{rec.start();state.recording=true;state.autoMicAllowed=true;$("mic").classList.add("on");$("mic").textContent="■";autoLaunchHide();status("🎙 Automatski slušam nemački…");}
  catch(e){state.rec=null;state.recording=false;state.nativeFailed=true;$("mic").textContent="🎙";recordFallback(automatic);}
 }
 
@@ -591,7 +600,19 @@ $("swap").addEventListener("click",()=>{state.swap=!state.swap;render();});
 $("start").addEventListener("click",start);$("send").addEventListener("click",send);
 $("nextQuestion").addEventListener("click",proceed);
 $("retry").addEventListener("click",reset);$("end").addEventListener("click",finish);
-$("mic").addEventListener("click",()=>{state.autoMicAllowed=true;mic(false);});
+$("mic").addEventListener("click",()=>{
+ if(!state.autoMicAllowed&&navigator.mediaDevices?.getUserMedia)askMicPermission();
+ mic(false);
+});
+$("autoLaunchButton").addEventListener("click",()=>{
+ if(!state.started){start();return;}
+ if(state.awaitNext)return;
+ if(!state.autoMicAllowed)askMicPermission();
+ if(state.recording){autoLaunchHide();return;}
+ // A physical tap helps iPhone Safari unlock playback and microphone.
+ if(state.currentQuestion?.de){stopVoice();say(state.currentQuestion.de,true);}
+ else mic(false);
+});
 $("audioBtn").addEventListener("click",()=>{
  state.speaker=!state.speaker;$("audioBtn").textContent=state.speaker?"🔊":"🔇";
  if(!state.speaker){stopVoice();waitForMic(400);}
@@ -601,6 +622,10 @@ $("repeatFinal").addEventListener("click",()=>{$("finalModal").hidden=true;reset
 $("answer").addEventListener("keydown",ev=>{if(ev.key==="Enter"&&!ev.shiftKey){ev.preventDefault();send();}});
 $("sceneImage").addEventListener("error",()=>status("Slika nije dostupna. Proveri internet.",true));
 render();
+if(AUTO_START){
+ autoLaunchVisible("Pokrećem razgovor. Ako je potrebno, dodirni 🎙 za mikrofon.");
+ setTimeout(()=>{if(!state.started&&!state.busy)start();},110);
+}
 })();
 </script>
 </body>
