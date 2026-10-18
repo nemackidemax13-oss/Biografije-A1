@@ -1,7 +1,7 @@
 /**
  * DE-MAX / ÖSD A1 — Cloudflare Worker for live German role-play on 40 pictures.
  * Deploy as its OWN Worker. Do not overwrite the existing emails Worker.
- * Add secret OPENAI_API_KEY in Cloudflare -> Worker -> Settings -> Variables and Secrets.
+ * Add Cloudflare secret named nivoA1 (or OPENAI_API_KEY) in Settings -> Variables and Secrets.
  * Never publish any OpenAI key in GitHub or HTML.
  * Health check: GET /health. Dialogue: POST /.
  */
@@ -102,11 +102,12 @@ export default {
    return new Response(null,{status:204,headers:{...headers(origin),"Access-Control-Allow-Methods":"POST, GET, OPTIONS","Access-Control-Allow-Headers":"Content-Type","Access-Control-Max-Age":"600"}});
   }
   if(request.method==="GET"&&u.pathname.replace(/\/$/,"")==="/health")
-   return reply({service:"demax-a1-dijalog",online:true,configured:!!env.OPENAI_API_KEY},200,origin);
+   return reply({service:"demax-a1-dijalog",online:true,configured:!!(env.nivoA1 || env.OPENAI_API_KEY)},200,origin);
   if(!ALLOWED_ORIGINS.has(origin))return reply({error:"Nepoznat izvor zahteva."},403,origin);
   if(request.method!=="POST"||!(u.pathname==="/"||u.pathname===""))
    return reply({error:"Nepoznata ruta."},404,origin);
-  if(!env.OPENAI_API_KEY)return reply({error:"Nije podešen OPENAI_API_KEY u Cloudflare Worker tajnama."},503,origin);
+  const apiKey=env.nivoA1 || env.OPENAI_API_KEY;
+  if(!apiKey)return reply({error:"U Cloudflare Worker tajnama nije podešen nivoA1 (ili OPENAI_API_KEY)."},503,origin);
   const size=number(request.headers.get("Content-Length"),0,100000);
   if(size>8500)return reply({error:"Zahtev je prevelik."},413,origin);
   if(rateLimited(request.headers.get("CF-Connecting-IP")||"unknown"))
@@ -149,7 +150,7 @@ export default {
   };
   const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),27000);
   try{
-   const res=await fetch(OPENAI_URL,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+env.OPENAI_API_KEY},body:JSON.stringify(payload),signal:controller.signal});
+   const res=await fetch(OPENAI_URL,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+apiKey},body:JSON.stringify(payload),signal:controller.signal});
    const modelData=await res.json().catch(()=>null);
    if(!res.ok){
     const reason=res.status===401?"OpenAI API ključ nije ispravan.":res.status===429?"OpenAI ograničenje kvote ili brzine.":"OpenAI nije dostupan (HTTP "+res.status+").";
