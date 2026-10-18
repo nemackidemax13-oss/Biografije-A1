@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#113a77">
+<title>DE-MAX | ÖSD A1 – Dijalog prema slici (OpenAI)</title>
+<meta name="description" content="40 fotografija, razgovor na nemačkom preko mikrofona, ispravke i ocenjivanje A1 uz OpenAI.">
+<style>
+:root{--ink:#123a70;--blue:#1763c0;--red:#e52d49;--green:#148e62;--line:#d6e3f3;--pale:#f3f7ff;--muted:#647c9d}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;overscroll-behavior:none;font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:#e9eff9;color:var(--ink)}
+button,input,textarea{font:inherit}button{cursor:pointer;-webkit-tap-highlight-color:transparent}button:disabled{opacity:.45;cursor:default}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+[hidden]{display:none!important}
+.app{height:100dvh;width:100%;max-width:560px;display:flex;flex-direction:column;margin:auto;background:#f7faff;overflow:hidden;box-shadow:0 0 30px #112b5220}
+.top{height:47px;flex:none;background:#123b76;color:white;display:flex;align-items:center;gap:7px;padding:0 10px}
+.brand{min-width:0;flex:1}.brand b{font-size:15px;display:block;line-height:1.15}.brand small{display:block;font-size:10px;color:#cbdcfa;letter-spacing:.35px}
+.iconbtn{border:1px solid #ffffff35;background:#ffffff16;border-radius:10px;min-width:34px;min-height:33px;color:white;font-size:18px}
+.scenehead{padding:7px 10px;display:flex;align-items:center;gap:8px;flex:none;background:white;border-bottom:1px solid var(--line)}
+.arr{border:1px solid #ffd0d6;color:var(--red);background:#fff5f6;width:38px;height:36px;border-radius:10px;font-size:25px;font-weight:900}
+.sceneinfo{min-width:0;flex:1;text-align:center}.sceneinfo strong{display:block;font-size:14px;line-height:1.23;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sceneinfo small{display:block;color:var(--muted);font-size:10px}
+.photo{margin:7px 9px 4px;min-height:0;height:clamp(152px,30dvh,300px);flex:none;display:flex;justify-content:center;align-items:center;border:1px solid var(--line);border-radius:13px;background:white;position:relative;overflow:hidden}
+.photo img{width:100%;height:100%;object-fit:contain}
+.photo .openimg{position:absolute;bottom:6px;right:6px;background:#fffefaec;border:1px solid var(--line);border-radius:8px;font-size:11px;font-weight:800;color:var(--blue);padding:6px}
+.roles{padding:3px 10px 7px;display:flex;gap:6px;align-items:center;flex:none}
+.roles span{flex:1;min-width:0;border:1px solid var(--line);background:#eaf2ff;border-radius:8px;padding:7px 5px;font-size:11px;font-weight:750;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.roles span.ai{background:#fff3f5;border-color:#ffd9df}
+.switch{min-width:38px;height:31px;border:1px solid var(--line);background:white;border-radius:8px;font-size:19px;color:var(--red)}
+.actions{padding:0 10px 6px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;flex:none}
+.actions button{border-radius:9px;min-height:34px;border:1px solid var(--line);background:white;color:var(--blue);font-size:11px;font-weight:800;padding:4px}
+.actions button.primary{background:var(--green);color:white;border-color:var(--green)}
+.actions button.alert{color:var(--red)}
+.messages{margin:0 9px;min-height:0;flex:1;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;border-radius:12px;border:1px solid var(--line);background:white;padding:9px;display:flex;flex-direction:column;gap:8px}
+.bubble{max-width:95%;padding:8px 10px;border-radius:12px;line-height:1.35;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}
+.bubble.ai{align-self:flex-start;background:#ecf3ff;border-bottom-left-radius:3px}
+.bubble.me{align-self:flex-end;background:#e8f8ed;border-bottom-right-radius:3px}
+.bubble.note{align-self:stretch;background:#fff7e9;border:1px solid #f7e1b7;font-size:11px}
+.bubble small{display:block;margin-bottom:3px;font-size:10px;color:#58789a;font-weight:800}
+.bubble .speak{float:right;border:0;background:transparent;color:var(--blue);font-size:16px;padding:0 0 0 8px}
+.empty{margin:auto;color:#7a8fac;text-align:center;font-size:12px;padding:10px;line-height:1.6}
+.feedback{margin:6px 9px 0;padding:6px 9px;border-radius:10px;border:1px solid #d6e6f3;background:#f1f7ff;flex:none;max-height:72px;overflow:auto}
+.feedback b{font-size:11px;color:#23609f}.feedback p{margin:2px 0 0;font-size:11px;line-height:1.25}
+.feedback.bad{border-color:#f9d4dd;background:#fff4f5}.feedback.good{border-color:#b7e7cb;background:#f0fbf4}
+.status{padding:5px 12px;min-height:23px;flex:none;color:#58759a;font-size:10px;display:flex;justify-content:space-between;align-items:center;gap:5px}
+.status em{font-style:normal;color:var(--red);font-weight:750}
+.inputrow{padding:0 9px calc(8px + env(safe-area-inset-bottom));display:flex;align-items:stretch;gap:6px;flex:none;background:#f7faff}
+.inputrow textarea{flex:1;min-width:0;min-height:44px;max-height:78px;resize:none;overflow:auto;border:1px solid #bfcee6;border-radius:12px;background:white;font-size:13px;padding:10px;color:#123a70}
+.inputrow button{border:none;border-radius:11px;min-width:42px;padding:0 9px;font-size:19px;background:#e8f1ff;color:var(--blue);font-weight:900}
+.inputrow .mic.on{background:var(--red);color:white}
+.inputrow .send{background:var(--green);color:white;font-size:22px}
+.modal{position:fixed;inset:0;background:#0b214cb8;z-index:30;display:grid;place-items:center;padding:15px}
+.panel{width:min(450px,100%);max-height:90dvh;overflow:auto;padding:19px;background:white;border-radius:18px;box-shadow:0 20px 50px #050e2944}
+.panel h3{margin:0 0 8px}.panel p{font-size:13px;line-height:1.5;color:#59718f}.panel label{display:block;font-size:12px;margin:12px 0 4px;font-weight:800}
+.panel input{width:100%;border:1px solid var(--line);padding:11px;border-radius:10px;font-size:13px}
+.panel .row{display:flex;gap:8px;margin-top:14px}
+.panel button{flex:1;border:0;border-radius:10px;padding:11px;font-size:12px;font-weight:800;background:#eef3fc;color:var(--ink)}
+.panel button.save{background:var(--green);color:white}
+.panel a{color:var(--blue);font-weight:700}
+.finalbox{font-size:14px;line-height:1.8}
+.finalbox strong{font-size:22px;color:var(--green)}
+@media(max-height:680px){.top{height:42px}.scenehead{padding:4px 8px}.photo{height:clamp(130px,25dvh,205px);margin-top:4px}.roles{padding-bottom:4px}.roles span{padding:5px}.actions{padding-bottom:4px}.actions button{min-height:30px}.feedback{max-height:53px}.bubble{font-size:12px;padding:7px}.inputrow textarea{min-height:41px}}
+@media(min-width:700px){.app{border:5px solid white;border-radius:17px;height:min(100dvh,930px)}}
+</style>
+</head>
+<body>
+<main class="app">
+ <header class="top"><div class="brand"><b>DE-MAX · ÖSD A1</b><small>RAZGOVOR NA OSNOVU SLIKE · OPENAI</small></div><button class="iconbtn" id="audioBtn" aria-label="Automatski izgovor" title="Automatski izgovor">🔊</button><button class="iconbtn" id="configBtn" aria-label="Podešavanje OpenAI veze">⚙</button></header>
+ <nav class="scenehead"><button class="arr" id="prev" aria-label="Prethodna slika">‹</button><div class="sceneinfo"><strong id="sceneTitle">Učitavanje…</strong><small id="sceneCount">1 / 40</small></div><button class="arr" id="next" aria-label="Sledeća slika">›</button></nav>
+ <div class="photo"><img id="sceneImage" alt="Fotografija situacije za usmeni A1"><button class="openimg" id="enlarge">⤢ Uvećaj</button></div>
+ <div class="roles"><span id="myRole">Ja: Kunde</span><button class="switch" id="swap" title="Zameni uloge" aria-label="Zameni uloge">⇄</button><span class="ai" id="aiRole">AI: Verkäuferin</span></div>
+ <div class="actions"><button class="primary" id="start">▶ Počni dijalog</button><button id="end">✓ Rezultat</button><button class="alert" id="retry">↻ Ponovo</button></div>
+ <section class="messages" id="messages" aria-live="polite"><p class="empty">Izaberi sliku i pritisni „Počni dijalog“. Razgovaraj sa AI osobom na nemačkom. Učenik i AI igraju uloge prema slici.</p></section>
+ <div class="feedback" id="feedback" hidden><b id="feedbackTitle"></b><p id="feedbackBody"></p></div>
+ <div class="status"><span id="status">Mikrofon: spreman · Jezik: nemački (de-DE)</span><em id="counter">0 odgovora</em></div>
+ <div class="inputrow"><textarea id="answer" rows="2" placeholder="Govori ili napiši odgovor na nemačkom…" aria-label="Odgovor na nemačkom" maxlength="500"></textarea><button id="mic" class="mic" title="Uključi ili zaustavi mikrofon" aria-label="Mikrofon">🎙</button><button id="send" class="send" title="Pošalji odgovor" aria-label="Pošalji odgovor">➤</button></div>
+</main>
+<section class="modal" id="config" hidden>
+ <div class="panel"><h3>⚙ OpenAI povezivanje</h3>
+  <p>Za AI dijalog potrebna je <b>Cloudflare Worker</b> adresa. API ključ se čuva isključivo na serveru, nikad u ovoj stranici.</p>
+  <label for="apiUrl">URL Cloudflare Workera</label><input id="apiUrl" type="url" placeholder="https://ime-workera.vaš-nalog.workers.dev/">
+  <p>Sačuvaj adresu nakon objavljivanja priloženog fajla <b>openai-dijalog-worker.js</b> u Cloudflare Workers i dodavanja tajne <b>OPENAI_API_KEY</b>.</p>
+  <div class="row"><button id="closeConfig">Otkaži</button><button class="save" id="saveConfig">Sačuvaj i proveri</button></div>
+ </div>
+</section>
+<section class="modal" id="imageModal" hidden><div class="panel" style="width:min(96vw,650px);max-height:98dvh"><button id="closeImage" style="float:right">✕</button><img id="largeImage" style="width:100%;height:auto;max-height:85dvh;object-fit:contain" alt="Uvećana slika"></div></section>
+<section class="modal" id="finalModal" hidden><div class="panel"><h3>Rezultat · ÖSD A1 dijalog</h3><div class="finalbox" id="finalDetails"></div><p>Ocenjuje se razumljivost teksta dobijenog iz govora, sadržaj, gramatika i prikladnost za situaciju. <b>Izgovor i akcenat se ne ocenjuju automatski.</b> Ovo je vežba, ne zvaničan ÖSD rezultat.</p><div class="row"><button id="closeFinal">Zatvori</button><button id="repeatFinal" class="save">Vežbaj ponovo</button></div></div></section>
+<script src="./scenes.js"></script>
+<script>
+(function(){
+"use strict";
+const scenes=Array.isArray(window.DEMAX_SCENES)?window.DEMAX_SCENES:[];
+const $=id=>document.getElementById(id);
+const state={index:0,swap:false,busy:false,started:false,history:[],grades:[],speaker:true,rec:null,recording:false,api:""};
+const STORE="demax_a1_dialog_worker_url";
+try{state.api=localStorage.getItem(STORE)||"";}catch(e){}
+function clean(t){return String(t||"").trim();}
+function s(){return scenes[state.index];}
+function roleUser(){return s().roles[state.swap?0:1]||"Gast";}
+function roleAI(){return s().roles[state.swap?1:0]||"Partner";}
+function esc(t){return clean(t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function status(t,err){$("status").textContent=t;$("status").style.color=err?"#bd3447":"#58759a";}
+function setBusy(v){state.busy=v;$("start").disabled=v;$("send").disabled=v;$("mic").disabled=v;$("swap").disabled=v;$("prev").disabled=v;$("next").disabled=v;}
+function add(type,text){const wrap=document.createElement("div");wrap.className="bubble "+type;let markup="<small>"+(type==="ai"?"AI · "+esc(roleAI()):type==="me"?"Učenik · "+esc(roleUser()):"Provera")+"</small>";
+ if(type==="ai")markup+='<button class="speak" aria-label="Poslušaj" title="Poslušaj">🔊</button>';markup+=esc(text);wrap.innerHTML=markup;
+ if(type==="ai")wrap.querySelector("button").addEventListener("click",()=>speak(text));$("messages").appendChild(wrap);$("messages").scrollTop=$("messages").scrollHeight;}
+function speak(t){if(!("speechSynthesis" in window)||!clean(t))return;window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang="de-DE";u.rate=.91;u.pitch=1;const voices=window.speechSynthesis.getVoices();const german=voices.filter(v=>/^de[-_]/i.test(v.lang));u.voice=german.find(v=>/google/i.test(v.name))||german.find(v=>/natural|premium/i.test(v.name))||german[0]||null;window.speechSynthesis.speak(u);}
+function stopVoice(){if("speechSynthesis" in window)window.speechSynthesis.cancel();}
+function stopMic(){if(state.rec&&state.recording){try{state.rec.stop();}catch(e){}}state.recording=false;$("mic").classList.remove("on");}
+function clearSession(){stopMic();stopVoice();state.started=false;state.history=[];state.grades=[];$("answer").value="";$("messages").innerHTML='<p class="empty">Pritisni „Počni dijalog“ i odgovaraj punim A1 rečenicama. AI će razgovarati u ulozi druge osobe sa slike.</p>';$("feedback").hidden=true;$("counter").textContent="0 odgovora";status("Spremno za novu vežbu.");$("start").textContent="▶ Počni dijalog";}
+function render(){if(!scenes.length){status("Nije učitana baza slika (scenes.js).",true);return;}const x=s();$("sceneTitle").textContent=x.de;$("sceneCount").textContent=(state.index+1)+" / "+scenes.length+" · "+x.sr;$("sceneImage").src=x.img;$("sceneImage").alt="Situacija "+x.no+" – "+x.de;$("myRole").textContent="Ja: "+roleUser();$("aiRole").textContent="AI: "+roleAI();clearSession();}
+function newScene(i){if(state.busy)return;state.index=(i+scenes.length)%scenes.length;state.swap=false;render();}
+function setFeedback(e){if(!e){$("feedback").hidden=true;return;}const score=Math.max(0,Math.min(2,Number(e.score)||0));$("feedback").hidden=false;$("feedback").className="feedback "+(score===2?"good":score===0?"bad":"");$("feedbackTitle").textContent="Provera: "+score+" / 2";
+ let msg=clean(e.explanation);if(e.corrected&&clean(e.corrected))msg+="  ✓ "+clean(e.corrected);$("feedbackBody").textContent=msg;}
+async function request(action,utterance){if(!state.api){$("config").hidden=false;throw Error("Prvo poveži Cloudflare Worker u podešavanjima ⚙.");}
+ const ctl=new AbortController();const timer=setTimeout(()=>ctl.abort(),32000);
+ const payload={action:action,scene:state.index+1,userRole:roleUser(),aiRole:roleAI(),answer:utterance||"",history:state.history.slice(-16)};
+ try{const resp=await fetch(state.api,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload),signal:ctl.signal,mode:"cors",cache:"no-store"});let data;try{data=await resp.json();}catch(e){throw Error("Server nije vratio JSON odgovor.");}if(!resp.ok)throw Error(data.error||"AI server HTTP "+resp.status);if(!data||typeof data.reply!=="string")throw Error("Nepotpun odgovor AI servera.");return data;}finally{clearTimeout(timer);}}
+async function start(){if(state.busy||state.started)return;setBusy(true);status("AI priprema početno A1 pitanje…");try{const d=await request("start","");$("messages").innerHTML="";add("ai",d.reply);state.history.push({role:"assistant",content:d.reply});state.started=true;$("start").textContent="✓ Dijalog aktivan";status("Tvoj red. Odgovori na nemačkom.");if(state.speaker)speak(d.reply);}catch(e){status(e.name==="AbortError"?"AI nije odgovorio. Proveri vezu.":e.message,true);}finally{setBusy(false);}}
+async function send(){if(state.busy)return;if(!state.started){status("Prvo pritisni „Počni dijalog“.",true);return;}const answer=clean($("answer").value);if(answer.length<2){status("Izgovori ili napiši odgovor.",true);return;}
+ stopMic();stopVoice();setBusy(true);$("answer").value="";add("me",answer);status("OpenAI proverava odgovor i nastavlja razgovor…");
+ const previous=state.history.slice();
+ try{const d=await request("turn",answer);state.history.push({role:"user",content:answer},{role:"assistant",content:d.reply});let e=d.evaluation||{};let score=Math.max(0,Math.min(2,Math.round(Number(e.score)||0)));state.grades.push(score);setFeedback(e);$("counter").textContent=state.grades.length+" odgovora";add("ai",d.reply);status("Provereno. "+(d.finished?"Dijalog je završen; otvori rezultat.":"Odgovori na sledeće pitanje."));if(state.speaker)speak(d.reply);}catch(e){state.history=previous;const bubbles=$("messages").querySelectorAll(".bubble.me");if(bubbles.length)bubbles[bubbles.length-1].remove();$("answer").value=answer;status(e.name==="AbortError"?"Vreme čekanja isteklo. Pokušaj ponovo.":e.message,true);}finally{setBusy(false);}}
+function finish(){stopMic();stopVoice();const n=state.grades.length;const sum=state.grades.reduce((a,b)=>a+b,0);const pct=n?Math.round(sum/(n*2)*100):0;const label=n?("Prosečno "+(sum/n).toFixed(1)+" / 2 po odgovoru"):"Nema ocenjenih odgovora.";
+ $("finalDetails").innerHTML="<strong>"+pct+"%</strong> · "+n+" odgovora<br>"+esc(label)+"<br>"+(n<5?"Za potpuniju vežbu preporučuje se najmanje 5 odgovora.":"Završio/la si vežbu ove situacije.");$("finalModal").hidden=false;}
+async function mic(){if(state.busy)return;const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){status("Ovaj pregledač ne podržava prepoznavanje govora. Koristi Chrome ili upiši odgovor.",true);return;}
+ if(state.recording){stopMic();return;}stopVoice();try{const rec=new SR();state.rec=rec;rec.lang="de-DE";rec.interimResults=true;rec.continuous=true;rec.maxAlternatives=1;
+ let finalText=clean($("answer").value),interim="";rec.onresult=function(ev){interim="";for(let i=ev.resultIndex;i<ev.results.length;i++){const piece=clean(ev.results[i][0].transcript);if(ev.results[i].isFinal)finalText+=(finalText?" ":"")+piece;else interim+=(interim?" ":"")+piece;}$("answer").value=clean(finalText+" "+interim);};
+ rec.onerror=function(e){status("Mikrofon: "+e.error+". Pokušaj ponovo ili kucaj.",true);};
+ rec.onend=function(){state.recording=false;$("mic").classList.remove("on");if(interim&&!finalText) $("answer").value=interim;status("Govor je unet. Proveri tekst i pritisni ➤.");};
+ rec.start();state.recording=true;$("mic").classList.add("on");status("🎙 Slušam nemački. Pritisni mikrofon za kraj.");}catch(e){status("Mikrofon nije dostupan: "+e.message,true);}}
+async function checkUrl(u){let url;try{url=new URL(u);}catch(e){throw Error("Unesi ispravnu URL adresu.");}if(url.protocol!=="https:")throw Error("Potrebna je HTTPS adresa.");if(url.username||url.password||url.search||url.hash)throw Error("URL ne sme da sadrži lozinku, parametre ili #.");const base=url.href.replace(/\/+$/,"");const ctl=new AbortController();const t=setTimeout(()=>ctl.abort(),12000);try{const r=await fetch(base+"/health",{method:"GET",signal:ctl.signal,mode:"cors",cache:"no-store"});if(!r.ok)throw Error("Worker nije dostupan (HTTP "+r.status+").");const data=await r.json();if(data.service!=="demax-a1-dijalog")throw Error("Ova adresa nije DE-MAX AI dijalog Worker.");return base;}finally{clearTimeout(t);}}
+$("prev").addEventListener("click",()=>newScene(state.index-1));$("next").addEventListener("click",()=>newScene(state.index+1));
+$("swap").addEventListener("click",()=>{state.swap=!state.swap;render();});
+$("start").addEventListener("click",start);$("send").addEventListener("click",send);$("retry").addEventListener("click",clearSession);$("end").addEventListener("click",finish);$("mic").addEventListener("click",mic);
+$("audioBtn").addEventListener("click",()=>{state.speaker=!state.speaker;$("audioBtn").textContent=state.speaker?"🔊":"🔇";if(!state.speaker)stopVoice();});
+$("configBtn").addEventListener("click",()=>{$("apiUrl").value=state.api;$("config").hidden=false;});
+$("closeConfig").addEventListener("click",()=>{$("config").hidden=true;});
+$("saveConfig").addEventListener("click",async()=>{const b=$("saveConfig");b.disabled=true;b.textContent="Proveravam…";try{const base=await checkUrl(clean($("apiUrl").value));state.api=base;try{localStorage.setItem(STORE,base);}catch(e){}$("config").hidden=true;status("Povezano sa DE-MAX AI serverom.");}catch(e){status(e.message,true);alert(e.message);}finally{b.disabled=false;b.textContent="Sačuvaj i proveri";}});
+$("enlarge").addEventListener("click",()=>{$("largeImage").src=s().img;$("imageModal").hidden=false;});$("closeImage").addEventListener("click",()=>{$("imageModal").hidden=true;});
+$("closeFinal").addEventListener("click",()=>{$("finalModal").hidden=true;});$("repeatFinal").addEventListener("click",()=>{$("finalModal").hidden=true;clearSession();});
+$("answer").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();}});
+render();if(!state.api)status("Za OpenAI proveru poveži Worker u ⚙ podešavanjima.");
+})();
+</script>
+</body>
+</html>
