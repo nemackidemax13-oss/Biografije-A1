@@ -150,6 +150,14 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 @media(max-height:680px){.photo{height:clamp(102px,24dvh,185px);max-height:185px}.messages{min-height:105px}.answer-title{padding-top:3px}}
 @media(max-height:540px){.photo{height:clamp(95px,22dvh,130px)}.messages{min-height:96px}.inputrow textarea{min-height:42px}}
 
+
+/* Pauza posle odgovora: pitanje + odgovor ostaju vidljivi do klika Dalje */
+.advance{margin:6px 8px 0;padding:7px 9px;display:flex;align-items:center;justify-content:space-between;gap:9px;flex:none;min-height:43px;border:1px solid #bcd9ef;border-radius:11px;background:#eaf4ff;box-shadow:0 2px 8px #1642730c}
+.advance span{font-size:11px;line-height:1.3;color:#235381;font-weight:750;flex:1;min-width:0}
+.advance button{flex:none;border:0;border-radius:9px;background:#138753;color:white;font-size:13px;font-weight:900;min-width:105px;height:35px;padding:0 11px;box-shadow:0 2px 6px #13875320}
+.advance button:disabled{opacity:.62;background:#93aebc;cursor:wait}
+.advance button:not(:disabled):active{background:#086941;transform:translateY(1px)}
+@media(max-height:620px){.advance{padding:5px 8px;min-height:39px;margin-top:4px}.advance span{font-size:10px}.advance button{height:31px}}
 </style>
 </head>
 <body>
@@ -162,6 +170,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
  <section class="messages" id="messages" aria-live="polite"><p class="empty">Izaberi sliku i pritisni „Počni dijalog“. Razgovaraj sa AI osobom na nemačkom. Učenik i AI igraju uloge prema slici.</p></section>
  <div class="feedback" id="feedback" hidden><b id="feedbackTitle"></b><div id="feedbackBody"></div></div>
  <div class="status"><span id="status">Pritisni Počni razgovor i dozvoli mikrofon</span><em id="counter">0 odgovora</em></div>
+ <div class="advance" id="advance" hidden><span id="advanceText">Odgovor je sačuvan.</span><button type="button" id="nextQuestion" disabled>Dalje →</button></div>
  <div class="answer-title">TVOJ ODGOVOR · NEMAČKI</div><div class="inputrow"><textarea id="answer" rows="2" placeholder="Govori ili napiši odgovor na nemačkom…" aria-label="Odgovor na nemačkom" maxlength="500"></textarea><button id="mic" class="mic" title="Uključi ili zaustavi mikrofon" aria-label="Mikrofon">🎙</button><button id="send" class="send" title="Pošalji odgovor" aria-label="Pošalji odgovor">➤</button></div>
 </main>
 <section class="modal" id="finalModal" hidden><div class="panel"><h3>Rezultat · ÖSD A1 dijalog</h3><div class="finalbox" id="finalDetails"></div><p>Ocena se odnosi na razumljivost, gramatiku i odgovor prema situaciji. Izgovor i akcenat se ne ocenjuju automatski. Ovo je vežba, ne zvaničan ÖSD rezultat.</p><div class="row"><button id="closeFinal">Zatvori</button><button id="repeatFinal" class="save">Vežbaj ponovo</button></div></div></section>
@@ -177,7 +186,7 @@ const $=id=>document.getElementById(id);
 const DEFAULT_API="https://usmenia1prvideo.nemackidemax13.workers.dev";
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
 const state={index:0,swap:false,busy:false,started:false,finished:false,history:[],grades:[],attempts:[],currentQuestion:null,mode:"online",speaker:true,
- rec:null,recording:false,autoMic:true,autoMicAllowed:false,sessionId:0,voiceToken:0,speaking:false,pendingListen:null,
+ rec:null,recording:false,autoMic:true,autoMicAllowed:false,sessionId:0,voiceToken:0,speaking:false,pendingListen:null,awaitNext:false,pendingQuestion:null,nextTimer:null,
  recognitionId:0,noSpeechRetries:0,localPositions:[],localIndex:0,api:DEFAULT_API};
 const clean=t=>String(t||"").trim();
 const scene=()=>scenes[state.index];
@@ -187,13 +196,16 @@ const userRole=()=>scene().roles[userSlot()]||"Gast";
 const aiRole=()=>scene().roles[aiSlot()]||"Partner";
 const esc=t=>clean(t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function status(t,err){$("status").textContent=t;$("status").style.color=err?"#c4324a":"#58759a";}
-function busy(v){state.busy=v;for(const id of ["start","send","swap","prev","next"])$(id).disabled=v;$("mic").disabled=v||!state.started;}
+function busy(v){state.busy=v;for(const id of ["start","send","swap","prev","next"])$(id).disabled=v||((id==="send")&&state.awaitNext);$("mic").disabled=v||!state.started||state.awaitNext;}
 function clearListenTimer(){if(state.pendingListen){clearTimeout(state.pendingListen);state.pendingListen=null;}}
 function stopVoice(){state.voiceToken++;state.speaking=false;if("speechSynthesis" in window)try{window.speechSynthesis.cancel();}catch(e){}}
 function stopMic(){state.recognitionId++;if(state.rec){state.rec.onend=null;state.rec.onresult=null;state.rec.onerror=null;try{state.rec.abort();}catch(e){}state.rec=null;}state.recording=false;$("mic").classList.remove("on");}
 function reset(){
  state.sessionId++;clearListenTimer();stopMic();stopVoice();
- state.started=false;state.finished=false;state.history=[];state.grades=[];state.attempts=[];$("answer").disabled=false;
+ if(state.nextTimer){clearTimeout(state.nextTimer);state.nextTimer=null;}
+ state.awaitNext=false;state.pendingQuestion=null;
+ $("advance").hidden=true;$("nextQuestion").disabled=true;$("nextQuestion").textContent="Dalje →";
+ state.started=false;state.finished=false;state.history=[];state.grades=[];state.attempts=[];$("answer").disabled=false;$("send").disabled=false;
  state.currentQuestion=null;state.mode="online";state.localIndex=0;state.localPositions=[];state.noSpeechRetries=0;
  $("answer").value="";
  $("messages").innerHTML='<p class="empty">Pritisni „Počni razgovor“. Na ekranu će se prikazivati jedno pitanje i tvoje polje za odgovor.</p>';
@@ -280,7 +292,7 @@ function askMicPermission(){
  catch(e){state.autoMicAllowed=false;}
 }
 function mic(automatic=false){
- if(state.busy||!state.started||state.finished)return;
+ if(state.busy||!state.started||state.finished||state.awaitNext)return;
  if(!SR){status("Mikrofon nije podržan. Koristi Chrome na HTTPS adresi ili napiši odgovor.",true);return;}
  if(state.recording){stopMic();status("Snimanje zaustavljeno. Pritisni ➤ ili nastavi govor.");return;}
  if(automatic&&!state.autoMicAllowed)return;
@@ -346,6 +358,43 @@ function localNext(){
  const i=state.localPositions[state.localIndex++];
  return{reply:rows[i]||"Guten Tag! Was möchten Sie machen?",reply_sr:sr[i]||"",finished:false};
 }
+function prepareNextQuestion(data,result){
+ state.pendingQuestion=data;
+ state.awaitNext=true;
+ state.finished=!!data.finished;
+ $("answer").disabled=true;
+ $("send").disabled=true;
+ $("mic").disabled=true;
+ $("advance").hidden=false;
+ $("nextQuestion").disabled=true;
+ $("nextQuestion").textContent=state.finished?"✓ Rezultat":"Dalje →";
+ $("advanceText").textContent=result.aiRated?"Odgovor ocenjen: "+result.score+"/2. Pogledaj odgovor, pa nastavi.":"Odgovor je sačuvan. Pogledaj ga pre nastavka.";
+ status(state.finished?"Razgovor je završen. Pogledaj svoj rezultat.":"Odgovor i prevod su na ekranu. Sačekaj kratko, pa klikni Dalje.");
+ if(state.nextTimer)clearTimeout(state.nextTimer);
+ const token=state.sessionId;
+ state.nextTimer=setTimeout(()=>{
+  state.nextTimer=null;
+  if(token===state.sessionId&&state.awaitNext&&!state.busy){
+   $("nextQuestion").disabled=false;
+   if(!state.finished)status("Odgovor i prevod su sačuvani. Klikni „Dalje“ kada budeš spreman.");
+  }
+ },2800);
+}
+function proceed(){
+ if(state.busy||!state.awaitNext||$("nextQuestion").disabled)return;
+ if(state.finished){finish();return;}
+ if(!state.pendingQuestion)return;
+ const next=state.pendingQuestion;
+ state.awaitNext=false;state.pendingQuestion=null;
+ if(state.nextTimer){clearTimeout(state.nextTimer);state.nextTimer=null;}
+ $("advance").hidden=true;
+ $("answer").disabled=false;
+ $("send").disabled=false;
+ $("mic").disabled=false;
+ questionPanel(next);
+ status("Sledeće pitanje je spremno. Odgovori na nemačkom.");
+ say(state.currentQuestion.de,true);
+}
 function questionPanel(data){
  const de=clean(data?.reply)||"Guten Tag! Was möchten Sie?";
  const sr=clean(data?.reply_sr)||translatedFromBank(de)||missingTranslation();
@@ -369,6 +418,7 @@ async function start(){
  busy(false);say(state.currentQuestion.de,true);
 }
 async function send(){
+ if(state.awaitNext)return;
  if(state.busy||!state.started||state.finished){if(!state.started)status("Prvo klikni „Počni razgovor“.",true);return;}
  const answer=clean($("answer").value);
  if(answer.length<2){status("Izgovori ili napiši nemački odgovor.",true);return;}
@@ -414,18 +464,9 @@ async function send(){
  $("feedback").hidden=true;
  state.finished=!!next.finished;
  busy(false);
- if(state.finished){
-   // The answered question and the submitted answer remain visible; nothing gets closed.
-   $("answer").value="";
-   $("answer").disabled=true;
-   status("Dijalog završen. Klikni „Rezultat“ da vidiš odgovore i rešenja.");
-   say(next.reply,false);
- }else{
-   // Show ONLY the next question; the empty answer field stays permanently visible.
-   questionPanel(next);
-   status(result.aiRated?"Odgovor: "+result.score+"/2. Novo pitanje je spremno.":"Novo pitanje · lokalna vežba bez AI ocenjivanja.");
-   say(next.reply,true);
- }
+ // Ne prikazuj sledeće pitanje automatski: učenik prvo vidi svoj odgovor i prevod.
+ // Dugme postaje aktivno posle kratke pauze, a naredno pitanje tek na njegov klik.
+ prepareNextQuestion(next,result);
 }
 function finish(){
  clearListenTimer();stopMic();stopVoice();
@@ -451,6 +492,7 @@ $("prev").addEventListener("click",()=>newScene(state.index-1));
 $("next").addEventListener("click",()=>newScene(state.index+1));
 $("swap").addEventListener("click",()=>{state.swap=!state.swap;render();});
 $("start").addEventListener("click",start);$("send").addEventListener("click",send);
+$("nextQuestion").addEventListener("click",proceed);
 $("retry").addEventListener("click",reset);$("end").addEventListener("click",finish);
 $("mic").addEventListener("click",()=>{state.autoMicAllowed=true;mic(false);});
 $("audioBtn").addEventListener("click",()=>{
