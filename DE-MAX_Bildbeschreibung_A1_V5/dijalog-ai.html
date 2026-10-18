@@ -248,9 +248,7 @@ async function start(){
  state.noSpeechRetries=0;askMicPermission();busy(true);status("Povezujem razgovor…");
  let q="",warn="";
  try{
-   if(await health()){
-      const data=await request("start","");q=data.reply;state.mode="online";
-   }else{localPrepare();q=localNext().reply;warn="Cloudflare još nema aktivan OpenAI dijalog. Pokrenuta je lokalna vežba sa postojećim A1 rečenicama, bez AI ocenjivanja.";}
+   const data=await request("start","");q=data.reply;state.mode="online";
  }catch(e){localPrepare();q=localNext().reply;warn="OpenAI trenutno nije odgovorio. Aktivna je lokalna vežba bez AI provere. Za OpenAI objavi objedinjeni a1nivo Worker."; }
  if(!q)q="Guten Tag! Was möchten Sie?";
  $("messages").innerHTML="";state.started=true;state.finished=false;
