@@ -1830,29 +1830,6 @@ const $=id=>document.getElementById(id);
 function persist(){saved.current=current;try{localStorage.setItem(STORAGE,JSON.stringify(saved))}catch{}}
 function words(txt){return (txt.match(/[\p{L}\p{N}]+(?:['’\-][\p{L}\p{N}]+)*/gu)||[]).length}
 function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-const PAT={
-'day':/\b(montag|dienstag|mittwoch|donnerstag|freitag|samstag|sonntag|wochenende|morgen|heute|übermorgen|nächste\w*)\b/i,
-'clock':/(?:\b(?:um|gegen|ab)\s*\d{1,2}\b|\b\d{1,2}\s*(?:uhr|:|\.)\s*\d{0,2}\b|\b(?:mittag|vormittag|nachmittag|abend|morgens)\b)/i,
-'food':/(?:pizza|brot|salat|kuchen|torte|fleisch|reis|nudel|suppe|käse|gemüse|obst|apfel|banane|kartoffel|spaghetti|grill|hähnchen|hamburger|pommes|fisch|essen)/i,
-'drink':/(?:wasser|saft|cola|kaffee|tee|limonade|milch|getränk|trinken)/i,
-'gift':/(?:buch|blumen|parfum|kleidung|geschenk|spielzeug|puppe|ball|schokolade|gutschein|teddy|uhr|tasche|kaufen)/i,
-'activity':/(?:kino|spazier|gehen|spielen|wandern|rad|tanzen|musik|schwimmen|shoppen|einkaufen|restaurant|kaffee|sport|park|essen|film|zusammen|besuchen|lernen|fahren)/i,
-'person':/(?:freund|freundin|bruder|schwester|mann|frau|mutter|vater|eltern|familie|kolleg|lehrer|allein|niemand|ich komme|wir kommen|sie kommt|er kommt|einladen)/i,
-'shop':/(?:laden|geschäft|supermarkt|einkaufszentrum|zentrum|innenstadt|buchhandlung|kaufhaus|möbelhaus|markt|elektro|bäckerei|schuh|geschäft|kaufen|bei\s+\w+)/i,
-'meeting-place':/(?:bahnhof|platz|park|schule|restaurant|café|cafe|zentrum|markt|kino|eingang|straße|haus|zu hause|bei dir|bei mir|vor dem|vor der|am |im |in der)/i,
-'country':/(?:deutschland|österreich|schweiz|italien|spanien|frankreich|türkei|serbien|bosnien|kroatien|montenegro|portugal|griechenland|niederlande|berlin|wien)/i,
-'yes-no':/(?:\bja\b|\bnein\b|gerne|natürlich|leider|möchte|kann|komme|nicht|lust|würde)/i,
-'duration':/(?:\b\d+\s*(?:tag|nacht|woche|monat)|ein\w*\s+(?:tag|nacht|woche|monat)|zwei|drei|vier|fünf|bis\s+\w+|bleibe)/i,
-'clothes':/(?:kleid|anzug|hemd|hose|jacke|pullover|schuhe|t-shirt|rock|mantel|bluse|jeans|tragen|anziehen)/i,
-'sport':/(?:fußball|basketball|tennis|joggen|laufen|schwimmen|radfahren|fahrrad|sport|wandern|fitness|volleyball)/i,
-'equipment':/(?:ball|schuhe|kleidung|fahrrad|wasser|tasche|sport|trikot|helm|handtuch|brauchen|nehmen)/i,
-'restaurant':/(?:restaurant|pizzeria|café|cafe|italien|chines|sushi|gasthaus|bistro)/i,
-};
-PAT.transport=/(?:auto|bus|zug|bahn|taxi|fahrrad|rad|zu fuß|laufen|fahren|fliegen|flugzeug|reisen|mit dem|mit der)/i;
-PAT.time=new RegExp(PAT.day.source+'|'+PAT.clock.source,'i');
-PAT['day-time']=PAT.time;PAT['yes-time']=new RegExp(PAT['yes-no'].source+'|'+PAT.time.source,'i');
-PAT['bring-food']=new RegExp(PAT.food.source+'|'+PAT.drink.source,'i');
-PAT['meeting-time']=new RegExp(PAT['meeting-place'].source+'|'+PAT.time.source,'i');
 /* Ucenik moze pisati i bez nemacke tastature: smisao se prepoznaje,
    nedostajuci umlauti se prikazuju ispravljeni, a ae/oe/ue su zamene. */
 const A1_MISSING_UMLAUTS=[
@@ -1921,7 +1898,6 @@ function correctGerman(text){
  t=t.replace(/(^|[.!?]\s+|\n\s*)([a-zäöü])/g,(m,p,c)=>p+c.toUpperCase());
  return t.trim();
 }
-function evaluateLocal(text,idx){const item=MAILS[idx];const original=text.trim();const count=words(original);const pts=item.types.map(t=>(PAT[t]&&PAT[t].test(original))?2:0);const greetings=/\b(hallo|liebe(?:r|\s|\b)|guten tag|hi|sehr geehrt)/i.test(original);const signoff=hasA1Closing(original);const form=signoff?1:0;const fixed=correctGerman(original);const commonMiss=(original.match(/\b(ich haben|wir kann|du kann|ich bin zeit|mit der bus|keine auto|ich moch|ich komm|ich hab)\b/gi)||[]).length+( /\bSport\s+spielen\b/i.test(original)?1:0);const lowerNouns=(original.match(/\b(?:samstag|sonntag|montag|zeit|schule|freundin|restaurant|geschenk|auto|bus|mittag|deutschkurs)\b/g)||[]).length;const grammar=Math.max(0,2-Math.min(2,commonMiss+(lowerNouns>3?1:0)));const len=count>=15&&count<=30?1:0;const score=Math.min(10,pts.reduce((a,b)=>a+b,0)+grammar+form+len);const missing=pts.map((x,i)=>x===0?item.questions[i]:null).filter(Boolean);return {score,points:pts,grammar,form,length:len,correctedText:fixed,feedback:missing.length?'Proveri da li si jasno odgovorio/la na sledeća pitanja: '+missing.join(' • '):'Prepoznati su odgovori na sva tri pitanja. Proveri smisao i gramatiku rečenica.',mode:'local'}}
 function renderResult(r){
  if(words($('answer').value)<15)return;
  const original=$('answer').value;
