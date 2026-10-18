@@ -518,7 +518,7 @@
         "required": [],
         "perspective": "man",
         "verbInfinitive": "können",
-        "answerVerb": "kannst",
+        "answerVerb": "kann",
         "verbType": "modal",
         "actionVerbs": [
           "kaufen"
@@ -962,9 +962,12 @@
       {
         "required": [],
         "perspective": "neutral",
-        "verbInfinitive": "kaufen",
-        "answerVerb": "kaufen",
-        "verbType": "simple"
+        "verbInfinitive": "möchten",
+        "answerVerb": "möchte",
+        "verbType": "modal",
+        "actionVerbs": [
+          "kaufen"
+        ]
       }
     ]
   },
