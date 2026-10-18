@@ -194,7 +194,7 @@ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
 const AUTO_START=true;
 const state={index:0,swap:false,busy:false,started:false,finished:false,history:[],grades:[],attempts:[],currentQuestion:null,mode:"online",speaker:true,
  rec:null,recording:false,autoMic:true,autoMicAllowed:false,sessionId:0,voiceToken:0,speaking:false,pendingListen:null,awaitNext:false,pendingQuestion:null,nextTimer:null,
- recognitionId:0,noSpeechRetries:0,localPositions:[],localIndex:0,api:DEFAULT_API,nativeFailed:false,micStream:null,mediaRecorder:null,monitor:null,recordTimer:null,audioCtx:null,voiceWatchdog:null};
+ recognitionId:0,noSpeechRetries:0,localPositions:[],localIndex:0,api:DEFAULT_API,nativeFailed:false,micStream:null,mediaRecorder:null,monitor:null,recordTimer:null,audioCtx:null,voiceWatchdog:null,permissionRequest:null};
 const clean=t=>String(t||"").trim();
 const scene=()=>scenes[state.index];
 const userSlot=()=>state.swap?0:1;
@@ -297,16 +297,50 @@ function releaseMicStream(){
  state.autoMicAllowed=false;
 }
 function askMicPermission(){
- if(!navigator.mediaDevices?.getUserMedia){state.autoMicAllowed=!!SR;status("Otvori stranicu preko HTTPS u Safari/Chrome ako mikrofon nije dostupan.",true);return;}
- if(state.micStream?.active){state.autoMicAllowed=true;return;}
- // Called directly by the student's tap on "Počni razgovor".
+ if(!navigator.mediaDevices?.getUserMedia){
+  state.autoMicAllowed=false;
+  autoLaunchVisible("Mikrofon nije dostupan unutar ovog prikaza. Otvori aplikaciju direktno u Safari/Chrome.");
+  status("Pregledač ne dozvoljava pristup mikrofonu na ovoj stranici.",true);
+  return Promise.resolve(false);
+ }
+ if(state.micStream?.active){
+  state.autoMicAllowed=true;
+  return Promise.resolve(true);
+ }
+ if(state.permissionRequest)return state.permissionRequest;
+ const session=state.sessionId;
+ let request;
  try{
-  navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}}).then(stream=>{
-   if(!state.started&&!state.busy){stream.getTracks().forEach(t=>t.stop());return;}
-   releaseMicStream();state.micStream=stream;state.autoMicAllowed=true;
-   if(state.started&&!state.busy&&!state.speaking&&!state.awaitNext&&!state.recording)waitForMic(450);
-  }).catch(()=>{state.autoMicAllowed=false;autoLaunchVisible("Dozvoli mikrofon u Safari/Chrome pregledaču.");status("Dozvoli mikrofon u pregledaču. Ako je blokiran u aplikaciji, koristi direktni link.",true);});
- }catch(e){status("Mikrofon nije dostupan u ovom prikazu.",true);}
+  request=navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
+ }catch(e){
+  status("Pristup mikrofonu nije odobren. Dodirni „Aktiviraj mikrofon“ i izaberi Dozvoli.",true);
+  autoLaunchVisible("Dodirni zeleno dugme, zatim izaberi „Dozvoli“.");
+  return Promise.resolve(false);
+ }
+ state.permissionRequest=Promise.resolve(request).then(stream=>{
+  if(session!==state.sessionId){
+   stream.getTracks().forEach(t=>t.stop());
+   return false;
+  }
+  if(state.micStream&&state.micStream!==stream)releaseMicStream();
+  state.micStream=stream;
+  state.autoMicAllowed=true;
+  state.noSpeechRetries=0;
+  autoLaunchHide();
+  if(state.started&&!state.busy&&!state.speaking&&!state.awaitNext&&!state.recording)waitForMic(380);
+  return true;
+ }).catch(e=>{
+  state.autoMicAllowed=false;
+  const denied=e?.name==="NotAllowedError"||e?.name==="PermissionDeniedError"||e?.name==="SecurityError";
+  const blocked=e?.name==="NotFoundError"||e?.name==="NotReadableError";
+  const message=blocked?"Telefon ne pronalazi slobodan mikrofon. Zatvori druge aplikacije koje ga koriste.":
+    denied?"Safari/Chrome je blokirao dozvolu. U podešavanjima ovog sajta izaberi Mikrofon → Dozvoli.":
+    "Dodirni zeleno dugme i potvrdi dozvolu za mikrofon.";
+  autoLaunchVisible(message);
+  status(message,true);
+  return false;
+ }).finally(()=>{state.permissionRequest=null;});
+ return state.permissionRequest;
 }
 function stopMic(){
  state.recognitionId++;
@@ -601,19 +635,29 @@ $("swap").addEventListener("click",()=>{state.swap=!state.swap;render();});
 $("start").addEventListener("click",start);$("send").addEventListener("click",send);
 $("nextQuestion").addEventListener("click",proceed);
 $("retry").addEventListener("click",reset);$("end").addEventListener("click",finish);
-$("mic").addEventListener("click",()=>{
- if(!state.autoMicAllowed&&navigator.mediaDevices?.getUserMedia)askMicPermission();
- mic(false);
-});
-$("autoLaunchButton").addEventListener("click",()=>{
- // Start permission within this user gesture, even when the AI question is loading.
- if(!state.autoMicAllowed)askMicPermission();
+$("mic").addEventListener("click",async()=>{
+ if(state.recording){mic(false);return;}
  if(!state.started){if(!state.busy)start();return;}
- if(state.awaitNext)return;
+ if(state.busy||state.awaitNext||state.finished)return;
+ if(!state.autoMicAllowed){
+  const permitted=await askMicPermission();
+  if(!permitted)return;
+ }
+ // Only begin listening after the browser has actually granted access.
+ clearListenTimer();
+ stopVoice();
+ if(!state.recording&&!state.busy&&!state.awaitNext)mic(false);
+});
+$("autoLaunchButton").addEventListener("click",async()=>{
  if(state.recording){autoLaunchHide();return;}
- // A physical tap helps iPhone Safari unlock playback and microphone.
- if(state.currentQuestion?.de){stopVoice();say(state.currentQuestion.de,true);}
- else mic(false);
+ if(!state.started&&!state.busy){start();return;}
+ const permitted=await askMicPermission();
+ if(!permitted)return;
+ autoLaunchHide();
+ if(!state.started||state.busy||state.awaitNext||state.finished)return;
+ clearListenTimer();
+ stopVoice();
+ if(!state.recording)mic(false);
 });
 $("audioBtn").addEventListener("click",()=>{
  state.speaker=!state.speaker;$("audioBtn").textContent=state.speaker?"🔊":"🔇";
