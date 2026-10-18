@@ -68,6 +68,54 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 .feedback .sr{color:#111;font-size:11px;line-height:1.35;margin-top:3px}
 .feedback .fixedlabel{font-size:10px;margin-top:6px;font-weight:850;color:#245789}
 @media(max-height:620px){.bubble .de{font-size:13px}.bubble .sr{font-size:11.5px}}
+
+/* DE-MAX · usklađene kartice za nemački dijalog i srpski prevod */
+.photo{height:clamp(156px,33dvh,340px);margin:4px 7px 3px;border-radius:15px;border-color:#cddded;box-shadow:0 2px 11px #133a7210}
+.messages{margin:0 8px;min-height:0;flex:1;gap:9px;padding:10px;scroll-behavior:smooth;border-radius:15px;border:1px solid #d8e5f4;background:linear-gradient(170deg,#f4f8fe 0%,#edf3fb 100%)}
+.bubble,.bubble.ai,.bubble.me{width:100%;max-width:100%;align-self:stretch;padding:0;background:#fff;border-radius:14px;border:1px solid #dce6f1;box-shadow:0 2px 9px #173c7310;white-space:normal;overflow:hidden;line-height:1.4}
+.bubble.ai{border-left:4px solid #326db6}
+.bubble.me{border-left:4px solid #18a16f}
+.bubble .message-header{display:flex;align-items:center;gap:7px;padding:6px 9px;min-height:35px;background:#f3f7ff;border-bottom:1px solid #e4ebf5}
+.bubble.me .message-header{background:#f2fbf7}
+.bubble .message-who{font-size:10px;font-weight:850;letter-spacing:.18px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#375d8a}
+.bubble.me .message-who{color:#177a54}
+.bubble .message-chip{flex:none;display:inline-flex;align-items:center;justify-content:center;border-radius:6px;padding:3px 6px;color:#fff;background:#346bb2;font-size:9px;font-weight:900;letter-spacing:.35px}
+.bubble.me .message-chip{background:#17966b}
+.bubble .speak{float:none;display:inline-grid;place-items:center;flex:none;margin-left:auto;padding:0;width:29px;height:27px;border:1px solid #d5e3f4;background:#fff;border-radius:8px;font-size:16px;color:#195aab;box-shadow:0 1px 3px #21538413}
+.bubble .speak:focus-visible{outline:2px solid #246bd4}
+.bubble .message-body{padding:10px 12px 11px;min-width:0}
+.bubble .message-body .de{display:block;color:#cc2741;font-size:15px;font-weight:800;line-height:1.46;white-space:pre-wrap;overflow-wrap:anywhere}
+.bubble .translation-box{margin-top:8px;border-top:1px dashed #d5deeb;padding-top:7px}
+.bubble .translation-label{font-size:9px;font-weight:850;letter-spacing:1px;color:#758ba4;margin-bottom:3px}
+.bubble .translation-box .sr{display:block;margin:0;color:#15191f;font-weight:500;font-size:12.5px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere}
+.bubble.note{padding:9px 11px;background:#fff9ec;border:1px solid #f0dfbb;border-left:3px solid #d39a38;font-size:11.5px;color:#614827;box-shadow:none}
+.bubble.note small{font-size:10px;margin-bottom:3px;color:#8c6427}
+.feedback{margin:6px 8px 0;padding:8px 10px;border-radius:12px;border:1px solid #d7e3f0;background:#fff;max-height:94px;overflow:auto;box-shadow:0 1px 6px #153c7310}
+.feedback b{font-size:11px;font-weight:850;color:#25629e}
+.feedback .sr{font-size:11.5px;line-height:1.4;color:#1d2533}
+.feedback .de{color:#d5223e;font-weight:800;font-size:12px;margin-top:5px}
+.feedback .fixedlabel{font-weight:850;color:#54718f;font-size:10px;margin-top:6px}
+.roles{padding:3px 8px 5px}
+.roles span{padding:6px 5px}
+.actions{padding:0 8px 6px}
+.status{min-height:22px;padding:4px 10px;font-size:10px}
+@media(max-height:680px){
+ .photo{height:clamp(130px,29dvh,240px);min-height:0}
+ .messages{padding:7px;gap:7px}
+ .bubble .message-header{min-height:30px;padding:4px 8px}
+ .bubble .message-body{padding:7px 9px 8px}
+ .bubble .message-body .de{font-size:13.5px}
+ .bubble .translation-box{margin-top:6px;padding-top:6px}
+ .bubble .translation-box .sr{font-size:11.5px}
+ .feedback{max-height:75px}
+}
+@media(max-height:540px){
+ .photo{height:25dvh;min-height:106px}
+ .roles span{padding:4px}
+ .feedback{max-height:57px}
+}
+@media(prefers-reduced-motion:reduce){.messages{scroll-behavior:auto}}
+
 </style>
 </head>
 <body>
@@ -78,7 +126,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
  <div class="roles"><span id="myRole">Ja: Kunde</span><button class="switch" id="swap" title="Zameni uloge" aria-label="Zameni uloge">⇄</button><span class="ai" id="aiRole">AI: Verkäuferin</span></div>
  <div class="actions"><button class="primary" id="start">▶ Počni razgovor</button><button id="end">✓ Rezultat</button><button class="alert" id="retry">↻ Ponovo</button></div>
  <section class="messages" id="messages" aria-live="polite"><p class="empty">Izaberi sliku i pritisni „Počni dijalog“. Razgovaraj sa AI osobom na nemačkom. Učenik i AI igraju uloge prema slici.</p></section>
- <div class="feedback" id="feedback" hidden><b id="feedbackTitle"></b><p id="feedbackBody"></p></div>
+ <div class="feedback" id="feedback" hidden><b id="feedbackTitle"></b><div id="feedbackBody"></div></div>
  <div class="status"><span id="status">Pritisni Počni razgovor i dozvoli mikrofon</span><em id="counter">0 odgovora</em></div>
  <div class="inputrow"><textarea id="answer" rows="2" placeholder="Govori ili napiši odgovor na nemačkom…" aria-label="Odgovor na nemačkom" maxlength="500"></textarea><button id="mic" class="mic" title="Uključi ili zaustavi mikrofon" aria-label="Mikrofon">🎙</button><button id="send" class="send" title="Pošalji odgovor" aria-label="Pošalji odgovor">➤</button></div>
 </main>
@@ -134,16 +182,20 @@ function missingTranslation(){
  return state.mode==="online"?"Prevod će se prikazati kada objaviš ažurirani OpenAI Worker.":"Prevod nije dostupan u lokalnoj vežbi.";
 }
 function bubble(type,de,sr){
- const wrap=document.createElement("div");wrap.className="bubble "+type;
- const title=type==="ai"?"Partner · "+esc(aiRole()):type==="me"?"Učenik · "+esc(userRole()):"Informacija";
+ const wrap=document.createElement("div");
+ wrap.className="bubble "+type;
+ const title=type==="ai"?esc(aiRole()):type==="me"?esc(userRole()):"Informacija";
  if(type==="note"){
-  wrap.innerHTML="<small>"+title+"</small>"+esc(de);
+  wrap.innerHTML="<small>Informacija</small>"+esc(de);
  }else{
   const translated=clean(sr)||translatedFromBank(de)||missingTranslation();
-  wrap.innerHTML="<small>"+title+"</small>"+(type==="ai"||type==="me"?'<button class="speak" title="Poslušaj nemački" aria-label="Izgovori rečenicu">🔊</button>':"")+'<div class="de" lang="de">'+esc(de)+'</div><div class="sr" lang="sr">'+esc(translated)+'</div>';
-  if(type==="ai"||type==="me")wrap.querySelector(".speak").addEventListener("click",()=>say(de,false));
+  const who=type==="ai"?"AI":"UČENIK";
+  wrap.innerHTML='<div class="message-header"><span class="message-chip">'+who+'</span><span class="message-who">'+title+'</span><button class="speak" title="Poslušaj nemački" aria-label="Izgovori nemačku rečenicu">🔊</button></div>'+
+   '<div class="message-body"><div class="de" lang="de">'+esc(de)+'</div><div class="translation-box"><div class="translation-label">PREVOD</div><div class="sr" lang="sr">'+esc(translated)+'</div></div></div>';
+  wrap.querySelector(".speak").addEventListener("click",()=>say(de,false));
  }
- const box=$("messages");box.appendChild(wrap);box.scrollTop=box.scrollHeight;
+ const box=$("messages");box.appendChild(wrap);
+ box.scrollTop=box.scrollHeight;
  return wrap;
 }
 function setTranslation(el,translation,original){
