@@ -3,7 +3,7 @@
  * Deploy as its OWN Worker. Do not overwrite the existing emails Worker.
  * Add Cloudflare secret named nivoA1 (or OPENAI_API_KEY) in Settings -> Variables and Secrets.
  * Never publish any OpenAI key in GitHub or HTML.
- * Health check: GET /health. Dialogue: POST /.
+ * Status check: GET / or /health. Oral dialogue: POST /api/a1-dialog.
  */
 const MODEL = "gpt-4.1-mini";
 const OPENAI_URL = "https://api.openai.com/v1/chat/completions";
@@ -101,11 +101,11 @@ export default {
    if(!ALLOWED_ORIGINS.has(origin))return new Response(null,{status:403});
    return new Response(null,{status:204,headers:{...headers(origin),"Access-Control-Allow-Methods":"POST, GET, OPTIONS","Access-Control-Allow-Headers":"Content-Type","Access-Control-Max-Age":"600"}});
   }
-  if(request.method==="GET"&&u.pathname.replace(/\/$/,"")==="/health")
-   return reply({service:"demax-a1-dijalog",online:true,configured:!!(env.nivoA1 || env.OPENAI_API_KEY)},200,origin);
+  if(request.method==="GET"&&["/","/health","/api/a1-dialog"].includes(u.pathname.replace(/\/$/,"")||"/"))
+   return reply({service:"demax-a1-dijalog",online:true,configured:!!(env.nivoA1 || env.OPENAI_API_KEY),worker:"a1usmeni",dialogEnabled:true,method:"POST",endpoint:"/api/a1-dialog",scenes:40},200,origin);
   if(!ALLOWED_ORIGINS.has(origin))return reply({error:"Nepoznat izvor zahteva."},403,origin);
   if(request.method!=="POST"||!["/","/api/a1-dialog"].includes(u.pathname))
-   return reply({error:"Nepoznata ruta."},404,origin);
+   return reply({error:"Za dijalog koristi POST /api/a1-dialog."},404,origin);
   const apiKey=env.nivoA1 || env.OPENAI_API_KEY;
   if(!apiKey)return reply({error:"U Cloudflare Worker tajnama nije podešen nivoA1 (ili OPENAI_API_KEY)."},503,origin);
   const size=number(request.headers.get("Content-Length"),0,100000);
