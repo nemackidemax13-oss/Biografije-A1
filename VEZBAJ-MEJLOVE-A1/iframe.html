@@ -1817,6 +1817,16 @@ const SAME_SERVER = /\.replit\.(app|dev)$/.test(location.hostname) || location.h
 const SERVER_PARAMETER = new URLSearchParams(location.search).get('server');
 const SERVER_BASE = String(SERVER_PARAMETER || window.DEMAX_API_URL || '').trim().replace(/\/+$/,'');
 const VALID_SERVER = /^https:\/\/[a-z0-9.-]+(?::[0-9]+)?$/i.test(SERVER_BASE) ? SERVER_BASE : '';
+/* Uparujemo izvornu postavku sa odgovorom servera iz ISTE baze 35 mejlova. */
+function fingerprintOpenMail(index){
+ const mail=ORIGINAL_MAILS[index];
+ if(!mail)return "";
+ const content=JSON.stringify([mail.s,mail.email,mail.q,mail.to]);
+ let hash=2166136261;
+ for(let i=0;i<content.length;i++){hash^=content.charCodeAt(i);hash=Math.imul(hash,16777619);}
+ return (hash>>>0).toString(16).padStart(8,"0");
+}
+
 const WORKER_API_URL = SAME_SERVER ? location.origin + '/api/check-email' : (VALID_SERVER ? VALID_SERVER + '/api/check-email' : '');
 const WORKER_READY=Boolean(WORKER_API_URL);
 const STORAGE='demax_a1_mail_practice_v3';
@@ -2049,13 +2059,14 @@ $('check').onclick=async()=>{
   }
   // Ocenu prikazi iskljucivo ako je AI proverio SVA pitanja prema bazi
   // i svako bodovano pitanje potkrepio citatom iz ucenikovog odgovora.
-  if(payload.verificationVersion!=='a1-task-database-evidence-v1'||
+  if(payload.verificationVersion!=='a1-task-database-evidence-v2'||
      payload.taskIndex!==idx ||
+     payload.taskFingerprint!==fingerprintOpenMail(idx) ||
      !Array.isArray(payload.points)||payload.points.length!==3 ||
      !Array.isArray(payload.questionFeedback)||payload.questionFeedback.length!==3 ||
      !Array.isArray(payload.questionEvidence)||payload.questionEvidence.length!==3 ||
      typeof payload.correctedText!=='string'||!payload.correctedText.trim()){
-   throw Error('OpenAI server koristi staru ili nepotpunu proveru. Potrebno je objaviti novi Cloudflare a1nivo Worker iz GitHuba.');
+   throw Error('Cloudflare a1nivo koristi staru proveru ili pogrešnu bazu mejlova. Dok se novi Worker ne objavi, ocena neće biti prikazana.');
   }
   if(current===idx&&$('answer').value===answerText){
    const data={...payload,mode:'ai'};
@@ -2301,7 +2312,7 @@ function renderMailGrid(){
   // Status „Proveren” se stiče samo eksplicitnom proverom završenog odgovora.
   const checked=Boolean(count>=15 && saved.completed[i]===draft && saved.results[i] &&
    saved.results[i].text===draft && saved.results[i].data?.mode==='ai' &&
-   saved.results[i].data?.verificationVersion==='a1-task-database-evidence-v1');
+   saved.results[i].data?.verificationVersion==='a1-task-database-evidence-v2');
   if(checked)finished++;
   const button=document.createElement('button');button.type='button';
   button.className='mail-card'+(checked?' is-done':'');
