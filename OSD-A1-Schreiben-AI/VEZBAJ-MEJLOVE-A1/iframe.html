@@ -1925,7 +1925,7 @@ function renderResult(r){
  if(missingClosing&&!hasA1Closing(correction))correction+='\n\nViele Grüße';
  const notes=Array.isArray(r.questionFeedback)&&r.questionFeedback.length===3
    ?r.questionFeedback:MAILS[current].questions.map(q=>'Proveri da li si odgovorio/la na pitanje: '+q);
- const items=notes.map((note,i)=>'<div class="review-question"><b>'+(i+1)+'.</b> '+escapeHtml(shortReview(note,165))+'</div>').join('');
+ const items=notes.map((note,i)=>'<div class="review-question"><b>'+(i+1)+'.</b> '+escapeHtml(Number(r.points?.[i])===2?shortReview(note,175):String(note).slice(0,780))+'</div>').join('');
  const sportTip=/\bSport\s+spielen\b/i.test(original)&&!/Sport\s+(?:machen|spielen)/i.test(r.feedback||'')
   ?'Za opšti sport koristi „Sport machen“.':'';
  const umlautErrors=missingA1Umlauts(original);
@@ -2083,7 +2083,7 @@ $('check').onclick=async()=>{
   }
   // Ocenu prikazi iskljucivo ako je AI proverio SVA pitanja prema bazi
   // i svako bodovano pitanje potkrepio citatom iz ucenikovog odgovora.
-  if(payload.verificationVersion!=='a1-translation-sentence-feedback-v3'||
+  if(payload.verificationVersion!=='a1-database-verb-slots-v4'||
      payload.taskIndex!==idx ||
      payload.taskFingerprint!==fingerprintOpenMail(idx) ||
      !Array.isArray(payload.points)||payload.points.length!==3 ||
