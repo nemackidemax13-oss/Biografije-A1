@@ -1837,6 +1837,7 @@ function correctGerman(text){
 }
 function evaluateLocal(text,idx){const item=MAILS[idx];const original=text.trim();const count=words(original);const pts=item.types.map(t=>(PAT[t]&&PAT[t].test(original))?2:0);const greetings=/\b(hallo|liebe(?:r|\s|\b)|guten tag|hi|sehr geehrt)/i.test(original);const signoff=/(?:liebe grüße|viele grüße|mit freundlichen grüßen|bis bald|tschüss|dein\w*|freundliche grüße)/i.test(original);const form=(greetings&&signoff)?1:((greetings||signoff)?0.5:0);const fixed=correctGerman(original);const commonMiss=(original.match(/\b(ich haben|wir kann|du kann|ich bin zeit|mit der bus|keine auto|ich moch|ich komm|ich hab)\b/gi)||[]).length+( /\bSport\s+spielen\b/i.test(original)?1:0);const lowerNouns=(original.match(/\b(?:samstag|sonntag|montag|zeit|schule|freundin|restaurant|geschenk|auto|bus|mittag|deutschkurs)\b/g)||[]).length;const grammar=Math.max(0,2-Math.min(2,commonMiss+(lowerNouns>3?1:0)));const len=count>=15&&count<=30?1:0;const score=Math.min(10,pts.reduce((a,b)=>a+b,0)+grammar+form+len);const missing=pts.map((x,i)=>x===0?item.questions[i]:null).filter(Boolean);return {score,points:pts,grammar,form,length:len,correctedText:fixed,feedback:missing.length?'Proveri da li si jasno odgovorio/la na sledeća pitanja: '+missing.join(' • '):'Prepoznati su odgovori na sva tri pitanja. Proveri smisao i gramatiku rečenica.',mode:'local'}}
 function renderResult(r){
+ if(words($('answer').value)<15)return; // bez prikazivanja bodova za prekratak mejl
  const isAI=r.mode==='ai';
  const rawPts=Array.isArray(r.points)?r.points:[0,0,0];
  const pts=rawPts.slice(0,3).map(x=>Math.max(0,Math.min(2,Number(x)||0)));
@@ -1885,13 +1886,13 @@ $('result').addEventListener('click',event=>{
 });
 function updateCount(){
  let c=words($('answer').value);
- $('count').textContent=c+' / 30 reči';
- $('count').title=c<15?'Za vežbu preporučujemo bar 15 reči.':c>30?'Cilj je oko 30 reči.':'Broj napisanih reči (cilj: oko 30).';
+ $('count').textContent=c<15?(c+' reči · min. 15'):(c+' / 30 reči');
+ $('count').title=c<15?'Mejl se NE ocenjuje ispod 15 reči. Nedostaje još '+(15-c)+' reči.':c>30?'Cilj je oko 30 reči.':'Minimum za ocenjivanje je 15 reči; cilj je oko 30.';
  $('count').classList.toggle('valid',c>=15&&c<=30);
  $('progress').style.width=Math.min(100,(c/30)*100)+'%';
  $('check').disabled=c===0;
- $('check').title=c===0?'Prvo napiši svoj mejl':'Proveri odgovor i vidi bodove i ispravljeni mejl';
- $('checkmode').textContent=WORKER_READY?'AI server je podešen. Rezultat služi za vežbanje.':'Osnovna provera radi bez interneta. Za detaljnu AI ispravku potrebna je serverska veza.';
+ $('check').title=c===0?'Prvo napiši svoj mejl':c<15?'Potrebno je još '+(15-c)+' reči za ocenjivanje.':'Proveri odgovor i vidi bodove i ispravljeni mejl';
+ $('checkmode').textContent=c<15?'Mejl neće biti ocenjen dok ne napišeš najmanje 15 reči.':WORKER_READY?'AI server je podešen. Rezultat služi za vežbanje.':'Osnovna provera radi bez interneta. Za detaljnu AI ispravku potrebna je serverska veza.';
 }
 
 const PRECISE_QUESTION_TRANSLATIONS = [["Šta možeš da doneseš za jelo i piće?","Šta dajemo mi našoj učiteljici?","Šta još možemo da radimo posle jela?"],["Kog dana i u koliko sati imaš vremena?","Gde ima dobrih prodavnica?","Kako možemo da idemo u kupovinu?"],["Šta kupujemo za Almu?","Kada imaš vremena?","Kako ćemo stići u Berlin?"],["Kog dana možeš da ideš na festival?","Koga želiš da povedeš?","Šta želiš da radiš posle toga?"],["Da li želiš da ideš sa mnom na kurs nemačkog?","Gde mogu da kupim knjigu nemačkog jezika?","Šta možemo da radimo posle učenja?"],["Gde možemo da kupimo poklon za moju bebu?","Kog dana i u koliko sati imaš vremena?","Gde ćemo se naći?"],["U koliko sati možeš da dođeš?","Šta voliš da jedeš?","Ko još dolazi s tobom?"],["Da li želiš danas da pođeš?","Šta donosiš za jelo?","Ko još dolazi s tobom?"],["Kada imaš vremena sledeće nedelje?","Šta želiš da naučiš da kuvaš?","Kako ćemo putovati do mesta održavanja kursa?"],["Kog dana imaš vremena za izlet?","Šta donosiš za jelo i piće?","Dolaziš li sam/sama?"],["U koliko sati počinje zabava u nedelju?","Koga želiš da pozoveš?","Šta želiš da ponudiš za jelo?"],["U koliko sati dolaziš u subotu?","Koliko dugo želiš da ostaneš?","Šta voliš da jedeš?"],["Kog dana imaš vremena da me voziš?","Šta možemo da kupimo mom sinu za rođendan?","Gde mogu da se kupe odlične torte?"],["S kim dolaziš?","Šta donosiš za jelo?","Kog dana imaš vremena?"],["Kog dana sledeće nedelje imaš vremena?","Šta želiš da naučiš da kuvaš?","Kako ćemo stići tamo?"],["Imaš li vremena sledećeg meseca?","Kako možemo da putujemo?","Koju zemlju možemo da posetimo?"],["U koliko sati imaš vremena?","Gde treba da se nađemo?","Koga vodiš sa sobom?"],["Kada imaš vremena za putovanje?","Koja zemlja ti je zanimljiva?","Šta radiš vikendom?"],["U koliko sati sutra imaš vremena?","Gde mogu da kupim novi mobilni telefon?","Šta bi voleo/volela da jedeš?"],["Kada možeš da dođeš u subotu?","Možeš li da doneseš nešto za jelo?","Koga želiš da pozoveš?"],["Kog dana i u koliko sati imaš vremena?","Šta možemo zajedno da radimo?","Koga vodiš sa sobom?"],["Kada možeš da se nađeš sa mnom?","Da li želiš i ti nešto da kupiš?","Gde možemo da kupimo novu letnju odeću?"],["Kog dana i u koliko sati imaš vremena za mene?","Šta možemo da radimo za vikend?","Koga ćemo još da pitamo?"],["Gde mogu da kupim novi nameštaj?","Kada možeš da se nađeš sa mnom?","Ko želi da kupi moj stari nameštaj?"],["Kada imaš vremena?","Gde možemo da se nađemo?","Šta možemo da radimo?"],["Kada imaš vremena u subotu?","Šta ćeš obući?","Kako ćemo stići na venčanje?"],["Šta da joj kupim?","Gde mogu da kupim poklon?","Gde i kada ćemo se naći?"],["Kojim sportom bi voleo/volela da se baviš?","Šta nam je potrebno?","Kog dana imaš vremena?"],["Kada imaš vremena za kupovinu odeće?","Gde ćemo se naći?","Da li želiš i ti nešto da kupiš?"],["Imaš li vremena za vikend?","Šta voliš da radiš u slobodno vreme?","Gde možemo da se nađemo?"],["Kada možeš da dođeš u subotu?","Ko još dolazi s tobom?","Šta želiš da obučeš?"],["Kog dana dolaziš? I u koliko sati?","Koliko dugo želiš da ostaneš?","Koga vodiš sa sobom?"],["Kog dana možeš da ideš s nama u grad?","Koji restoran ti se dopada?","Šta još možemo da radimo posle jela?"],["Gde treba da organizujemo njegovu rođendansku proslavu?","Šta možemo da mu kupimo?","Koga ćemo pozvati?"],["Kog dana i u koliko sati dolaziš?","Koliko dugo želiš da ostaneš?","Šta bi voleo/volela da jedeš?"]];
@@ -1942,6 +1943,16 @@ $('answer').addEventListener('input',()=>{saved.drafts[current]=$('answer').valu
 $('check').onclick=async()=>{
  const idx=current,answerText=$('answer').value,wc=words(answerText);
  if(wc===0)return;
+ if(wc<15){
+   delete saved.results[idx];
+   delete saved.completed[idx];
+   $('answerPanel').classList.remove('has-result');
+   $('result').replaceChildren();
+   persist();
+   updateCount();
+   window.alert('MEJL NIJE OCENJEN!\n\nNapisano: '+wc+' reči.\nPotrebno je najmanje 15 reči.\nDopiši još '+(15-wc)+' reči i zatim pritisni „Proveri mejl“.');
+   return;
+ }
  const initial=evaluateLocal(answerText,idx);
  const button=$('check');
  button.disabled=true;button.textContent='AI proverava…';
