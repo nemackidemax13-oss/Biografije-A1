@@ -257,7 +257,7 @@ export default {
   async fetch(request,env) {
     const url=new URL(request.url), origin=request.headers.get("Origin");
     if (request.method==="GET" && url.pathname==="/health")
-      return json({status:"ok",openaiConfigured:Boolean(env.OPENAI_API_KEY),tasks:35,provider:"OpenAI",rulesVersion:"a1-35-strict-pronouns-modal-separable-context-2026-10-18"},200,origin);
+      return json({status:"ok",openaiConfigured:Boolean(env.OPENAI_API_KEY),tasks:35,provider:"OpenAI",rulesVersion:"a1-35-strict-min15-2026-10-18"},200,origin);
     if(url.pathname!=="/api/check-email")
       return json({error:"Nepoznata putanja. Koristi /health ili /api/check-email."},404,origin);
     if(!SITE_ORIGINS.has(origin))
