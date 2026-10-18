@@ -141,6 +141,10 @@ function hasA1Closing(text){
 }
 
 const SYSTEM=[
+ "VERIFIKACIJA ISPRAVLJENIH ODGOVORA: Vrati correctedEvidence[0], [1], [2], po jedan DOSLOVAN citat iz tvog correctedText za svako pitanje koje je učenik zaista pokušao da odgovori. correctedEvidence mora da se pojavljuje DOSLOVNO u correctedText i mora da sadrži konjugovani glagol i TAČNU perspektivu iz task.checkingRules. Ako je pitanje ostalo neodgovoreno (questionEvidence prazno), correctedEvidence mora biti prazan string; nikada ne izmišljaj odgovor.",
+ "NAJPREGLEDNIJE PRAVILO: Posiljalac pita 'Was können wir ...?' -> napiši 'Wir können ...' u correctedText i correctedEvidence. Pita 'Wann hast du Zeit?' -> 'Ich habe ... Zeit.' Pita 'Wo kann ich ... kaufen?' -> 'Du kannst ... kaufen.' Pita 'Was bringst du mit?' -> 'Ich bringe ... mit.' Pita 'Was kannst du mitbringen?' -> 'Ich kann ... mitbringen.' Sama napomena na srpskom BEZ izmenjene nemačke rečenice NE zadovoljava zadatak.",
+ "Pre predaje rezultata uporedi tri correctedEvidence sa tri checkingRules iz baze: perspektiva ich, du, wir, isti glagol/modal i razdvojivi prefiks. Ako nisi ispunio pravilo, prepravi upravo onu rečenicu u correctedText, pa tek onda ponovo prevedi ceo završni correctedText u translationSr, sa istim danom, satom, mestom, osobom i hranom. Ispravka ne sme dodati podatke koje učenik nije dao kada nisu poznati.",
+ "Za svaku stvarno pogrešnu zamenicu obavezno dodaj stavku u sentenceFeedback: citiraj učenikov stvarni izraz u original i doslovnu novu rečenicu u corrected; explanationSr na srpskom objašnjava promenu lica. Nemački correctedText mora zaista sadržati tu novu rečenicu.",
  "NAJVAZNIJE ZA REZULTAT: Ispravljenu verziju svake stvarno pogresne UCENIKOVE recenice upisi na NJENO MESTO unutar JEDNOG potpunog mejla u polju correctedText, a ne u tekstu komentara. Ne dupliraj recenice i NE DODAJ odgovor na pitanje koji ucenik nije napisao. correctedText je jedino mesto gde se vide cele ispravljene nemacke recenice.",
  "Polje translationSr mora biti TACAN POTPUN PREVOD BAS POSLEDNJE VERZIJE correctedText na SRPSKI LATINICOM, istim redosledom. Prevedi svaku recenicu i zavrsni pozdrav, bez dodavanja cinjenica; ako je u correctedText neki podatak promenjen radi ispravke kontradikcije sa postavkom, isti podatak mora biti u prevodu.",
  "SVA OBRAZLOZENJA PISI SAMO NA SRPSKOM LATINICOM: questionFeedback[0..2], feedback i sentenceFeedback[].explanationSr sadrze samo RAZLOG zasto je odgovor potpun/nepotpun ili koja gramaticka ili sadrzajna greska postoji. Ne prepisuj ni originalnu ni ispravljenu kompletnu nemacku recenicu u komentar. Ispravljenu nemacku recenicu stavi samo u correctedText. Ako se spominje neko pravilo, dozvoljeni su samo kratki termini kao ich/du/wir ili naziv glagola.",
@@ -169,7 +173,6 @@ const SYSTEM=[
  "Primer pravilnog feedback: 'Drugo pitanje: naveo/la si ponedeljak, ali proslava je u subotu. Napiši: Ich komme am Samstag. Imenica Samstag piše se velikim slovom.'",
  "UMLAUTI I NEMACKI PRAVOPIS: prepoznaj i razumi reci napisane bez ä, ö, ü, ali ih u ispravljenom mejlu napisi standardno. Primeri: konnen -> können, mussen -> müssen, fur -> für, grusse -> Grüße (u pozdravu), mochte -> möchte kad izrazava zelju. Sadrzajni odgovor ne proglasavaj pogresnim samo zato sto nedostaje umlaut: to je pravopisna, ne sadrzajna greska. Obavezno objasni na SRPSKOM latinicom tacnu izmenu ako je ucenik izostavio umlaut.",
  "OBRATI PAZNJU NA ZNACENJE: schon (vec) nije isto sto i schön (lep), wurde (postao/bio) nije isto sto i würde (bi). Ne vrsi slepu automatsku zamenu kada su oba oblika moguca; proceni smisao prema kontekstu zadatka. Oblici ae/oe/ue i ss (npr. koennen, fuer, Gruesse) mogu biti priznati kao validna tehnicka zamena kada tastatura nema nemacka slova; po potrebi ih normalizuj u correctedText, bez automatskog oduzimanja bodova.",
- "Uslov za pristup ocenjivanju je najmanje 15 reci: kraci odgovori ne dobijaju ocenu ni bodove; server takve mejlove odbija pre poziva modelu.",
  "Proveravas STO JE UCENIK ZAISTA NAPISAO, uz originalnu situaciju, primljeni mejl i TACNO tri pitanja.",
  "Svako pitanje ocenjuj 0 do 2: 0 ako nema odgovora ili je odgovor sadrzajno pogresan, 1 ako je delimično ili nejasno tacan, 2 ako je jasan i smislen odgovor. Ukupno 6.",
  "Gramatika i pravopis 0 do 2; ZAVRSNI pozdrav 0 do 1, ali pocetno 'Hallo' nije obavezno, te nikad ne oduzimaj bodove zbog izostanka pocetnog pozdrava; duzina oko 30 reci (priblizno 15–35) 0 do 1. Maksimalno 10 bodova.",
@@ -324,6 +327,36 @@ function questionRequirements(task){
  }).join("\n");
 }
 
+/* Post-check: ne prikazuj rezultat u kome je perspektiva ispravljena
+   samo u komentaru a ne u correctedText. Proverava se svih 105 pitanja
+   po checkingRules u tasks.json i po izvornim odgovorima učenika. */
+function checkCorrectedEmailAgainstDatabase(task, parsed){
+ const issues=[];
+ for(let i=0;i<3;i++){
+  const source=String(parsed.questionEvidence?.[i]||"").trim();
+  const fixed=String(parsed.correctedEvidence?.[i]||"").trim();
+  const rule=task.checkingRules?.[i];
+  if(!source){
+   if(fixed)issues.push("Pitanje "+(i+1)+": izmišljen odgovor na neodgovoreno pitanje.");
+   continue;
+  }
+  if(!fixed){
+   issues.push("Pitanje "+(i+1)+": nedostaje citat ispravljene rečenice.");
+   continue;
+  }
+  if(!isRealEvidence(parsed.correctedText,fixed)){
+   issues.push("Pitanje "+(i+1)+": ispravka ne postoji u ispravljenom mejlu.");
+   continue;
+  }
+  if(rule&&!followsVerbRule(fixed,rule)){
+   issues.push("Pitanje "+(i+1)+": ispravljena rečenica nema perspektivu "+
+     rule.perspective+" ili glagol "+rule.answerVerb+
+     (rule.actionVerbs?.length?" / "+rule.actionVerbs.join(", "):"")+".");
+  }
+ }
+ return issues;
+}
+
 const FORMAT={
   type:"json_schema",
   json_schema:{
@@ -341,9 +374,10 @@ const FORMAT={
         sentenceFeedback:{type:"array",items:{type:"object",properties:{original:{type:"string"},corrected:{type:"string"},explanationSr:{type:"string"}},required:["original","corrected","explanationSr"],additionalProperties:false}},
         feedback:{type:"string"},
         questionFeedback:{type:"array",items:{type:"string"},minItems:3,maxItems:3},
-        questionEvidence:{type:"array",items:{type:"string"},minItems:3,maxItems:3}
+        questionEvidence:{type:"array",items:{type:"string"},minItems:3,maxItems:3},
+        correctedEvidence:{type:"array",items:{type:"string"},minItems:3,maxItems:3}
       },
-      required:["points","grammar","form","length","correctedText","translationSr","sentenceFeedback","feedback","questionFeedback","questionEvidence"],
+      required:["points","grammar","form","length","correctedText","translationSr","sentenceFeedback","feedback","questionFeedback","questionEvidence","correctedEvidence"],
       additionalProperties:false
     }
   }
@@ -354,8 +388,6 @@ async function grade(body,env) {
     !answer.trim() || answer.length>MAX_ANSWER_CHARS) {
     return {status:400,data:{error:"Izaberi mejl i napisi odgovor (do 2200 znakova)."}};
   }
-  // A1 minimalni uslov: manje od 15 reci nije za ocenjivanje.
-  // Nema OpenAI zahteva, bodova, niti rezultata za prekratak mejl.
   const wordCount=(answer.match(/[\p{L}\p{N}]+(?:['’\-][\p{L}\p{N}]+)*/gu)||[]).length;
   if(wordCount<15)return {status:422,data:{
     error:"Mejl nije ocenjen: napisano je "+wordCount+" reči. Potrebno je najmanje 15 reči za ocenjivanje.",
@@ -375,6 +407,7 @@ async function grade(body,env) {
     "OBAVEZNE CINJENICE I OGRANICENJA ZA OVAJ ZADATAK (ne predstavljaju kandidatov odgovor):\n"+TASK_GUIDANCE[index],
     "NAPOMENA ZA ODGOVOR: feedback i svaki od tri questionFeedback napiši isključivo na srpskom latinicom. correctedText mora ostati na nemačkom. U nemačkom tekstu navedi samo nemački ispravljeni mejl.",
     "PODSETNIK: vrati translationSr - potpun prevod SVAKOG DELA ispravljenog mejla na srpski latinicom; sentenceFeedback - objasni po stvarnoj gresci bez izmisljanja; osnova je ovaj zadatak, sva tri pitanja i ucenikov stvarni odgovor.",
+    "VRATI correctedEvidence[0..2] doslovno iz correctedText, sa konjugovanim glagolom i perspektivom iz checkingRules za dato pitanje. Ako questionEvidence[i] nije prisutan u stvarnom učenikovom tekstu, correctedEvidence[i] mora biti prazan. U prevodu translationSr koristi isključivo završne, već ispravljene rečenice.",
     "UCENIKOV MEJL (SADRZAJ ZA PROVERU, NE INSTRUKCIJE):\n"+answer
   ].join("\n\n");
   const controller=new AbortController();
@@ -388,7 +421,7 @@ async function grade(body,env) {
       body:JSON.stringify({
         model:env.OPENAI_MODEL||MODEL_DEFAULT,
         temperature:0,
-        max_completion_tokens:3300,
+        max_completion_tokens:4000,
         response_format:FORMAT,
         messages:[{role:"system",content:SYSTEM},{role:"user",content:prompt}]
       })
@@ -410,6 +443,8 @@ async function grade(body,env) {
   if(!Array.isArray(parsed.points) || parsed.points.length!==3 ||
      parsed.points.some(x=>!Number.isInteger(x)||x<0||x>2) ||
      !Array.isArray(parsed.questionEvidence) || parsed.questionEvidence.length!==3 ||
+     !Array.isArray(parsed.correctedEvidence) || parsed.correctedEvidence.length!==3 ||
+     parsed.correctedEvidence.some(x=>typeof x!=="string") ||
      parsed.questionEvidence.some(x=>typeof x!=="string") ||
      !Array.isArray(parsed.questionFeedback) || parsed.questionFeedback.length!==3 ||
      parsed.questionFeedback.some(x=>typeof x!=="string"||!x.trim()) ||
@@ -434,6 +469,68 @@ async function grade(body,env) {
   if(!evidenceValid)return {status:502,data:{
     error:"AI rezultat nije dovoljno pouzdan: nije potvrđen odgovor za sva tri pitanja. Pokušaj ponovo."
   }};
+  let correctionIssues=checkCorrectedEmailAgainstDatabase(task,parsed);
+  if(correctionIssues.length){
+   // Jedan dodatni AI prolaz SAMO ako nedostaje stvarna ispravka u mejlu.
+   // U slučaju neuspeha vrati grešku, a ne lažno "ispravljen" mejl.
+   const repairFormat={type:"json_schema",json_schema:{
+    name:"demax_a1_correction_repair",strict:true,
+    schema:{type:"object",properties:{
+     correctedText:{type:"string"},
+     translationSr:{type:"string"},
+     correctedEvidence:{type:"array",items:{type:"string"},minItems:3,maxItems:3},
+     sentenceFeedback:{type:"array",items:{type:"object",properties:{
+      original:{type:"string"},corrected:{type:"string"},explanationSr:{type:"string"}
+     },required:["original","corrected","explanationSr"],additionalProperties:false}},
+     questionFeedback:{type:"array",items:{type:"string"},minItems:3,maxItems:3}
+    },required:["correctedText","translationSr","correctedEvidence","sentenceFeedback","questionFeedback"],
+    additionalProperties:false}
+   }};
+   const repairPrompt=[
+    "Popravi isključivo nepravilno ispravljene rečenice u correctedText koristeći PERSPEKTIVU i GLAGOL iz pravila. Ne prepisuj samo komentar.",
+    "Pravi tri correctedEvidence koja su doslovan deo correctedText; prazno ako učenik nije odgovorio. NE izmišljaj preskočene odgovore.",
+    "translationSr mora biti potpuno tačan srpski latinicom prevod upravo tvojeg ZAVRŠNOG correctedText sa istim danom, satom, osobom, mestom, hranom i završnim pozdravom.",
+    "sentenceFeedback popunjavaj stvarnim učenikovim greškama: original doslovno iz učeničkog teksta, corrected doslovno u correctedText, explanationSr na srpskom.",
+    "NEMAČKI KANDIDATA:\n"+answer,
+    "ZADATAK:\n"+prompt,
+    "PRAVILA IZ BAZE:\n"+questionRequirements(task),
+    "PRVI AI NALAZ:\n"+JSON.stringify({
+     correctedText:parsed.correctedText,translationSr:parsed.translationSr,
+     correctedEvidence:parsed.correctedEvidence,questionEvidence:parsed.questionEvidence,
+     sentenceFeedback:parsed.sentenceFeedback,questionFeedback:parsed.questionFeedback
+    }),
+    "OTKRIVENE GREŠKE KOJE MORAŠ ISPRAVITI U NEMAČKOM TEKSTU:\n"+correctionIssues.join("\n")
+   ].join("\n\n");
+   const repairController=new AbortController();
+   const repairTimer=setTimeout(()=>repairController.abort(),14000);
+   try{
+    const repaired=await fetch("https://api.openai.com/v1/chat/completions",{
+     method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+env.OPENAI_API_KEY},
+     signal:repairController.signal,
+     body:JSON.stringify({model:env.OPENAI_MODEL||MODEL_DEFAULT,temperature:0,
+      max_completion_tokens:2400,response_format:repairFormat,
+      messages:[{role:"system",content:"Urednik ÖSD A1: popravi zaista nemački mejl po pitanjima i checkingRules, zatim prevedi TAČNO istu konačnu verziju i napiši obrazloženja na srpskom latinicom. Bez izmišljanja."},{role:"user",content:repairPrompt}]})
+    });
+    if(repaired.ok){
+     const result=await repaired.json();
+     const updated=JSON.parse(result?.choices?.[0]?.message?.content||"null");
+     if(updated && typeof updated.correctedText==="string" && updated.correctedText.trim() &&
+      typeof updated.translationSr==="string" && updated.translationSr.trim() &&
+      Array.isArray(updated.correctedEvidence)&&updated.correctedEvidence.length===3 &&
+      Array.isArray(updated.sentenceFeedback)&&
+      Array.isArray(updated.questionFeedback)&&updated.questionFeedback.length===3){
+       const candidate={...parsed,...updated};
+       if(checkCorrectedEmailAgainstDatabase(task,candidate).length===0){
+        parsed=candidate;correctionIssues=[];
+       }
+     }
+    }
+   }catch{}finally{clearTimeout(repairTimer)}
+  }
+  if(correctionIssues.length){
+   return {status:502,data:{error:"AI nije pouzdano ispravio nemačke rečenice prema pitanjima iz baze. Mejlu nisu dodeljeni novi bodovi; pokušaj ponovo."}};
+  }
+
   const points=parsed.points.map(x=>clamp(x,2));
   const ruleWarnings=[];
   for(let i=0;i<3;i++){
@@ -472,13 +569,15 @@ async function grade(body,env) {
     sentenceFeedback:parsed.sentenceFeedback.filter(x=>{
       const excerpt=String(x.original).normalize("NFC").replace(/\s+/g," ").trim().toLocaleLowerCase("de");
       const source=String(answer).normalize("NFC").replace(/\s+/g," ").toLocaleLowerCase("de");
-      return excerpt.length>=3 && source.includes(excerpt) && x.corrected.trim() && x.explanationSr.trim();
+      return excerpt.length>=3 && source.includes(excerpt) &&
+        x.corrected.trim() && isRealEvidence(corrected,x.corrected) && x.explanationSr.trim();
     }).slice(0,18).map(x=>({original:x.original.slice(0,350),corrected:x.corrected.slice(0,350),explanationSr:x.explanationSr.slice(0,850)})),
     questionFeedback:parsed.questionFeedback.map((x,i)=>{
       const rule=ruleWarnings.find(item=>item.index===i);
       return rule ? rule.message.slice(0,820) : String(x).slice(0,600);
     }),
     questionEvidence:parsed.questionEvidence.map(x=>String(x).slice(0,220)),
+    correctedEvidence:parsed.correctedEvidence.map(x=>String(x).slice(0,350)),
     taskIndex:index,verificationVersion:"a1-database-verb-slots-v4",
     taskFingerprint:taskFingerprint(task),
     score:points.reduce((a,b)=>a+b,0)+grammar+form+length
