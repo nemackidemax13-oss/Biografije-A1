@@ -13,26 +13,22 @@
 ## Javni link aplikacije
 https://nemackidemax13-oss.github.io/Biografije-A1/DE-MAX_Bildbeschreibung_A1_V5/dijalog-ai.html
 
-## POVEZIVANJE SA POSTOJEĆIM CLOUDFLARE a1nivo WORKEROM
+## POSEBAN CLOUDFLARE WORKER SAMO ZA A1 USMENI
 
-Javna adresa postojećeg Workera: https://a1nivo.nemackidemax13.workers.dev
+**Mejlovi ostaju na postojećem a1nivo Workeru.** Za ovaj usmeni ispit napravi potpuno novi Cloudflare Worker sa imenom `a1usmeni`. Ne menjaj a1nivo.
 
-U GitHub aplikaciji **dijalog-ai.html** ta adresa je već podrazumevano podešena. Novi endpoint je `POST /api/a1-dialog`. **Nije moguće aktivirati endpoint samo GitHub izmenom**: vlasnik mora objaviti ažurirani kod Workera u Cloudflareu.
+1. Otvori [gotovu stranicu sa kodom i uputstvom](https://nemackidemax13-oss.github.io/Biografije-A1/DE-MAX_Bildbeschreibung_A1_V5/OBJAVI_POSEBAN_WORKER_A1_USMENI.html).
+2. Cloudflare → Workers & Pages → Create Worker → naziv `a1usmeni` → Deploy.
+3. U novom Workeru otvori Edit code → klik unutar koda → Ctrl+A → nalepi kod kopiran s gornje stranice → Deploy.
+4. U **Settings → Variables and Secrets** dodaj novu tajnu po imenu `nivoA1` (ili `OPENAI_API_KEY`) čija je vrednost pravi OpenAI API ključ. **Cloudflare tajne su vezane za pojedinačni Worker; ne prenose se automatski sa a1nivo.** Stari ključ može biti iskorišćen ako poznaješ njegovu vrednost; ako ne, potrebno je generisati novi OpenAI API ključ (ne slati ga u chat i ne zapisivati na GitHub).
+5. Otvori https://a1usmeni.nemackidemax13.workers.dev/health — nakon objavljivanja treba da vrati `"configured":true`.
+6. Otvori https://nemackidemax13-oss.github.io/Biografije-A1/DE-MAX_Bildbeschreibung_A1_V5/dijalog-ai.html i izaberi sliku. Klikni **Počni razgovor**, dozvoli mikrofon.
 
-1. Otvori jednostavnu stranicu s dugmetom **KOPIRAJ GOTOV KOD**:
-   https://nemackidemax13-oss.github.io/Biografije-A1/CLOUDFLARE_A1NIVO_OBJAVI.html
-2. U Cloudflare -> **Workers & Pages** -> izaberi postojeći **a1nivo** -> **Edit code**.
-3. Sačuvaj kopiju trenutno objavljenog koda pre zamene, naročito ako Worker koristi druge funkcije koje nisu u GitHub kopiji.
-4. U editoru zameni kod kopiranim i klikni **Deploy**.
-5. Ne menjaj OpenAI tajnu ako već radi. Kod očekuje `OPENAI_API_KEY` za postojeće mejlove i koristi `OPENAI_API_KEY` ili `nivoA1` za dijalog. Vrednost API ključa se NE objavljuje na GitHubu.
-6. Otvori https://a1nivo.nemackidemax13.workers.dev/health . Provera uspelog objavljivanja: `"dialogEnabled": true`.
-7. Otvori https://nemackidemax13-oss.github.io/Biografije-A1/DE-MAX_Bildbeschreibung_A1_V5/dijalog-ai.html , izaberi sliku i klikni **Počni dijalog**.
+Kod posebnog Workera: https://github.com/nemackidemax13-oss/Biografije-A1/blob/main/DE-MAX_Bildbeschreibung_A1_V5/openai-dijalog-worker.js
 
-Objedinjeni izvorni kod za direktno kopiranje: https://github.com/nemackidemax13-oss/Biografije-A1/blob/main/A1NIVO_CLOUDFLARE_MEJLOVI_I_USMENI.js
+Aplikacija podrazumevano zove `https://a1usmeni.nemackidemax13.workers.dev/api/a1-dialog` (POST). Ako je Worker drugačije nazvan, adresu promeni preko ⚙ u aplikaciji. Worker ne hostuje sliku i HTML; statička aplikacija i 40 fotografija ostaju na GitHub Pages.
 
-**Očuvano u pripremljenom kodu:** 35 mejlova, najmanje 15 reči, Rafaela review endpoint i iframe rute; dodaje se `/api/a1-dialog` sa postojećom OpenAI tajnom. Nije izvršeno objavljivanje na Cloudflareu iz ovog GitHub uređivanja.
-
-OpenAI naplaćuje pozive u skladu sa API potrošnjom. Za produkciju koristi Cloudflare WAF/global rate limiting.
+Postojeći email Worker `a1nivo` ostaje neizmenjen.
 
 ## iframe kod
 ```html
