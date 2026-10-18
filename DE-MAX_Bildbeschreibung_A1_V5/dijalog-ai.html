@@ -78,9 +78,9 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 </main>
 <section class="modal" id="config" hidden>
  <div class="panel"><h3>⚙ OpenAI povezivanje</h3>
-  <p>Za AI dijalog koristi se postojeći <b>a1nivo</b> Cloudflare Worker. API ključ ostaje u postojećoj serverskoj tajni i nikada se ne unosi u ovu stranicu.</p>
-  <label for="apiUrl">URL Cloudflare Workera</label><input id="apiUrl" type="url" placeholder="https://a1nivo.nemackidemax13.workers.dev">
-  <p>Adresa je već podešena na <b>a1nivo.nemackidemax13.workers.dev</b>. U Cloudflare treba objaviti objedinjeni Worker kod iz GitHuba. Postojeću tajnu <b>OPENAI_API_KEY</b> nemoj menjati.</p>
+  <p>Ovaj usmeni ispit koristi <b>poseban Cloudflare Worker a1usmeni</b>. Worker za mejlove <b>a1nivo</b> se ne menja. OpenAI ključ se čuva samo u tajni novog Workera.</p>
+  <label for="apiUrl">URL Cloudflare Workera</label><input id="apiUrl" type="url" placeholder="https://a1usmeni.nemackidemax13.workers.dev">
+  <p>Posle pravljenja novog Workera <b>a1usmeni</b> u Cloudflareu, dodaj njemu tajnu <b>nivoA1</b> sa OpenAI API ključem. Možeš koristiti i naziv <b>OPENAI_API_KEY</b>. Ako odabereš drugo ime Workera, ovde upiši njegov javni URL.</p>
   <div class="row"><button id="closeConfig">Otkaži</button><button class="save" id="saveConfig">Sačuvaj i proveri</button></div>
  </div>
 </section>
@@ -94,7 +94,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 const scenes=Array.isArray(window.DEMAX_SCENES)?window.DEMAX_SCENES:[];
 const offline=window.DEMAX_FALLBACK_DIALOGS||{};
 const $=id=>document.getElementById(id);
-const DEFAULT_API="https://a1nivo.nemackidemax13.workers.dev";
+const DEFAULT_API="https://a1usmeni.nemackidemax13.workers.dev";
 const STORE="demax_a1_dialog_worker_url";
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
 const state={
@@ -104,7 +104,7 @@ const state={
  sessionId:0,voiceToken:0,speaking:false,pendingListen:null,
  recognitionId:0,noSpeechRetries:0,localPositions:[],localIndex:0,api:DEFAULT_API
 };
-try{const saved=localStorage.getItem(STORE)||"";state.api=saved.startsWith("https://a1nivo.nemackidemax13.workers.dev")?saved:DEFAULT_API;}catch(e){state.api=DEFAULT_API;}
+try{const saved=localStorage.getItem(STORE)||"";state.api=saved.startsWith("https://a1usmeni.nemackidemax13.workers.dev")?saved:DEFAULT_API;}catch(e){state.api=DEFAULT_API;}
 const clean=t=>String(t||"").trim();
 const scene=()=>scenes[state.index];
 const userSlot=()=>state.swap?0:1;
@@ -294,7 +294,7 @@ async function checkUrl(value){
  if(u.protocol!=="https:"||u.search||u.hash||u.username||u.password)throw Error("Unesi čistu HTTPS Worker adresu.");
  const base=u.href.replace(/\/+$/,""),controller=new AbortController(),t=setTimeout(()=>controller.abort(),9500);
  try{const r=await fetch(base+"/health",{signal:controller.signal,mode:"cors",cache:"no-store"});if(!r.ok)throw Error("Server nije odgovorio.");
- const d=await r.json();if(!d.dialogEnabled&&d.service!=="demax-a1-dijalog")throw Error("Worker radi, ali A1 dijalog još nije objavljen.");
+ const d=await r.json();if(d.service!=="demax-a1-dijalog"&&d.dialogEnabled!==true)throw Error("Ova adresa nije AI Worker za usmeni A1.");if(d.configured===false)throw Error("Worker radi, ali moraš dodati Secret nivoA1 (OpenAI API ključ).");
  return base;}finally{clearTimeout(t);}
 }
 $("prev").addEventListener("click",()=>newScene(state.index-1));
