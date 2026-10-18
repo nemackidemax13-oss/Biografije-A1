@@ -188,6 +188,18 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
  .messages .bubble .message-body .de{font-size:12px}
  .messages .bubble .message-body .sr{font-size:10.5px}
 }
+
+/* 19.10.2026 · DE-MAX vizuelne izmene (bez izmene funkcionalnosti) */
+.actions #retry{background:#e52d49;color:#fff;border:1px solid #ce233d;box-shadow:0 2px 5px #b11e3426}
+.actions #retry:active{background:#c91d37}
+.roles .switch{color:#1763c0;background:#edf5ff;border:2px solid #1763c0;font-weight:900}
+.scenehead .arr{background:#e52d49;border:1px solid #cb233d;color:#fff;box-shadow:0 2px 6px #b11e3420}
+.scenehead .arr:active{background:#c71f37}
+.roles span{font-size:11px;font-weight:850;color:#fff;box-shadow:0 1px 5px #123a7018}
+.roles span.role-blue{background:#1763c0;border-color:#1457a8;color:white}
+.roles span.role-red{background:#e52d49;border-color:#d32642;color:white}
+.photo{margin-left:1px;margin-right:1px;border-radius:9px}
+
 </style>
 </head>
 <body>
@@ -254,7 +266,11 @@ function render(){
  if(!scenes.length){status("Greška: baza fotografija nije učitana.",true);return;}
  const x=scene();$("sceneTitle").textContent=x.de;$("sceneCount").textContent=(state.index+1)+" / "+scenes.length+" · "+x.sr;
  $("sceneImage").src=x.img;$("sceneImage").alt="A1 situacija: "+x.de;
- $("myRole").textContent="Ja: "+userRole();$("aiRole").textContent="AI: "+aiRole();reset();
+ $("myRole").textContent="Ja: "+userRole();$("aiRole").textContent="AI: "+aiRole();
+ const roleColor=(r,defaultColor)=>/verk[aä]ufer/i.test(r)?"role-red":/kund/i.test(r)?"role-blue":defaultColor;
+ $("myRole").classList.remove("role-blue","role-red");$("myRole").classList.add(roleColor(userRole(),"role-blue"));
+ $("aiRole").classList.remove("role-blue","role-red");$("aiRole").classList.add(roleColor(aiRole(),"role-red"));
+ reset();
 }
 function newScene(i){if(state.busy)return;state.index=(i+scenes.length)%scenes.length;state.swap=false;render();}
 function translatedFromBank(text){
