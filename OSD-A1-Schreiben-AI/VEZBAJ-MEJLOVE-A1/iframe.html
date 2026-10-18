@@ -1747,6 +1747,26 @@ body.view-mail:not(.mobile-writing) .a1-prep-topline{display:flex;align-items:ce
 /* Ocena je prikazana samo za AI odgovor sa proverljivim dokazima iz baze. */
 .review-inner .verified-score{float:right;color:#0d6c48;background:#e9f9f0;border-radius:5px;padding:2px 7px;font-size:13px;font-weight:900}
 
+
+/* Translation of the corrected email, with optional expanded error details. */
+.review-inner .translation-label{font-size:12px!important;font-weight:900;color:#0a6b4a;margin:8px 0 4px}
+.review-inner .translated{white-space:pre-wrap!important;overflow-wrap:anywhere;background:#f0f9f9;border-left:3px solid #1c8891;border-radius:6px;color:#244e50;padding:8px 10px;margin:0 0 10px;font-size:13px;line-height:1.45}
+.review-inner .sentence-detail-button{display:block;width:100%;border:1px solid #a4badb;background:#edf5ff;color:#164b8a;border-radius:8px;margin:9px 0 4px;padding:8px 10px;font-weight:800;font-size:12px;cursor:pointer}
+.sentence-details-dialog{width:min(95vw,590px);max-height:88dvh;border:1px solid #b9cee7;border-radius:12px;padding:0;box-shadow:0 20px 60px #0c275a70;background:white;color:#143250}
+.sentence-details-dialog::backdrop{background:#051c3c9e}
+.sentence-modal-top{position:sticky;top:0;background:#103b76;color:white;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px;z-index:1}
+.sentence-modal-top strong{font-size:13px}
+.sentence-modal-top button{background:white;color:#123d7b;border:0;border-radius:7px;padding:7px 10px;font-weight:800;cursor:pointer}
+.sentence-details-body{overflow-y:auto;max-height:calc(88dvh - 59px);padding:12px 14px;overscroll-behavior:contain}
+.sentence-detail{background:#f5f8ff;border:1px solid #e0e9f6;padding:10px;margin:0 0 9px;border-radius:9px;font-size:13px;line-height:1.5}
+.sentence-detail h3{font-size:13px;color:#144a85;margin:0 0 7px}
+.sentence-detail p{margin:5px 0}
+@media(max-width:799px){
+ html body.mobile-review .review-inner .translation-label{font-size:11px!important;margin:5px 0 3px}
+ html body.mobile-review .review-inner .translated{font-size:11.7px!important;line-height:1.33;padding:6px 8px;margin:0 0 6px}
+ html body.mobile-review .review-inner .sentence-detail-button{font-size:11px;padding:7px 9px;margin:6px 0 2px}
+}
+
 </style>
 </head>
 <body class="view-home">
@@ -1928,15 +1948,24 @@ function renderResult(r){
  const tips=[extra,sportTip,umlautTip,greetingTip].filter((x,i,arr)=>x&&arr.indexOf(x)===i)
   .filter((x)=>!missingClosing||x===greetingTip||!/nedostaje.{0,25}pozdrav|završni pozdrav/i.test(x));
  const parts=tips.slice(0,4).map(x=>'<div class="review-note">'+escapeHtml(x)+'</div>').join('');
+ const sentenceNotes=Array.isArray(r.sentenceFeedback)?r.sentenceFeedback.filter(x=>x&&x.explanationSr&&x.original&&x.corrected):[];
+ const detailButton=sentenceNotes.length?'<button type="button" id="showSentenceCorrections" class="sentence-detail-button">Detaljne ispravke rečenica ('+sentenceNotes.length+')</button>':'';
+ const detailsHtml=sentenceNotes.map((x,i)=>'<article class="sentence-detail"><h3>'+(i+1)+'. rečenica ili izraz</h3><p><b>Napisano:</b> <span lang="de">'+escapeHtml(x.original)+'</span></p><p><b>Ispravno:</b> <span lang="de">'+escapeHtml(x.corrected)+'</span></p><p><b>Objašnjenje:</b> '+escapeHtml(x.explanationSr)+'</p></article>').join('');
+ const detailDialog=$('sentenceDetailsDialog');
+ if(detailDialog)detailDialog.querySelector('.sentence-details-body').innerHTML=detailsHtml;
+
  $('result').innerHTML=`
  <div class="review-inner">
    <div class="correction-label">ISPRAVLJEN MEJL <span class="verified-score">${Number.isFinite(Number(r.score))?Math.round(Number(r.score)):0}/10</span></div>
    <div class="corrected" lang="de">${escapeHtml(correction)}</div>
+   <div class="translation-label">TAČAN PREVOD ISPRAVLJENOG MEJLA</div>
+   <div class="translated" lang="sr-Latn">${escapeHtml(String(r.translationSr||'').trim()||'Prevod nije dostupan: potrebno je ažurirati OpenAI proveru na Cloudflare.')}</div>
    <div class="feedback-heading">KOMENTAR PROVERE</div>
    <div class="review-comment" lang="sr-Latn">
       ${items}
       ${parts}
    </div>
+   ${detailButton}
    <div class="retry-actions"><button type="button" id="retryMail" class="retry-mail-btn">↻ Vežbaj ponovo isti mejl</button></div>
  </div>`;
  $('answerPanel').classList.add('has-result');
@@ -1963,7 +1992,13 @@ function retryCurrentMail(){
 }
 $('result').addEventListener('click',event=>{
  if(event.target.closest('#retryMail'))retryCurrentMail();
+ if(event.target.closest('#showSentenceCorrections')){
+   const modal=$('sentenceDetailsDialog');
+   if(modal&&typeof modal.showModal==='function')modal.showModal();
+ }
 });
+$('closeSentenceDetails').addEventListener('click',()=>$('sentenceDetailsDialog').close());
+
 function updateCount(){
  let c=words($('answer').value);
  $('count').textContent=c<15?(c+' reči · min. 15'):(c+' / 30 reči');
@@ -2059,13 +2094,15 @@ $('check').onclick=async()=>{
   }
   // Ocenu prikazi iskljucivo ako je AI proverio SVA pitanja prema bazi
   // i svako bodovano pitanje potkrepio citatom iz ucenikovog odgovora.
-  if(payload.verificationVersion!=='a1-task-database-evidence-v2'||
+  if(payload.verificationVersion!=='a1-translation-sentence-feedback-v3'||
      payload.taskIndex!==idx ||
      payload.taskFingerprint!==fingerprintOpenMail(idx) ||
      !Array.isArray(payload.points)||payload.points.length!==3 ||
      !Array.isArray(payload.questionFeedback)||payload.questionFeedback.length!==3 ||
      !Array.isArray(payload.questionEvidence)||payload.questionEvidence.length!==3 ||
-     typeof payload.correctedText!=='string'||!payload.correctedText.trim()){
+     typeof payload.correctedText!=='string'||!payload.correctedText.trim() ||
+     typeof payload.translationSr!=='string'||!payload.translationSr.trim() ||
+     !Array.isArray(payload.sentenceFeedback)){
    throw Error('Cloudflare a1nivo koristi staru proveru ili pogrešnu bazu mejlova. Dok se novi Worker ne objavi, ocena neće biti prikazana.');
   }
   if(current===idx&&$('answer').value===answerText){
@@ -2357,5 +2394,9 @@ else renderMailGrid();
 <!-- OpenAI provera ide preko Cloudflare Workera; direktna podesavanja API kljuca nisu potrebna. -->
 
 
+<dialog id="sentenceDetailsDialog" class="sentence-details-dialog" aria-label="Detaljna objašnjenja grešaka">
+ <div class="sentence-modal-top"><strong>DETALJNA OBJAŠNJENJA GREŠAKA</strong><button id="closeSentenceDetails" type="button">Zatvori ✕</button></div>
+ <div class="sentence-details-body" lang="sr-Latn"></div>
+</dialog>
 </body>
 </html>
