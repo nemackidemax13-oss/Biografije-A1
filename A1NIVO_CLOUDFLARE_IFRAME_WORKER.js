@@ -94,7 +94,7 @@ const UMLAUT_WORDS=[
  ["mogen","mögen"],["fur","für"],["uber","über"],
  ["naturlich","natürlich"],["spater","später"],["fruh","früh"],
  ["gluck","Glück"],["gemuse","Gemüse"],["kase","Käse"],
- ["fruhstuck","Frühstück"],["wunsche","wünsche"],["wunschen","wünschen"],
+ ["fruhstuck","Frühstück"],["grusse","Grüße"],["wunsche","wünsche"],["wunschen","wünschen"],
  ["schuler","Schüler"],["schulerin","Schülerin"],["funf","fünf"],
  ["zwolf","zwölf"],["grun","grün"],["gemutlich","gemütlich"],
  ["zuruck","zurück"],["kuche","Küche"],["tur","Tür"],
