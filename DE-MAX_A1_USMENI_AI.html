@@ -116,6 +116,40 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 }
 @media(prefers-reduced-motion:reduce){.messages{scroll-behavior:auto}}
 
+
+/* Jedno aktivno pitanje + neprekidno vidljivo polje odgovora */
+.photo{height:clamp(125px,27dvh,270px);max-height:270px;flex-shrink:1}
+.roles{padding:2px 8px 4px}.roles span{padding:5px 4px}
+.actions{padding-bottom:5px}
+.messages{flex:1;min-height:120px;overflow-y:auto;display:block;padding:8px;border-radius:12px}
+.messages .bubble{margin:0;max-width:100%;width:100%;border-radius:11px;box-shadow:none}
+.messages .bubble+.bubble{margin-top:7px}
+.messages .bubble .message-header{min-height:30px;padding:4px 9px}
+.messages .bubble .message-body{padding:8px 10px}
+.messages .bubble .message-body .de{font-size:14px;line-height:1.4}
+.messages .bubble .translation-box{padding-top:5px;margin-top:6px}
+.messages .bubble .translation-box .sr{font-size:12px;line-height:1.35}
+.answer-title{font-size:10px;font-weight:900;letter-spacing:.65px;color:#295b93;padding:6px 12px 3px;flex:none}
+.inputrow{padding:0 8px calc(8px + env(safe-area-inset-bottom));flex:none}
+.inputrow textarea{min-height:52px;max-height:90px;font-size:14px;border:2px solid #afccef}
+.inputrow .mic,.inputrow .send{min-width:46px}
+.feedback{display:none!important}
+.finalbox{font-size:13px;line-height:1.42}
+.result-total{display:flex;align-items:center;gap:10px;margin:6px 0 14px}
+.result-total strong{font-size:26px;color:#128b61}
+.result-total span{font-size:12px;color:#506d88}
+.result-item{padding:12px 10px;margin-bottom:10px;border:1px solid #d9e5f3;border-radius:12px;background:#fbfdff}
+.result-item-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;color:#174e8e}
+.result-item-title span{font-size:11px;color:#1d7b5e;font-weight:800}
+.result-label{font-size:10px;letter-spacing:.4px;font-weight:900;color:#45698a;margin:10px 0 3px}
+.result-item .de{color:#d5223e;font-size:13.5px;font-weight:800;line-height:1.4}
+.result-item .sr{color:#111;font-size:12px;margin-top:2px;line-height:1.38}
+.result-solution{background:#eff8f2;padding:7px 9px;margin-top:8px;border-left:3px solid #168c60;border-radius:8px}
+.result-comment{font-size:11px;margin-top:8px;color:#3a5574}
+#finalModal .panel{max-height:92dvh;overflow-y:auto;width:min(510px,98vw)}
+@media(max-height:680px){.photo{height:clamp(102px,24dvh,185px);max-height:185px}.messages{min-height:105px}.answer-title{padding-top:3px}}
+@media(max-height:540px){.photo{height:clamp(95px,22dvh,130px)}.messages{min-height:96px}.inputrow textarea{min-height:42px}}
+
 </style>
 </head>
 <body>
@@ -128,9 +162,9 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
  <section class="messages" id="messages" aria-live="polite"><p class="empty">Izaberi sliku i pritisni „Počni dijalog“. Razgovaraj sa AI osobom na nemačkom. Učenik i AI igraju uloge prema slici.</p></section>
  <div class="feedback" id="feedback" hidden><b id="feedbackTitle"></b><div id="feedbackBody"></div></div>
  <div class="status"><span id="status">Pritisni Počni razgovor i dozvoli mikrofon</span><em id="counter">0 odgovora</em></div>
- <div class="inputrow"><textarea id="answer" rows="2" placeholder="Govori ili napiši odgovor na nemačkom…" aria-label="Odgovor na nemačkom" maxlength="500"></textarea><button id="mic" class="mic" title="Uključi ili zaustavi mikrofon" aria-label="Mikrofon">🎙</button><button id="send" class="send" title="Pošalji odgovor" aria-label="Pošalji odgovor">➤</button></div>
+ <div class="answer-title">TVOJ ODGOVOR · NEMAČKI</div><div class="inputrow"><textarea id="answer" rows="2" placeholder="Govori ili napiši odgovor na nemačkom…" aria-label="Odgovor na nemačkom" maxlength="500"></textarea><button id="mic" class="mic" title="Uključi ili zaustavi mikrofon" aria-label="Mikrofon">🎙</button><button id="send" class="send" title="Pošalji odgovor" aria-label="Pošalji odgovor">➤</button></div>
 </main>
-<section class="modal" id="finalModal" hidden><div class="panel"><h3>Rezultat · ÖSD A1 dijalog</h3><div class="finalbox" id="finalDetails"></div><p>Ocenjuje se razumljivost teksta dobijenog iz govora, sadržaj, gramatika i prikladnost za situaciju. <b>Izgovor i akcenat se ne ocenjuju automatski.</b> Ovo je vežba, ne zvaničan ÖSD rezultat.</p><div class="row"><button id="closeFinal">Zatvori</button><button id="repeatFinal" class="save">Vežbaj ponovo</button></div></div></section>
+<section class="modal" id="finalModal" hidden><div class="panel"><h3>Rezultat · ÖSD A1 dijalog</h3><div class="finalbox" id="finalDetails"></div><p>Ocena se odnosi na razumljivost, gramatiku i odgovor prema situaciji. Izgovor i akcenat se ne ocenjuju automatski. Ovo je vežba, ne zvaničan ÖSD rezultat.</p><div class="row"><button id="closeFinal">Zatvori</button><button id="repeatFinal" class="save">Vežbaj ponovo</button></div></div></section>
 <script src="./DE-MAX_Bildbeschreibung_A1_V5/scenes.js"></script>
 <script src="./DE-MAX_Bildbeschreibung_A1_V5/dialogs-fallback.js"></script>
 <script>
@@ -142,7 +176,7 @@ const offlineSr=window.DEMAX_FALLBACK_TRANSLATIONS||{};
 const $=id=>document.getElementById(id);
 const DEFAULT_API="https://usmenia1prvideo.nemackidemax13.workers.dev";
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-const state={index:0,swap:false,busy:false,started:false,finished:false,history:[],grades:[],mode:"online",speaker:true,
+const state={index:0,swap:false,busy:false,started:false,finished:false,history:[],grades:[],attempts:[],currentQuestion:null,mode:"online",speaker:true,
  rec:null,recording:false,autoMic:true,autoMicAllowed:false,sessionId:0,voiceToken:0,speaking:false,pendingListen:null,
  recognitionId:0,noSpeechRetries:0,localPositions:[],localIndex:0,api:DEFAULT_API};
 const clean=t=>String(t||"").trim();
@@ -158,12 +192,15 @@ function clearListenTimer(){if(state.pendingListen){clearTimeout(state.pendingLi
 function stopVoice(){state.voiceToken++;state.speaking=false;if("speechSynthesis" in window)try{window.speechSynthesis.cancel();}catch(e){}}
 function stopMic(){state.recognitionId++;if(state.rec){state.rec.onend=null;state.rec.onresult=null;state.rec.onerror=null;try{state.rec.abort();}catch(e){}state.rec=null;}state.recording=false;$("mic").classList.remove("on");}
 function reset(){
- state.sessionId++;clearListenTimer();stopMic();stopVoice();state.started=false;state.finished=false;
- state.history=[];state.grades=[];state.mode="online";state.localIndex=0;state.localPositions=[];
- state.noSpeechRetries=0;$("answer").value="";
- $("messages").innerHTML='<p class="empty">Pritisni „Počni razgovor“. Posle pitanja mikrofon će se sam uključiti ako pregledač dozvoli. Možeš i da kucaš.</p>';
+ state.sessionId++;clearListenTimer();stopMic();stopVoice();
+ state.started=false;state.finished=false;state.history=[];state.grades=[];state.attempts=[];$("answer").disabled=false;
+ state.currentQuestion=null;state.mode="online";state.localIndex=0;state.localPositions=[];state.noSpeechRetries=0;
+ $("answer").value="";
+ $("messages").innerHTML='<p class="empty">Pritisni „Počni razgovor“. Na ekranu će se prikazivati jedno pitanje i tvoje polje za odgovor.</p>';
  $("feedback").hidden=true;$("counter").textContent="0 odgovora";
- $("start").textContent="▶ Počni razgovor";status("Spremno. Pritisni „Počni razgovor“ i dozvoli mikrofon.");busy(false);
+ $("start").textContent="▶ Počni razgovor";
+ status("Spremno. Posle pitanja odgovori glasom ili tekstom.");
+ busy(false);
 }
 function render(){
  if(!scenes.length){status("Greška: baza fotografija nije učitana.",true);return;}
@@ -309,67 +346,105 @@ function localNext(){
  const i=state.localPositions[state.localIndex++];
  return{reply:rows[i]||"Guten Tag! Was möchten Sie machen?",reply_sr:sr[i]||"",finished:false};
 }
+function questionPanel(data){
+ const de=clean(data?.reply)||"Guten Tag! Was möchten Sie?";
+ const sr=clean(data?.reply_sr)||translatedFromBank(de)||missingTranslation();
+ state.currentQuestion={de,sr};
+ $("messages").innerHTML="";
+ bubble("ai",de,sr);
+ $("answer").value="";
+}
 async function start(){
  if(state.busy||state.started||!scenes.length)return;
  state.noSpeechRetries=0;askMicPermission();busy(true);status("Povezujem razgovor…");
- let answer={reply:"",reply_sr:""},warn="";
- try{
-   answer=await request("start","");
-   state.mode="online";
- }catch(e){
-   localPrepare();answer=localNext();
-   warn="OpenAI trenutno nije odgovorio ("+clean(e.message)+"). Pokrenuta je lokalna vežba bez AI ocenjivanja.";
- }
- const q=clean(answer.reply)||"Guten Tag! Was möchten Sie?";
- $("messages").innerHTML="";state.started=true;state.finished=false;
- if(warn)note(warn);
- bubble("ai",q,answer.reply_sr);
- state.history.push({role:"assistant",content:q});
+ let next={reply:"",reply_sr:""},warn="";
+ try{next=await request("start","");state.mode="online";}
+ catch(e){localPrepare();next=localNext();warn="OpenAI nije odgovorio ("+clean(e.message)+"). Pokrenuta je lokalna vežba bez AI ocenjivanja.";}
+ state.started=true;state.finished=false;
+ questionPanel(next);
+ if(warn)status(warn,true);
+ else status("Pitanje je spremno. Odgovori u polju ispod.");
+ state.history.push({role:"assistant",content:state.currentQuestion.de});
  $("start").textContent=state.mode==="online"?"✓ OpenAI aktivan":"✓ Lokalna vežba";
- status(state.mode==="online"?"Saslušaj nemački i odgovori glasom ili tekstom.":"Lokalna vežba · bez OpenAI ocenjivanja");
- busy(false);say(q,true);
+ busy(false);say(state.currentQuestion.de,true);
 }
 async function send(){
  if(state.busy||!state.started||state.finished){if(!state.started)status("Prvo klikni „Počni razgovor“.",true);return;}
- const answer=clean($("answer").value);if(answer.length<2){status("Izgovori ili napiši nemački odgovor.",true);return;}
- clearListenTimer();stopMic();stopVoice();busy(true);$("answer").value="";
- const mine=bubble("me",answer,"");
+ const answer=clean($("answer").value);
+ if(answer.length<2){status("Izgovori ili napiši nemački odgovor.",true);return;}
+ const question={...(state.currentQuestion||{de:"",sr:""})};
+ clearListenTimer();stopMic();stopVoice();busy(true);
+ const myBubble=bubble("me",answer,"");
+ status("Proveravam odgovor…");
  let next=null;
+ let result={question:question.de,question_sr:question.sr,student:answer,student_sr:"",solution:"",solution_sr:"",feedback:"",score:null,aiRated:false};
  if(state.mode==="online"){
   try{
    next=await request("turn",answer);
-   setTranslation(mine,next.user_sr,answer);
-   state.history.push({role:"user",content:answer},{role:"assistant",content:next.reply});
-   const score=Math.max(0,Math.min(2,Math.round(Number(next.evaluation?.score)||0)));
+   const ev=next.evaluation||{};
+   const score=Math.max(0,Math.min(2,Math.round(Number(ev.score)||0)));
+   result.aiRated=true;result.score=score;result.feedback=clean(ev.explanation);
+   result.student_sr=clean(next.user_sr)||translatedFromBank(answer);
+   result.solution=clean(ev.corrected)||(score===2?answer:"");
+   result.solution_sr=clean(ev.corrected_sr)||(result.solution===answer?result.student_sr:"");
    state.grades.push(score);
-   feedback(next.evaluation||{score:0});
-   $("counter").textContent=state.grades.length+" AI ocena";
+   state.history.push({role:"user",content:answer},{role:"assistant",content:next.reply});
+   setTranslation(myBubble,result.student_sr,answer);
   }catch(e){
-   localPrepare();setTranslation(mine,"",answer);
-   note("OpenAI trenutno nije dostupan ("+clean(e.message)+"). Nastavljamo lokalno, bez novih AI ocena.");
+   state.mode="local";localPrepare();
    next=localNext();
+   result.feedback="OpenAI nije odgovorio. Lokalni zadatak nije automatski ocenjen.";
+   status("OpenAI nije odgovorio; nastavak lokalne vežbe.",true);
   }
  }else{
-  setTranslation(mine,"",answer);
-  const lines=offline[String(state.index+1)]||[],srs=offlineSr[String(state.index+1)]||[];
-  const lastPos=state.localPositions[state.localIndex-1];
-  const suggested=Number.isInteger(lastPos)?clean(lines[lastPos+1]):"";
-  if(suggested)note("Primer: "+suggested+(srs[lastPos+1]?" — "+srs[lastPos+1]:"")+" · Nije AI ocena.");
   next=localNext();
  }
- if(state.mode==="local")state.history.push({role:"user",content:answer},{role:"assistant",content:next.reply});
- bubble("ai",next.reply,next.reply_sr);
+ if(!result.aiRated){
+  const arr=offline[String(state.index+1)]||[],trans=offlineSr[String(state.index+1)]||[];
+  const normalized=clean(question.de).toLocaleLowerCase("de");
+  const idx=arr.findIndex(item=>clean(item).toLocaleLowerCase("de")===normalized);
+  if(idx>=0&&idx+1<arr.length){result.solution=arr[idx+1];result.solution_sr=trans[idx+1]||"";}
+  if(!result.feedback)result.feedback="Primer iz baze A1, bez automatske OpenAI ocene.";
+  result.student_sr=translatedFromBank(answer);
+  state.history.push({role:"user",content:answer},{role:"assistant",content:next.reply});
+  setTranslation(myBubble,result.student_sr,answer);
+ }
+ state.attempts.push(result);
+ $("counter").textContent=state.attempts.length+" odgovora";
+ $("feedback").hidden=true;
  state.finished=!!next.finished;
  busy(false);
- if(state.finished){status("Dijalog je završen. Otvori rezultat.");say(next.reply,false);}
- else{status(state.mode==="online"?"Odgovor je proveren. Saslušaj sledeće pitanje.":"Lokalna vežba · nije AI ocenjeno.");say(next.reply,true);}
+ if(state.finished){
+   // The answered question and the submitted answer remain visible; nothing gets closed.
+   $("answer").value="";
+   $("answer").disabled=true;
+   status("Dijalog završen. Klikni „Rezultat“ da vidiš odgovore i rešenja.");
+   say(next.reply,false);
+ }else{
+   // Show ONLY the next question; the empty answer field stays permanently visible.
+   questionPanel(next);
+   status(result.aiRated?"Odgovor: "+result.score+"/2. Novo pitanje je spremno.":"Novo pitanje · lokalna vežba bez AI ocenjivanja.");
+   say(next.reply,true);
+ }
 }
 function finish(){
- clearListenTimer();stopMic();stopVoice();const n=state.grades.length,sum=state.grades.reduce((a,b)=>a+b,0);
- if(n){const percent=Math.round(sum/(2*n)*100);
-   $("finalDetails").innerHTML="<strong>"+percent+"%</strong> · "+n+" AI ocenjenih odgovora<br>Prosečno "+(sum/n).toFixed(1)+" / 2 po odgovoru."+
-    (state.mode==="local"?"<br><b>Preostali odgovori nisu AI ocenjeni (lokalna vežba).</b>":"");
- }else $("finalDetails").innerHTML="<strong>Vežba završena</strong><br>Lokalni dijalog radi, ali OpenAI nije bio povezan, pa nema automatskog ocenjivanja.";
+ clearListenTimer();stopMic();stopVoice();
+ const count=state.attempts.length,graded=state.attempts.filter(a=>a.aiRated);
+ const sum=graded.reduce((n,a)=>n+a.score,0);
+ const pct=graded.length?Math.round(sum/(2*graded.length)*100):0;
+ let html=graded.length?'<div class="result-total"><strong>'+pct+'%</strong><span>'+graded.length+' AI ocenjenih odgovora od '+count+'</span></div>':
+ '<div class="result-total"><strong>'+count+'</strong><span>odgovora; nema automatske AI ocene</span></div>';
+ if(!count)html+='<p>Još nema odgovora. Započni razgovor da bi se prikazala rešenja.</p>';
+ state.attempts.forEach((a,i)=>{
+  const solution=a.solution||"Ispravan odgovor nije dostavljen. Pogledaj komentar i pokušaj ponovo.";
+  const translation=a.solution_sr||(a.solution?"Prevod rešenja nije dostupan.":"");
+  html+='<article class="result-item"><div class="result-item-title"><b>Pitanje '+(i+1)+'</b><span>'+(a.aiRated?a.score+" / 2":"Lokalna vežba")+'</span></div>'+
+   '<div class="result-label">PITANJE</div><div class="de">'+esc(a.question)+'</div><div class="sr">'+esc(a.question_sr||"")+'</div>'+
+   '<div class="result-label">TVOJ ODGOVOR</div><div class="de">'+esc(a.student)+'</div>'+(a.student_sr?'<div class="sr">'+esc(a.student_sr)+'</div>':"")+
+   '<div class="result-solution"><div class="result-label">REŠENJE / ISPRAVKA</div><div class="de">'+esc(solution)+'</div>'+(translation?'<div class="sr">'+esc(translation)+'</div>':"")+'</div>'+
+   (a.feedback?'<div class="result-comment">'+esc(a.feedback)+'</div>':"")+'</article>';
+ });
+ $("finalDetails").innerHTML=html;
  $("finalModal").hidden=false;
 }
 $("prev").addEventListener("click",()=>newScene(state.index-1));
