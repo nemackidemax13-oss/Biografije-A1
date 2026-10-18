@@ -1853,11 +1853,11 @@ function renderResult(r){
  $('result').innerHTML=`<div class="result-title"><span>REZULTAT PROVERE</span><span class="ai-label">${isAI?'AI provera':'Osnovna automatska provera'}</span></div>
  <div class="scorebox"><div class="score">${score.toLocaleString('sr-RS')}<small> / 10 bodova</small></div><div class="score-caption">Ocena za vežbanje — nije zvanična ÖSD ocena</div></div>
  <div class="rubric"><span>1. pitanje <b>${pts[0]}/2</b></span><span>2. pitanje <b>${pts[1]}/2</b></span><span>3. pitanje <b>${pts[2]}/2</b></span><span>Gramatika <b>${grammar}/2</b></span><span>Forma <b>${form}/1</b></span><span>Dužina <b>${len}/1</b></span></div>
- ${Array.isArray(r.questionFeedback)&&r.questionFeedback.length===3?'<div class="question-feedback">'+r.questionFeedback.map((q,i)=>'<div class="question-feedback-item"><b>'+(i+1)+'. pitanje</b><p>'+escapeHtml(q)+'</p></div>').join('')+'</div>':''}
- <div class="correction-label">✎ ISPRAVLJEN MEJL</div>
+ ${Array.isArray(r.questionFeedback)&&r.questionFeedback.length===3?'<div class="question-feedback"><div class="feedback-heading">Objašnjenje po pitanjima (srpski)</div>'+r.questionFeedback.map((q,i)=>'<div class="question-feedback-item"><b>'+(i+1)+'. pitanje</b><p>'+escapeHtml(q)+'</p></div>').join('')+'</div>':''}
+ <div class="correction-label">✎ ISPRAVLJEN MEJL (NEMAČKI)</div>
  <div class="corrected" lang="de">${escapeHtml(correction)}</div>
  <div class="change-hint">${changed?'Prikazana je automatski ispravljena verzija tvog mejla.':'Tekst je prikazan bez dodatnih automatskih izmena.'}</div>
- <div class="feedback-heading">Komentar provere</div><div class="feedback">${escapeHtml(feedbackText)}</div>
+ <div class="feedback-heading">Komentar provere na srpskom</div><div class="feedback">${escapeHtml(feedbackText)}</div>
  <div class="retry-actions"><button type="button" id="retryMail" class="retry-mail-btn">↻ Vežbaj ponovo isti mejl</button></div>
  ${isAI?'':'<p class="help">Osnovna provera ne može pouzdano da otkrije sve gramatičke i sadržajne greške. Za potpuniju AI ispravku potreban je povezan serverski servis.</p>'}`;
  $('answerPanel').classList.add('has-result');
