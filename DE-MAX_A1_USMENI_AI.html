@@ -171,7 +171,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
  <div class="feedback" id="feedback" hidden><b id="feedbackTitle"></b><div id="feedbackBody"></div></div>
  <div class="status"><span id="status">Pritisni Počni razgovor i dozvoli mikrofon</span><em id="counter">0 odgovora</em></div>
  <div class="advance" id="advance" hidden><span id="advanceText">Odgovor je sačuvan.</span><button type="button" id="nextQuestion" disabled>Dalje →</button></div>
- <div class="answer-title">TVOJ ODGOVOR · NEMAČKI</div><div class="inputrow"><textarea id="answer" rows="2" placeholder="Govori ili napiši odgovor na nemačkom…" aria-label="Odgovor na nemačkom" maxlength="500"></textarea><button id="mic" class="mic" title="Uključi ili zaustavi mikrofon" aria-label="Mikrofon">🎙</button><button id="send" class="send" title="Pošalji odgovor" aria-label="Pošalji odgovor">➤</button></div>
+ <div class="answer-title">TVOJ ODGOVOR · NEMAČKI</div><div class="inputrow"><textarea id="answer" lang="de-DE" spellcheck="false" rows="2" placeholder="Govori ili napiši odgovor na nemačkom…" aria-label="Odgovor na nemačkom" maxlength="500"></textarea><button id="mic" class="mic" title="Uključi ili zaustavi mikrofon" aria-label="Mikrofon">🎙</button><button id="send" class="send" title="Pošalji odgovor" aria-label="Pošalji odgovor">➤</button></div>
 </main>
 <section class="modal" id="finalModal" hidden><div class="panel"><h3>Rezultat · ÖSD A1 dijalog</h3><div class="finalbox" id="finalDetails"></div><p>Ocena se odnosi na razumljivost, gramatiku i odgovor prema situaciji. Izgovor i akcenat se ne ocenjuju automatski. Ovo je vežba, ne zvaničan ÖSD rezultat.</p><div class="row"><button id="closeFinal">Zatvori</button><button id="repeatFinal" class="save">Vežbaj ponovo</button></div></div></section>
 <script src="./DE-MAX_Bildbeschreibung_A1_V5/scenes.js"></script>
@@ -398,9 +398,9 @@ async function recordFallback(automatic){
   $("mic").classList.remove("on");$("mic").textContent="🎙";
   const mime=(rec.mimeType||kind||"audio/mp4").split(";")[0],blob=new Blob(chunks,{type:mime});
   if(blob.size<700){status("Nije snimljen govor. Klikni 🎙 i pokušaj ponovo.");return;}
-  const form=new FormData();form.append("file",blob,"odgovor."+(mime.includes("mp4")?"mp4":mime.includes("ogg")?"ogg":"webm"));
+  const form=new FormData();form.append("language","de");form.append("file",blob,"odgovor."+(mime.includes("mp4")?"mp4":mime.includes("ogg")?"ogg":"webm"));
   const ctrl=new AbortController(),deadline=setTimeout(()=>ctrl.abort(),29000);
-  status("Prepoznajem tvoj odgovor na nemačkom…");
+  status("🇩🇪 Prepoznajem nemački govor (Deutsch), bez prevođenja na engleski…");
   try{
    const response=await fetch(state.api+"/api/a1-transcribe",{method:"POST",body:form,signal:ctrl.signal,mode:"cors"});
    const data=await response.json().catch(()=>({}));
