@@ -140,8 +140,8 @@ function bubble(type,de,sr){
   wrap.innerHTML="<small>"+title+"</small>"+esc(de);
  }else{
   const translated=clean(sr)||translatedFromBank(de)||missingTranslation();
-  wrap.innerHTML="<small>"+title+"</small>"+(type==="ai"?'<button class="speak" title="Poslušaj nemački" aria-label="Ponovi izgovor">🔊</button>':"")+'<div class="de" lang="de">'+esc(de)+'</div><div class="sr" lang="sr">'+esc(translated)+'</div>';
-  if(type==="ai")wrap.querySelector(".speak").addEventListener("click",()=>say(de,true));
+  wrap.innerHTML="<small>"+title+"</small>"+(type==="ai"||type==="me"?'<button class="speak" title="Poslušaj nemački" aria-label="Izgovori rečenicu">🔊</button>':"")+'<div class="de" lang="de">'+esc(de)+'</div><div class="sr" lang="sr">'+esc(translated)+'</div>';
+  if(type==="ai"||type==="me")wrap.querySelector(".speak").addEventListener("click",()=>say(de,false));
  }
  const box=$("messages");box.appendChild(wrap);box.scrollTop=box.scrollHeight;
  return wrap;
