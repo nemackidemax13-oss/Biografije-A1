@@ -1716,6 +1716,33 @@ body.view-mail:not(.mobile-writing) .a1-prep-topline{display:flex;align-items:ce
 .question-feedback-item b{font-size:11px}
 .question-feedback-item p{margin:3px 0;font-size:12px;line-height:1.42}
 
+
+/* A1: samo ispravljeni mejl i koncizan komentar za 3 pitanja. */
+.review-inner{display:block;box-sizing:border-box}
+.review-inner .corrected{font-size:14px!important;line-height:1.4!important;white-space:pre-wrap!important;margin:4px 0 9px!important;padding:9px 11px!important}
+.review-inner .correction-label,.review-inner .feedback-heading{font-size:12px!important;margin:6px 0 4px!important;font-weight:900}
+.review-comment{display:flex;flex-direction:column;gap:5px}
+.review-question{background:#f2f7fe;border-radius:7px;padding:6px 8px;font-size:12px;line-height:1.3;color:#214367}
+.review-question b{color:#1558a4}
+.review-note{font-size:11.6px;line-height:1.32;background:#fff8ed;border-left:3px solid #e3a040;padding:6px 7px;border-radius:5px}
+.review-inner .retry-actions{margin:9px 0 0!important}
+@media(max-width:799px){
+ html body.mobile-review{position:fixed!important;inset:0!important;width:100%!important;height:100dvh!important;overflow:hidden!important;overscroll-behavior:none!important}
+ html body.mobile-review .app{display:flex!important;flex-direction:column!important;height:100dvh!important;max-height:100dvh!important;min-height:0!important;overflow:hidden!important}
+ html body.mobile-review header{flex:0 0 auto!important}
+ html body.mobile-review main.workspace{display:flex!important;flex:1 1 0%!important;flex-direction:column!important;height:0!important;min-height:0!important;overflow:hidden!important}
+ html body.mobile-review section#answerPanel{display:flex!important;flex:1 1 0%!important;flex-direction:column!important;height:100%!important;max-height:100%!important;min-height:0!important;overflow:hidden!important}
+ html body.mobile-review section#answerPanel>.panel-title{flex:0 0 auto!important;min-height:35px!important;padding:5px 9px!important}
+ html body.mobile-review #result.resultwrap{display:block!important;position:relative!important;flex:1 1 0%!important;height:0!important;min-height:0!important;max-height:100%!important;overflow:hidden!important;overflow-y:hidden!important;margin:3px 8px 8px!important;padding:5px 7px!important;overscroll-behavior:none!important;touch-action:none!important}
+ html body.mobile-review #result .review-inner{position:absolute!important;top:5px!important;left:7px!important;margin:0!important;max-width:none!important;transform-origin:top left!important;overflow:visible!important}
+ html body.mobile-review .review-inner .corrected{font-size:13.2px!important;line-height:1.32!important;padding:7px 9px!important;margin:4px 0 6px!important}
+ html body.mobile-review .review-inner .feedback-heading{margin:5px 0 3px!important}
+ html body.mobile-review .review-question{font-size:11.5px;line-height:1.25;padding:5px 7px}
+ html body.mobile-review .review-note{font-size:11px;padding:5px 6px}
+ html body.mobile-review .review-inner .retry-actions{margin-top:7px!important}
+ html body.mobile-review .retry-mail-btn{min-height:34px!important;font-size:12px!important;padding:7px 11px!important}
+}
+
 </style>
 </head>
 <body class="view-home">
@@ -1863,6 +1890,20 @@ function correctA1Umlauts(text){
  return result;
 }
 
+
+/* Tri prihvatljiva pozdrava na KRAJU A1 mejla; latinicna zamena
+   bez umlauta samo se prepoznaje, a u ispravci se pise standardno. */
+function hasA1Closing(text){
+ const txt=String(text||'').replace(/\r/g,'').trim();
+ return /(?:liebe\s+gr(?:ü|ue|u)(?:ß|ss)e|viele\s+gr(?:ü|ue|u)(?:ß|ss)e|bis\s+bald)\s*[!,.]?(?:\s*\n\s*[\p{L}][\p{L}' -]{0,45})?\s*$/iu.test(txt);
+}
+function shortReview(text,max=150){
+ const value=String(text||'').replace(/\s+/g,' ').replace(/^\s*(?:\d\.\s*|NAPOMENA:\s*)/i,'').trim();
+ if(value.length<=max)return value;
+ const cut=value.slice(0,max-1),position=cut.lastIndexOf(' ');
+ return (position>max*.65?cut.slice(0,position):cut).trim()+'…';
+}
+
 function correctSportExpression(text){
  return String(text??'').replace(/\bSport\s+spielen\b/gi,'Sport machen');
 }
@@ -1876,36 +1917,41 @@ function correctGerman(text){
  t=t.replace(/(^|[.!?]\s+|\n\s*)([a-zäöü])/g,(m,p,c)=>p+c.toUpperCase());
  return t.trim();
 }
-function evaluateLocal(text,idx){const item=MAILS[idx];const original=text.trim();const count=words(original);const pts=item.types.map(t=>(PAT[t]&&PAT[t].test(original))?2:0);const greetings=/\b(hallo|liebe(?:r|\s|\b)|guten tag|hi|sehr geehrt)/i.test(original);const signoff=/(?:liebe grüße|viele grüße|mit freundlichen grüßen|bis bald|tschüss|dein\w*|freundliche grüße)/i.test(original);const form=(greetings&&signoff)?1:((greetings||signoff)?0.5:0);const fixed=correctGerman(original);const commonMiss=(original.match(/\b(ich haben|wir kann|du kann|ich bin zeit|mit der bus|keine auto|ich moch|ich komm|ich hab)\b/gi)||[]).length+( /\bSport\s+spielen\b/i.test(original)?1:0);const lowerNouns=(original.match(/\b(?:samstag|sonntag|montag|zeit|schule|freundin|restaurant|geschenk|auto|bus|mittag|deutschkurs)\b/g)||[]).length;const grammar=Math.max(0,2-Math.min(2,commonMiss+(lowerNouns>3?1:0)));const len=count>=15&&count<=30?1:0;const score=Math.min(10,pts.reduce((a,b)=>a+b,0)+grammar+form+len);const missing=pts.map((x,i)=>x===0?item.questions[i]:null).filter(Boolean);return {score,points:pts,grammar,form,length:len,correctedText:fixed,feedback:missing.length?'Proveri da li si jasno odgovorio/la na sledeća pitanja: '+missing.join(' • '):'Prepoznati su odgovori na sva tri pitanja. Proveri smisao i gramatiku rečenica.',mode:'local'}}
+function evaluateLocal(text,idx){const item=MAILS[idx];const original=text.trim();const count=words(original);const pts=item.types.map(t=>(PAT[t]&&PAT[t].test(original))?2:0);const greetings=/\b(hallo|liebe(?:r|\s|\b)|guten tag|hi|sehr geehrt)/i.test(original);const signoff=hasA1Closing(original);const form=(greetings&&signoff)?1:((greetings||signoff)?0.5:0);const fixed=correctGerman(original);const commonMiss=(original.match(/\b(ich haben|wir kann|du kann|ich bin zeit|mit der bus|keine auto|ich moch|ich komm|ich hab)\b/gi)||[]).length+( /\bSport\s+spielen\b/i.test(original)?1:0);const lowerNouns=(original.match(/\b(?:samstag|sonntag|montag|zeit|schule|freundin|restaurant|geschenk|auto|bus|mittag|deutschkurs)\b/g)||[]).length;const grammar=Math.max(0,2-Math.min(2,commonMiss+(lowerNouns>3?1:0)));const len=count>=15&&count<=30?1:0;const score=Math.min(10,pts.reduce((a,b)=>a+b,0)+grammar+form+len);const missing=pts.map((x,i)=>x===0?item.questions[i]:null).filter(Boolean);return {score,points:pts,grammar,form,length:len,correctedText:fixed,feedback:missing.length?'Proveri da li si jasno odgovorio/la na sledeća pitanja: '+missing.join(' • '):'Prepoznati su odgovori na sva tri pitanja. Proveri smisao i gramatiku rečenica.',mode:'local'}}
 function renderResult(r){
- if(words($('answer').value)<15)return; // bez prikazivanja bodova za prekratak mejl
- const isAI=r.mode==='ai';
- const rawPts=Array.isArray(r.points)?r.points:[0,0,0];
- const pts=rawPts.slice(0,3).map(x=>Math.max(0,Math.min(2,Number(x)||0)));
- const grammar=Math.max(0,Math.min(2,Number(r.grammar)||0));
- const form=Math.max(0,Math.min(1,Number(r.form)||0));
- const len=Math.max(0,Math.min(1,Number(r.length)||0));
- const score=Math.max(0,Math.min(10,pts.reduce((a,b)=>a+b,0)+grammar+form+len));
+ if(words($('answer').value)<15)return;
  const original=$('answer').value;
- const correction=correctA1Umlauts(correctSportExpression(r.correctedText||original)).trim();
- const sportTip=/\bSport\s+spielen\b/i.test(original)&&!/\bSport\s+(machen|spielen)\b/i.test(r.feedback||'')?'Izraz „Sport spielen“ ispravlja se u „Sport machen“ (npr. „Ich kann Sport machen“).':'';
- const missed=missingA1Umlauts(original);
- const umlautTip=missed.length&&!/umlaut/i.test(String(r.feedback||''))?
-  'Umlauti: Razumeo sam napisane reči, ali standardno se piše: '+[...new Set(missed.map(e=>'„'+e.from+'“ → „'+e.to+'“'))].slice(0,8).join(', ')+'. Rečenice su prepoznate, a pisanje slova možeš da popraviš.':'';
- const feedbackText=[r.feedback||'',sportTip,umlautTip].filter(Boolean).join('\n');
- const changed=correction!==original.trim();
- $('result').innerHTML=`<div class="result-title"><span>REZULTAT PROVERE</span><span class="ai-label">${isAI?'AI provera':'Osnovna automatska provera'}</span></div>
- <div class="scorebox"><div class="score">${score.toLocaleString('sr-RS')}<small> / 10 bodova</small></div><div class="score-caption">Ocena za vežbanje — nije zvanična ÖSD ocena</div></div>
- <div class="rubric"><span>1. pitanje <b>${pts[0]}/2</b></span><span>2. pitanje <b>${pts[1]}/2</b></span><span>3. pitanje <b>${pts[2]}/2</b></span><span>Gramatika <b>${grammar}/2</b></span><span>Forma <b>${form}/1</b></span><span>Dužina <b>${len}/1</b></span></div>
- ${Array.isArray(r.questionFeedback)&&r.questionFeedback.length===3?'<div class="question-feedback"><div class="feedback-heading">Objašnjenje po pitanjima (srpski)</div>'+r.questionFeedback.map((q,i)=>'<div class="question-feedback-item"><b>'+(i+1)+'. pitanje</b><p>'+escapeHtml(q)+'</p></div>').join('')+'</div>':''}
- <div class="correction-label">✎ ISPRAVLJEN MEJL (NEMAČKI)</div>
- <div class="corrected" lang="de">${escapeHtml(correction)}</div>
- <div class="change-hint">${changed?'Prikazana je automatski ispravljena verzija tvog mejla.':'Tekst je prikazan bez dodatnih automatskih izmena.'}</div>
- <div class="feedback-heading">Komentar provere na srpskom</div><div class="feedback">${escapeHtml(feedbackText)}</div>
- <div class="retry-actions"><button type="button" id="retryMail" class="retry-mail-btn">↻ Vežbaj ponovo isti mejl</button></div>
- ${isAI?'':'<p class="help">Osnovna provera ne može pouzdano da otkrije sve gramatičke i sadržajne greške. Za potpuniju AI ispravku potreban je povezan serverski servis.</p>'}`;
+ const missingClosing=!hasA1Closing(original);
+ let correction=correctA1Umlauts(correctSportExpression(r.correctedText||original)).trim();
+ if(missingClosing&&!hasA1Closing(correction))correction+='\n\nViele Grüße';
+ const notes=Array.isArray(r.questionFeedback)&&r.questionFeedback.length===3
+   ?r.questionFeedback:MAILS[current].questions.map(q=>'Proveri da li si odgovorio/la na pitanje: '+q);
+ const items=notes.map((note,i)=>'<div class="review-question"><b>'+(i+1)+'.</b> '+escapeHtml(shortReview(note,165))+'</div>').join('');
+ const sportTip=/\bSport\s+spielen\b/i.test(original)&&!/Sport\s+(?:machen|spielen)/i.test(r.feedback||'')
+  ?'Za opšti sport koristi „Sport machen“.':'';
+ const umlautErrors=missingA1Umlauts(original);
+ const umlautTip=umlautErrors.length&&!/umlaut/i.test(String(r.feedback||''))?
+  'Ispravi umlaute: '+[...new Set(umlautErrors.map(e=>e.from+' → '+e.to))].slice(0,3).join(', ')+'.':'';
+ const greetingTip=missingClosing?'Nedostaje završni pozdrav. Dodaj: Liebe Grüße, Bis bald ili Viele Grüße.':'';
+ const fullFeedback=String(r.feedback||'').replace(/\bNAPOMENA:\s*/gi,'').trim();
+ const extra=shortReview(fullFeedback,195);
+ const tips=[extra,sportTip,umlautTip,greetingTip].filter((x,i,arr)=>x&&arr.indexOf(x)===i)
+  .filter((x)=>!missingClosing||x===greetingTip||!/nedostaje.{0,25}pozdrav|završni pozdrav/i.test(x));
+ const parts=tips.slice(0,4).map(x=>'<div class="review-note">'+escapeHtml(x)+'</div>').join('');
+ $('result').innerHTML=`
+ <div class="review-inner">
+   <div class="correction-label">ISPRAVLJEN MEJL</div>
+   <div class="corrected" lang="de">${escapeHtml(correction)}</div>
+   <div class="feedback-heading">KOMENTAR PROVERE</div>
+   <div class="review-comment" lang="sr-Latn">
+      ${items}
+      ${parts}
+   </div>
+   <div class="retry-actions"><button type="button" id="retryMail" class="retry-mail-btn">↻ Vežbaj ponovo isti mejl</button></div>
+ </div>`;
  $('answerPanel').classList.add('has-result');
  if(document.body.classList.contains('mobile-writing'))closeMobileWriting(true);
+ if(document.body.classList.contains('mobile-review'))requestAnimationFrame(fitMailReviewScreen);
 }
 /* Ponavljanje je moguće neograničeno, nezavisno od prethodne ocene.
    Briše se samo pokušaj izabranog mejla, ostali mejlovi ostaju sačuvani. */
@@ -2162,6 +2208,31 @@ function openMobileWriting(){
  setTimeout(setMobileVisibleHeight,350);
  setTimeout(setMobileVisibleHeight,800);
 }
+
+/* Dinamicki sabija rezultat da SAV ostane u okviru mobilnog ekrana
+   bez vertikalnog skrolovanja (cak i pri malom iframe viewportu). */
+function fitMailReviewScreen(){
+ if(!window.matchMedia('(max-width:799px)').matches||!document.body.classList.contains('mobile-review'))return;
+ const holder=$('result'),content=holder?.querySelector('.review-inner');
+ if(!holder||!content||holder.clientHeight<90||holder.clientWidth<100)return;
+ const maxHeight=holder.clientHeight-12,contentWidth=holder.clientWidth-14;
+ function measure(scale){
+  content.style.setProperty('width',(contentWidth/scale).toFixed(2)+'px','important');
+  content.style.transform='scale('+scale+')';
+  return content.getBoundingClientRect().height;
+ }
+ if(measure(1)<=maxHeight)return;
+ let low=.18,high=1;
+ for(let i=0;i<16;i++){
+  const mid=(low+high)/2;
+  if(measure(mid)>maxHeight)high=mid;
+  else low=mid;
+ }
+ measure(low);
+}
+window.addEventListener('resize',()=>requestAnimationFrame(fitMailReviewScreen));
+window.visualViewport?.addEventListener('resize',()=>requestAnimationFrame(fitMailReviewScreen));
+
 function closeMobileWriting(toResult=false){
  $('answer').blur();
  document.body.classList.remove('mobile-writing','is-typing','keyboard-tight','keyboard-micro');
@@ -2169,6 +2240,7 @@ function closeMobileWriting(toResult=false){
  $('writeHeading').textContent=toResult?'REZULTAT PROVERE':'2. NAPIŠI SVOJ ODGOVOR';
  growMailEditor();
  window.scrollTo(0,0);
+ if(toResult)requestAnimationFrame(()=>{fitMailReviewScreen();setTimeout(fitMailReviewScreen,140)});
 }
 $('mobileStartTop').addEventListener('click',openMobileWriting);
 $('mobileStartBottom').addEventListener('click',openMobileWriting);
