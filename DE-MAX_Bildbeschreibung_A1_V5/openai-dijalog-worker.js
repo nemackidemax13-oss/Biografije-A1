@@ -104,7 +104,7 @@ export default {
   if(request.method==="GET"&&u.pathname.replace(/\/$/,"")==="/health")
    return reply({service:"demax-a1-dijalog",online:true,configured:!!(env.nivoA1 || env.OPENAI_API_KEY)},200,origin);
   if(!ALLOWED_ORIGINS.has(origin))return reply({error:"Nepoznat izvor zahteva."},403,origin);
-  if(request.method!=="POST"||!(u.pathname==="/"||u.pathname===""))
+  if(request.method!=="POST"||!["/","/api/a1-dialog"].includes(u.pathname))
    return reply({error:"Nepoznata ruta."},404,origin);
   const apiKey=env.nivoA1 || env.OPENAI_API_KEY;
   if(!apiKey)return reply({error:"U Cloudflare Worker tajnama nije podešen nivoA1 (ili OPENAI_API_KEY)."},503,origin);
@@ -119,9 +119,11 @@ export default {
   if(!Number.isInteger(Number(data.scene))||scene!==Number(data.scene))return reply({error:"Nepoznata slika."},400,origin);
   const meta=SCENES[scene-1];
   const chooseUser=textClean(data.userRole,80);
-  const isFirst=chooseUser===meta[1],isSecond=chooseUser===meta[2];
+  const slot=Number(data.userRoleIndex);
+  const isFirst=slot===0||(slot!==1&&chooseUser===meta[1]);
+  const isSecond=slot===1||(slot!==0&&chooseUser===meta[2]);
   if(!isFirst&&!isSecond)return reply({error:"Neispravna uloga."},400,origin);
-  const userRole=chooseUser,aiRole=isFirst?meta[2]:meta[1];
+  const userRole=isFirst?meta[1]:meta[2],aiRole=isFirst?meta[2]:meta[1];
   const action=data.action;
   if(!["start","turn"].includes(action))return reply({error:"Neispravna akcija."},400,origin);
   const answer=textClean(data.answer,500);
