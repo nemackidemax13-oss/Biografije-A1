@@ -101,9 +101,9 @@ export default {
    if(!ALLOWED_ORIGINS.has(origin))return new Response(null,{status:403});
    return new Response(null,{status:204,headers:{...headers(origin),"Access-Control-Allow-Methods":"POST, GET, OPTIONS","Access-Control-Allow-Headers":"Content-Type","Access-Control-Max-Age":"600"}});
   }
-  if(!ALLOWED_ORIGINS.has(origin))return reply({error:"Nepoznat izvor zahteva."},403,origin);
   if(request.method==="GET"&&u.pathname.replace(/\/$/,"")==="/health")
    return reply({service:"demax-a1-dijalog",online:true,configured:!!env.OPENAI_API_KEY},200,origin);
+  if(!ALLOWED_ORIGINS.has(origin))return reply({error:"Nepoznat izvor zahteva."},403,origin);
   if(request.method!=="POST"||!(u.pathname==="/"||u.pathname===""))
    return reply({error:"Nepoznata ruta."},404,origin);
   if(!env.OPENAI_API_KEY)return reply({error:"Nije podešen OPENAI_API_KEY u Cloudflare Worker tajnama."},503,origin);
