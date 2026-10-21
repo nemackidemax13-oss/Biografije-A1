@@ -2,7 +2,7 @@
   "id": "./",
   "name": "DE-MAX Evidencija učenika",
   "short_name": "DE-MAX",
-  "description": "Evidencija učenika, kurseva, termina, prijava, polaganja i kupovina aplikacije",
+  "description": "DE-MAX evidencija učenika, dečijih kurseva i nedeljnog rasporeda časova",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
