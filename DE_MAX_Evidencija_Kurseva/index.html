@@ -257,6 +257,8 @@ html,body{max-width:100%;overflow-x:clip}
  .mobile-quick .btn{min-height:39px;font-size:12px}
 }
 </style>
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="application-name" content="DE-MAX Evidencija">
 </head>
 <body>
 <div class="shell">
@@ -378,5 +380,6 @@ window.visualViewport?.addEventListener('resize',()=>{document.documentElement.s
 load();render();
 })();
 </script>
+<script>if ("serviceWorker" in navigator && (location.protocol==="https:" || location.hostname==="localhost")) { window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{})); }</script>
 </body>
 </html>
