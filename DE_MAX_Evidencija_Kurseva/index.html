@@ -770,7 +770,16 @@ pages.certificates=pages.certificates||0;pages.embassy=pages.embassy||0;
  .cert-preview-wrap{background:#eef3fb;border-radius:18px;padding:16px}
  .certificate-sheet{background:#fff;color:#111;width:min(100%,780px);margin:0 auto;padding:34px 42px;border-radius:18px;box-shadow:0 18px 40px rgba(22,34,56,.10);border:1px solid #e7ebf3}
  .cert-head{display:flex;align-items:center;gap:18px;border-bottom:2px solid #eef2f8;padding-bottom:16px;margin-bottom:18px}
- .cert-head img{width:82px;height:82px;border-radius:0;object-fit:contain;box-shadow:none;background:transparent;border:none}
+ .cert-head img{width:91px;height:91px;border-radius:0;object-fit:contain;box-shadow:none;background:transparent;border:none}
+ .cert-school-details{flex:1;min-width:0}
+ .cert-contacts{font-size:10.5px;line-height:1.55;color:#24324a;text-align:right;overflow-wrap:anywhere;max-width:265px;flex:0 0 265px}
+ .cert-contacts span{display:block}
+ .cert-student-search{border:2px solid #d22f35!important;box-shadow:0 0 0 2px rgba(210,47,53,.07)!important}
+ .cert-student-search:focus{outline:2px solid #f2a8ad;outline-offset:1px}
+ .cert-sign-area{min-height:96px;display:flex;justify-content:flex-end;align-items:flex-end;margin-top:38px}
+ .cert-sign{min-width:235px;border-top:1px solid #aeb8cc;padding-top:8px;font-size:12px;color:#374760;text-align:center}
+ .cert-level-box h3{color:#1c4792}
+ .cert-foot .cert-stamp{display:none!important}
  .cert-school{font-size:12px;letter-spacing:2px;font-weight:800;color:#335ca8;text-transform:uppercase}
  .cert-school-name{font-size:28px;font-weight:900;letter-spacing:-.8px;color:#c32121;line-height:1.1}
  .cert-meta{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:16px}
@@ -783,7 +792,7 @@ pages.certificates=pages.certificates||0;pages.embassy=pages.embassy||0;
  .cert-level-box{margin-top:22px;background:#fbfcfe;border:1px solid #e5eaf4;border-radius:16px;padding:18px}
  .cert-level-box h3{margin:0 0 8px;font-size:18px;color:#274b96}
  .cert-level-box p{margin:0;line-height:1.72;color:#24344c;font-size:14px}
- .cert-foot{display:flex;justify-content:space-between;gap:18px;margin-top:36px;align-items:flex-end}
+ .cert-foot{display:block;min-height:125px;margin-top:40px}
  .cert-sign{min-width:220px;border-top:1px solid #cfd7e6;padding-top:8px;font-size:12px;color:#60718e;text-align:center}
  .cert-stamp{width:120px;height:120px;border:2px dashed #e36a6a;border-radius:50%;display:grid;place-items:center;color:#d53b3b;font-weight:900;font-size:14px;text-align:center;line-height:1.2}
  .embassy-top{display:grid;grid-template-columns:1.05fr .95fr;gap:14px}
@@ -809,11 +818,11 @@ pages.certificates=pages.certificates||0;pages.embassy=pages.embassy||0;
  .embassy-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
  .embassy-form-grid .wide{grid-column:1/-1}
  .cert-inline-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:14px}
- .pdf-stage{position:fixed;left:-10000px;top:0;pointer-events:none;opacity:0}
+ .pdf-stage{position:fixed;left:-10000px;top:0;pointer-events:none;opacity:0}.pdf-stage .certificate-sheet{width:780px;max-width:none}
  .dm-overview-red.btn{background:#cc2e32!important;color:#fff!important;border:1px solid #b52227!important;box-shadow:0 4px 11px rgba(184,35,42,.16)}
  .dm-overview-red.btn:hover{background:#ae2229!important;color:#fff!important}
  .weekly-heading .btn[data-action="weekly-prev"],.weekly-heading .btn[data-action="weekly-next"],.page-controls .btn[data-action="page-prev"],.page-controls .btn[data-action="page-next"],.modal-page-controls .btn[data-action="modal-prev"],.modal-page-controls .btn[data-action="modal-next"],.embassy-cal-head .btn[data-action="embassy-month-prev"],.embassy-cal-head .btn[data-action="embassy-month-next"]{background:#0b9255!important;color:#fff!important;border-color:#087a46!important;box-shadow:0 3px 10px rgba(11,146,85,.13)!important}
- .weekly-heading .btn:disabled,.page-controls .btn:disabled,.modal-page-controls .btn:disabled{opacity:.4!important;box-shadow:none!important}
+ .weekly-heading .btn[data-action="weekly-prev"]:disabled,.weekly-heading .btn[data-action="weekly-next"]:disabled,.page-controls .btn:disabled,.modal-page-controls .btn:disabled{opacity:.4!important;box-shadow:none!important}
  .weekly-day{background:#e5f7ed!important;color:#08733c!important;border-color:#a8dfbc!important}
  .weekly-day span{color:#078042!important;font-weight:900!important}
  .weekly-day strong{color:#167547!important}
@@ -827,7 +836,7 @@ pages.certificates=pages.certificates||0;pages.embassy=pages.embassy||0;
  .week-column.selected .week-day-name{color:#09683a!important}
  @media(max-width:600px){.weekly-day span{font-weight:900!important}.dm-overview-red.btn{padding:8px 12px!important}}
  @media (max-width:920px){.embassy-top{grid-template-columns:1fr}.certificate-row,.embassy-row{flex-direction:column}.certificate-row .actions,.embassy-row .actions{justify-content:flex-start}.certificate-sheet{padding:24px 18px}.cert-head{flex-direction:column;align-items:flex-start}.cert-student{font-size:22px}.cert-foot{flex-direction:column;align-items:flex-start}.cert-stamp{width:92px;height:92px;font-size:12px}}
- @media (max-width:640px){.embassy-form-grid,.form-grid{grid-template-columns:1fr}.certificate-sheet{padding:20px 14px}.cert-title h2{font-size:22px}.cert-body,.cert-level-box p{font-size:13px;line-height:1.65}}
+ @media (max-width:640px){.embassy-form-grid,.form-grid{grid-template-columns:1fr}.certificate-sheet{padding:20px 14px}.cert-title h2{font-size:22px}.cert-body,.cert-level-box p{font-size:13px;line-height:1.65}.cert-head{display:grid;grid-template-columns:68px 1fr;gap:8px}.cert-head img{width:68px;height:68px}.cert-contacts{grid-column:1/-1;max-width:none;text-align:left;border-top:1px solid #e9edf5;padding-top:5px;font-size:9.5px}.cert-student{font-size:21px}}
  `;
  document.head.appendChild(style);
 })();
@@ -926,11 +935,12 @@ function certificateForm(id=''){
  const levelTpl=levelBlock(currentLevel);
  const studentName=r?.studentName||'';
  const body=r?.bodyText||certificateBodyText({studentName:studentName,startDate:r?.startDate||linkedCourse?.start||TODAY(),endDate:r?.endDate||linkedCourse?.end||TODAY(),level:currentLevel,hours:r?.hours||''});
- const form=`<form id="certificate-form" data-id="${esc(id)}"><div class="form-grid"><div class="form-group"><label>Broj potvrde *</label><input class="form-control" name="number" maxlength="50" required value="${esc(r?.number||certificateNumberDefault())}"></div><div class="form-group"><label>Datum *</label><input class="form-control" type="date" name="issueDate" required value="${esc(r?.issueDate||TODAY())}"></div><div class="form-group wide"><label>Učenik iz baze (opciono)</label><select class="form-control" name="studentId" id="cert-student-select">${opt(studentOptions,r?.studentId||'')}</select></div><div class="form-group wide"><label>Ime i prezime učenika *</label><input class="form-control" id="cert-student-name" name="studentName" maxlength="120" required value="${esc(studentName)}" placeholder="Ime Prezime"></div><div class="form-group wide"><label>Poveži sa kursom (opciono)</label><select class="form-control" name="courseId" id="cert-course-select">${opt(courseOptions,r?.courseId||'')}</select></div><div class="form-group"><label>Nivo kursa *</label><select class="form-control" name="level" id="cert-level">${opt(levelOptions,currentLevel)}</select></div><div class="form-group"><label>Broj časova *</label><input class="form-control" name="hours" maxlength="20" required value="${esc(r?.hours||'96')}" placeholder="96"></div><div class="form-group wide"><label>Naziv kursa</label><input class="form-control" name="courseTitle" id="cert-course-title" maxlength="120" value="${esc(r?.courseTitle || (linkedCourse?courseName(linkedCourse):''))}"></div><div class="form-group"><label>Period od *</label><input class="form-control" type="date" name="startDate" id="cert-start-date" required value="${esc(r?.startDate||linkedCourse?.start||TODAY())}"></div><div class="form-group"><label>Period do *</label><input class="form-control" type="date" name="endDate" id="cert-end-date" required value="${esc(r?.endDate||linkedCourse?.end||TODAY())}"></div><div class="form-group wide"><label>Glavni tekst potvrde *</label><textarea class="form-control" rows="5" name="bodyText" id="cert-body" required>${esc(body)}</textarea><div class="form-help">Predlog rečenice možeš ručno menjati.</div></div><div class="form-group wide"><label>Naslov nivoa</label><input class="form-control" name="levelTitle" id="cert-level-title" maxlength="120" value="${esc(r?.levelTitle||levelTpl.title)}"></div><div class="form-group wide"><label>Opis nivoa</label><textarea class="form-control" rows="6" name="levelText" id="cert-level-text">${esc(r?.levelText||levelTpl.text)}</textarea></div></div><div class="cert-inline-actions"><button type="button" class="btn soft" data-action="cert-refresh-text">Ponudi tekst</button><button type="button" class="btn soft" data-action="close-modal">Otkaži</button><button type="submit" class="btn primary">Sačuvaj potvrdu</button></div></form>`;
+ const form=`<form id="certificate-form" data-id="${esc(id)}"><div class="form-grid"><div class="form-group"><label>Broj potvrde *</label><input class="form-control" name="number" maxlength="50" required value="${esc(r?.number||certificateNumberDefault())}"></div><div class="form-group"><label>Datum *</label><input class="form-control" type="date" name="issueDate" required value="${esc(r?.issueDate||TODAY())}"></div><div class="form-group wide"><label for="cert-student-select">Učenik iz baze (opciono) – pronađi ili upiši ime</label><input class="form-control cert-student-search" type="search" list="cert-student-options" id="cert-student-select" maxlength="120" autocomplete="off" placeholder="Kucaj ime ili izaberi iz baze..." value="${esc(studentName)}"><input type="hidden" name="studentId" id="cert-student-id" value="${esc(r?.studentId||'')}"><datalist id="cert-student-options">${sortedStudents(db.students).map(s=>`<option value="${esc(name(s))}" label="${esc(s.phone||'DE-MAX učenik')}"></option>`).join('')}</datalist><div class="form-help">Crveno označeno polje omogućava pretragu ili unos novog imena.</div></div><div class="form-group wide"><label>Ime i prezime učenika *</label><input class="form-control" id="cert-student-name" name="studentName" maxlength="120" required value="${esc(studentName)}" placeholder="Ime Prezime"></div><div class="form-group wide"><label>Poveži sa kursom (opciono)</label><select class="form-control" name="courseId" id="cert-course-select">${opt(courseOptions,r?.courseId||'')}</select></div><div class="form-group"><label>Nivo kursa *</label><select class="form-control" name="level" id="cert-level">${opt(levelOptions,currentLevel)}</select></div><div class="form-group"><label>Broj časova *</label><input class="form-control" name="hours" maxlength="20" required value="${esc(r?.hours||'96')}" placeholder="96"></div><div class="form-group wide"><label>Naziv kursa</label><input class="form-control" name="courseTitle" id="cert-course-title" maxlength="120" value="${esc(r?.courseTitle || (linkedCourse?courseName(linkedCourse):''))}"></div><div class="form-group"><label>Period od *</label><input class="form-control" type="date" name="startDate" id="cert-start-date" required value="${esc(r?.startDate||linkedCourse?.start||TODAY())}"></div><div class="form-group"><label>Period do *</label><input class="form-control" type="date" name="endDate" id="cert-end-date" required value="${esc(r?.endDate||linkedCourse?.end||TODAY())}"></div><div class="form-group wide"><label>Glavni tekst potvrde *</label><textarea class="form-control" rows="5" name="bodyText" id="cert-body" required>${esc(body)}</textarea><div class="form-help">Predlog rečenice možeš ručno menjati.</div></div><div class="form-group wide"><label for="cert-level-title">Naslov nivoa – A1 / A2 / B1</label><select class="form-control" name="levelTitle" id="cert-level-title">${opt(['A1','A2','B1'].map(level=>[certText[level].title,certText[level].title]),r?.levelTitle||levelTpl.title)}</select></div><div class="form-group wide"><label>Opis nivoa</label><textarea class="form-control" rows="6" name="levelText" id="cert-level-text">${esc(r?.levelText||levelTpl.text)}</textarea></div></div><div class="cert-inline-actions"><button type="button" class="btn soft" data-action="cert-refresh-text">Ponudi tekst</button><button type="button" class="btn soft" data-action="close-modal">Otkaži</button><button type="submit" class="btn primary">Sačuvaj potvrdu</button></div></form>`;
  openModal(r?'Izmeni potvrdu':'Nova potvrda','Popuni podatke, sačuvaj i preuzmi PDF.',form,'',true);
 }
 function certCourseSync(form){const cid=form.querySelector('[name="courseId"]').value;const c=getCourse(cid);if(!c)return;const title=form.querySelector('#cert-course-title');const level=form.querySelector('#cert-level');const sd=form.querySelector('#cert-start-date');const ed=form.querySelector('#cert-end-date');if(title&&!title.value.trim())title.value=courseName(c);if(level)level.value=c.level;if(sd)sd.value=c.start;if(ed)ed.value=c.end;certLevelSync(form,false);}
-function certStudentSync(form){const sid=form.querySelector('[name="studentId"]').value;const s=getStudent(sid);if(s)form.querySelector('#cert-student-name').value=name(s)}
+function certStudentSync(form){const query=form.querySelector('#cert-student-select')?.value.trim()||'';const student=sortedStudents(db.students).find(s=>name(s).toLocaleLowerCase('sr')===query.toLocaleLowerCase('sr'));const hidden=form.querySelector('#cert-student-id');if(hidden)hidden.value=student?.id||'';const target=form.querySelector('#cert-student-name');if(target)target.value=query;}
+function certTitleSync(form){const selected=form.querySelector('#cert-level-title')?.value;const match=Object.entries(certText).find(([,v])=>v.title===selected);if(!match)return;const level=form.querySelector('#cert-level');if(level)level.value=match[0];const text=form.querySelector('#cert-level-text');if(text)text.value=match[1].text;certRefreshBody(form)}
 function certLevelSync(form,updateText=true){const level=form.querySelector('#cert-level')?.value||'A1';const tpl=levelBlock(level);const title=form.querySelector('#cert-level-title');const text=form.querySelector('#cert-level-text');if(title)title.value=tpl.title;if(text)text.value=tpl.text;if(updateText)certRefreshBody(form)}
 function certRefreshBody(form){const studentName=form.querySelector('#cert-student-name')?.value||'';const level=form.querySelector('#cert-level')?.value||'A1';const startDate=form.querySelector('#cert-start-date')?.value||TODAY();const endDate=form.querySelector('#cert-end-date')?.value||TODAY();const hours=form.querySelector('[name="hours"]')?.value||'';const body=form.querySelector('#cert-body');if(body)body.value=certificateBodyText({studentName,startDate,endDate,level,hours})}
 function saveCertificate(form){
@@ -946,7 +956,7 @@ function saveCertificate(form){
 }
 function certificatePreviewHTML(r){
  const courseLine=[r.courseTitle,r.level].filter(Boolean).join(' · ');
- return `<div class="cert-preview-wrap"><div class="certificate-sheet"><div class="cert-head"><img src="${DMX_ROUND_LOGO}" alt="DE-MAX logo"><div><div class="cert-school">Zentrum für deutsche Sprache</div><div class="cert-school-name">DE-MAX TUTIN</div><div class="muted small" style="margin-top:4px">Od 2013. sa Vama</div></div></div><div class="cert-meta"><div class="cert-badge"><strong>Bescheinigung Nr.</strong><br>${esc(r.number||'')}</div><div class="cert-badge"><strong>Datum</strong><br>${ddDE(r.issueDate)}</div></div><div class="cert-title"><h2>Bescheinigung</h2><p>Bescheinigung über die Teilnahme an einem Deutschsprachkurs</p></div><div class="cert-student">${esc(r.studentName||'')}</div><div class="cert-body">${esc(r.bodyText||certificateBodyText(r))}</div>${courseLine?`<div class="cert-badge" style="margin-bottom:16px"><strong>Kurs</strong><br>${esc(courseLine)}</div>`:''}<div class="cert-level-box"><h3>${esc(r.levelTitle||levelBlock(r.level).title)}</h3><p>${esc(r.levelText||levelBlock(r.level).text)}</p></div><div class="cert-foot"><div class="cert-sign">DE-MAX Tutin<br>Ovlašćeno lice / potpis</div><div class="cert-stamp">DE-MAX<br>TUTIN</div></div></div></div>`;
+ return `<div class="cert-preview-wrap"><div class="certificate-sheet"><div class="cert-head"><img src="${DMX_ROUND_LOGO}" alt="DE-MAX Tutin"><div class="cert-school-details"><div class="cert-school">Zentrum für deutsche Sprache</div><div class="cert-school-name">DE-MAX TUTIN</div><div class="muted small" style="margin-top:5px">Seit 2013 an Ihrer Seite.</div></div><div class="cert-contacts"><span><strong>Adresse:</strong> Pešterska bb, 36320 Tutin, Serbien</span><span><strong>Telefon:</strong> +381 62 8490970</span><span><strong>E-Mail:</strong> nemackidemax13@gmail.com</span><span><strong>Bankverbindung:</strong> 200-3605600101988-10</span></div></div><div class="cert-meta"><div class="cert-badge"><strong>Bescheinigung Nr.</strong><br>${esc(r.number||'')}</div><div class="cert-badge"><strong>Datum</strong><br>${ddDE(r.issueDate)}</div></div><div class="cert-title"><h2>Bescheinigung</h2><p>Bescheinigung über die Teilnahme an einem Deutschsprachkurs</p></div><div class="cert-student">${esc(r.studentName||'')}</div><div class="cert-body">${esc(r.bodyText||certificateBodyText(r))}</div>${courseLine?`<div class="cert-badge" style="margin-bottom:16px"><strong>Deutschkurs</strong><br>${esc(courseLine)}</div>`:''}<div class="cert-level-box"><h3>${esc(r.levelTitle||levelBlock(r.level).title)}</h3><p>${esc(r.levelText||levelBlock(r.level).text)}</p></div><div class="cert-foot"><div class="cert-sign-area"><div class="cert-sign">Unterschrift der verantwortlichen Person</div></div></div></div></div>`;
 }
 function openCertificatePreview(id){const r=db.certificates.find(x=>x.id===id);if(!r)return;openModal('Pregled potvrde','Preuzimanje u PDF ili štampa',certificatePreviewHTML(r)+`<div class="cert-inline-actions"><button type="button" class="btn soft" data-action="certificate-pdf" data-id="${esc(id)}">↓ Preuzmi PDF</button><button type="button" class="btn primary" data-action="close-modal">Zatvori</button></div>`,'',true)}
 function renderCertificates(){
@@ -973,7 +983,7 @@ async function certificateToPDF(id){
   pdf.addImage(imgData,'PNG',20,20,w,h);
   pdf.save(`Potvrda_${(rec.number||'DEMAX').replace(/[\\/:*?"<>|]+/g,'_')}.pdf`);
   stage.remove();
- }catch(err){toast('PDF nije mogao biti pripremljen. Otvori pregled i sačuvaj kao PDF.',true);console.error(err)}
+ }catch(err){toast('PDF nije mogao biti pripremljen. Pokušaj ponovo uz internet vezu.',true);console.error(err)}
 }
 function monthLabel(isoMonth){const [y,m]=isoMonth.split('-').map(Number);return new Date(y,m-1,1).toLocaleDateString('sr-RS',{month:'long',year:'numeric'})}
 function monthShift(isoMonth,delta){const [y,m]=isoMonth.split('-').map(Number);const d=new Date(y,m-1+delta,1);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-01`}
@@ -1019,8 +1029,157 @@ document.addEventListener('click',async e=>{
 },true);
 document.addEventListener('submit',e=>{if(e.target.id==='certificate-form'){e.preventDefault();e.stopImmediatePropagation();saveCertificate(e.target)} if(e.target.id==='embassy-form'){e.preventDefault();e.stopImmediatePropagation();saveEmbassy(e.target)}},true);
 document.addEventListener('input',e=>{if(e.target.id==='certificate-search'){certificateSearch=e.target.value;pages.certificates=0;if(view==='certificates')render()} if(e.target.id==='embassy-search'){embassySearch=e.target.value;pages.embassy=0;if(view==='embassy')render()}},true);
-document.addEventListener('change',e=>{const form=document.getElementById('certificate-form');if(!form)return; if(e.target.id==='cert-student-select')certStudentSync(form); if(e.target.id==='cert-course-select')certCourseSync(form); if(e.target.id==='cert-level')certLevelSync(form,true);},true);
+document.addEventListener('input',e=>{if(e.target.id==='cert-student-select'){const form=e.target.closest('form');if(form)certStudentSync(form)}},true);
+document.addEventListener('change',e=>{const form=document.getElementById('certificate-form');if(!form)return; if(e.target.id==='cert-student-select')certStudentSync(form); if(e.target.id==='cert-course-select')certCourseSync(form); if(e.target.id==='cert-level')certLevelSync(form,true); if(e.target.id==='cert-level-title')certTitleSync(form);},true);
 ensureAdvancedData();
+
+
+/* DE-MAX v10: full-size picture/video carousel and complete offline ZIP backup */
+(function(){
+const css=document.createElement('style');css.textContent=`
+body[data-view="memories"] #view-root{min-height:0;overflow:hidden}
+body[data-view="memories"] #memory-results{display:flex;flex:1;min-height:0;overflow:hidden}
+.dmx-gallery-root{display:flex;flex-direction:column;flex:1;min-height:0;min-width:0;width:100%;gap:7px}
+.dmx-gallery-tools{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:nowrap;min-height:29px}
+.dmx-gallery-tools strong{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dmx-gallery-actions{display:flex;gap:6px;justify-content:flex-end}
+.dmx-gallery-actions .btn{min-height:30px;font-size:11px;padding:5px 9px}
+.dmx-gallery-stage{display:flex;flex-direction:column;flex:1;min-height:0;min-width:0;background:#101b30;border-radius:16px;overflow:hidden;position:relative;box-shadow:0 8px 24px #172f4b15}
+.dmx-gallery-media{flex:1;min-height:0;width:100%;display:flex;justify-content:center;align-items:center;overflow:hidden}
+.dmx-gallery-media img,.dmx-gallery-media video{display:block;width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain;object-position:center}
+.dmx-gallery-arrow{position:absolute;z-index:2;top:50%;transform:translateY(-50%);width:43px;height:47px;border:0;border-radius:12px;background:#ffffffd9;color:#1955af;display:grid;place-items:center;font-size:29px;font-weight:900;cursor:pointer;box-shadow:0 3px 12px #0003}
+.dmx-gallery-arrow.left{left:10px}.dmx-gallery-arrow.right{right:10px}
+.dmx-gallery-arrow:disabled{opacity:.3;cursor:default}
+.dmx-gallery-counter{position:absolute;z-index:2;bottom:10px;left:50%;transform:translateX(-50%);padding:6px 11px;background:#0b172dcc;color:white;border-radius:99px;font-size:12px;font-weight:700;pointer-events:none}
+.dmx-gallery-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff;border:1px solid #e7ebf2;border-radius:13px;padding:8px 10px;min-height:55px}
+.dmx-gallery-title{font-weight:800;color:#223451;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dmx-gallery-sub{font-size:11px;color:#73839b;margin-top:3px;white-space:nowrap}
+.dmx-gallery-edit{display:flex;gap:5px;align-items:center;flex-shrink:0}.dmx-gallery-edit .btn{min-height:30px;padding:5px 8px;font-size:11px}
+.dmx-gallery-empty{display:flex;flex:1;align-items:center;justify-content:center;flex-direction:column;text-align:center;color:#667993;border:1px dashed #bfcde3;border-radius:15px;background:#fff;gap:8px;padding:12px}
+.dmx-gallery-empty strong{color:#314461}
+.dmx-viewer .modal{width:min(1100px,calc(100vw - 16px));height:calc(100dvh - 20px);max-height:calc(100dvh - 20px);display:flex;flex-direction:column;overflow:hidden}
+.dmx-viewer .modal-head{padding:10px 14px;flex-shrink:0}
+.dmx-viewer .modal-body{display:flex;flex-direction:column;flex:1;min-height:0;overflow:hidden;padding:8px 10px 10px}
+.dmx-viewer .dmx-gallery-root{height:100%}
+.dmx-viewer .dmx-gallery-stage{border-radius:12px}
+.dmx-viewer .dmx-gallery-meta{min-height:45px}
+.dmx-viewer .dmx-gallery-tools{display:none}
+body[data-view="memories"] #view-root>.memory-info{display:none}
+body[data-view="memories"] #view-root>.toolbar{margin:0 0 4px!important;min-height:0}
+@media(max-width:760px){
+ body[data-view="memories"] .main{padding-bottom:5px}
+ .dmx-gallery-tools strong{font-size:11px}
+ .dmx-gallery-actions .btn{min-height:26px;font-size:9px;padding:4px 6px}
+ .dmx-gallery-arrow{height:42px;width:32px;font-size:25px;border-radius:9px}
+ .dmx-gallery-arrow.left{left:5px}.dmx-gallery-arrow.right{right:5px}
+ .dmx-gallery-meta{min-height:49px;padding:5px 7px}
+ .dmx-gallery-title{font-size:11px}.dmx-gallery-sub{font-size:10px}
+ .dmx-gallery-edit .btn{min-height:27px;padding:4px 5px;font-size:9px}
+ .dmx-viewer .modal{height:calc(100dvh - 8px);max-height:calc(100dvh - 8px)}
+ .dmx-viewer .modal-head{padding:8px 10px}
+ .dmx-viewer .modal-head h2{font-size:15px}
+ .dmx-viewer .modal-head p{display:none}
+ .dmx-viewer .modal-body{padding:5px}
+}
+`;document.head.appendChild(css);
+})();
+let dmxMemoryIndex=0,dmxViewerIndex=0,dmxMemMeta=[],dmxViewerOpened=false,dmxGalleryRun=0,dmxBackupBusy=false;
+function dmxSortedMedia(records){return [...records].sort((a,b)=>String(b.createdAt||'').localeCompare(String(a.createdAt||'')))}
+function dmxIndexById(id,items){return Math.max(0,items.findIndex(r=>r.id===id))}
+function dmxGalleryContent(m,index,count,viewer=false){
+ const blobURL=memObjectURL(m.blob);const video=String(m.mime).startsWith('video/');
+ const media=video?`<video playsinline controls preload="metadata" src="${blobURL}" aria-label="${esc(m.title)}"></video>`:`<img draggable="false" src="${blobURL}" alt="${esc(m.title)}">`;
+ return `<div class="dmx-gallery-root"><div class="dmx-gallery-tools"><strong>Uspomene · fotografije i video</strong><div class="dmx-gallery-actions"><button class="btn soft sm" data-action="backup-all" type="button">↓ Potpuna kopija</button><button class="btn soft sm" data-action="restore-all" type="button">↑ Uvezi kopiju</button></div></div><section class="dmx-gallery-stage" aria-label="Pregled uspomena">`+
+ `<div class="dmx-gallery-media">${media}</div><button type="button" class="dmx-gallery-arrow left" data-action="dmx-${viewer?'viewer':'gallery'}-prev" aria-label="Prethodna uspomena" ${index===0?'disabled':''}>‹</button>`+
+ `<button type="button" class="dmx-gallery-arrow right" data-action="dmx-${viewer?'viewer':'gallery'}-next" aria-label="Sledeća uspomena" ${index===count-1?'disabled':''}>›</button><span class="dmx-gallery-counter">${index+1} / ${count}</span></section>`+
+ `<div class="dmx-gallery-meta"><div style="min-width:0"><div class="dmx-gallery-title" title="${esc(m.title)}">${esc(m.title)}</div><div class="dmx-gallery-sub">${dd(m.date)} · ${video?'Video':'Fotografija'}</div></div><div class="dmx-gallery-edit">`+
+ (viewer?'':`<button class="btn soft sm" data-action="dmx-open-current" data-id="${esc(m.id)}">Uvećaj</button>`)+`<button class="btn soft sm" data-action="memory-edit" data-id="${esc(m.id)}">Izmeni</button><button class="btn soft sm" data-action="memory-download" data-id="${esc(m.id)}">Preuzmi</button><button class="btn danger sm" data-action="memory-delete" data-id="${esc(m.id)}">Obriši</button></div></div></div>`;
+}
+renderMemories=function(){return `<div id="memory-results" aria-label="Galerija uspomena"><div class="soft-note">Učitavanje uspomena…</div></div>`};
+refreshMemories=async function(){
+ const run=++dmxGalleryRun;
+ try{const records=dmxSortedMedia(await mediaAll());if(run!==dmxGalleryRun||view!=='memories'||!$('#memory-results'))return;
+ dmxMemMeta=records.map(x=>({id:x.id,title:x.title}));dmxMemoryIndex=Math.min(Math.max(dmxMemoryIndex,0),Math.max(0,records.length-1));
+ releaseMediaUrls();if(!records.length){$('#memory-results').innerHTML=`<div class="dmx-gallery-empty"><strong>Još nema uspomena</strong><span>Dodaj fotografije ili video-snimke. Sve ćeš moći da pregledaš strelicama levo i desno.</span><button class="btn primary sm" data-action="memory-upload">＋ Dodaj slike / video</button><div class="dmx-gallery-actions"><button class="btn soft sm" data-action="backup-all">↓ Potpuna kopija</button><button class="btn soft sm" data-action="restore-all">↑ Uvezi kopiju</button></div></div>`;return}
+ $('#memory-results').innerHTML=dmxGalleryContent(records[dmxMemoryIndex],dmxMemoryIndex,records.length,false);
+ }catch(err){if($('#memory-results'))$('#memory-results').innerHTML=`<div class="soft-note">${esc(err.message||'Ne mogu učitati uspomene.')}</div>`}
+};
+async function dmxSlideGallery(delta){
+ if(!dmxMemMeta.length)return;const ix=Math.min(Math.max(dmxMemoryIndex+delta,0),dmxMemMeta.length-1);if(ix===dmxMemoryIndex)return;
+ dmxMemoryIndex=ix;await refreshMemories();
+}
+function dmxViewerTitle(){const t=$('.dmx-viewer .modal-head h2');if(t)t.textContent='Uspomene · '+(dmxViewerIndex+1)+' / '+dmxMemMeta.length}
+function dmxCloseViewer(){dmxViewerOpened=false;dmxViewerIndex=0;$('.modal-backdrop')?.classList.remove('dmx-viewer');closeModal();if(view==='memories')refreshMemories()}
+async function dmxRenderViewer(){
+ const id=dmxMemMeta[dmxViewerIndex]?.id;if(!id||!dmxViewerOpened)return;
+ try{const m=await mediaOne(id);if(!m||!dmxViewerOpened)return;releaseMediaUrls();const root=$('.dmx-viewer .modal-body');if(!root)return;root.innerHTML=dmxGalleryContent(m,dmxViewerIndex,dmxMemMeta.length,true);dmxViewerTitle()}
+ catch(err){toast('Ne mogu prikazati uspomenu: '+err.message,true)}
+}
+memoryView=async function(id){
+ try{const all=dmxSortedMedia(await mediaAll());if(!all.length)return;
+ dmxMemMeta=all.map(x=>({id:x.id,title:x.title}));dmxViewerIndex=dmxIndexById(id,all);dmxViewerOpened=true;
+ openModal('Uspomene','Strelicama levo i desno pregledaj sve slike i video-zapise.',`<div class="soft-note">Učitavanje...</div>`,'',true);
+ $('.modal-backdrop')?.classList.add('dmx-viewer');await dmxRenderViewer();
+ }catch(err){dmxViewerOpened=false;toast('Ne mogu otvoriti uspomenu: '+err.message,true)}
+};
+async function dmxSlideViewer(delta){if(!dmxViewerOpened)return;const ix=Math.min(Math.max(dmxViewerIndex+delta,0),dmxMemMeta.length-1);if(ix!==dmxViewerIndex){dmxViewerIndex=ix;await dmxRenderViewer()}}
+// Real ZIP with uncompressed binary entries: works fully offline without CDN libraries.
+const dmxTextEncoder=new TextEncoder(),dmxTextDecoder=new TextDecoder();
+const dmxCrcTable=(()=>{const t=new Uint32Array(256);for(let i=0;i<256;i++){let n=i;for(let k=0;k<8;k++)n=(n&1)?(0xedb88320^(n>>>1)):(n>>>1);t[i]=n>>>0}return t})();
+async function dmxCrc(blob){let crc=0xffffffff;for(let offset=0;offset<blob.size;offset+=2*1024*1024){const chunk=new Uint8Array(await blob.slice(offset,offset+2*1024*1024).arrayBuffer());for(let i=0;i<chunk.length;i++)crc=dmxCrcTable[(crc^chunk[i])&255]^(crc>>>8)}return (crc^0xffffffff)>>>0}
+function dmxPut16(dv,offset,val){dv.setUint16(offset,val,true)}
+function dmxPut32(dv,offset,val){dv.setUint32(offset,val>>>0,true)}
+function dmxZipLocalHeader(name,blob,crc){const fn=dmxTextEncoder.encode(name);const arr=new Uint8Array(30+fn.length),d=new DataView(arr.buffer);dmxPut32(d,0,0x04034b50);dmxPut16(d,4,20);dmxPut16(d,6,0x0800);dmxPut16(d,8,0);dmxPut32(d,14,crc);dmxPut32(d,18,blob.size);dmxPut32(d,22,blob.size);dmxPut16(d,26,fn.length);arr.set(fn,30);return arr}
+function dmxZipCentralHeader(name,blob,crc,offset){const fn=dmxTextEncoder.encode(name);const arr=new Uint8Array(46+fn.length),d=new DataView(arr.buffer);dmxPut32(d,0,0x02014b50);dmxPut16(d,4,20);dmxPut16(d,6,20);dmxPut16(d,8,0x0800);dmxPut16(d,10,0);dmxPut32(d,16,crc);dmxPut32(d,20,blob.size);dmxPut32(d,24,blob.size);dmxPut16(d,28,fn.length);dmxPut32(d,42,offset);arr.set(fn,46);return arr}
+async function dmxWriteZip(entries){
+ if(entries.length>65000)throw Error('Previše datoteka za ZIP.');let parts=[],centers=[],offset=0;
+ for(const entry of entries){const blob=entry.blob instanceof Blob?entry.blob:new Blob([entry.blob]);if(blob.size>0xffffffff)throw Error('Fajl je veći od 4 GB.');const crc=await dmxCrc(blob);const local=dmxZipLocalHeader(entry.name,blob,crc);parts.push(local,blob);centers.push(dmxZipCentralHeader(entry.name,blob,crc,offset));offset+=local.length+blob.size;if(offset>0xffffffff)throw Error('Rezervna kopija je veća od ZIP limita 4 GB.')}
+ let centralSize=0;for(const item of centers){centralSize+=item.length;parts.push(item)}
+ const end=new Uint8Array(22),dv=new DataView(end.buffer);dmxPut32(dv,0,0x06054b50);dmxPut16(dv,8,centers.length);dmxPut16(dv,10,centers.length);dmxPut32(dv,12,centralSize);dmxPut32(dv,16,offset);parts.push(end);return new Blob(parts,{type:'application/zip'});
+}
+function dmxZipSafeFileName(name){return String(name||'medij').replace(/[^a-zA-Z0-9._-]/g,'_').slice(0,110)||'datoteka'}
+async function dmxMakeBackup(){
+ if(dmxBackupBusy)return;dmxBackupBusy=true;
+ try{toast('Pripremam potpunu rezervnu kopiju...');const records=dmxSortedMedia(await mediaAll());const metadata=[],entries=[];
+ for(let i=0;i<records.length;i++){const r=records[i],path='uspomene/'+String(i+1).padStart(5,'0')+'-'+dmxZipSafeFileName(r.filename||r.title);metadata.push({path,id:r.id,title:r.title,filename:r.filename,mime:r.mime,date:r.date,createdAt:r.createdAt});entries.push({name:path,blob:r.blob})}
+ const manifest={format:'DEMAX-FULL-BACKUP-1',app:'DE-MAX Evidencija',version:10,exportedAt:new Date().toISOString(),data:db,media:metadata};entries.unshift({name:'DE_MAX_EVIDENCIJA.json',blob:new Blob([JSON.stringify(manifest,null,2)],{type:'application/json'})});
+ const zip=await dmxWriteZip(entries);blobDownload(zip,`DE_MAX_SVE_SLIKE_VIDEO_PODACI_${TODAY()}.zip`);toast('Sačuvana potpuna ZIP kopija: '+records.length+' uspomena.');
+ }catch(err){toast('Kopija nije napravljena: '+(err.message||err),true)}finally{dmxBackupBusy=false}
+}
+function dmxZipReader(file){
+ const bytes=file.slice(Math.max(0,file.size-65557));return bytes.arrayBuffer().then(buf=>{
+ const dv=new DataView(buf),base=file.size-buf.byteLength;let eocd=-1;
+ for(let i=buf.byteLength-22;i>=0;i--)if(dv.getUint32(i,true)===0x06054b50){eocd=i;break}
+ if(eocd<0)throw Error('ZIP arhiva nije ispravna.');const count=dv.getUint16(eocd+10,true),cdSize=dv.getUint32(eocd+12,true),cdStart=dv.getUint32(eocd+16,true);
+ if(count>10000||cdStart+cdSize>file.size||cdSize>20*1024*1024)throw Error('Arhiva je prevelika ili neispravna.');return {count,cdStart,cdSize};
+ });
+}
+async function dmxReadZipEntries(file){const head=await dmxZipReader(file),data=await file.slice(head.cdStart,head.cdStart+head.cdSize).arrayBuffer(),dv=new DataView(data),map=new Map();let p=0;for(let i=0;i<head.count;i++){
+ if(p+46>data.byteLength||dv.getUint32(p,true)!==0x02014b50)throw Error('Oštećena centralna lista ZIP-a.');const method=dv.getUint16(p+10,true),crc=dv.getUint32(p+16,true),size=dv.getUint32(p+24,true),nameSize=dv.getUint16(p+28,true),extraSize=dv.getUint16(p+30,true),commentSize=dv.getUint16(p+32,true),offset=dv.getUint32(p+42,true),name=dmxTextDecoder.decode(new Uint8Array(data,p+46,nameSize));if(p+46+nameSize+extraSize+commentSize>data.byteLength)throw Error('Oštećen naziv ZIP datoteke.');if(method!==0)throw Error('Ova aplikacija uvozi sopstveni nekomprimovani ZIP format.');if(map.has(name)||name.startsWith('/')||name.includes('..'))throw Error('Neispravno ime datoteke.');map.set(name,{name,size,crc,offset});p+=46+nameSize+extraSize+commentSize;
+ }
+ return map;
+}
+async function dmxZipEntryBlob(file,entry){const header=new DataView(await file.slice(entry.offset,entry.offset+30).arrayBuffer());if(header.byteLength<30||header.getUint32(0,true)!==0x04034b50)throw Error('Neispravno ZIP zaglavlje.');const off=entry.offset+30+header.getUint16(26,true)+header.getUint16(28,true);if(off+entry.size>file.size)throw Error('Datoteka nije potpuna.');return file.slice(off,off+entry.size)}
+function dmxReplaceMedia(records){return mediaDB().then(dbase=>new Promise((resolve,reject)=>{const tx=dbase.transaction('media','readwrite');const store=tx.objectStore('media');store.clear();for(const r of records)store.put(r);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error||Error('Nema dovoljno prostora.'));tx.onabort=()=>reject(tx.error||Error('Uvoz medija je prekinut.'))}))}
+async function dmxRestoreBackup(file){
+ if(dmxBackupBusy)return;dmxBackupBusy=true;
+ try{if(file.size>4*1024*1024*1024)throw Error('Datoteka je prevelika za ZIP format.');toast('Proveravam rezervnu kopiju...');
+ let next,records=[];
+ if(file.name.toLowerCase().endsWith('.json')){if(file.size>40*1024*1024)throw Error('JSON je prevelik.');next=validateImport(JSON.parse(await file.text()));if(!ask('Učitavanje JSON kopije menja evidenciju, ali ne briše postojeće slike i video. Nastaviti?'))return;db=next;persist();render();toast('JSON evidencija je vraćena, uspomene su ostale.');return}
+ const map=await dmxReadZipEntries(file),entry=map.get('DE_MAX_EVIDENCIJA.json');if(!entry||entry.size>40*1024*1024)throw Error('Ovo nije DE-MAX potpuna rezervna kopija.');const manifestBlob=await dmxZipEntryBlob(file,entry);if(await dmxCrc(manifestBlob)!==entry.crc)throw Error('Evidencija je oštećena.');const manifest=JSON.parse(await manifestBlob.text());if(manifest.format!=='DEMAX-FULL-BACKUP-1'||!Array.isArray(manifest.media))throw Error('Nepoznat format kopije.');next=validateImport({data:manifest.data});if(manifest.media.length>10000)throw Error('Previše medijskih datoteka.');
+ const knownIds=new Set();for(const m of manifest.media){const en=map.get(m.path);if(!en||!String(m.path).startsWith('uspomene/')||knownIds.has(m.id))throw Error('Nedostaje fotografija ili video u arhivi.');knownIds.add(m.id);const blob=await dmxZipEntryBlob(file,en);if(await dmxCrc(blob)!==en.crc)throw Error('Oštećena fotografija ili video: '+m.filename);records.push({id:String(m.id||uid()).slice(0,130),title:String(m.title||'Uspomena').slice(0,120),filename:String(m.filename||'uspomena').slice(0,180),mime:String(m.mime||'application/octet-stream').slice(0,100),date:isoOk(m.date)?m.date:TODAY(),createdAt:String(m.createdAt||new Date().toISOString()).slice(0,50),blob})}
+ if(!ask(`Uvezi potpunu kopiju: ${next.students.length} učenika i ${records.length} fotografija/video-snimaka? Ovo će ZAMENITI sadašnju evidenciju i uspomene na ovom uređaju.`))return;
+ const old=db;db=next;if(!persist()){db=old;throw Error('Evidencija ne može da stane u lokalno skladište.')}try{await dmxReplaceMedia(records)}catch(err){db=old;persist();throw err}dmxMemoryIndex=0;dmxViewerOpened=false;closeModal();render();toast('Vraćena kompletna evidencija i '+records.length+' uspomena.');
+ }catch(err){toast('Uvoz nije uspeo: '+(err.message||err),true)}finally{dmxBackupBusy=false}
+}
+(function dmxBackupUI(){const inp=document.createElement('input');inp.type='file';inp.id='dmx-restore-zip';inp.accept='.zip,.json,application/zip,application/json';inp.hidden=true;document.body.appendChild(inp);inp.addEventListener('change',async e=>{const f=e.target.files?.[0];e.target.value='';if(f)await dmxRestoreBackup(f)});
+ const old=renderData;renderData=function(){let h=old();h=h.replace(/data-action="export-json"/g,'data-action="backup-all"').replace(/data-action="import-json"/g,'data-action="restore-all"').replace(/Rezervna kopija \(JSON\)/g,'Potpuna rezervna kopija (ZIP)').replace(/Sačuvaj celu evidenciju/g,'Evidencija, slike i video zajedno').replace(/Uvoz kopije/g,'Uvoz ZIP ili JSON kopije').replace(/Uvoz rezervne kopije/g,'Uvoz potpune kopije').replace(/Čuva učenike, kurseve, kupovine aplikacija i raniju evidenciju\. Koristi za vraćanje podataka\./g,'Čuva sve podatke, slike i video u jednom ZIP fajlu.').replace(/Učitaj prethodno preuzet JSON fajl\. Uvoz zamenjuje postojeće podatke u ovom pregledaču\./g,'Uvezi ZIP sa kompletnim podacima ili prethodnu JSON evidenciju.');return h};
+})();
+document.addEventListener('click',async e=>{const b=e.target.closest('button[data-action]');if(!b)return;const a=b.dataset.action;if(a==='backup-all'||a==='restore-all'||a.startsWith('dmx-')){e.preventDefault();e.stopImmediatePropagation();if(a==='backup-all')await dmxMakeBackup();else if(a==='restore-all')$('#dmx-restore-zip').click();else if(a==='dmx-gallery-prev')await dmxSlideGallery(-1);else if(a==='dmx-gallery-next')await dmxSlideGallery(1);else if(a==='dmx-viewer-prev')await dmxSlideViewer(-1);else if(a==='dmx-viewer-next')await dmxSlideViewer(1);else if(a==='dmx-open-current')await memoryView(b.dataset.id);}
+},true);
+document.addEventListener('keydown',e=>{const el=e.target;if(el&&['INPUT','TEXTAREA','SELECT'].includes(el.tagName))return;if(e.key==='Escape'&&dmxViewerOpened){e.preventDefault();dmxCloseViewer();return}if(e.key==='ArrowRight'||e.key==='ArrowLeft'){const delta=e.key==='ArrowRight'?1:-1;if(dmxViewerOpened){e.preventDefault();dmxSlideViewer(delta)}else if(view==='memories'){e.preventDefault();dmxSlideGallery(delta)}}});
+// Keep the original close handlers; mark the fullscreen gallery as closed when its modal is dismissed.
+document.addEventListener('click',e=>{if(e.target.id==='modal-backdrop'||e.target.closest('[data-action="close-modal"]')||(dmxViewerOpened&&e.target.closest('[data-action="memory-edit"], [data-action="memory-delete"]'))){dmxViewerOpened=false}},true);
 
 load();render();
 })();
