@@ -516,7 +516,32 @@ body{background:var(--bg)}
  body[data-view="data"] .extra-export .btn{min-height:28px;font-size:10px}
 }
 </style>
-</head>
+<style>
+.btn.student-search-loupe{background:#eaf2ff!important;color:#2563ba!important;border:1px solid #c6d9f6!important;flex:0 0 42px;min-width:42px;max-width:42px;padding:7px;display:inline-flex;align-items:center;justify-content:center;box-shadow:none!important}
+.btn.student-search-loupe:hover{background:#dceaff!important}
+.dm-student-lookup-label{display:block;font-weight:800;font-size:13px;color:#314766;margin-bottom:7px}
+.dm-student-lookup-field{display:flex;align-items:center;gap:9px;background:#fff;border:2px solid #bed4f4;border-radius:11px;padding:0 10px;color:#3262a9;height:45px}
+.dm-student-lookup-field:focus-within{border-color:#2d66bc;box-shadow:0 0 0 3px #377de322}
+.dm-student-lookup-field input{outline:0;border:0;background:transparent;color:#23314b;flex:1;min-width:0;width:100%;font-size:14px}
+.dm-student-lookup-counter{font-size:12px;font-weight:700;color:#6c7a92;margin:10px 0 6px}
+.dm-student-lookup-results{display:grid;gap:7px;min-height:36px}
+.dm-student-hit{display:flex;align-items:center;gap:11px;width:100%;text-align:left;background:#fff;border:1px solid #e5eaf3;border-radius:11px;padding:9px 10px;color:#26364d;min-width:0;cursor:pointer}
+.dm-student-hit:hover,.dm-student-hit:focus-visible{border-color:#93b7ee;background:#f4f8ff}
+.dm-student-hit-avatar{width:35px;height:35px;flex:0 0 35px;display:grid;place-items:center;border-radius:9px;background:#e7f0ff;color:#315fa1;font-weight:850;font-size:11px}
+.dm-student-hit-copy{flex:1;min-width:0;display:grid;gap:3px}
+.dm-student-hit-copy strong{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dm-student-hit-copy small{font-size:11px;color:#728096;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dm-student-hit-arrow{font-size:26px;line-height:1;color:#4d78ad}
+.dm-student-lookup-empty{text-align:center;color:#72829b;font-size:13px;padding:21px 8px}
+.dm-student-hit-pages{display:flex;gap:15px;align-items:center;justify-content:center;padding:5px 0}
+.dm-student-hit-pages span{font-weight:750;font-size:12px;color:#53637a}
+@media(max-width:600px) and (orientation:portrait){
+body[data-view="overview"] .topbar .actions{display:grid!important;grid-template-columns:minmax(0,1fr) 40px minmax(0,1fr)!important;gap:5px!important;width:100%}
+body[data-view="overview"] .topbar .actions .btn{font-size:11px;padding:5px 4px;min-width:0;max-width:none}
+body[data-view="overview"] .topbar .actions .student-search-loupe{width:40px;max-width:40px;min-width:40px!important;height:34px;justify-self:center;padding:5px}
+.dm-student-lookup-field{height:42px}.dm-student-hit{padding:7px 9px}.dm-student-hit-avatar{width:30px;height:30px;flex-basis:30px}.dm-student-hit-pages{gap:11px}
+}
+</style></head>
 <body>
 <div class="shell">
 <aside class="sidebar">
@@ -899,6 +924,7 @@ function validateImport(data){
 }
 jsonExport=function(){ensureAdvancedData();download(`DE_MAX_REZERVNA_KOPIJA_${TODAY()}.json`,JSON.stringify({app:'DE-MAX Evidencija',version:7,exportedAt:new Date().toISOString(),data:db},null,2),'application/json');toast('Rezervna kopija je preuzeta.');}
 function topButtonsForView(){
+ if(view==='overview')return '<button class="btn student-green" data-action="new-student">＋ Učenik</button><button class="btn student-search-loupe" data-action="open-student-lookup" type="button" title="Pretraži učenike" aria-label="Pretraži učenike"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg></button><button class="btn primary" data-action="new-course">＋ Novi kurs</button>';
  if(view==='memories')return '<button class="btn mem-add" data-action="memory-upload">＋ Dodaj slike / video</button>';
  if(['schedules','applications','exams'].includes(view))return '<button class="btn soft dm-overview-red" data-view="overview">← Pregled</button><button class="btn primary" data-action="new-'+(view==='schedules'?'schedule':view==='applications'?'application':'exam')+'">＋ '+(view==='schedules'?'Termin':view==='applications'?'Prijava':'Polaganje')+'</button>';
  if(view==='apps')return '<button class="btn student-green" data-action="new-student">＋ Učenik</button><button class="btn primary" data-action="new-purchase">＋ Kupovina</button>';
@@ -1180,6 +1206,31 @@ document.addEventListener('click',async e=>{const b=e.target.closest('button[dat
 document.addEventListener('keydown',e=>{const el=e.target;if(el&&['INPUT','TEXTAREA','SELECT'].includes(el.tagName))return;if(e.key==='Escape'&&dmxViewerOpened){e.preventDefault();dmxCloseViewer();return}if(e.key==='ArrowRight'||e.key==='ArrowLeft'){const delta=e.key==='ArrowRight'?1:-1;if(dmxViewerOpened){e.preventDefault();dmxSlideViewer(delta)}else if(view==='memories'){e.preventDefault();dmxSlideGallery(delta)}}});
 // Keep the original close handlers; mark the fullscreen gallery as closed when its modal is dismissed.
 document.addEventListener('click',e=>{if(e.target.id==='modal-backdrop'||e.target.closest('[data-action="close-modal"]')||(dmxViewerOpened&&e.target.closest('[data-action="memory-edit"], [data-action="memory-delete"]'))){dmxViewerOpened=false}},true);
+
+
+// DE-MAX v12: pretraga učenika na početnom ekranu
+let dmStudentLookupQuery='',dmStudentLookupPage=0;
+function dmLookupNorm(v){return String(v||'').toLocaleLowerCase('sr').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'dj').trim()}
+function dmLookupMatches(){const q=dmLookupNorm(dmStudentLookupQuery);return sortedStudents(db.students).filter(s=>!q||dmLookupNorm(name(s)+' '+(s.phone||'')+' '+(s.email||'')).includes(q))}
+function dmLookupResults(){
+ const items=dmLookupMatches(), per=innerHeight<650?2:compact()?3:5,count=Math.max(1,Math.ceil(items.length/per));
+ dmStudentLookupPage=Math.max(0,Math.min(dmStudentLookupPage,count-1));
+ const part=items.slice(dmStudentLookupPage*per,(dmStudentLookupPage+1)*per);
+ const result=part.map(s=>'<button type="button" class="dm-student-hit" data-action="student-detail" data-id="'+esc(s.id)+'"><span class="dm-student-hit-avatar">'+esc(short(s))+'</span><span class="dm-student-hit-copy"><strong>'+esc(name(s))+'</strong><small>'+esc([s.phone,s.email].filter(Boolean).join(' · ')||'Karton učenika')+'</small></span><span class="dm-student-hit-arrow" aria-hidden="true">›</span></button>').join('');
+ const pager=count>1?'<div class="dm-student-hit-pages"><button class="btn soft sm" type="button" data-action="dm-lookup-prev" '+(dmStudentLookupPage===0?'disabled':'')+'>←</button><span>'+(dmStudentLookupPage+1)+' / '+count+'</span><button class="btn soft sm" type="button" data-action="dm-lookup-next" '+(dmStudentLookupPage===count-1?'disabled':'')+'>→</button></div>':'';
+ const holder=document.getElementById('dm-student-lookup-results');if(holder)holder.innerHTML=items.length?result+pager:'<div class="dm-student-lookup-empty">'+(db.students.length?'Nema učenika za unetu pretragu.':'Još nema unetih učenika.')+'</div>';
+ const counter=document.getElementById('dm-student-lookup-count');if(counter)counter.textContent=items.length+' '+(items.length===1?'učenik':'učenika');
+}
+function openStudentLookup(){
+ dmStudentLookupQuery='';dmStudentLookupPage=0;
+ const body='<section class="dm-student-lookup" aria-label="Pretraga učenika"><label class="dm-student-lookup-label" for="dm-student-lookup-input">Pronađi učenika</label><div class="dm-student-lookup-field"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input id="dm-student-lookup-input" type="search" autocomplete="off" enterkeyhint="search" placeholder="Ime, prezime, telefon ili mejl" aria-label="Ime, prezime, telefon ili mejl"></div><div class="dm-student-lookup-counter" id="dm-student-lookup-count"></div><div id="dm-student-lookup-results" class="dm-student-lookup-results"></div></section>';
+ openModal('Pretraga učenika','Dodirni ime da otvoriš karton učenika.',body);dmLookupResults();
+}
+document.addEventListener('click',e=>{const btn=e.target.closest('button[data-action]');if(!btn)return;const a=btn.dataset.action;
+ if(a==='open-student-lookup'){e.preventDefault();e.stopImmediatePropagation();openStudentLookup();return}
+ if(a==='dm-lookup-prev'||a==='dm-lookup-next'){e.preventDefault();e.stopImmediatePropagation();dmStudentLookupPage+=a==='dm-lookup-next'?1:-1;dmLookupResults();return}
+},true);
+document.addEventListener('input',e=>{if(e.target.id!=='dm-student-lookup-input')return;dmStudentLookupQuery=e.target.value;dmStudentLookupPage=0;dmLookupResults()},true);
 
 load();render();
 })();
