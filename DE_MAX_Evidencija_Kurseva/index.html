@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="sr">
+<html lang="sr-Latn">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -516,7 +516,9 @@ body{background:var(--bg)}
  body[data-view="data"] .extra-export .btn{min-height:28px;font-size:10px}
 }
 </style>
+
 <style>
+/* DE-MAX v12 — lupa pored dugmeta Učenik na početnom pregledu */
 .btn.student-search-loupe{background:#eaf2ff!important;color:#2563ba!important;border:1px solid #c6d9f6!important;flex:0 0 42px;min-width:42px;max-width:42px;padding:7px;display:inline-flex;align-items:center;justify-content:center;box-shadow:none!important}
 .btn.student-search-loupe:hover{background:#dceaff!important}
 .dm-student-lookup-label{display:block;font-weight:800;font-size:13px;color:#314766;margin-bottom:7px}
@@ -536,12 +538,16 @@ body{background:var(--bg)}
 .dm-student-hit-pages{display:flex;gap:15px;align-items:center;justify-content:center;padding:5px 0}
 .dm-student-hit-pages span{font-weight:750;font-size:12px;color:#53637a}
 @media(max-width:600px) and (orientation:portrait){
-body[data-view="overview"] .topbar .actions{display:grid!important;grid-template-columns:minmax(0,1fr) 40px minmax(0,1fr)!important;gap:5px!important;width:100%}
-body[data-view="overview"] .topbar .actions .btn{font-size:11px;padding:5px 4px;min-width:0;max-width:none}
-body[data-view="overview"] .topbar .actions .student-search-loupe{width:40px;max-width:40px;min-width:40px!important;height:34px;justify-self:center;padding:5px}
-.dm-student-lookup-field{height:42px}.dm-student-hit{padding:7px 9px}.dm-student-hit-avatar{width:30px;height:30px;flex-basis:30px}.dm-student-hit-pages{gap:11px}
+ body[data-view="overview"] .topbar .actions{display:grid!important;grid-template-columns:minmax(0,1fr) 40px minmax(0,1fr)!important;gap:5px!important;width:100%}
+ body[data-view="overview"] .topbar .actions .btn{font-size:11px;padding:5px 4px;min-width:0;max-width:none}
+ body[data-view="overview"] .topbar .actions .student-search-loupe{width:40px;max-width:40px;min-width:40px!important;height:34px;justify-self:center;padding:5px}
+ .dm-student-lookup-field{height:42px}
+ .dm-student-hit{padding:7px 9px}
+ .dm-student-hit-avatar{width:30px;height:30px;flex-basis:30px}
+ .dm-student-hit-pages{gap:11px}
 }
-</style></head>
+</style>
+</head>
 <body>
 <div class="shell">
 <aside class="sidebar">
@@ -578,13 +584,13 @@ const $=(q,root=document)=>root.querySelector(q),$$=(q,root=document)=>Array.fro
 const esc=(v)=>String(v??'').replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]));
 const uid=()=>typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():'id_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2);
 const isoOk=(v)=>/^\d{4}-\d{2}-\d{2}$/.test(String(v??''))&&!Number.isNaN(Date.parse(`${v}T12:00:00`));
-const dd=(s)=>isoOk(s)?new Date(s+'T12:00:00').toLocaleDateString('sr-RS',{day:'2-digit',month:'2-digit',year:'numeric'}):'—';
+const dd=(s)=>isoOk(s)?new Date(s+'T12:00:00').toLocaleDateString('sr-Latn-RS',{day:'2-digit',month:'2-digit',year:'numeric'}):'—';
 const name=(s)=>[s.firstName,s.lastName].filter(Boolean).join(' ').trim();
 const short=(s)=>`${(s.firstName||'')[0]||''}${(s.lastName||'')[0]||''}`.toUpperCase()||'P';
 const collator=new Intl.Collator('sr',{sensitivity:'base'});
 const sortedStudents=(students)=>[...students].sort((a,b)=>collator.compare(name(a),name(b)));
 const courseName=c=>c.title?.trim()||`${c.level} ${kindText(c.kind)}`;
-const kindText=k=>({standard:'Standardni kurs',intensive:'Intenzivni kurs',prep:'Priprema za ispit',kids:'Dečiji kurs',app:'Aplikacija'})[k]||'Kurs';
+const kindText=k=>({standard:'Standardni kurs',intensive:'Intenzivni kurs',prep:'Priprema za ispit',kids:'Dečiji kurs',individual:'Individualni kurs',app:'Aplikacija'})[k]||'Kurs';
 const statusOf=c=>c.archived?'Arhiviran':c.end<TODAY()?'Završen':c.start>TODAY()?'U najavi':'Aktivan';
 const statusPill=c=>{let s=statusOf(c),css=s==='Aktivan'?'green':s==='U najavi'?'blue':s==='Završen'?'yellow':'gray';return `<span class="pill ${css}">${s}</span>`};
 const getCourse=id=>db.courses.find(c=>c.id===id);
@@ -616,7 +622,7 @@ function studentRow(s){const en=coursesFor(s.id),appCount=db.purchases.filter(p=
 function renderStudents(){return `<div class="toolbar"><div class="toolbar-left"><label class="field-search"><span>⌕</span><input id="student-search" type="search" autocomplete="off" placeholder="Pretraži ime, prezime, telefon, mejl..." value="${esc(searchText)}" aria-label="Pretraga polaznika"></label></div></div><div class="panel" id="student-results">${studentResults()}</div>`}
 function studentResults(){const q=searchText.trim().toLocaleLowerCase('sr');const list=sortedStudents(db.students).filter(s=>[name(s),s.phone,s.email].join(' ').toLocaleLowerCase('sr').includes(q));if(!list.length)return q?emptyHTML('⌕','Nema rezultata','Pokušaj sa drugim imenom ili brojem.'):'';const r=paged('students',list,studentRow);return `<div class="page-records">${r.items}</div>${r.pager}`}
 
-function renderCourses(){const filters=[['all','Svi kursevi'],['A1','Nivo A1'],['A2','Nivo A2'],['B1','Nivo B1'],['standard','Standardni'],['intensive','Intenzivni'],['prep','Pripreme'],['kids','Dečiji kursevi'],['app','Aplikacija']];return `<div class="toolbar"><div class="toolbar-left"><select id="course-filter" class="select-filter" aria-label="Filtriraj kurseve">${filters.map(([v,t])=>`<option value="${v}" ${courseFilter===v?'selected':''}>${t}</option>`).join('')}</select></div></div><div id="course-results">${courseResults()}</div>`}
+function renderCourses(){const filters=[['all','Svi kursevi'],['A1','Nivo A1'],['A2','Nivo A2'],['B1','Nivo B1'],['standard','Standardni'],['intensive','Intenzivni'],['prep','Pripreme'],['kids','Dečiji kursevi'],['individual','Individualni kurs'],['app','Aplikacija']];return `<div class="toolbar"><div class="toolbar-left"><select id="course-filter" class="select-filter" aria-label="Filtriraj kurseve">${filters.map(([v,t])=>`<option value="${v}" ${courseFilter===v?'selected':''}>${t}</option>`).join('')}</select></div></div><div id="course-results">${courseResults()}</div>`}
 function courseResults(){const list=db.courses.filter(c=>courseFilter==='all'||c.level===courseFilter||c.kind===courseFilter).sort((a,b)=>b.start.localeCompare(a.start));if(!list.length)return emptyHTML('▣','Nema kurseva','Kurseve dodaješ pomoću gornjeg dugmeta Novi kurs.');const r=paged('courses',list,courseCard);return `<div class="course-grid page-records">${r.items}</div>${r.pager}`}
 
 function renderArchive(){const list=db.courses.filter(c=>['Završen','Arhiviran'].includes(statusOf(c))).filter(c=>archiveFilter==='all'||c.level===archiveFilter).sort((a,b)=>b.end.localeCompare(a.end));const r=paged('archive',list,courseCard);return `<div class="toolbar"><div class="toolbar-left"><select id="archive-filter" class="select-filter"><option value="all">Svi nivoi</option>${['A1','A2','B1'].map(l=>`<option ${archiveFilter===l?'selected':''}>${l}</option>`).join('')}</select><span class="pill">${list.length} u arhivi</span></div><button class="btn soft" data-action="export-enrollments">↓ Izvoz</button></div>${list.length?`<div class="course-grid page-records">${r.items}</div>${r.pager}`:emptyHTML('▤','Arhiva je prazna','Završeni kursevi pojavljuju se ovde automatski.')}`}
@@ -639,7 +645,7 @@ function nextMobileStep(){const form=$('.modal-body form[data-wizard]');if(!form
 function setupModalDetails(){detailPages.index=0;const container=$('.modal-body'),entries=$$('.enroll-item',container);if(!entries.length)return;const pager=document.createElement('div');pager.className='modal-page-controls';container.appendChild(pager);const per=innerHeight<730?1:2;const show=()=>{const count=Math.ceil(entries.length/per),now=Math.min(detailPages.index,count-1);entries.forEach((el,i)=>el.classList.toggle('mobile-step-hidden',i<now*per||i>=(now+1)*per));pager.innerHTML=count>1?`<div class="page-controls"><button class="btn soft sm" data-action="modal-prev" ${now===0?'disabled':''}>← Prethodna</button><span>${now+1} / ${count}</span><button class="btn soft sm" data-action="modal-next" ${now>=count-1?'disabled':''}>Sledeća →</button></div>`:'';};window._demaxModalPage=(dir)=>{detailPages.index+=dir;show()};show()}
 function closeModal(){$('#modal-root').innerHTML=''}
 const opt=(entries,sel)=>entries.map(([v,t])=>`<option value="${esc(v)}" ${v===sel?'selected':''}>${esc(t)}</option>`).join('');
-const levelOptions=[['A1','A1'],['A2','A2'],['B1','B1']],kindOptions=[['standard','Standardni kurs'],['intensive','Intenzivni kurs'],['prep','Priprema za ispit'],['kids','Dečiji kurs'],['app','Aplikacija']];
+const levelOptions=[['A1','A1'],['A2','A2'],['B1','B1']],kindOptions=[['standard','Standardni kurs'],['intensive','Intenzivni kurs'],['prep','Priprema za ispit'],['kids','Dečiji kurs'],['app','Aplikacija'],['individual','Individualni kurs']];
 function openCourseForm(id=''){const c=id?getCourse(id):null;const start=c?.start||TODAY(),end=c?.end||'';const b=`<form id="course-form" data-id="${esc(id)}"><div class="form-grid"><div class="form-group wide"><label for="co-level">Nivo jezika *</label><select class="form-control" name="level" id="co-level">${opt(levelOptions,c?.level||'A1')}</select></div><div class="form-group course-kind"><label for="co-kind">Vrsta kursa *</label><select class="form-control" name="kind" id="co-kind">${opt(kindOptions,c?.kind||'standard')}</select></div><div class="form-group course-title"><label for="co-title">Naziv grupe (opciono)</label><input id="co-title" class="form-control" name="title" maxlength="100" placeholder="Npr. A1 Standardni – oktobar 2026" value="${esc(c?.title||'')}"><span class="form-help">Ako ostaviš prazno, naziv će se automatski formirati.</span></div><div class="form-group"><label for="co-start">Datum početka *</label><input id="co-start" class="form-control" type="date" name="start" required value="${esc(start)}"></div><div class="form-group"><label for="co-end">Datum završetka *</label><input id="co-end" class="form-control" type="date" name="end" required value="${esc(end)}"></div><div class="form-group wide"><label for="co-notes">Napomene (opciono)</label><textarea id="co-notes" class="form-control" rows="3" name="notes" maxlength="800" placeholder="Termini, učionica, dodatne informacije...">${esc(c?.notes||'')}</textarea></div></div><div style="margin-top:19px;display:flex;justify-content:flex-end;gap:9px"><button type="button" class="btn soft" data-action="close-modal">Otkaži</button><button type="submit" class="btn primary">Potvrdi</button></div></form>`;openModal(c?'Izmeni kurs':'Novi kurs','Za dečiji kurs izaberi vrstu Dečiji kurs, pa dodaj učenike i kontakte u grupu.',b)}
 function openStudentForm(id=''){const s=id?getStudent(id):null;const choices=db.courses.map(c=>[c.id,`${courseName(c)} (${dd(c.start)} – ${dd(c.end)})`]);const b=`<form id="student-form" data-id="${esc(id)}"><div class="form-grid"><div class="form-group"><label for="st-first">Ime *</label><input class="form-control" id="st-first" name="firstName" required maxlength="80" value="${esc(s?.firstName||'')}"></div><div class="form-group"><label for="st-last">Prezime *</label><input class="form-control" id="st-last" name="lastName" required maxlength="80" value="${esc(s?.lastName||'')}"></div><div class="form-group mobile-wide"><label for="st-phone">Broj telefona</label><input type="tel" class="form-control" id="st-phone" name="phone" maxlength="45" placeholder="+381 6..." value="${esc(s?.phone||'')}"></div><div class="form-group mobile-wide"><label for="st-email">Mejl adresa</label><input type="email" class="form-control" id="st-email" name="email" maxlength="150" placeholder="ime@primer.com" value="${esc(s?.email||'')}"></div>${!s&&choices.length?`<div class="form-group wide"><label for="st-join">Odmah upiši u kurs (opciono)</label><select class="form-control" name="courseId" id="st-join"><option value="">Bez kursa, upisaću kasnije</option>${opt(choices,'')}</select><span class="form-help">Individualni datumi početka i kraja mogu se urediti u detaljima polaznika.</span></div>`:''}<div class="form-group wide"><label for="st-notes">Napomene</label><textarea class="form-control" id="st-notes" name="notes" rows="3" maxlength="800" placeholder="Dodatne informacije...">${esc(s?.notes||'')}</textarea></div></div><div style="margin-top:19px;display:flex;justify-content:flex-end;gap:9px"><button type="button" class="btn soft" data-action="close-modal">Otkaži</button><button type="submit" class="btn primary">Potvrdi</button></div></form>`;openModal(s?'Izmeni polaznika':'Novi polaznik','Osnovni podaci i kontakt.',b)}
 function detailStudent(id){const s=getStudent(id);if(!s)return;const rows=coursesFor(id);const b=`<div class="detail-head"><div class="avatar peach" style="width:53px;height:53px;flex-basis:53px;font-size:19px">${esc(short(s))}</div><div><div class="strong" style="font-size:19px">${esc(name(s))}</div><div class="small muted">${rows.length} upisa u kurseve</div></div></div><div class="detail-meta"><div><label>Telefon</label><strong>${s.phone?`<a href="tel:${esc(s.phone.replace(/[^+0-9]/g,''))}">${esc(s.phone)}</a>`:'—'}</strong></div><div><label>Mejl</label><strong>${s.email?`<a href="mailto:${esc(s.email)}">${esc(s.email)}</a>`:'—'}</strong></div></div>${s.notes?`<div class="soft-note">${esc(s.notes)}</div>`:''}<div class="line-title"><span>Kupljene aplikacije: ${db.purchases.filter(p=>p.studentId===id).length}</span><button class="btn soft sm" data-action="new-purchase" data-student="${esc(id)}">＋ Dodaj</button></div>${db.purchases.filter(p=>p.studentId===id).map(p=>`<div class="enroll-item"><div class="mini-level">${esc(p.level)}</div><div class="enroll-data"><div class="info-title">Aplikacija ${esc(p.level)}</div><div class="info-sub">Kupovina: ${dd(p.date)} · Važi do: ${dd(p.until)}</div></div><button class="btn soft sm" data-action="edit-purchase" data-id="${esc(p.id)}">Izmeni</button></div>`).join('')}<div class="line-title"><span>Istorija pohađanja</span><button class="btn primary sm" data-action="new-enrollment" data-id="${esc(id)}">＋ Upiši u kurs</button></div>${rows.length?rows.map(({course:c,...e})=>{const t=totals(c.id,id);return `<div class="enroll-item"><div class="mini-level">${esc(c.level)}</div><div class="enroll-data"><div class="info-title">${esc(courseName(c))}</div><div class="info-sub">${esc(kindText(c.kind))} · ${dd(e.start)} – ${dd(e.end)}</div></div><button class="btn soft sm" data-action="edit-enrollment" data-id="${esc(e.id)}">Datumi</button></div>`}).join(''):emptyHTML('▣','Nema upisa','Upiši polaznika na kurs da bi se čuvala istorija.')}<div style="display:flex;gap:7px;justify-content:space-between;margin-top:22px;flex-wrap:wrap"><button class="btn danger sm" data-action="delete-student" data-id="${esc(id)}">Obriši polaznika</button><button class="btn soft" data-action="edit-student" data-id="${esc(id)}">✎ Uredi podatke</button></div>`;openModal('Karton polaznika','Kontakti, upisi i kupovine aplikacije.',b,'',true)}
@@ -651,14 +657,14 @@ function jsonExport(){download(`DE_MAX_REZERVNA_KOPIJA_${TODAY()}.json`,JSON.str
 function csvStudents(){csv('POLAZNICI',['Ime','Prezime','Telefon','Mejl','Napomene','Broj kurseva'],sortedStudents(db.students).map(s=>[s.firstName,s.lastName,s.phone,s.email,s.notes,coursesFor(s.id).length]));toast('Lista polaznika je izvezena.')}
 function csvEnrollments(){csv('ISTORIJA_POHADJANJA',['Ime','Prezime','Telefon','Mejl','Kurs','Nivo','Vrsta kursa','Početak pohađanja','Kraj pohađanja','Status kursa'],db.enrollments.map(e=>{const s=getStudent(e.studentId),c=getCourse(e.courseId);if(!s||!c)return null;const t=totals(c.id,s.id);return [s.firstName,s.lastName,s.phone,s.email,courseName(c),c.level,kindText(c.kind),dd(e.start),dd(e.end),statusOf(c)]}).filter(Boolean));toast('Istorija pohađanja je izvezena.')}
 function csvAttendance(cid=''){csv('PRISUSTVO'+(cid?'_GRUPA':''),['Datum','Kurs','Nivo','Vrsta','Ime','Prezime','Status'],db.attendance.filter(a=>!cid||a.courseId===cid).sort((a,b)=>a.date.localeCompare(b.date)).map(a=>{const c=getCourse(a.courseId),s=getStudent(a.studentId);return c&&s?[dd(a.date),courseName(c),c.level,kindText(c.kind),s.firstName,s.lastName,{present:'Prisutan',absent:'Odsutan',excused:'Opravdano'}[a.status]||'']:null}).filter(Boolean));toast('Prisustvo je izvezeno.')}
-function validateImport(data){let d=data?.data||data;if(!d||!['students','courses','enrollments','attendance'].every(x=>Array.isArray(d[x])))throw Error('JSON ne sadrži kompletnu DE-MAX evidenciju.');if(d.students.length>100000||d.courses.length>50000||d.enrollments.length>500000||d.attendance.length>2000000)throw Error('Prevelika datoteka.');const cleanStr=(x,max=800)=>String(x??'').slice(0,max);const students=d.students.map(s=>({id:cleanStr(s.id,120),firstName:cleanStr(s.firstName,80),lastName:cleanStr(s.lastName,80),phone:cleanStr(s.phone,45),email:cleanStr(s.email,150),notes:cleanStr(s.notes),createdAt:cleanStr(s.createdAt,50)}));const courses=d.courses.map(c=>({id:cleanStr(c.id,120),level:['A1','A2','B1'].includes(c.level)?c.level:'A1',kind:['standard','intensive','prep','kids','app'].includes(c.kind)?c.kind:'standard',title:cleanStr(c.title,100),start:isoOk(c.start)?c.start:TODAY(),end:isoOk(c.end)?c.end:TODAY(),notes:cleanStr(c.notes),archived:c.archived===true,createdAt:cleanStr(c.createdAt,50)}));const sids=new Set(students.map(s=>s.id)),cids=new Set(courses.map(c=>c.id));const enrollments=d.enrollments.filter(e=>sids.has(e.studentId)&&cids.has(e.courseId)).map(e=>({id:cleanStr(e.id,120),studentId:cleanStr(e.studentId,120),courseId:cleanStr(e.courseId,120),start:isoOk(e.start)?e.start:TODAY(),end:isoOk(e.end)?e.end:TODAY(),createdAt:cleanStr(e.createdAt,50)}));const combinations=new Set(enrollments.map(e=>e.courseId+'|'+e.studentId));const attendance=d.attendance.filter(a=>combinations.has(a.courseId+'|'+a.studentId)&&isoOk(a.date)&&['present','absent','excused'].includes(a.status)).map(a=>({id:cleanStr(a.id,120),courseId:cleanStr(a.courseId,120),studentId:cleanStr(a.studentId,120),date:a.date,status:a.status,updatedAt:cleanStr(a.updatedAt,50)}));const purchases=(Array.isArray(d.purchases)?d.purchases:[]).filter(p=>sids.has(p.studentId)).map(p=>({id:cleanStr(p.id,120),studentId:cleanStr(p.studentId,120),level:['A1','A2','B1'].includes(p.level)?p.level:'A1',date:isoOk(p.date)?p.date:TODAY(),until:isoOk(p.until)?p.until:'',price:cleanStr(p.price,20),notes:cleanStr(p.notes),createdAt:cleanStr(p.createdAt,50)}));const schedules=(Array.isArray(d.schedules)?d.schedules:[]).filter(t=>cids.has(t.courseId)).slice(0,100000).map(t=>({id:cleanStr(t.id,120),courseId:cleanStr(t.courseId,120),day:Math.max(0,Math.min(6,Number(t.day)||0)),start:/^\d{2}:\d{2}$/.test(t.start)?t.start:'18:00',end:/^\d{2}:\d{2}$/.test(t.end)?t.end:'19:00',place:cleanStr(t.place,100),startDate:isoOk(t.startDate)?t.startDate:(courses.find(c=>c.id===t.courseId)?.start||''),endDate:isoOk(t.endDate)?t.endDate:(courses.find(c=>c.id===t.courseId)?.end||''),notes:cleanStr(t.notes,500)}));const safeList=(a)=>Array.isArray(a)?a.slice(0,100000):[];const applications=safeList(d.applications).map(x=>({id:cleanStr(x.id,120),firstName:cleanStr(x.firstName,80),lastName:cleanStr(x.lastName,80),phone:cleanStr(x.phone,45),level:['A1','A2','B1'].includes(x.level)?x.level:'A1',kind:['standard','intensive','prep','kids'].includes(x.kind)?x.kind:'standard',date:isoOk(x.date)?x.date:TODAY(),status:['Nova','Kontaktiran','Upisan','Odustao'].includes(x.status)?x.status:'Nova',notes:cleanStr(x.notes,500)}));const exams=safeList(d.exams).map(x=>({id:cleanStr(x.id,120),firstName:cleanStr(x.firstName,80),lastName:cleanStr(x.lastName,80),phone:cleanStr(x.phone,45),level:['A1','A2','B1'].includes(x.level)?x.level:'A1',city:['Beograd','Novi Pazar'].includes(x.city)?x.city:'Beograd',date:isoOk(x.date)?x.date:TODAY(),status:['Prijavljen','Položio','Nije položio','Otkazan'].includes(x.status)?x.status:'Prijavljen',notes:cleanStr(x.notes,500)}));return {students,courses,enrollments,attendance,purchases,schedules,applications,exams}}
+function validateImport(data){let d=data?.data||data;if(!d||!['students','courses','enrollments','attendance'].every(x=>Array.isArray(d[x])))throw Error('JSON ne sadrži kompletnu DE-MAX evidenciju.');if(d.students.length>100000||d.courses.length>50000||d.enrollments.length>500000||d.attendance.length>2000000)throw Error('Prevelika datoteka.');const cleanStr=(x,max=800)=>String(x??'').slice(0,max);const students=d.students.map(s=>({id:cleanStr(s.id,120),firstName:cleanStr(s.firstName,80),lastName:cleanStr(s.lastName,80),phone:cleanStr(s.phone,45),email:cleanStr(s.email,150),notes:cleanStr(s.notes),createdAt:cleanStr(s.createdAt,50)}));const courses=d.courses.map(c=>({id:cleanStr(c.id,120),level:['A1','A2','B1'].includes(c.level)?c.level:'A1',kind:['standard','intensive','prep','kids','app','individual'].includes(c.kind)?c.kind:'standard',title:cleanStr(c.title,100),price:Math.max(0,Number(c.price)||0),currency:['EUR','RSD'].includes(c.currency)?c.currency:'EUR',start:isoOk(c.start)?c.start:TODAY(),end:isoOk(c.end)?c.end:TODAY(),notes:cleanStr(c.notes),archived:c.archived===true,createdAt:cleanStr(c.createdAt,50)}));const sids=new Set(students.map(s=>s.id)),cids=new Set(courses.map(c=>c.id));const enrollments=d.enrollments.filter(e=>sids.has(e.studentId)&&cids.has(e.courseId)).map(e=>({id:cleanStr(e.id,120),studentId:cleanStr(e.studentId,120),courseId:cleanStr(e.courseId,120),start:isoOk(e.start)?e.start:TODAY(),end:isoOk(e.end)?e.end:TODAY(),createdAt:cleanStr(e.createdAt,50)}));const combinations=new Set(enrollments.map(e=>e.courseId+'|'+e.studentId));const attendance=d.attendance.filter(a=>combinations.has(a.courseId+'|'+a.studentId)&&isoOk(a.date)&&['present','absent','excused'].includes(a.status)).map(a=>({id:cleanStr(a.id,120),courseId:cleanStr(a.courseId,120),studentId:cleanStr(a.studentId,120),date:a.date,status:a.status,updatedAt:cleanStr(a.updatedAt,50)}));const purchases=(Array.isArray(d.purchases)?d.purchases:[]).filter(p=>sids.has(p.studentId)).map(p=>({id:cleanStr(p.id,120),studentId:cleanStr(p.studentId,120),level:['A1','A2','B1'].includes(p.level)?p.level:'A1',date:isoOk(p.date)?p.date:TODAY(),until:isoOk(p.until)?p.until:'',price:cleanStr(p.price,20),notes:cleanStr(p.notes),createdAt:cleanStr(p.createdAt,50)}));const schedules=(Array.isArray(d.schedules)?d.schedules:[]).filter(t=>cids.has(t.courseId)).slice(0,100000).map(t=>({id:cleanStr(t.id,120),courseId:cleanStr(t.courseId,120),studentId:cleanStr(t.studentId,120),day:Math.max(0,Math.min(6,Number(t.day)||0)),start:/^\d{2}:\d{2}$/.test(t.start)?t.start:'18:00',end:/^\d{2}:\d{2}$/.test(t.end)?t.end:'19:00',place:cleanStr(t.place,100),startDate:isoOk(t.startDate)?t.startDate:(courses.find(c=>c.id===t.courseId)?.start||''),endDate:isoOk(t.endDate)?t.endDate:(courses.find(c=>c.id===t.courseId)?.end||''),notes:cleanStr(t.notes,500)}));const safeList=(a)=>Array.isArray(a)?a.slice(0,100000):[];const applications=safeList(d.applications).map(x=>({id:cleanStr(x.id,120),firstName:cleanStr(x.firstName,80),lastName:cleanStr(x.lastName,80),phone:cleanStr(x.phone,45),studentId:cleanStr(x.studentId,120),email:cleanStr(x.email,150),level:['A1','A2','B1'].includes(x.level)?x.level:'A1',kind:['standard','intensive','prep','kids','individual'].includes(x.kind)?x.kind:'standard',date:isoOk(x.date)?x.date:TODAY(),status:['Nova','Kontaktiran','Upisan','Odustao'].includes(x.status)?x.status:'Nova',notes:cleanStr(x.notes,500)}));const exams=safeList(d.exams).map(x=>({id:cleanStr(x.id,120),firstName:cleanStr(x.firstName,80),lastName:cleanStr(x.lastName,80),phone:cleanStr(x.phone,45),studentId:cleanStr(x.studentId,120),email:cleanStr(x.email,150),level:['A1','A2','B1'].includes(x.level)?x.level:'A1',city:['Beograd','Novi Pazar'].includes(x.city)?x.city:'Beograd',date:isoOk(x.date)?x.date:TODAY(),status:['Prijavljen','Položio','Nije položio','Otkazan'].includes(x.status)?x.status:'Prijavljen',notes:cleanStr(x.notes,500)}));return {students,courses,enrollments,attendance,purchases,schedules,applications,exams}}
 function saveAttendance(cid,sid,date,status){if(!getCourse(cid)||!findEnrollment(cid,sid)||!isoOk(date))return;const index=db.attendance.findIndex(a=>a.courseId===cid&&a.studentId===sid&&a.date===date);if(status==='none'){if(index>=0)db.attendance.splice(index,1)}else if(index>=0){db.attendance[index].status=status;db.attendance[index].updatedAt=new Date().toISOString()}else db.attendance.push({id:uid(),courseId:cid,studentId:sid,date,status,updatedAt:new Date().toISOString()});persist();render()}
 function ask(text){return window.confirm(text)}
 document.addEventListener('click',e=>{if(e.target.id==='modal-backdrop'){closeModal();return}const btn=e.target.closest('button[data-action],button[data-view]');if(!btn)return;const action=btn.dataset.action,id=btn.dataset.id;if(btn.dataset.view){navigate(btn.dataset.view);return}if(action==='close-modal'){closeModal();return}if(action==='page-prev'||action==='page-next'){const key=btn.dataset.key;if(!(key in pages))return;pages[key]=Math.max(0,pages[key]+(action==='page-next'?1:-1));render();return}if(action==='mobile-next'){e.preventDefault();nextMobileStep();return}if(action==='mobile-back'){const f=$('.modal-body form[data-wizard]');if(f)setFormStep(f,0);return}if(action==='modal-prev'||action==='modal-next'){window._demaxModalPage?.(action==='modal-next'?1:-1);return}if(action==='new-student')return openStudentForm();if(action==='new-purchase')return purchaseForm('',btn.dataset.student||'');if(action==='edit-purchase')return purchaseForm(id);if(action==='delete-purchase'){if(!ask('Obrisati ovu kupovinu aplikacije?'))return;db.purchases=db.purchases.filter(p=>p.id!==id);persist();closeModal();render();toast('Kupovina je obrisana.');return}if(action==='edit-student')return openStudentForm(id);if(action==='student-detail')return detailStudent(id);if(action==='new-course')return openCourseForm();if(action==='edit-course')return openCourseForm(id);if(action==='course-detail')return detailCourse(id);if(action==='new-enrollment')return enrollmentForm(id||'',btn.dataset.course||'');if(action==='edit-enrollment')return enrollmentForm('','',id);if(action==='course-to-attendance'){attendanceCourseId=id;closeModal();navigate('attendance');return}if(action==='archive-course'){const c=getCourse(id);if(!c)return;c.archived=!c.archived;persist();closeModal();render();toast(c.archived?'Kurs je arhiviran.':'Kurs je vraćen iz arhive.');return}if(action==='delete-student'){if(!ask('Obrisati učenika, njegove upise i kupovine aplikacije? Brisanje se ne može opozvati.'))return;db.students=db.students.filter(s=>s.id!==id);db.enrollments=db.enrollments.filter(a=>a.studentId!==id);db.attendance=db.attendance.filter(a=>a.studentId!==id);db.purchases=db.purchases.filter(p=>p.studentId!==id);persist();closeModal();render();toast('Učenik je obrisan.');return}if(action==='delete-course'){if(!ask('OBRISATI kurs, sve njegove upise i evidenciju prisustva? Ova radnja se ne može opozvati.'))return;db.courses=db.courses.filter(c=>c.id!==id);db.schedules=db.schedules.filter(t=>t.courseId!==id);db.enrollments=db.enrollments.filter(a=>a.courseId!==id);db.attendance=db.attendance.filter(a=>a.courseId!==id);persist();closeModal();render();toast('Kurs je obrisan.');return}if(action==='remove-enrollment'){const en=db.enrollments.find(x=>x.id===id);if(!en||!ask('Ukloniti učenika iz ovog kursa? Biće obrisano i njegovo prisustvo za ovaj kurs.'))return;db.enrollments=db.enrollments.filter(x=>x.id!==id);db.attendance=db.attendance.filter(x=>!(x.studentId===en.studentId&&x.courseId===en.courseId));persist();closeModal();render();toast('Upis je uklonjen.');return}if(action==='set-attendance'){saveAttendance(btn.dataset.course,btn.dataset.student,btn.dataset.date,btn.dataset.status);return}if(action==='attendance-day'){attendanceDay=btn.dataset.date;render();return}if(action==='all-present'){const cid=btn.dataset.course,en=enrollmentsFor(cid);if(!en.length)return;if(!ask(`Označiti svih ${en.length} učenika kao prisutne za ${dd(attendanceDay)}? Ovo menja postojeće unose za taj datum.`))return;en.forEach(e=>{const a=db.attendance.find(x=>x.courseId===cid&&x.studentId===e.studentId&&x.date===attendanceDay);if(a){a.status='present';a.updatedAt=new Date().toISOString()}else db.attendance.push({id:uid(),courseId:cid,studentId:e.studentId,date:attendanceDay,status:'present',updatedAt:new Date().toISOString()})});persist();render();toast('Svi su označeni kao prisutni.');return}if(action==='export-purchases')return csvPurchases();if(action==='export-json')return jsonExport();if(action==='export-students')return csvStudents();if(action==='export-enrollments')return csvEnrollments();if(action==='export-attendance-all')return csvAttendance();if(action==='export-attendance-course')return csvAttendance(id);if(action==='import-json'){$('#import-file').value='';$('#import-file').click();return}});
 document.addEventListener('submit',e=>{if(compact()&&e.target.matches('form[data-wizard][data-step="0"]')){e.preventDefault();e.stopImmediatePropagation();nextMobileStep()}},true);
 document.addEventListener('submit',e=>{const f=e.target;if(!['course-form','student-form','enrollment-form','purchase-form'].includes(f.id))return;e.preventDefault();if(!f.reportValidity())return;const data=Object.fromEntries(new FormData(f).entries()),id=f.dataset.id;
-if(f.id==='purchase-form'){if(!getStudent(data.studentId)||!['A1','A2','B1'].includes(data.level)||!isoOk(data.date)||data.until&&!isoOk(data.until)||data.until&&data.until<data.date){toast('Proveri učenika, nivo i datume.',true);return}const old=id?db.purchases.find(p=>p.id===id):null;const record={studentId:data.studentId,level:data.level,date:data.date,until:data.until||'',price:String(data.price||'').trim(),notes:String(data.notes||'').trim()};if(old)Object.assign(old,record);else db.purchases.push({id:uid(),...record,createdAt:new Date().toISOString()});persist();closeModal();render();toast(old?'Kupovina je izmenjena.':'Kupovina aplikacije je evidentirana.');return}
-if(f.id==='course-form'){if(!isoOk(data.start)||!isoOk(data.end)||data.end<data.start){toast('Datum završetka mora biti isti ili posle početka.',true);return}if(!['A1','A2','B1'].includes(data.level)||!['standard','intensive','prep','kids','app'].includes(data.kind))return;const old=id?getCourse(id):null;if(old)Object.assign(old,{level:data.level,kind:data.kind,title:data.title.trim(),start:data.start,end:data.end,notes:data.notes.trim()});else db.courses.push({id:uid(),level:data.level,kind:data.kind,title:data.title.trim(),start:data.start,end:data.end,notes:data.notes.trim(),archived:false,createdAt:new Date().toISOString()});persist();closeModal();render();toast(old?'Kurs je ažuriran.':'Kurs je kreiran.');return}
+if(f.id==='purchase-form'){if(!getStudent(data.studentId)||!['A1','A2','B1'].includes(data.level)||!isoOk(data.date)||data.until&&!isoOk(data.until)||data.until&&data.until<data.date){toast('Proveri učenika, nivo i datume.',true);return}const old=id?db.purchases.find(p=>p.id===id):null;const record={studentId:data.studentId,level:data.level,date:data.date,until:data.until||'',price:String(data.price||'').trim(),notes:String(data.notes||'').trim()};if(old)Object.assign(old,record);else db.purchases.push({id:uid(),...record,createdAt:new Date().toISOString()});const saved=old||db.purchases[db.purchases.length-1];if(data.dmxPaid==='on'&&Number(record.price)>0)dmxBookPurchasePayment(saved,record);persist();closeModal();render();toast(old?'Kupovina je izmenjena.':'Kupovina aplikacije je evidentirana.');return}
+if(f.id==='course-form'){if(!isoOk(data.start)||!isoOk(data.end)||data.end<data.start){toast('Datum završetka mora biti isti ili posle početka.',true);return}if(!['A1','A2','B1'].includes(data.level)||!['standard','intensive','prep','kids','app','individual'].includes(data.kind))return;const old=id?getCourse(id):null;if(!Number.isFinite(Number(data.price))||Number(data.price)<0){toast('Unesi ispravnu cenu kursa.',true);return}const financial={price:Number(data.price||0),currency:data.currency==='RSD'?'RSD':'EUR'};if(old)Object.assign(old,{level:data.level,kind:data.kind,title:data.title.trim(),start:data.start,end:data.end,notes:data.notes.trim(),...financial});else db.courses.push({id:uid(),level:data.level,kind:data.kind,title:data.title.trim(),start:data.start,end:data.end,notes:data.notes.trim(),...financial,archived:false,createdAt:new Date().toISOString()});persist();closeModal();render();toast(old?'Kurs je ažuriran.':'Kurs je kreiran.');return}
 if(f.id==='student-form'){const firstName=data.firstName.trim(),lastName=data.lastName.trim();if(!firstName||!lastName){toast('Unesi ime i prezime.',true);return}const old=id?getStudent(id):null;let sid;if(old){Object.assign(old,{firstName,lastName,phone:data.phone.trim(),email:data.email.trim(),notes:data.notes.trim()});sid=id}else{sid=uid();db.students.push({id:sid,firstName,lastName,phone:data.phone.trim(),email:data.email.trim(),notes:data.notes.trim(),createdAt:new Date().toISOString()});if(data.courseId&&getCourse(data.courseId)){const c=getCourse(data.courseId);db.enrollments.push({id:uid(),studentId:sid,courseId:c.id,start:c.start,end:c.end,createdAt:new Date().toISOString()})}}persist();closeModal();render();toast(old?'Podaci o učeniku su ažurirani.':'Učenik je dodat.');return}
 if(f.id==='enrollment-form'){if(!getStudent(data.studentId)||!getCourse(data.courseId)||!isoOk(data.start)||!isoOk(data.end)||data.end<data.start){toast('Proveri polaznika, kurs i datume.',true);return}const dupe=db.enrollments.find(e=>e.courseId===data.courseId&&e.studentId===data.studentId&&e.id!==id);if(dupe){toast('Učenik je već upisan u taj kurs.',true);return}const old=id?db.enrollments.find(e=>e.id===id):null;if(old)Object.assign(old,{start:data.start,end:data.end});else db.enrollments.push({id:uid(),studentId:data.studentId,courseId:data.courseId,start:data.start,end:data.end,createdAt:new Date().toISOString()});persist();closeModal();render();toast(old?'Datumi pohađanja su izmenjeni.':'Učenik je upisan u kurs.')}});
 document.addEventListener('input',e=>{if(e.target.id==='student-search'){searchText=e.target.value;pages.students=0;$('#student-results').innerHTML=studentResults()}if(e.target.id==='app-search'){appSearch=e.target.value;pages.apps=0;$('#app-results').innerHTML=appResults()}});
@@ -726,7 +732,7 @@ function submitNewRecord(f,type){if(!f.reportValidity())return;const v=Object.fr
  }else{
   if(!v.firstName.trim()||!v.lastName.trim()||!v.phone.trim()||!['A1','A2','B1'].includes(v.level)||!isoOk(v.date)){toast('Proveri ime, telefon, nivo i datum.',true);return}
   r={firstName:v.firstName.trim(),lastName:v.lastName.trim(),phone:v.phone.trim(),level:v.level,date:v.date,status:v.status,notes:v.notes.trim()};
-  if(type==='applications'){if(!['standard','intensive','prep','kids'].includes(v.kind))return;r.kind=v.kind}
+  if(type==='applications'){if(!['standard','intensive','prep','kids','individual'].includes(v.kind))return;r.kind=v.kind}
   else {if(!['Beograd','Novi Pazar'].includes(v.city))return;r.city=v.city}
  }
  if(old)Object.assign(old,r);else db[type].push({id:uid(),...r,createdAt:new Date().toISOString()});persist();closeModal();render();toast(old?'Podaci su izmenjeni.':'Zapis je sačuvan.');
@@ -740,7 +746,7 @@ document.addEventListener('click',e=>{const btn=e.target.closest('button[data-ac
  if(/^edit-(schedules|applications|exams)$/.test(action)){e.stopPropagation();newRegistryForm(action.slice(5),id);return;}
  if(/^delete-(schedules|applications|exams)$/.test(action)){e.stopPropagation();const type=action.slice(7);if(!ask('Obrisati izabrani zapis? Ova radnja se ne može opozvati.'))return;db[type]=db[type].filter(x=>x.id!==id);persist();render();toast('Zapis je obrisan.');}
 },true);
-document.addEventListener('submit',e=>{const ids={'schedule-form':'schedules','application-form':'applications','exam-form':'exams'};const type=ids[e.target.id];if(!type)return;e.preventDefault();e.stopPropagation();submitNewRecord(e.target,type);},true);
+document.addEventListener('submit',e=>{const ids={'schedule-form':'schedules','application-form':'applications','exam-form':'exams'};const type=ids[e.target.id];if(!type||window.DMX_V14_HANDLES)return;e.preventDefault();e.stopPropagation();submitNewRecord(e.target,type);},true);
 document.addEventListener('input',e=>{if(e.target.id?.startsWith('search-')){const type=e.target.id.slice(7);if(type in newSearch){newSearch[type]=e.target.value;pages[type]=0;$('#list-'+type).innerHTML=newRecordResults(type)}}});
 
 
@@ -886,6 +892,7 @@ pages.certificates=pages.certificates||0;pages.embassy=pages.embassy||0;
 function ensureAdvancedData(){
  if(!Array.isArray(db.certificates))db.certificates=[];
  if(!Array.isArray(db.embassy))db.embassy=[];
+ if(!Array.isArray(db.payments))db.payments=[];
 }
 function ddDE(s){return isoOk(s)?new Date(s+'T12:00:00').toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'numeric'}):'—'}
 function certificateBodyText(rec){
@@ -908,19 +915,19 @@ function validateImport(data){
  if(d.students.length>100000||d.courses.length>50000||d.enrollments.length>500000||d.attendance.length>2000000)throw Error('Prevelika datoteka.');
  const cleanStr=(x,max=800)=>String(x??'').slice(0,max);
  const students=d.students.map(s=>({id:cleanStr(s.id,120),firstName:cleanStr(s.firstName,80),lastName:cleanStr(s.lastName,80),phone:cleanStr(s.phone,45),email:cleanStr(s.email,150),notes:cleanStr(s.notes),createdAt:cleanStr(s.createdAt,50)}));
- const courses=d.courses.map(c=>({id:cleanStr(c.id,120),level:['A1','A2','B1'].includes(c.level)?c.level:'A1',kind:['standard','intensive','prep','kids','app'].includes(c.kind)?c.kind:'standard',title:cleanStr(c.title,100),start:isoOk(c.start)?c.start:TODAY(),end:isoOk(c.end)?c.end:TODAY(),notes:cleanStr(c.notes),archived:c.archived===true,createdAt:cleanStr(c.createdAt,50)}));
+ const courses=d.courses.map(c=>({id:cleanStr(c.id,120),level:['A1','A2','B1'].includes(c.level)?c.level:'A1',kind:['standard','intensive','prep','kids','app','individual'].includes(c.kind)?c.kind:'standard',title:cleanStr(c.title,100),price:Math.max(0,Number(c.price)||0),currency:['EUR','RSD'].includes(c.currency)?c.currency:'EUR',start:isoOk(c.start)?c.start:TODAY(),end:isoOk(c.end)?c.end:TODAY(),notes:cleanStr(c.notes),archived:c.archived===true,createdAt:cleanStr(c.createdAt,50)}));
  const sids=new Set(students.map(s=>s.id)),cids=new Set(courses.map(c=>c.id));
  const enrollments=d.enrollments.filter(e=>sids.has(e.studentId)&&cids.has(e.courseId)).map(e=>({id:cleanStr(e.id,120),studentId:cleanStr(e.studentId,120),courseId:cleanStr(e.courseId,120),start:isoOk(e.start)?e.start:TODAY(),end:isoOk(e.end)?e.end:TODAY(),createdAt:cleanStr(e.createdAt,50)}));
  const combinations=new Set(enrollments.map(e=>e.courseId+'|'+e.studentId));
  const attendance=d.attendance.filter(a=>combinations.has(a.courseId+'|'+a.studentId)&&isoOk(a.date)&&['present','absent','excused'].includes(a.status)).map(a=>({id:cleanStr(a.id,120),courseId:cleanStr(a.courseId,120),studentId:cleanStr(a.studentId,120),date:a.date,status:a.status,updatedAt:cleanStr(a.updatedAt,50)}));
  const purchases=(Array.isArray(d.purchases)?d.purchases:[]).filter(p=>sids.has(p.studentId)).map(p=>({id:cleanStr(p.id,120),studentId:cleanStr(p.studentId,120),level:['A1','A2','B1'].includes(p.level)?p.level:'A1',date:isoOk(p.date)?p.date:TODAY(),until:isoOk(p.until)?p.until:'',price:cleanStr(p.price,20),notes:cleanStr(p.notes),createdAt:cleanStr(p.createdAt,50)}));
- const schedules=(Array.isArray(d.schedules)?d.schedules:[]).filter(t=>cids.has(t.courseId)).slice(0,100000).map(t=>({id:cleanStr(t.id,120),courseId:cleanStr(t.courseId,120),day:Math.max(0,Math.min(6,Number(t.day)||0)),start:/^\d{2}:\d{2}$/.test(t.start)?t.start:'18:00',end:/^\d{2}:\d{2}$/.test(t.end)?t.end:'19:00',place:cleanStr(t.place,100),startDate:isoOk(t.startDate)?t.startDate:(courses.find(c=>c.id===t.courseId)?.start||''),endDate:isoOk(t.endDate)?t.endDate:(courses.find(c=>c.id===t.courseId)?.end||''),notes:cleanStr(t.notes,500)}));
+ const schedules=(Array.isArray(d.schedules)?d.schedules:[]).filter(t=>cids.has(t.courseId)).slice(0,100000).map(t=>({id:cleanStr(t.id,120),courseId:cleanStr(t.courseId,120),studentId:cleanStr(t.studentId,120),day:Math.max(0,Math.min(6,Number(t.day)||0)),start:/^\d{2}:\d{2}$/.test(t.start)?t.start:'18:00',end:/^\d{2}:\d{2}$/.test(t.end)?t.end:'19:00',place:cleanStr(t.place,100),startDate:isoOk(t.startDate)?t.startDate:(courses.find(c=>c.id===t.courseId)?.start||''),endDate:isoOk(t.endDate)?t.endDate:(courses.find(c=>c.id===t.courseId)?.end||''),notes:cleanStr(t.notes,500)}));
  const safeList=(a)=>Array.isArray(a)?a.slice(0,100000):[];
- const applications=safeList(d.applications).map(x=>({id:cleanStr(x.id,120),firstName:cleanStr(x.firstName,80),lastName:cleanStr(x.lastName,80),phone:cleanStr(x.phone,45),level:['A1','A2','B1'].includes(x.level)?x.level:'A1',kind:['standard','intensive','prep','kids'].includes(x.kind)?x.kind:'standard',date:isoOk(x.date)?x.date:TODAY(),status:['Nova','Kontaktiran','Upisan','Odustao'].includes(x.status)?x.status:'Nova',notes:cleanStr(x.notes,500)}));
- const exams=safeList(d.exams).map(x=>({id:cleanStr(x.id,120),firstName:cleanStr(x.firstName,80),lastName:cleanStr(x.lastName,80),phone:cleanStr(x.phone,45),level:['A1','A2','B1'].includes(x.level)?x.level:'A1',city:['Beograd','Novi Pazar'].includes(x.city)?x.city:'Beograd',date:isoOk(x.date)?x.date:TODAY(),status:['Prijavljen','Položio','Nije položio','Otkazan'].includes(x.status)?x.status:'Prijavljen',notes:cleanStr(x.notes,500)}));
+ const applications=safeList(d.applications).map(x=>({id:cleanStr(x.id,120),firstName:cleanStr(x.firstName,80),lastName:cleanStr(x.lastName,80),phone:cleanStr(x.phone,45),studentId:cleanStr(x.studentId,120),email:cleanStr(x.email,150),level:['A1','A2','B1'].includes(x.level)?x.level:'A1',kind:['standard','intensive','prep','kids','individual'].includes(x.kind)?x.kind:'standard',date:isoOk(x.date)?x.date:TODAY(),status:['Nova','Kontaktiran','Upisan','Odustao'].includes(x.status)?x.status:'Nova',notes:cleanStr(x.notes,500)}));
+ const exams=safeList(d.exams).map(x=>({id:cleanStr(x.id,120),firstName:cleanStr(x.firstName,80),lastName:cleanStr(x.lastName,80),phone:cleanStr(x.phone,45),studentId:cleanStr(x.studentId,120),email:cleanStr(x.email,150),level:['A1','A2','B1'].includes(x.level)?x.level:'A1',city:['Beograd','Novi Pazar'].includes(x.city)?x.city:'Beograd',date:isoOk(x.date)?x.date:TODAY(),status:['Prijavljen','Položio','Nije položio','Otkazan'].includes(x.status)?x.status:'Prijavljen',notes:cleanStr(x.notes,500)}));
  const certificates=safeList(d.certificates).map(x=>({id:cleanStr(x.id,120),studentId:cleanStr(x.studentId,120),studentName:cleanStr(x.studentName,120),courseId:cleanStr(x.courseId,120),courseTitle:cleanStr(x.courseTitle,120),level:['A1','A2','B1'].includes(x.level)?x.level:'A1',number:cleanStr(x.number,50),issueDate:isoOk(x.issueDate)?x.issueDate:TODAY(),startDate:isoOk(x.startDate)?x.startDate:TODAY(),endDate:isoOk(x.endDate)?x.endDate:TODAY(),hours:cleanStr(x.hours,20),bodyText:cleanStr(x.bodyText,2000),bodyHtml:cleanStr(x.bodyHtml,6000),levelTitle:cleanStr(x.levelTitle,120),levelText:cleanStr(x.levelText,4000),createdAt:cleanStr(x.createdAt,50)}));
  const embassy=safeList(d.embassy).map(x=>({id:cleanStr(x.id,120),firstName:cleanStr(x.firstName,80),lastName:cleanStr(x.lastName,80),phone:cleanStr(x.phone,45),place:cleanStr(x.place,100),service:cleanStr(x.service,120),date:isoOk(x.date)?x.date:TODAY(),time:/^\d{2}:\d{2}$/.test(x.time)?x.time:'08:00',status:['Zakazan','Predat zahtev','Završen','Pomeren','Otkazan'].includes(x.status)?x.status:'Zakazan',notes:cleanStr(x.notes,500),createdAt:cleanStr(x.createdAt,50)}));
- return {students,courses,enrollments,attendance,purchases,schedules,applications,exams,certificates,embassy};
+ const payments=safeList(d.payments).map(p=>({id:cleanStr(p.id,120),type:['course','app'].includes(p.type)?p.type:'course',studentId:cleanStr(p.studentId,120),studentName:cleanStr(p.studentName,160),courseId:cleanStr(p.courseId,120),purchaseId:cleanStr(p.purchaseId,120),amount:Math.max(0,Number(p.amount)||0),currency:['EUR','RSD'].includes(p.currency)?p.currency:'EUR',date:isoOk(p.date)?p.date:TODAY(),method:cleanStr(p.method,40),notes:cleanStr(p.notes,500),createdAt:cleanStr(p.createdAt,50)}));return {students,courses,enrollments,attendance,purchases,schedules,applications,exams,certificates,embassy,payments};
 }
 jsonExport=function(){ensureAdvancedData();download(`DE_MAX_REZERVNA_KOPIJA_${TODAY()}.json`,JSON.stringify({app:'DE-MAX Evidencija',version:7,exportedAt:new Date().toISOString(),data:db},null,2),'application/json');toast('Rezervna kopija je preuzeta.');}
 function topButtonsForView(){
@@ -991,7 +998,7 @@ function renderCertificates(){
  const items=[...db.certificates].filter(r=>`${r.number} ${r.studentName} ${r.level} ${r.courseTitle}`.toLocaleLowerCase('sr').includes(q)).sort((a,b)=>String(b.issueDate).localeCompare(String(a.issueDate))||String(b.createdAt).localeCompare(String(a.createdAt)));
  const count=items.length;
  const pagedRes=count?paged('certificates',items,r=>`<div class="certificate-row"><div class="left"><div class="title">Potvrda ${esc(r.number)} · ${esc(r.studentName)}</div><div class="sub">${esc(r.level)}${r.courseTitle?` · ${esc(r.courseTitle)}`:''} · Datum: ${dd(r.issueDate)} · Period: ${dd(r.startDate)} – ${dd(r.endDate)} · ${esc(r.hours)} časova</div></div><div class="actions"><button class="btn soft sm" data-action="certificate-preview" data-id="${esc(r.id)}">Pregled</button><button class="btn soft sm" data-action="certificate-pdf" data-id="${esc(r.id)}">PDF</button><button class="btn soft sm" data-action="edit-certificate" data-id="${esc(r.id)}">Izmeni</button><button class="btn danger sm" data-action="delete-certificate" data-id="${esc(r.id)}">Obriši</button></div></div>`):null;
- return `<div class="certificate-note">Ovde čuvaš šablone potvrda za A1, A2 i B1. Kada popuniš obrazac, možeš odmah otvoriti pregled i preuzeti potvrdu u PDF-u.</div><div class="toolbar"><label class="field-search"><span>⌕</span><input type="search" id="certificate-search" placeholder="Broj potvrde, učenik, nivo..." value="${esc(certificateSearch)}"></label></div><div class="panel pad">${count?`<div class="certificate-list">${pagedRes.items}</div>${pagedRes.pager}`:emptyHTML('📄','Još nema potvrda','Kreiraj potvrdu zelenim dugmetom u vrhu.')}</div>`;
+ return `<div class="certificate-note">Ovde čuvaš šablone potvrda za A1, A2 i B1. Kada popuniš obrazac, možeš odmah otvoriti pregled i preuzeti potvrdu u PDF-u.</div><div class="toolbar"><label class="field-search"><span>⌕</span><input type="search" id="certificate-search" placeholder="Broj potvrde, učenik, nivo..." value="${esc(certificateSearch)}"></label></div><div class="panel pad">${count?`<div class="certificate-list">${pagedRes.items}</div>${pagedRes.pager}`:emptyHTML('📄','Još nema potvrda','Kreiraj potvrdu pomoću zelenog dugmeta u vrhu.')}</div>`;
 }
 function loadScript(url){return new Promise((resolve,reject)=>{const s=document.createElement('script');s.src=url;s.onload=resolve;s.onerror=()=>reject(Error('Ne mogu učitati dodatak za PDF.'));document.head.appendChild(s)})}
 let pdfLibPromise=null;
@@ -1011,7 +1018,7 @@ async function certificateToPDF(id){
   stage.remove();
  }catch(err){toast('PDF nije mogao biti pripremljen. Pokušaj ponovo uz internet vezu.',true);console.error(err)}
 }
-function monthLabel(isoMonth){const [y,m]=isoMonth.split('-').map(Number);return new Date(y,m-1,1).toLocaleDateString('sr-RS',{month:'long',year:'numeric'})}
+function monthLabel(isoMonth){const [y,m]=isoMonth.split('-').map(Number);return new Date(y,m-1,1).toLocaleDateString('sr-Latn-RS',{month:'long',year:'numeric'})}
 function monthShift(isoMonth,delta){const [y,m]=isoMonth.split('-').map(Number);const d=new Date(y,m-1+delta,1);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-01`}
 function embassyCalendarHTML(){
  const first=new Date(embassyMonth+'T12:00:00');const y=first.getFullYear(),m=first.getMonth();
@@ -1208,69 +1215,402 @@ document.addEventListener('keydown',e=>{const el=e.target;if(el&&['INPUT','TEXTA
 document.addEventListener('click',e=>{if(e.target.id==='modal-backdrop'||e.target.closest('[data-action="close-modal"]')||(dmxViewerOpened&&e.target.closest('[data-action="memory-edit"], [data-action="memory-delete"]'))){dmxViewerOpened=false}},true);
 
 
-// DE-MAX v12: pretraga učenika na početnom ekranu
+// DE-MAX v12: brza pretraga učenika sa početne stranice.
 let dmStudentLookupQuery='',dmStudentLookupPage=0;
-function dmLookupNorm(v){return String(v||'').toLocaleLowerCase('sr').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'dj').trim()}
-function dmLookupMatches(){const q=dmLookupNorm(dmStudentLookupQuery);return sortedStudents(db.students).filter(s=>!q||dmLookupNorm(name(s)+' '+(s.phone||'')+' '+(s.email||'')).includes(q))}
+function dmLookupNorm(v){return String(v||'').toLocaleLowerCase('sr').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'dj').trim();}
+function dmLookupMatches(){const q=dmLookupNorm(dmStudentLookupQuery);return sortedStudents(db.students).filter(s=>!q||dmLookupNorm(`${name(s)} ${s.phone||''} ${s.email||''}`).includes(q));}
 function dmLookupResults(){
- const items=dmLookupMatches(), per=innerHeight<650?2:compact()?3:5,count=Math.max(1,Math.ceil(items.length/per));
+ const items=dmLookupMatches(),per=innerHeight<650?2:compact()?3:5, count=Math.max(1,Math.ceil(items.length/per));
  dmStudentLookupPage=Math.max(0,Math.min(dmStudentLookupPage,count-1));
- const part=items.slice(dmStudentLookupPage*per,(dmStudentLookupPage+1)*per);
- const result=part.map(s=>'<button type="button" class="dm-student-hit" data-action="student-detail" data-id="'+esc(s.id)+'"><span class="dm-student-hit-avatar">'+esc(short(s))+'</span><span class="dm-student-hit-copy"><strong>'+esc(name(s))+'</strong><small>'+esc([s.phone,s.email].filter(Boolean).join(' · ')||'Karton učenika')+'</small></span><span class="dm-student-hit-arrow" aria-hidden="true">›</span></button>').join('');
- const pager=count>1?'<div class="dm-student-hit-pages"><button class="btn soft sm" type="button" data-action="dm-lookup-prev" '+(dmStudentLookupPage===0?'disabled':'')+'>←</button><span>'+(dmStudentLookupPage+1)+' / '+count+'</span><button class="btn soft sm" type="button" data-action="dm-lookup-next" '+(dmStudentLookupPage===count-1?'disabled':'')+'>→</button></div>':'';
- const holder=document.getElementById('dm-student-lookup-results');if(holder)holder.innerHTML=items.length?result+pager:'<div class="dm-student-lookup-empty">'+(db.students.length?'Nema učenika za unetu pretragu.':'Još nema unetih učenika.')+'</div>';
- const counter=document.getElementById('dm-student-lookup-count');if(counter)counter.textContent=items.length+' '+(items.length===1?'učenik':'učenika');
+ const group=items.slice(dmStudentLookupPage*per,(dmStudentLookupPage+1)*per);
+ const entries=group.map(s=>`<button type="button" class="dm-student-hit" data-action="student-detail" data-id="${esc(s.id)}"><span class="dm-student-hit-avatar">${esc(short(s))}</span><span class="dm-student-hit-copy"><strong>${esc(name(s))}</strong><small>${esc([s.phone,s.email].filter(Boolean).join(' · ')||'Karton učenika')}</small></span><span class="dm-student-hit-arrow" aria-hidden="true">›</span></button>`).join('');
+ const pager=count>1?`<div class="dm-student-hit-pages"><button class="btn soft sm" type="button" data-action="dm-lookup-prev" ${dmStudentLookupPage===0?'disabled':''}>←</button><span>${dmStudentLookupPage+1} / ${count}</span><button class="btn soft sm" type="button" data-action="dm-lookup-next" ${dmStudentLookupPage===count-1?'disabled':''}>→</button></div>`:'';
+ const holder=document.getElementById('dm-student-lookup-results');if(holder)holder.innerHTML=items.length?entries+pager:`<div class="dm-student-lookup-empty">${db.students.length?'Nema učenika za unetu pretragu.':'Još nema unetih učenika.'}</div>`;
+ const countEl=document.getElementById('dm-student-lookup-count');if(countEl)countEl.textContent=`${items.length} ${items.length===1?'učenik':'učenika'}`;
 }
 function openStudentLookup(){
  dmStudentLookupQuery='';dmStudentLookupPage=0;
- const body='<section class="dm-student-lookup" aria-label="Pretraga učenika"><label class="dm-student-lookup-label" for="dm-student-lookup-input">Pronađi učenika</label><div class="dm-student-lookup-field"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input id="dm-student-lookup-input" type="search" autocomplete="off" enterkeyhint="search" placeholder="Ime, prezime, telefon ili mejl" aria-label="Ime, prezime, telefon ili mejl"></div><div class="dm-student-lookup-counter" id="dm-student-lookup-count"></div><div id="dm-student-lookup-results" class="dm-student-lookup-results"></div></section>';
- openModal('Pretraga učenika','Dodirni ime da otvoriš karton učenika.',body);dmLookupResults();
+ const body=`<section class="dm-student-lookup" aria-label="Pretraga učenika"><label class="dm-student-lookup-label" for="dm-student-lookup-input">Pronađi učenika</label><div class="dm-student-lookup-field"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input id="dm-student-lookup-input" type="search" autocomplete="off" enterkeyhint="search" placeholder="Ime, prezime, telefon ili mejl" aria-label="Ime, prezime, telefon ili mejl"></div><div class="dm-student-lookup-counter" id="dm-student-lookup-count"></div><div id="dm-student-lookup-results" class="dm-student-lookup-results"></div></section>`;
+ openModal('Pretraga učenika','Dodirni ime da otvoriš karton učenika.',body);
+ dmLookupResults();
 }
-document.addEventListener('click',e=>{const btn=e.target.closest('button[data-action]');if(!btn)return;const a=btn.dataset.action;
- if(a==='open-student-lookup'){e.preventDefault();e.stopImmediatePropagation();openStudentLookup();return}
- if(a==='dm-lookup-prev'||a==='dm-lookup-next'){e.preventDefault();e.stopImmediatePropagation();dmStudentLookupPage+=a==='dm-lookup-next'?1:-1;dmLookupResults();return}
+document.addEventListener('click',e=>{
+ const btn=e.target.closest('button[data-action]');if(!btn)return;
+ if(btn.dataset.action==='open-student-lookup'){e.preventDefault();e.stopImmediatePropagation();openStudentLookup();return}
+ if(btn.dataset.action==='dm-lookup-prev'||btn.dataset.action==='dm-lookup-next'){
+  e.preventDefault();e.stopImmediatePropagation();dmStudentLookupPage+=btn.dataset.action==='dm-lookup-next'?1:-1;dmLookupResults();return;
+ }
 },true);
-document.addEventListener('input',e=>{if(e.target.id!=='dm-student-lookup-input')return;dmStudentLookupQuery=e.target.value;dmStudentLookupPage=0;dmLookupResults()},true);
+document.addEventListener('input',e=>{
+ if(e.target.id!=='dm-student-lookup-input')return;
+ dmStudentLookupQuery=e.target.value;dmStudentLookupPage=0;dmLookupResults();
+},true);
 
 
-// DE-MAX v13 enhancements
-const v13css=document.createElement('style');
-v13css.textContent='.dmx-course-buttons{display:flex;flex-wrap:wrap;gap:7px}.course-bottom{flex-wrap:wrap}.dmx-delete-group{background:#ffe8ea!important;color:#b92c35!important;border-color:#efbec4!important}.dmx-today-yellow{background:#ffdc61!important;color:#5b4700!important;border-color:#e6bf24!important;font-weight:900!important}.dmx-rich-editor{min-height:110px;max-height:190px;overflow:auto;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}.dmx-rich-editor strong{font-weight:900}.dmx-bold-control{width:40px;height:34px;background:#edf3ff;color:#163b72;border:1px solid #cad9ef;border-radius:8px;font-weight:900;font-size:16px}.dmx-rich-tools{display:flex;justify-content:space-between;gap:6px;align-items:center;margin-bottom:6px}.dmx-dateclock{display:inline-flex;align-items:center;font-weight:800;font-size:12px;color:#21508a;background:#f1f6ff;border:1px solid #dbe8fa;border-radius:10px;padding:6px 9px;margin-top:5px;white-space:nowrap;font-variant-numeric:tabular-nums}#student-results:empty{display:none}body[data-view="memories"] .topbar .mem-add,body[data-view="memories"] .dmx-gallery-empty [data-action="memory-upload"]{background:#cc3339!important;color:white!important;border-color:#b4292f!important}.dmx-exam-candidate{background:#f4f8ff;border:1px solid #d9e5fa;border-radius:11px;padding:9px}.dmx-a4-stage{left:-10000px!important;top:0!important;opacity:1!important;pointer-events:none!important}.dmx-a4-stage .cert-preview-wrap{width:794px!important;min-width:794px!important;height:1123px!important;padding:0!important;background:#fff!important}.dmx-a4-stage .certificate-sheet{width:794px!important;min-width:794px!important;height:1123px!important;max-height:1123px!important;min-height:1123px!important;box-sizing:border-box!important;border:0!important;border-radius:0!important;box-shadow:none!important;margin:0!important;padding:52px 56px 48px!important;display:flex!important;flex-direction:column!important;overflow:hidden!important}.dmx-a4-stage .cert-foot{margin-top:auto!important;padding-top:25px!important}@media(max-width:600px){.dmx-course-buttons .btn{font-size:11px;padding:5px 8px}.dmx-dateclock{font-size:11px}}';
-document.head.appendChild(v13css);
+// DE-MAX V13 – practical UI refinements (safe against older saved records).
+const dmxV13Style=document.createElement('style');
+dmxV13Style.textContent=`
+ .dmx-course-buttons{display:flex;justify-content:flex-end;gap:6px;align-items:center;flex-wrap:wrap}
+ .course-bottom{gap:5px;flex-wrap:wrap}
+ .dmx-delete-group{background:#ffebec!important;color:#ba2028!important;border:1px solid #f6bec2!important}
+ .dmx-today-yellow{background:#ffd755!important;color:#574000!important;border-color:#e9bf2a!important;font-weight:900!important}
+ .dmx-certificate-boldbar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px}
+ .dmx-bold-control{border-radius:8px;border:1px solid #cdd8ee;background:#edf3ff;color:#19385d;font-weight:900;font-size:16px;width:42px;height:36px}
+ .dmx-bold-control:focus{outline:2px solid #3985f9}
+ .dmx-rich-editor{min-height:118px;max-height:172px;overflow:auto;background:#fff;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere;cursor:text}
+ .dmx-rich-editor strong,.dmx-rich-editor b{font-weight:900}
+ .certificate-sheet .cert-body strong,.certificate-sheet .cert-body b{font-weight:900}
+ .dmx-empty-students:empty{display:none}
+ #student-results:empty{display:none}
+ .topbar{position:relative}
+ .dmx-dateclock{display:inline-flex;align-items:center;gap:8px;border:1px solid #d6e6ff;border-radius:10px;background:#f1f6ff;padding:6px 10px;color:#1c487c;font-size:12px;font-weight:850;letter-spacing:.1px;margin-top:6px;white-space:nowrap;font-variant-numeric:tabular-nums}
+ .dmx-dateclock svg{color:#2874d3}
+ body[data-view="memories"] .topbar .mem-add,body[data-view="memories"] .dmx-gallery-empty [data-action="memory-upload"]{background:#ce313a!important;color:#fff!important;border-color:#b5242d!important;box-shadow:0 5px 15px #ce313a22!important}
+ .dmx-gallery-tools .dmx-gallery-actions [data-action="backup-all"]{border-color:#cfddec}
+ .dmx-choose-student{border:1px solid #deebfb;background:#f5f8ff;padding:9px;border-radius:12px}
+ .dmx-choose-student label{font-weight:800;color:#3b5784}
+ .pdf-stage.dmx-a4-stage{position:fixed!important;left:-10000px!important;top:0!important;opacity:1!important;pointer-events:none!important;z-index:-1!important}
+ .pdf-stage.dmx-a4-stage .cert-preview-wrap{padding:0!important;background:#fff!important;border:0!important;width:794px!important;min-width:794px!important;height:1123px!important}
+ .pdf-stage.dmx-a4-stage .certificate-sheet{width:794px!important;min-width:794px!important;height:1123px!important;max-height:1123px!important;min-height:1123px!important;box-sizing:border-box!important;border:0!important;border-radius:0!important;box-shadow:none!important;margin:0!important;padding:52px 56px 48px!important;display:flex!important;flex-direction:column!important;overflow:hidden!important}
+ .pdf-stage.dmx-a4-stage .cert-foot{margin-top:auto!important;padding-top:30px!important}
+ .pdf-stage.dmx-a4-stage .cert-level-box{break-inside:avoid!important}
+ @media (max-width:600px){.dmx-course-buttons .btn{min-height:30px;font-size:11px;padding:5px 8px}.dmx-dateclock{font-size:11px;padding:5px 8px}.topbar .actions{gap:5px}}
+ `;
+document.head.appendChild(dmxV13Style);
+
+// The rich editor permits only bold markup and line breaks; never use arbitrary user HTML.
 function dmxCleanRich(raw){
- const tpl=document.createElement('template');tpl.innerHTML=String(raw||'').slice(0,18000);
- const walk=n=>{if(n.nodeType===Node.TEXT_NODE)return esc(n.textContent||'');if(n.nodeType!==Node.ELEMENT_NODE)return '';const tag=n.tagName.toLowerCase();if(tag==='br')return '<br>';const inner=Array.from(n.childNodes).map(walk).join('');if(tag==='b'||tag==='strong')return '<strong>'+inner+'</strong>';if(tag==='p'||tag==='div')return inner+'<br>';return inner;};
- return Array.from(tpl.content.childNodes).map(walk).join('').replace(/(<br>\s*)+$/,'').slice(0,6000);
+ const template=document.createElement('template');template.innerHTML=String(raw||'').slice(0,18000);
+ const walk=(node)=>{
+   if(node.nodeType===Node.TEXT_NODE)return esc(node.textContent||'');
+   if(node.nodeType!==Node.ELEMENT_NODE)return '';
+   const tag=node.tagName.toLowerCase();
+   if(tag==='br')return '<br>';
+   const inner=[...node.childNodes].map(walk).join('');
+   if(tag==='strong'||tag==='b')return '<strong>'+inner+'</strong>';
+   if(tag==='div'||tag==='p')return inner+'<br>';
+   return inner;
+ };
+ return [...template.content.childNodes].map(walk).join('').replace(/(<br>\s*)+$/,'').slice(0,6000);
 }
-function dmxCertificateRich(r){return r.bodyHtml?dmxCleanRich(r.bodyHtml):esc(r.bodyText||certificateBodyText(r)).replace(/\n/g,'<br>')}
-function dmxSyncCert(form){const e=form.querySelector('#dmx-rich-cert'),plain=form.querySelector('#cert-body'),html=form.querySelector('#dmx-rich-html');if(e&&plain&&html){plain.value=e.innerText.trim();html.value=dmxCleanRich(e.innerHTML)}}
-const oldCertForm=certificateForm;
-certificateForm=function(id){
- oldCertForm(id);const form=document.querySelector('#certificate-form'),old=form&&form.querySelector('#cert-body');if(!old)return;const rec=id?db.certificates.find(x=>x.id===id):null;
- const editor=document.createElement('div');editor.id='dmx-rich-cert';editor.className='form-control dmx-rich-editor';editor.contentEditable='true';editor.setAttribute('aria-label','Glavni tekst potvrde');editor.innerHTML=rec&&rec.bodyHtml?dmxCleanRich(rec.bodyHtml):esc(old.value).replace(/\n/g,'<br>');
- const tools=document.createElement('div');tools.className='dmx-rich-tools';tools.innerHTML='<span class="small muted">Označi tekst i pritisni B za podebljavanje</span><button type="button" class="dmx-bold-control" data-action="cert-bold-text"><b>B</b></button>';
- const store=document.createElement('input');store.id='dmx-rich-html';store.type='hidden';store.name='bodyHtml';
- old.required=false;old.style.display='none';old.parentNode.insertBefore(tools,old);old.parentNode.insertBefore(editor,old);old.parentNode.insertBefore(store,old);
- let saved=null;const b=tools.querySelector('button');b.addEventListener('mousedown',e=>{e.preventDefault();const selection=getSelection();if(selection.rangeCount&&editor.contains(selection.anchorNode))saved=selection.getRangeAt(0).cloneRange()});
- b.addEventListener('click',e=>{e.preventDefault();editor.focus();if(saved){const sel=getSelection();sel.removeAllRanges();sel.addRange(saved);if(!saved.collapsed){const strong=document.createElement('strong');strong.appendChild(saved.extractContents());saved.insertNode(strong);sel.removeAllRanges();saved=null;dmxSyncCert(form);return}}document.execCommand('bold',false,null);saved=null;dmxSyncCert(form)});
- editor.addEventListener('paste',e=>{e.preventDefault();document.execCommand('insertText',false,e.clipboardData.getData('text/plain'))});
- editor.addEventListener('input',()=>dmxSyncCert(form));editor.addEventListener('blur',()=>dmxSyncCert(form));dmxSyncCert(form);
+function dmxCertificateRich(r){
+ const raw=r.bodyHtml?dmxCleanRich(r.bodyHtml):esc(r.bodyText||certificateBodyText(r)).replace(/\n/g,'<br>');
+ return raw;
+}
+function dmxSyncRich(form){
+ const editor=form.querySelector('#dmx-cert-rich'),plain=form.querySelector('#cert-body'),html=form.querySelector('#dmx-cert-body-html');
+ if(!editor||!plain||!html)return;
+ // innerText accounts for visible line breaks; keep historical bodyText for exports.
+ plain.value=editor.innerText.replace(/\u00a0/g,' ').trim();
+ html.value=dmxCleanRich(editor.innerHTML);
+}
+function dmxSetupRich(form,id){
+ const old=form.querySelector('#cert-body');if(!old)return;
+ const rec=id?db.certificates.find(x=>x.id===id):null;
+ const initial=rec?.bodyHtml?dmxCleanRich(rec.bodyHtml):esc(old.value).replace(/\n/g,'<br>');
+ const group=old.closest('.form-group');
+ const toolbar=document.createElement('div'); toolbar.className='dmx-certificate-boldbar';
+ toolbar.innerHTML='<span class="small muted">Označi deo teksta, zatim klikni <strong>B</strong></span><button type="button" class="dmx-bold-control" data-action="cert-bold-text" title="Podebljaj označeni tekst" aria-label="Podebljaj označeni tekst"><strong>B</strong></button>';
+ const editor=document.createElement('div'); editor.id='dmx-cert-rich';editor.className='form-control dmx-rich-editor';editor.contentEditable='true';editor.setAttribute('role','textbox');editor.setAttribute('aria-multiline','true');editor.setAttribute('aria-label','Glavni tekst potvrde');editor.innerHTML=initial;
+ const store=document.createElement('input');store.type='hidden';store.name='bodyHtml';store.id='dmx-cert-body-html';
+ old.required=false;old.style.display='none';
+ group.insertBefore(toolbar,old);group.insertBefore(editor,old);group.insertBefore(store,old);
+ const bold=toolbar.querySelector('[data-action="cert-bold-text"]');
+ let savedRange=null;
+ bold.addEventListener('mousedown',e=>{e.preventDefault();const sel=window.getSelection();if(sel&&sel.rangeCount&&editor.contains(sel.anchorNode))savedRange=sel.getRangeAt(0).cloneRange()});
+ bold.addEventListener('click',e=>{e.preventDefault();editor.focus();if(savedRange){const sel=window.getSelection();sel.removeAllRanges();sel.addRange(savedRange);if(!savedRange.collapsed){const strong=document.createElement('strong');strong.appendChild(savedRange.extractContents());savedRange.insertNode(strong);sel.removeAllRanges();savedRange=null;dmxSyncRich(form);return}}document.execCommand('bold',false,null);savedRange=null;dmxSyncRich(form)});
+ editor.addEventListener('input',()=>dmxSyncRich(form));
+ editor.addEventListener('blur',()=>dmxSyncRich(form));
+ editor.addEventListener('paste',e=>{e.preventDefault();const text=e.clipboardData?.getData('text/plain')||'';document.execCommand('insertText',false,text)});
+ dmxSyncRich(form);
+}
+const dmxPrevCertificateForm=certificateForm;
+certificateForm=function(id=''){
+ dmxPrevCertificateForm(id);
+ const form=document.querySelector('#certificate-form');if(!form)return;
+ dmxSetupRich(form,id);
 };
-const originalCertRefresh=certRefreshBody;
-certRefreshBody=function(form){originalCertRefresh(form);const editor=form.querySelector('#dmx-rich-cert');if(editor){editor.textContent=form.querySelector('#cert-body').value;dmxSyncCert(form)}};
-const originalCertSave=saveCertificate;
-saveCertificate=function(form){dmxSyncCert(form);originalCertSave(form)};
-const originalExamForm=newRegistryForm;
-newRegistryForm=function(type,id){
- originalExamForm(type,id);if(type!=='exams')return;const form=document.querySelector('#exam-form');if(!form)return;
- const options=sortedStudents(db.students).map(s=>({label:name(s)+' · '+(s.phone||'bez telefona'),first:s.firstName,last:s.lastName,phone:s.phone,level:(coursesFor(s.id).at(-1)||{}).course?.level||'A1'})).concat(db.applications.map(a=>({label:a.firstName+' '+a.lastName+' · prijava · '+a.phone,first:a.firstName,last:a.lastName,phone:a.phone,level:a.level})));
- const box=document.createElement('div');box.className='form-group wide dmx-exam-candidate';const label=document.createElement('label');label.textContent='Prijavljeni učenik (opciono)';const select=document.createElement('select');select.className='form-control';select.add(new Option('Unesi ručno ili izaberi učenika',''));options.forEach((r,i)=>select.add(new Option(r.label,String(i))));box.append(label,select);form.querySelector('.form-grid')?.prepend(box);
- select.addEventListener('change',()=>{const r=options[Number(select.value)];if(!r)return;for(const [k,v] of [['firstName',r.first],['lastName',r.last],['phone',r.phone],['level',r.level]]){const field=form.elements.namedItem(k);if(field)field.value=v||''}});
+const dmxPrevCertRefresh=certRefreshBody;
+certRefreshBody=function(form){
+ dmxPrevCertRefresh(form);
+ const editor=form.querySelector('#dmx-cert-rich');if(editor){editor.textContent=form.querySelector('#cert-body')?.value||'';dmxSyncRich(form)}
 };
-const baseRenderV13=render;
-render=function(){baseRenderV13();if(view==='overview'){const label=document.querySelector('.topbar .subtext');if(label&&!document.querySelector('#dmx-dateclock')){const clock=document.createElement('div');clock.id='dmx-dateclock';clock.className='dmx-dateclock';label.insertAdjacentElement('afterend',clock)}dmxClockTick()}else document.querySelector('#dmx-dateclock')?.remove()};
-function dmxClockTick(){const el=document.querySelector('#dmx-dateclock');if(el){const d=new Date();el.textContent='◷ '+d.toLocaleDateString('sr-RS',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'})+' · '+d.toLocaleTimeString('sr-RS',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false})}}
-setInterval(dmxClockTick,1000);
+const dmxPrevSaveCert=saveCertificate;
+saveCertificate=function(form){dmxSyncRich(form);dmxPrevSaveCert(form)};
+
+// Pick an existing student or an applicant directly when recording exam registration.
+const dmxPrevRegistryForm=newRegistryForm;
+newRegistryForm=function(type,id=''){
+ dmxPrevRegistryForm(type,id);
+ if(type!=='exams')return;
+ const form=document.querySelector('#exam-form');if(!form)return;
+ const students=sortedStudents(db.students).map(s=>({key:'student:'+s.id,label:name(s)+' · '+(s.phone||'bez telefona'),firstName:s.firstName,lastName:s.lastName,phone:s.phone,level:coursesFor(s.id).at(-1)?.course?.level||'A1'}));
+ const applicants=[...db.applications].map(a=>({key:'application:'+a.id,label:[a.firstName,a.lastName].join(' ')+' · prijava · '+a.phone,firstName:a.firstName,lastName:a.lastName,phone:a.phone,level:a.level}));
+ const entries=[...students,...applicants];
+ const block=document.createElement('div');block.className='form-group wide dmx-choose-student';
+ const select=document.createElement('select');select.className='form-control';select.id='dmx-exam-person';
+ const lead=new Option('Unesi ručno ili izaberi učenika iz evidencije',''); select.add(lead);
+ entries.forEach(x=>select.add(new Option(x.label,x.key)));
+ block.innerHTML='<label for="dmx-exam-person">Prijavljeni učenik (opciono)</label>';
+ block.appendChild(select);
+ const grid=form.querySelector('.form-grid');grid?.insertAdjacentElement('afterbegin',block);
+ select.addEventListener('change',()=>{
+  const r=entries.find(e=>e.key===select.value);if(!r)return;
+  for(const k of ['firstName','lastName','phone','level']){const input=form.elements.namedItem(k);if(input)input.value=r[k]||''}
+  const studentRef=form.querySelector('#dmx-exam-student-id');if(studentRef)studentRef.value=select.value.startsWith('student:')?select.value.slice(8):'';
+ });
+ const store=document.createElement('input');store.type='hidden';store.name='studentId';store.id='dmx-exam-student-id';store.value='';form.appendChild(store);
+};
+
+// Date and live clock on the overview. Never overwrites persisted student data.
+const dmxPrevRender=render;
+render=function(){dmxPrevRender();if(view==='overview'){
+ const host=document.querySelector('.topbar .subtext');
+ if(host&&!document.getElementById('dmx-now')){
+  const clock=document.createElement('div');clock.className='dmx-dateclock';clock.id='dmx-now';clock.innerHTML='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span class="dmx-clock-value"></span>';
+  host.insertAdjacentElement('afterend',clock);
+ }
+ dmxTickClock();
+ }else{document.getElementById('dmx-now')?.remove();}};
+function dmxTickClock(){const clock=document.querySelector('#dmx-now .dmx-clock-value');if(clock){const d=new Date();const date=d.toLocaleDateString('sr-Latn-RS',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'});const time=d.toLocaleTimeString('sr-Latn-RS',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});clock.textContent=date+' · '+time}}
+setInterval(dmxTickClock,1000);
+// Red upload button in the section header is an ordinary file picker for photo or video.
+
+// DE-MAX V14: povezane evidencije, individualni kursevi i stvarne uplate.
+window.DMX_V14_HANDLES=true;
+const dmx14style=document.createElement('style');dmx14style.textContent=`
+ .dmx14-price{font-size:12px;font-weight:800;color:#1e5eb3;background:#edf4ff;padding:6px 8px;border-radius:8px}
+ .dmx14-finance{display:grid;gap:12px}.dmx14-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+ .dmx14-financebox{background:#fff;border:1px solid #e0e7f2;border-radius:15px;padding:15px;min-width:0}
+ .dmx14-financebox strong{font-size:21px;color:#163762;display:block;margin:5px 0}.dmx14-financebox small{color:#63718a}
+ .dmx14-payment-row{display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid #e8edf5;padding:12px 14px;background:#fff}
+ .dmx14-payment-row:last-child{border-bottom:0}.dmx14-payment-row .dmx14-main{min-width:0;flex:1}
+ .dmx14-income{font-size:17px;font-weight:850;color:#19835b}.dmx14-meta{font-size:12px;color:#60718c;line-height:1.5;overflow-wrap:anywhere}
+ .dmx14-linkstudent{background:#f3f7ff;border:1px solid #d7e6ff;border-radius:12px;padding:10px}
+ .dmx14-linkstudent label{color:#244777!important;font-weight:800}
+ .dmx14-time-note{display:block;font-size:11px;color:#64748b;margin-top:2px}
+ .dmx14-empty{padding:22px 15px;text-align:center;color:#60718c}
+ .dmx14-money-controls{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+ .dmx14-money-controls select,.dmx14-money-controls input{min-width:120px;max-width:200px}
+ .dmx14-amounts{display:grid;gap:2px}
+ .dmx14-amounts span{font-variant-numeric:tabular-nums}
+ .dmx14-note{background:#f2f8ff;border:1px solid #d7e6ff;padding:9px 12px;border-radius:12px;font-size:12px;color:#4c678b}
+ .dmx14-linked-data{color:#2862a2;font-weight:650;font-size:12px}
+ .dmx14-conversion-note{font-size:11px;color:#68758b}
+ .dmx14-finance-tab{background:#f2f7ff;border-color:#ccdffa;color:#154d8c}
+ @media(max-width:600px){
+  .dmx14-finance>.dmx14-note{display:none}
+  .dmx14-summary{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:5px}
+  .dmx14-financebox{padding:8px 6px!important;border-radius:10px;min-height:80px}
+  .dmx14-financebox strong{font-size:13px!important;margin:2px 0;white-space:nowrap}
+  .dmx14-financebox small{font-size:10px;line-height:1.15}
+  .dmx14-finance .toolbar{margin:2px 0!important;gap:4px!important}
+  .dmx14-money-controls{gap:4px;flex-wrap:nowrap;width:100%}
+  .dmx14-money-controls .form-control{height:32px;min-height:32px;padding:4px 6px;font-size:11px;min-width:0;max-width:120px;width:39%}
+  .dmx14-money-controls .btn{min-height:30px;font-size:10px;padding:4px 5px}
+  #dmx14-finance-search{min-height:31px;height:31px;max-width:100%!important}
+  .dmx14-payment-row{padding:6px 9px}
+  .dmx14-payment-row .info-title{font-size:12px}
+  .dmx14-payment-row .dmx14-income{font-size:13px}
+ }
+
+ @media(max-width:680px){.dmx14-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.dmx14-financebox{padding:10px}.dmx14-financebox strong{font-size:15px}.dmx14-payment-row{padding:9px 10px}.dmx14-payment-row .app-actions{gap:3px}.dmx14-payment-row .app-actions .btn{min-height:27px;padding:4px 7px;font-size:11px}.dmx14-money-controls input,.dmx14-money-controls select{max-width:140px}.dmx14-finance .toolbar{margin:0}}
+ `;document.head.appendChild(dmx14style);
+function dmxEnsurePayments(){ensureAdvancedData();}
+function dmxMoney(v,c='EUR'){return new Intl.NumberFormat('sr-Latn-RS',{minimumFractionDigits:0,maximumFractionDigits:2}).format(Number(v)||0)+' '+(c==='RSD'?'RSD':'€')}
+function dmxMaybeAddStudent(firstName,lastName,phone='',email=''){
+ const fn=(firstName||'').trim(),ln=(lastName||'').trim();if(!fn||!ln)return '';
+ const existing=db.students.find(s=>(name(s).toLocaleLowerCase('sr')===(fn+' '+ln).toLocaleLowerCase('sr')&& (!phone||s.phone===phone)));
+ if(existing)return existing.id;
+ const id=uid();db.students.push({id,firstName:fn,lastName:ln,phone:(phone||'').trim(),email:(email||'').trim(),notes:'',createdAt:new Date().toISOString()});return id;
+}
+function dmxBookPurchasePayment(p,record){dmxEnsurePayments();if(db.payments.some(x=>x.purchaseId===p.id))return;const amount=Number(record.price);if(!(amount>0))return;const student=getStudent(record.studentId);db.payments.push({id:uid(),type:'app',studentId:record.studentId,studentName:student?name(student):'',courseId:'',purchaseId:p.id,amount,currency:'EUR',date:record.date,method:'Gotovina',notes:'Uplata aplikacije '+record.level,createdAt:new Date().toISOString()});}
+// Extend the existing course form, preserving previous group and enrolment logic.
+const dmx14OldCourseForm=openCourseForm;
+openCourseForm=function(id=''){
+ dmx14OldCourseForm(id);
+ const form=document.querySelector('#course-form');if(!form)return;
+ const c=id?getCourse(id):null,grid=form.querySelector('.form-grid');
+ const block=document.createElement('div');block.className='form-group';block.innerHTML=`<label for="dmx14-price">Cena kursa po učeniku</label><input id="dmx14-price" class="form-control" type="number" name="price" min="0" max="99999999" step="0.01" placeholder="Npr. 70" value="${esc(c?.price??'')}">`;
+ const money=document.createElement('div');money.className='form-group';money.innerHTML=`<label for="dmx14-currency">Valuta kursa</label><select id="dmx14-currency" name="currency" class="form-control">${opt([['EUR','Evro (€)'],['RSD','Dinar (RSD)']],c?.currency||'EUR')}</select>`;
+ const notes=grid.querySelector('[name="notes"]')?.closest('.form-group');if(notes){notes.before(block,money)}else grid.append(block,money);
+ if(compact()&&form.dataset.wizard){[block,money].forEach(el=>{el.dataset.step='1';if(form.dataset.step==='0')el.classList.add('mobile-step-hidden')})}
+};
+const dmx14OldPurchaseForm=purchaseForm;
+purchaseForm=function(id='',prefStudent=''){
+ dmx14OldPurchaseForm(id,prefStudent);
+ const form=document.querySelector('#purchase-form');if(!form)return;
+ const row=document.createElement('div');row.className='form-group wide dmx14-linkstudent';
+ const already=id&&db.payments.some(p=>p.purchaseId===id);
+ row.innerHTML=`<label style="display:flex;align-items:center;gap:9px"><input type="checkbox" name="dmxPaid" ${already?'disabled':''}> Uplata za aplikaciju je primljena – upiši u Evidenciju</label><span class="dmx14-time-note">${already?'Uplata je već evidentirana. Za novu ratu koristi Evidencija → Nova uplata.':'Označi samo ako je novac stvarno primljen. Iznos se uzima iz polja Cena (€).'}</span>`;
+ form.querySelector('.form-grid')?.append(row);
+ if(compact()&&form.dataset.wizard){row.dataset.step='1';if(form.dataset.step==='0')row.classList.add('mobile-step-hidden')}
+};
+const dmx14OldCourseCard=courseCard;
+courseCard=function(c){let html=dmx14OldCourseCard(c);const label=c.price>0?`<span class="dmx14-price" title="Cena po jednom učeniku">Cena: ${esc(dmxMoney(c.price,c.currency))} / učenik</span>`:'';return label?html.replace('<div class="course-bottom">',`<div style="margin:9px 0">${label}</div><div class="course-bottom">`):html};
+// Full working form for the three registries. Students may be chosen from DB or added inline.
+newRegistryForm=function(type,id=''){
+ if(!['schedules','applications','exams'].includes(type))return;
+ const old=id?db[type]?.find(x=>x.id===id):null;
+ if(type==='schedules'&&!db.courses.length){toast('Prvo napravi grupu u odeljku Kursevi.',true);navigate('courses');openCourseForm();return}
+ const students=sortedStudents(db.students);
+ const selectStudents=`<select class="form-control" name="studentId" id="dmx14-reg-student"><option value="">${type==='schedules'?'Samo grupa, bez pojedinačnog učenika':'Novi učenik – upiši podatke ispod'}</option>${type==='schedules'?'<option value="__new__">＋ Novi učenik uz ovu grupu</option>':''}${students.map(s=>`<option value="${esc(s.id)}" ${old?.studentId===s.id?'selected':''}>${esc(name(s))} · ${esc(s.phone||'bez telefona')}</option>`).join('')}</select>`;
+ const field=(key,label,html,extra='')=>`<div class="form-group ${extra}"><label for="dmx14-${key}">${label}</label>${html}</div>`;
+ const inp=(key,value,type='text',attrs='')=>`<input id="dmx14-${key}" class="form-control" type="${type}" name="${key}" value="${esc(value??'')}" ${attrs}>`;
+ const choose=(key,vals,value)=>`<select id="dmx14-${key}" name="${key}" class="form-control">${opt(vals,value)}</select>`;
+ const note=field('notes','Napomena',`<textarea id="dmx14-notes" name="notes" class="form-control" rows="2" maxlength="500">${esc(old?.notes||'')}</textarea>`,'wide');
+ let formContent='';
+ if(type==='schedules'){
+  const cs=db.courses.filter(c=>!c.archived).sort((a,b)=>b.start.localeCompare(a.start));
+  const choices=cs.map(c=>[c.id,`${courseName(c)} · ${c.level}`]);
+  const first=getCourse(old?.courseId||cs[0]?.id);
+  formContent=field('courseId','Kurs / grupa *',choose('courseId',choices,old?.courseId||cs[0].id),'wide')+
+    field('studentId','Učenik iz evidencije (opciono)',selectStudents,'wide dmx14-linkstudent')+
+    field('firstName','Novi učenik – ime',inp('firstName','','text','maxlength="80"'))+
+    field('lastName','Prezime novog učenika',inp('lastName','','text','maxlength="80"'))+
+    field('phone','Telefon novog učenika',inp('phone','','tel','maxlength="45"'))+
+    field('email','Mejl novog učenika',inp('email','','email','maxlength="150"'))+
+    field('day','Dan u nedelji *',choose('day',daysOfWeek.map((x,i)=>[String(i),x]),String(old?.day??0)),'wide')+
+    field('start','Početak časa *',inp('start',old?.start||'18:00','text','inputmode="numeric" required pattern="(?:[01][0-9]|2[0-3]):[0-5][0-9]" placeholder="19:15" title="24-časovno vreme HH:MM"')+'<span class="dmx14-time-note">24-časovno vreme Srbije, npr. 19:15 (bez AM/PM)</span>')+
+    field('end','Kraj časa *',inp('end',old?.end||'19:00','text','inputmode="numeric" required pattern="(?:[01][0-9]|2[0-3]):[0-5][0-9]" placeholder="20:15" title="24-časovno vreme HH:MM"'))+
+    field('startDate','Datum od *',inp('startDate',old?.startDate||first?.start||TODAY(),'date','required'))+
+    field('endDate','Datum do',inp('endDate',old?.endDate||first?.end||'','date'))+
+    field('place','Mesto / način',inp('place',old?.place||'','text','maxlength="100" placeholder="Učionica, Zoom..."'),'wide')+note;
+ }else{
+  formContent=field('studentId','Izaberi učenika ili dodaj novog',selectStudents,'wide dmx14-linkstudent')+
+    field('firstName','Ime učenika *',inp('firstName',old?.firstName||'','text','required maxlength="80"'))+
+    field('lastName','Prezime *',inp('lastName',old?.lastName||'','text','required maxlength="80"'))+
+    field('phone','Telefon *',inp('phone',old?.phone||'','tel','required maxlength="45"'))+
+    field('email','Mejl (opciono)',inp('email',old?.email||'','email','maxlength="150"'))+
+    field('level','Nivo jezika',choose('level',levelOptions,old?.level||'A1'),'wide');
+  if(type==='applications')formContent+=field('kind','Vrsta kursa',choose('kind',kindOptions.filter(x=>x[0]!=='app'),old?.kind||'standard'),'wide');
+  else formContent+=field('city','Mesto polaganja',choose('city',[['Beograd','Beograd'],['Novi Pazar','Novi Pazar']],old?.city||'Beograd'),'wide');
+  formContent+=field('date',type==='applications'?'Datum prijave *':'Datum polaganja *',inp('date',old?.date||TODAY(),'date','required'))+
+  field('status','Status',choose('status',type==='applications'?['Nova','Kontaktiran','Upisan','Odustao'].map(x=>[x,x]):['Prijavljen','Položio','Nije položio','Otkazan'].map(x=>[x,x]),old?.status||(type==='applications'?'Nova':'Prijavljen')))+note;
+ }
+ const fid=type==='schedules'?'schedule':type==='applications'?'application':'exam';
+ const form=`<form id="${fid}-form" data-id="${esc(id)}"><div class="form-grid dm-new-grid">${formContent}</div><div class="dm-form-actions"><button type="button" class="btn soft" data-action="close-modal">Otkaži</button><button type="submit" class="btn primary">Potvrdi</button></div></form>`;
+ openModal(old?'Izmeni '+newConfig[type].singular.toLowerCase():'Dodaj '+newConfig[type].singular.toLowerCase(),type==='schedules'?'Dan i 24-časovno vreme po grupi.': 'Poveži sa učenikom ili dodaj novog.',form);
+ if(compact()&&type!=='schedules'){
+  const el=document.querySelector('#'+(type==='applications'?'application':'exam')+'-form');
+  if(el?.dataset.wizard){for(const k of ['email','level']){const row=el.elements.namedItem(k)?.closest('.form-group');if(row){row.dataset.step='1';row.classList.add('mobile-step-hidden')}}}
+ }
+ if(type==='schedules'){
+  const el=document.querySelector('#schedule-form');if(!el)return;
+  // Hide new-student fields unless explicitly requested. Calendar only needs group + weekday + times.
+  for(const k of ['firstName','lastName','phone','email']){
+   const row=el.elements.namedItem(k)?.closest('.form-group');if(row)row.style.display='none';
+  }
+  if(compact()&&el.dataset.wizard){
+   for(const k of ['start','end']){const row=el.elements.namedItem(k)?.closest('.form-group');if(row){row.dataset.step='1';row.classList.add('mobile-step-hidden')}}
+  }
+ }
+ // Existing students are chosen in-place; new ones can also be entered here.
+};
+submitNewRecord=function(f,type){
+ if(!f.reportValidity())return;
+ const v=Object.fromEntries(new FormData(f).entries()),id=f.dataset.id,old=id?db[type].find(x=>x.id===id):null;
+ let studentId=v.studentId==='__new__'?'':v.studentId||'';
+ if(type==='schedules'){
+  if(!getCourse(v.courseId)||!/^([01][0-9]|2[0-3]):[0-5][0-9]$/.test(v.start)||!/^([01][0-9]|2[0-3]):[0-5][0-9]$/.test(v.end)||v.end<=v.start||!isoOk(v.startDate)||v.endDate&&(!isoOk(v.endDate)||v.endDate<v.startDate)){toast('Proveri grupu, dan i vreme HH:MM.',true);return}
+  if((v.firstName||v.lastName)&&(!v.firstName?.trim()||!v.lastName?.trim())){toast('Za novog učenika unesi i ime i prezime.',true);return}
+  if(v.studentId==='__new__'&&(!v.firstName?.trim()||!v.lastName?.trim())){toast('Za novog učenika unesi ime i prezime.',true);return}
+  if(v.studentId==='__new__')studentId=dmxMaybeAddStudent(v.firstName,v.lastName,v.phone,v.email);
+  const rec={courseId:v.courseId,studentId,day:Number(v.day),start:v.start,end:v.end,startDate:v.startDate,endDate:v.endDate||'',place:(v.place||'').trim(),notes:(v.notes||'').trim()};
+  if(old)Object.assign(old,rec);else db.schedules.push({id:uid(),...rec,createdAt:new Date().toISOString()});
+  if(studentId&&!findEnrollment(v.courseId,studentId)){
+   const c=getCourse(v.courseId);db.enrollments.push({id:uid(),studentId,courseId:c.id,start:rec.startDate||c.start,end:rec.endDate||c.end,createdAt:new Date().toISOString()});
+  }
+ }else{
+  if(!v.firstName?.trim()||!v.lastName?.trim()||!v.phone?.trim()||!['A1','A2','B1'].includes(v.level)||!isoOk(v.date)){toast('Unesi ime, prezime, telefon, nivo i datum.',true);return}
+  if(type==='applications'&&!['standard','intensive','prep','kids','individual'].includes(v.kind))return;
+  if(type==='exams'&&!['Beograd','Novi Pazar'].includes(v.city))return;
+  if(!studentId)studentId=dmxMaybeAddStudent(v.firstName,v.lastName,v.phone,v.email);
+  const rec={studentId,firstName:v.firstName.trim(),lastName:v.lastName.trim(),phone:v.phone.trim(),email:(v.email||'').trim(),level:v.level,date:v.date,status:v.status,notes:(v.notes||'').trim(),...(type==='applications'?{kind:v.kind}:{city:v.city})};
+  if(old)Object.assign(old,rec);else db[type].push({id:uid(),...rec,createdAt:new Date().toISOString()});
+ }
+ persist();closeModal();render();toast(old?'Podaci su izmenjeni.':'Učenik i zapis su sačuvani.');
+};
+const dmx14OldRecordSubtitle=newRecordSubtitle;
+newRecordSubtitle=function(type,r){let base=dmx14OldRecordSubtitle(type,r);if(type==='schedules'&&r.studentId){const s=getStudent(r.studentId);if(s)base+=' · Učenik: '+esc(name(s))}return base};
+// Finance: sums of confirmed payments only; course tuition prices are not counted until paid.
+const dmx14PrevTop=topButtonsForView;
+topButtonsForView=function(){if(view==='finance')return '<button class="btn soft dm-overview-red" data-view="overview">← Pregled</button><button class="btn student-green" data-action="new-finance">＋ Uplata</button>';return dmx14PrevTop()};
+const dmx14FinanceNav=document.createElement('button');
+dmx14FinanceNav.className='nav-btn';dmx14FinanceNav.dataset.view='finance';
+dmx14FinanceNav.innerHTML='<span class="nav-icon"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M8 15h4"/></svg></span>Evidencija';
+const embBtn=document.querySelector('.nav-btn[data-view="embassy"]');if(embBtn)embBtn.insertAdjacentElement('afterend',dmx14FinanceNav);
+let dmxFinanceFilter='all',dmxFinanceMonth='',dmxFinanceSearch='',dmxFinancePage=0;
+function dmxFinancePayments(){dmxEnsurePayments();return [...db.payments].filter(p=>(dmxFinanceFilter==='all'||p.type===dmxFinanceFilter)&&(!dmxFinanceMonth||p.date.slice(0,7)===dmxFinanceMonth)&&[p.studentName,getStudent(p.studentId)?name(getStudent(p.studentId)):'',getCourse(p.courseId)?courseName(getCourse(p.courseId)):'',p.notes,p.method].join(' ').toLocaleLowerCase('sr').includes(dmxFinanceSearch.toLocaleLowerCase('sr'))).sort((a,b)=>(b.date+(b.createdAt||'')).localeCompare(a.date+(a.createdAt||'')))}
+function dmxTotals(data,type){const payments=data.filter(x=>!type||x.type===type);return Object.fromEntries(['EUR','RSD'].map(currency=>[currency,payments.filter(x=>x.currency===currency).reduce((a,x)=>a+Number(x.amount),0)]))}
+function renderFinance(){
+ dmxEnsurePayments();const payments=dmxFinancePayments(),total=dmxTotals(payments),courses=dmxTotals(payments,'course'),apps=dmxTotals(payments,'app');
+ const card=(name,sums,desc)=>`<div class="dmx14-financebox"><small>${name}</small><strong>${dmxMoney(sums.EUR,'EUR')}</strong><strong>${dmxMoney(sums.RSD,'RSD')}</strong><small>${desc}</small></div>`;
+ const pageSizeN=compact()?2:innerHeight<730?3:7,count=Math.max(1,Math.ceil(payments.length/pageSizeN));dmxFinancePage=Math.max(0,Math.min(dmxFinancePage,count-1));
+ const slice=payments.slice(dmxFinancePage*pageSizeN,dmxFinancePage*pageSizeN+pageSizeN);
+ const entries=slice.map(p=>{const student=getStudent(p.studentId),course=getCourse(p.courseId);const who=student?name(student):p.studentName||'Nepoznato ime';return `<div class="dmx14-payment-row"><div class="dmx14-main"><div class="info-title">${esc(who)} · <span class="dmx14-income">${esc(dmxMoney(p.amount,p.currency))}</span></div><div class="dmx14-meta">${p.type==='course'?'Kurs':'Aplikacija'}${course?' · '+esc(courseName(course)):''} · ${dd(p.date)} · ${esc(p.method||'')}</div>${p.notes?`<div class="dmx14-meta">${esc(p.notes)}</div>`:''}</div><div class="app-actions"><button class="btn soft sm" data-action="edit-finance" data-id="${esc(p.id)}">Izmeni</button><button class="btn danger sm" data-action="delete-finance" data-id="${esc(p.id)}">Obriši</button></div></div>`}).join('');
+ return `<div class="dmx14-finance"><div class="dmx14-note">Prikaz je zasnovan na evidentiranim uplatama, a ne na ugovorenim cenama kurseva. Evre i dinare vodimo odvojeno, bez proizvoljnog kursa konverzije.</div><div class="dmx14-summary">${card('Ukupno primljeno',total,payments.length+' uplata')}${card('Kursevi',courses,'Uplate za nastavu')}${card('Aplikacije',apps,'Primljene uplate')}</div><div class="toolbar"><div class="dmx14-money-controls"><select class="form-control" id="dmx14-finance-type" aria-label="Vrsta prihoda"><option value="all" ${dmxFinanceFilter==='all'?'selected':''}>Sve uplate</option><option value="course" ${dmxFinanceFilter==='course'?'selected':''}>Kursevi</option><option value="app" ${dmxFinanceFilter==='app'?'selected':''}>Aplikacije</option></select><input class="form-control" type="month" id="dmx14-finance-month" value="${esc(dmxFinanceMonth)}" aria-label="Mesec"><button type="button" class="btn soft sm" data-action="finance-clear">Svi datumi</button><button class="btn soft sm" data-action="export-finance">↓ CSV</button></div><input class="form-control" style="max-width:260px" type="search" id="dmx14-finance-search" placeholder="Pretraži učenika..." value="${esc(dmxFinanceSearch)}"></div><div class="panel">${entries||'<div class="dmx14-empty">Još nema evidentiranih uplata. Koristi gornje dugme „+ Uplata“.</div>'}</div>${count>1?`<div class="page-controls"><button class="btn soft sm" data-action="finance-prev" ${dmxFinancePage===0?'disabled':''}>← Prethodna</button><span>${dmxFinancePage+1} / ${count}</span><button class="btn soft sm" data-action="finance-next" ${dmxFinancePage===count-1?'disabled':''}>Sledeća →</button></div>`:''}</div>`;
+}
+const dmx14PrevRender=render;
+render=function(){dmx14PrevRender();if(view==='finance'){heading('Evidencija uplata','Primljene uplate kurseva i aplikacija, po učeniku i datumu.');document.querySelector('.topbar .actions').innerHTML=topButtonsForView();document.querySelector('#view-root').innerHTML=renderFinance();document.body.dataset.view='finance'}};
+function dmxPaymentForm(id=''){
+ dmxEnsurePayments();const rec=id?db.payments.find(x=>x.id===id):null;
+ if(!db.students.length){toast('Prvo dodaj učenika da bi evidentirao njegovu uplatu.',true);openStudentForm();return}
+ const choices=sortedStudents(db.students).map(s=>[s.id,name(s)+(s.phone?' · '+s.phone:'')]);
+ const co=[['','Izaberi kurs (opciono)'],...db.courses.map(c=>[c.id,courseName(c)+' · '+c.level])];
+ const optsPurch=[['','Bez povezivanja kupovine'],...db.purchases.map(p=>{const s=getStudent(p.studentId);return [p.id,(s?name(s):'Kupac')+' · Aplikacija '+p.level+' · '+dd(p.date)]})];
+ const html=`<form id="dmx14-finance-form" data-id="${esc(id)}"><div class="form-grid"><div class="form-group"><label for="dmx14-pay-type">Vrsta prihoda *</label><select class="form-control" id="dmx14-pay-type" name="type">${opt([['course','Kurs'],['app','Aplikacija']],rec?.type||'course')}</select></div><div class="form-group"><label for="dmx14-pay-student">Učenik *</label><select class="form-control" id="dmx14-pay-student" name="studentId" required>${opt(choices,rec?.studentId||choices[0]?.[0])}</select></div><div class="form-group wide"><label for="dmx14-pay-course">Kurs / grupa</label><select class="form-control" name="courseId" id="dmx14-pay-course">${opt(co,rec?.courseId||'')}</select></div><div class="form-group wide"><label for="dmx14-pay-purchase">Kupovina aplikacije (opciono)</label><select class="form-control" name="purchaseId" id="dmx14-pay-purchase">${opt(optsPurch,rec?.purchaseId||'')}</select></div><div class="form-group"><label for="dmx14-pay-amount">Primljeno (iznos) *</label><input class="form-control" id="dmx14-pay-amount" name="amount" type="number" min="0.01" max="999999999" step="0.01" required value="${esc(rec?.amount||'')}" placeholder="Npr. 70"></div><div class="form-group"><label for="dmx14-pay-currency">Valuta</label><select class="form-control" id="dmx14-pay-currency" name="currency">${opt([['EUR','EUR (€)'],['RSD','RSD (dinari)']],rec?.currency||'EUR')}</select></div><div class="form-group"><label for="dmx14-pay-date">Datum uplate *</label><input class="form-control" id="dmx14-pay-date" name="date" type="date" required value="${esc(rec?.date||TODAY())}"></div><div class="form-group"><label for="dmx14-pay-method">Način plaćanja</label><select class="form-control" id="dmx14-pay-method" name="method">${opt([['Gotovina','Gotovina'],['Bankovni račun','Bankovni račun'],['Kartica','Kartica'],['Drugo','Drugo']],rec?.method||'Gotovina')}</select></div><div class="form-group wide"><label for="dmx14-pay-notes">Napomena / rata</label><textarea class="form-control" id="dmx14-pay-notes" name="notes" maxlength="500" rows="2">${esc(rec?.notes||'')}</textarea></div></div><div class="dm-form-actions"><button type="button" class="btn soft" data-action="close-modal">Otkaži</button><button type="submit" class="btn primary">Potvrdi uplatu</button></div></form>`;
+ openModal(rec?'Izmeni uplatu':'Nova uplata','U Evidenciju unesi samo stvarno primljen novac.',html);
+ if(compact()){
+  const form=document.querySelector('#dmx14-finance-form');if(!form)return;
+  form.dataset.wizard='1';form.dataset.step='0';
+  const step2=new Set(['amount','currency','date','method','notes']);
+  $$('.form-grid>.form-group',form).forEach(row=>{const k=row.querySelector('[name]')?.name;row.dataset.step=step2.has(k)?'1':'0'});
+  const submit=form.querySelector('button[type="submit"]');
+  if(submit){submit.dataset.wizardSubmit='1';const back=document.createElement('button');back.type='button';back.className='btn soft mobile-back';back.dataset.action='mobile-back';back.textContent='← Nazad';submit.parentElement.insertBefore(back,submit);setFormStep(form,0)}
+ }
+}
+function dmxFinanceSave(form){
+ const x=Object.fromEntries(new FormData(form).entries()),amount=Number(x.amount),student=getStudent(x.studentId);
+ if(!student||!Number.isFinite(amount)||amount<=0||!isoOk(x.date)||!['course','app'].includes(x.type)){toast('Proveri učenika, iznos i datum uplate.',true);return}
+ const id=form.dataset.id||uid();const old=db.payments.find(p=>p.id===id);
+ const rec={id,type:x.type,studentId:student.id,studentName:name(student),courseId:x.type==='course'&&getCourse(x.courseId)?x.courseId:'',purchaseId:x.type==='app'&&db.purchases.some(p=>p.id===x.purchaseId)?x.purchaseId:'',amount,currency:x.currency==='RSD'?'RSD':'EUR',date:x.date,method:x.method||'Gotovina',notes:(x.notes||'').trim().slice(0,500),createdAt:old?.createdAt||new Date().toISOString()};
+ if(old)Object.assign(old,rec);else db.payments.push(rec);persist();closeModal();render();toast(old?'Uplata je izmenjena.':'Uplata je evidentirana.');
+}
+// Use capture for working registry forms. Legacy broken singular/plural handlers remain bypassed.
+document.addEventListener('submit',e=>{const typ={'schedule-form':'schedules','application-form':'applications','exam-form':'exams'}[e.target.id];if(typ){e.preventDefault();e.stopImmediatePropagation();submitNewRecord(e.target,typ)}else if(e.target.id==='dmx14-finance-form'){e.preventDefault();e.stopImmediatePropagation();dmxFinanceSave(e.target)}},true);
+// Connected students and plain Latin timetable. Supports old records with no studentId.
+document.addEventListener('change',e=>{
+ if(e.target.id==='dmx14-reg-student'){
+  const form=e.target.closest('form');const student=getStudent(e.target.value);if(!form)return;
+  if(form.id==='schedule-form'){
+   for(const k of ['firstName','lastName','phone','email']){
+    const input=form.elements.namedItem(k),row=input?.closest('.form-group');if(!row)continue;
+    row.style.display=e.target.value==='__new__'?'':'none';
+    if(e.target.value!=='__new__')row.style.display='none';
+    if(e.target.value==='__new__'){row.style.display='';input.value='';}
+   }
+  }
+  if(student){for(const k of ['firstName','lastName','phone','email']){const el=form.elements.namedItem(k);if(el)el.value=student[k]||''}}
+  else if(form.id!=='schedule-form'){for(const k of ['firstName','lastName','phone','email']){const el=form.elements.namedItem(k);if(el)el.value=''}}
+ }
+ if(e.target.id==='dmx14-pay-course'){
+  const c=getCourse(e.target.value);const form=e.target.form;if(c&&form){if(!form.elements.namedItem('amount').value)form.elements.namedItem('amount').value=c.price||'';form.elements.namedItem('currency').value=c.currency||'EUR';form.elements.namedItem('type').value='course'}
+ }
+ if(e.target.id==='dmx14-pay-purchase'&&e.target.value){const purchase=db.purchases.find(p=>p.id===e.target.value),form=e.target.form;if(purchase&&form){form.elements.namedItem('type').value='app';form.elements.namedItem('studentId').value=purchase.studentId;if(!form.elements.namedItem('amount').value)form.elements.namedItem('amount').value=purchase.price||'';form.elements.namedItem('currency').value='EUR'}}
+ if(e.target.id==='dmx14-finance-type'){dmxFinanceFilter=e.target.value;dmxFinancePage=0;render()}
+ if(e.target.id==='dmx14-finance-month'){dmxFinanceMonth=e.target.value;dmxFinancePage=0;render()}
+});
+document.addEventListener('input',e=>{if(e.target.id==='dmx14-finance-search'){dmxFinanceSearch=e.target.value;dmxFinancePage=0;const pos=e.target.selectionStart;render();const el=document.getElementById('dmx14-finance-search');el?.focus();el?.setSelectionRange(pos,pos)}},true);
+document.addEventListener('click',e=>{const btn=e.target.closest('button[data-action]');if(!btn)return;const a=btn.dataset.action,id=btn.dataset.id;if(!['new-finance','edit-finance','delete-finance','finance-prev','finance-next','finance-clear','export-finance'].includes(a))return;e.preventDefault();e.stopImmediatePropagation();
+ if(a==='new-finance')return dmxPaymentForm();if(a==='edit-finance')return dmxPaymentForm(id);
+ if(a==='delete-finance'){if(!ask('Obrisati ovu uplatu? Umanjiće se ukupan prihod.'))return;db.payments=db.payments.filter(x=>x.id!==id);persist();render();toast('Uplata je obrisana.');return}
+ if(a==='finance-prev'||a==='finance-next'){dmxFinancePage=Math.max(0,dmxFinancePage+(a==='finance-next'?1:-1));render();return}
+ if(a==='finance-clear'){dmxFinanceMonth='';dmxFinancePage=0;render();return}
+ if(a==='export-finance'){csv('DE_MAX_UPLATE',['Datum','Učenik','Vrsta','Kurs','Iznos','Valuta','Način','Napomena'],dmxFinancePayments().map(p=>[dd(p.date),getStudent(p.studentId)?name(getStudent(p.studentId)):p.studentName,p.type==='course'?'Kurs':'Aplikacija',getCourse(p.courseId)?courseName(getCourse(p.courseId)):'',p.amount,p.currency,p.method,p.notes]));toast('Uplate su izvezene.');return}
+},true);
+// Keep app invoice amounts and tuition prices separate from actual bank/cash receipts.
+dmxEnsurePayments();
 
 load();render();
 })();
