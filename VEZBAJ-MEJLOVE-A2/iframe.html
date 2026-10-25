@@ -272,6 +272,76 @@ header{flex:none;background:linear-gradient(110deg,#0a275e,#1657a3);color:#fff;p
   .workspace.writing .editor textarea{font-size:16px!important}
  }
 }
+
+/* A2 keyboard-first writing mode v6: maximize visible draft ABOVE the keyboard. */
+.questions-toggle{display:none}
+@media(max-width:700px){
+ html.a2-typing .app{
+  top:var(--a2-vtop,0px)!important;
+  height:var(--a2-vh,100dvh)!important;
+  max-height:var(--a2-vh,100dvh)!important;
+ }
+ html.a2-typing body header{display:none!important}
+ html.a2-typing .workspace.writing{height:100%!important;min-height:0!important}
+ html.a2-typing .workspace.writing .answer{height:100%!important;min-height:0!important}
+ html.a2-typing .workspace.writing .editor{
+  grid-template-rows:auto minmax(0,1fr) auto!important;
+  padding:2px 5px 2px!important;
+  gap:2px!important;
+ }
+ html.a2-typing .workspace.writing .questions-toggle{
+  display:block;
+  width:100%;
+  height:26px;
+  min-height:26px;
+  border:1px solid #c4d9f6;
+  border-radius:6px;
+  background:#edf5ff;
+  color:#1e509c;
+  font-size:11px;
+  font-weight:850;
+  text-align:left;
+  padding:3px 9px;
+  line-height:1.3;
+ }
+ html.a2-typing:not(.a2-questions-open) .workspace.writing .writing-questions{
+  display:none!important;
+ }
+ html.a2-typing.a2-questions-open .workspace.writing .editor{
+  grid-template-rows:auto auto minmax(0,1fr) auto!important;
+ }
+ html.a2-typing.a2-questions-open .workspace.writing .writing-questions{
+  display:block!important;
+  padding:4px 7px!important;
+  max-height:min(40%,150px)!important;
+  overflow-y:auto!important;
+ }
+ html.a2-typing .workspace.writing .editor textarea{
+  height:100%!important;
+  min-height:0!important;
+  width:100%!important;
+  font-size:14px!important;
+  line-height:1.30!important;
+  padding:6px 8px!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain;
+  scroll-padding-bottom:12px;
+ }
+ html.a2-typing .workspace.writing .foot{
+  flex:none!important;
+  min-height:37px!important;
+  padding:2px 0 max(2px,env(safe-area-inset-bottom))!important;
+  border-top:1px solid #dfe9f6!important;
+  background:#fff!important;
+ }
+ html.a2-typing .workspace.writing .check{padding:8px 9px!important;font-size:11.5px!important}
+ html.a2-typing .workspace.writing .word-count{font-size:10px!important}
+}
+@supports (-webkit-touch-callout:none){
+ @media(max-width:700px){
+  html.a2-typing .workspace.writing .editor textarea{font-size:16px!important}
+ }
+}
 </style></head><body>
 <div class="app"><header><div class="top"><div class="brand">A2 mejl vežbe</div><div class="pill">13 mejlova · 15 bodova</div></div>
 <div class="nav"><button id="prev" aria-label="Prethodni mejl">‹</button><button id="navTitle" type="button" aria-label="Trenutni mejl; tokom pisanja vrati na postavku">Izaberi mejl</button><button id="next" aria-label="Sledeći mejl">›</button><button id="homeButton" type="button" aria-label="Svi mejlovi" title="Svi mejlovi">⌂</button></div></header>
@@ -293,7 +363,7 @@ header{flex:none;background:linear-gradient(110deg,#0a275e,#1657a3);color:#fff;p
 <main id="workspace" class="workspace hide">
 <section class="panel prompt"><div class="ptitle"><strong id="number">1. mejl</strong><div class="buttons"><button id="startWriting" class="start mobile-start" type="button">✎ Piši mejl</button></div></div>
 <div id="promptScroll" class="prompt-scroller"><div id="promptFit" class="prompt-fit"><div class="label">SITUATION</div><div id="situation" class="situation"></div><div class="email"><div class="email-head"><div><b>Von:</b> <span id="senderEmail"></span></div><div><b>Betreff:</b> <span id="subject"></span></div></div><div id="original" class="email-body"></div></div><div class="notes">Schreiben Sie <strong>circa 50 Wörter</strong>. Schreiben Sie einen Gruß am Ende.</div></div></div></section>
-<section class="panel answer"><div class="editor"><div class="editor-label"><strong>2. NAPIŠI SVOJ ODGOVOR</strong><button class="back" id="backToTask" type="button">← Postavka</button><small>A2 · cilj 50 reči · prolaz 3/15</small></div><div id="questions" class="questions writing-questions" aria-label="Četiri pitanja iz postavke"></div><textarea id="answer" spellcheck="true" placeholder="Liebe/Lieber ...&#10;&#10;vielen Dank für deine E-Mail.&#10;&#10;...&#10;&#10;Liebe Grüße"></textarea><div class="foot"><span id="count" class="word-count">0 / 50 reči</span><button id="check" class="check" type="button">✓ Proveri mejl</button></div><div class="msg" id="saveLabel">Cilj: 50 reči. Ispod 26 reči nema ocenjivanja. Dodaj završni pozdrav.</div></div><div id="result" class="result" aria-live="polite"></div></section>
+<section class="panel answer"><div class="editor"><div class="editor-label"><strong>2. NAPIŠI SVOJ ODGOVOR</strong><button class="back" id="backToTask" type="button">← Postavka</button><small>A2 · cilj 50 reči · prolaz 3/15</small></div><button id="questionsToggle" type="button" class="questions-toggle" aria-controls="questions" aria-expanded="false">Pitanja (4) ▾</button><div id="questions" class="questions writing-questions" aria-label="Četiri pitanja iz postavke"></div><textarea id="answer" spellcheck="true" placeholder="Liebe/Lieber ...&#10;&#10;vielen Dank für deine E-Mail.&#10;&#10;...&#10;&#10;Liebe Grüße"></textarea><div class="foot"><span id="count" class="word-count">0 / 50 reči</span><button id="check" class="check" type="button">✓ Proveri mejl</button></div><div class="msg" id="saveLabel">Cilj: 50 reči. Ispod 26 reči nema ocenjivanja. Dodaj završni pozdrav.</div></div><div id="result" class="result" aria-live="polite"></div></section>
 </main></div>
 <script id="mailData" type="application/json">[{"title":"Arbeit gefunden","from":"Ahmet","subject":"Arbeit gefunden","email":"h.ahmet@gmx.at","situation":"Sie bekommen von Ihrem Freund Ahmet folgendes E-Mail:","body":"Liebe/Lieber …,\n\nbei mir gibt es Neuigkeiten. Ich habe endlich Arbeit gefunden! Seit einem Monat arbeite ich als Verkäufer in einer Bäckerei. Leider habe ich nur am Sonntag frei, da mache ich mit meiner Familie meistens einen kleinen Ausflug.\n\nUnd du? Wie geht es dir? Was machst du eigentlich? Arbeitest du? Und was machst du so in deiner Freizeit, z. B. am Wochenende?\n\nHast du Zeit und Lust, uns nächsten Sonntag zu besuchen?\n\nLiebe Grüße\nAhmet","questions":["Wie geht es dir?","Was machst du eigentlich? Arbeitest du?","Was machst du in deiner Freizeit, z. B. am Wochenende?","Hast du Zeit und Lust, uns nächsten Sonntag zu besuchen?"]},{"title":"Reise","from":"Michael","subject":"Reise","email":"michael.morris@hotmail.com","situation":"Sie bekommen von Ihrem Freund Michael folgendes E-Mail:","body":"Liebe/Lieber …,\n\nwie geht es dir? Stell dir vor, ich fahre nächste Woche nach Österreich. Dort werde ich Wien, Salzburg und Innsbruck besuchen. Ich freue mich sehr darauf. Hast du schon einmal eine Reise gemacht? Wohin bist du gefahren? Was gibt es bei dir Neues?\n\nWir haben uns so lange nicht mehr gesehen. Nach meiner Reise müssen wir uns unbedingt treffen. Dann zeige ich dir auch meine Fotos.\n\nWann hast du Zeit?\n\nBis bald und liebe Grüße\nMichael","questions":["Wie geht es dir?","Hast du schon einmal eine Reise gemacht? Wohin bist du gefahren?","Was gibt es bei dir Neues?","Wann hast du Zeit?"]},{"title":"Kurze Reise","from":"Klara","subject":"kurze Reise","email":"klara_lara@yahoo.de","situation":"Sie bekommen von Ihrer Freundin Klara folgendes E-Mail:","body":"Liebe/Lieber …,\n\nwas gibt es bei dir Neues? Bei mir in der Arbeit ist gerade ziemlich viel los. Zum Glück habe ich nächsten Monat Urlaub! Ich möchte gerne eine kurze Reise machen, aber ich habe noch keine Idee, wohin. Wenn du Lust hast, können wir ja zusammen wegfahren.\n\nWohin möchtest du gerne fahren? Und was möchtest du dort machen? Von mir aus können wir fünf bis sechs Tage wegfahren, wie lange hast du Zeit?\n\nSchreib mir bald!\nLiebe Grüße\nKlara","questions":["Was gibt es bei dir Neues?","Wohin möchtest du gerne fahren?","Was möchtest du dort machen?","Wie lange hast du Zeit?"]},{"title":"Kino!","from":"Matthias","subject":"Kino!","email":"matthias.93@gmx.at","situation":"Sie bekommen von Ihrem Freund Matthias folgendes E-Mail:","body":"Liebe/Lieber …,\n\nab Freitag ist der neue Film im Kino, den wir uns ansehen wollten. Ich möchte dich gerne einladen. Wann möchtest du ins Kino gehen? Wo sollen wir uns treffen?\n\nIch freue mich schon sehr! Ich gehe ja wirklich oft ins Kino, was ist denn dein liebstes Hobby?\n\nWenn du Lust hast, dann können wir nach dem Kino noch etwas unternehmen. Hast du eine Idee, was wir machen können?\n\nBis dann, ich freu mich!\nLiebe Grüße\nMatthias","questions":["Wann möchtest du ins Kino gehen?","Wo sollen wir uns treffen?","Was ist dein liebstes Hobby?","Was könnten wir nach dem Kino machen?"]},{"title":"Wörterbuch leihen","from":"Ivo","subject":"Wörterbuch leihen","email":"ivo89@gmx.at","situation":"Sie bekommen von Ihrem Freund Ivo folgendes E-Mail:","body":"Liebe/Lieber …!\n\nIch bin bald mit meinem Deutschkurs fertig! Nächste Woche habe ich die Prüfung. Du hast ja gesagt, dass du mir dein Wörterbuch leihst. Wann kann ich denn zu dir kommen und es abholen?\n\nVielleicht können wir danach etwas zusammen machen. Hast du eine Idee?\n\nDu hast ja auch einen Deutschkurs besucht und eine sehr gute Note bekommen. Wie hat dir der Kurs gefallen und welchen Tipp kannst du mir für meine Prüfung geben?\n\nIch freue mich darauf, dich wiederzusehen. :)\n\nLiebe Grüße\nIvo","questions":["Wann kann ich denn zu dir kommen und es abholen?","Hast du eine Idee, was wir danach zusammen machen können?","Wie hat dir der Deutschkurs gefallen?","Welchen Tipp kannst du geben?"]},{"title":"Neue Wohnung","from":"Hannah","subject":"Neue Wohnung!","email":"Hannah.M@yahoo.com","situation":"Sie bekommen von Ihrer Kollegin Hannah folgendes E-Mail:","body":"Liebe/Lieber …,\n\nendlich habe ich eine größere Wohnung gefunden und kann gleich einziehen. Du hast gesagt, dass du mir beim Packen helfen willst. Wann hast du Zeit?\nIch kann dich zu Hause abholen. Da fällt mir ein: Du hast ja auch eine neue Adresse. Wo wohnst du jetzt? Wie gefällt dir die Wohnung? Bist du zufrieden?\nIn drei Wochen möchte ich in meiner neuen Wohnung eine große Party machen. Hast du ein paar Tipps für die Party?\n\nLiebe Grüße\nHannah","questions":["Wann hast du Zeit?","Wo wohnst du jetzt?","Wie gefällt dir die Wohnung? Bist du zufrieden?","Hast du ein paar Tipps für die Party?"]},{"title":"Deutsch lernen","from":"Daniel","subject":"Deutsch lernen","email":"danielopes@aon.com","situation":"Sie bekommen von Daniel, einem Kollegen aus dem Deutschkurs, folgendes E-Mail:","body":"Hallo …,\n\njetzt haben wir uns schon lange nicht mehr gesehen. Was machst du immer? Wie geht es dir beim Deutschlernen?\n\nIch war in den Ferien sehr viel unterwegs und habe schon fast alles vergessen. Wenn du willst, können wir uns nächste Woche einmal treffen und zusammen ein bisschen Deutsch lernen. Hast du Zeit? Und wann?\n\nAch ja, unser Deutschlehrer hat bald Geburtstag. Was sollen wir unserem Lehrer schenken? Hast du eine Idee?\n\nBis bald!\nDaniel","questions":["Was machst du immer?","Wie geht es dir beim Deutschlernen?","Hast du Zeit? Und wann?","Was sollen wir unserem Lehrer schenken? Hast du eine Idee?"]},{"title":"Reise – drugi model","from":"Michael","subject":"Reise","email":"michael.morris@hotmail.com","situation":"Sie bekommen von Ihrem Freund Michael folgendes E-Mail (weiterer Modellsatz):","body":"Liebe/Lieber …,\n\nwie geht es dir? Stell dir vor, ich fahre nächste Woche nach Österreich. Dort werde ich Wien, Salzburg und Innsbruck besuchen. Ich freue mich sehr darauf. Hast du schon einmal eine Reise gemacht? Wohin bist du gefahren? Was gibt es bei dir Neues?\n\nWir haben uns so lange nicht mehr gesehen. Nach meiner Reise müssen wir uns unbedingt treffen. Dann zeige ich dir auch meine Fotos.\n\nWann hast du Zeit?\n\nBis bald und liebe Grüße\nMichael","questions":["Wie geht es dir?","Hast du schon einmal eine Reise gemacht? Wohin bist du gefahren?","Was gibt es bei dir Neues?","Wann hast du Zeit?"]},{"title":"Geburtstagsparty","from":"Sara","email":"sara.mueller@gmx.de","subject":"Mein Geburtstag","situation":"Sie bekommen von Ihrer Freundin Sara folgendes E-Mail:","body":"Liebe/Lieber …,\n\nnächste Woche habe ich Geburtstag! Am Samstag möchte ich bei mir zu Hause eine kleine Party machen. Ich habe schon einige Freunde eingeladen und möchte etwas Leckeres kochen.\n\nHast du am Samstagabend Zeit? Was isst du besonders gern? Kannst du etwas zu trinken mitbringen?\n\nNach dem Essen können wir noch etwas zusammen machen. Was schlägst du vor?\n\nIch freue mich auf deine Antwort!\n\nLiebe Grüße\nSara","questions":["Hast du am Samstagabend Zeit?","Was isst du besonders gern?","Kannst du etwas zu trinken mitbringen?","Was können wir nach dem Essen machen?"]},{"title":"Besuch am Wochenende","from":"Nina","email":"nina.schmidt@gmx.de","subject":"Mein Besuch","situation":"Sie bekommen von Ihrer Freundin Nina folgendes E-Mail:","body":"Liebe/Lieber …,\n\nwie geht es dir? Ich habe nächste Woche ein paar Tage frei und möchte dich endlich wieder besuchen. Am Freitag komme ich um 16 Uhr mit dem Zug in deine Stadt.\n\nWo sollen wir uns treffen? Kann ich bei dir übernachten?\n\nAm Samstag möchte ich gern etwas unternehmen. Was können wir zusammen machen?\n\nÜbrigens, was hast du letztes Wochenende gemacht? Ich war mit meiner Schwester im Kino.\n\nSchreib mir bitte bald!\n\nViele Grüße\nNina","questions":["Wo sollen wir uns treffen?","Kann ich bei dir übernachten?","Was können wir am Samstag zusammen machen?","Was hast du letztes Wochenende gemacht?"]},{"title":"Mein neuer Hund","from":"Paul","email":"paul.weber@yahoo.de","subject":"Mein neuer Hund","situation":"Sie bekommen von Ihrem Freund Paul folgendes E-Mail:","body":"Liebe/Lieber …,\n\nich habe tolle Neuigkeiten! Letzte Woche habe ich einen kleinen Hund bekommen. Er heißt Bruno und ist sehr lieb. Jeden Nachmittag gehe ich mit ihm im Park spazieren.\n\nMagst du eigentlich Tiere? Hast du schon einmal ein Haustier gehabt?\n\nAm Sonntag möchte ich mit Bruno einen langen Spaziergang machen. Hast du Lust mitzukommen? Was können wir danach zusammen machen?\n\nIch freue mich auf dich!\n\nLiebe Grüße\nPaul","questions":["Magst du Tiere?","Hast du schon einmal ein Haustier gehabt?","Hast du am Sonntag Zeit für einen Spaziergang?","Was können wir danach zusammen machen?"]},{"title":"Gemeinsam kochen","from":"Melanie","email":"melanie.fischer@gmx.de","subject":"Zusammen kochen","situation":"Sie bekommen von Ihrer Freundin Melanie folgendes E-Mail:","body":"Liebe/Lieber …,\n\nwie geht es dir? Ich habe seit Kurzem eine neue Küche und möchte am Wochenende gern mit dir zusammen kochen.\n\nHast du schon einmal ein typisch deutsches Gericht gekocht? Was möchtest du am Samstag gern kochen?\n\nWir müssen auch einkaufen gehen. Wann hast du Zeit? Was sollen wir für das Essen kaufen?\n\nNach dem Essen können wir uns einen Film ansehen.\n\nBis bald!\n\nLiebe Grüße\nMelanie","questions":["Hast du schon einmal ein deutsches Gericht gekocht?","Was möchtest du am Samstag kochen?","Wann hast du Zeit?","Was sollen wir für das Essen kaufen?"]},{"title":"Ein Konzert","from":"Markus","email":"markus.bauer@gmx.de","subject":"Konzert am Freitag","situation":"Sie bekommen von Ihrem Freund Markus folgendes E-Mail:","body":"Liebe/Lieber …,\n\nam nächsten Freitag gibt es ein tolles Konzert in unserer Stadt. Meine Lieblingsband spielt ab 20 Uhr in der Stadthalle. Ich habe schon zwei Eintrittskarten gekauft.\n\nHörst du gern Musik? Warst du schon einmal auf einem Konzert?\n\nIch möchte dich gern einladen. Wann und wo sollen wir uns treffen?\n\nNach dem Konzert können wir noch etwas unternehmen. Hast du eine Idee, was wir machen könnten?\n\nIch freue mich auf deine Antwort!\n\nViele Grüße\nMarkus","questions":["Hörst du gern Musik?","Warst du schon einmal auf einem Konzert?","Wann und wo sollen wir uns treffen?","Was können wir nach dem Konzert machen?"]}]</script>
 <script>
@@ -450,14 +520,23 @@ function updateNav(){
 }
 function enterWriting(){
  $('workspace').classList.add('writing');
+ document.documentElement.classList.remove('a2-questions-open');
+ $('questionsToggle').setAttribute('aria-expanded','false');
+ $('questionsToggle').textContent='Pitanja (4) ▾';
  updateNav();
- $('answer').focus({preventScroll:true});
- requestAnimationFrame(fitA2QuestionsToKeyboard);
+ const input=$('answer');
+ input.focus({preventScroll:true});
+ // Opening an existing draft should expose the continuation and not jump to the page top.
+ if(input.value){const n=input.value.length;input.setSelectionRange(n,n);}
+ fitA2Viewport();
+ requestAnimationFrame(()=>{fitA2QuestionsToKeyboard();if(input.value)input.scrollTop=input.scrollHeight;});
 }
 function leaveWriting(){
  $('answer').blur();
  $('workspace').classList.remove('writing');
+ document.documentElement.classList.remove('a2-typing','a2-questions-open');
  updateNav();
+ fitA2Viewport();
  requestAnimationFrame(fitFullEmailWithoutScroll);
 }
 $('navTitle').onclick=()=>{if($('workspace').classList.contains('writing'))leaveWriting();};
@@ -466,7 +545,25 @@ $('homeButton').onclick=showWelcome;
 $('chooseMailButton').onclick=showHome;
 $('startWriting').onclick=enterWriting;
 $('backToTask').onclick=leaveWriting;
-$('answer').addEventListener('input',()=>{state.drafts[current]=$('answer').value;save();updateCount();$('result').classList.remove('on')});
+$('answer').addEventListener('input',()=>{
+ const area=$('answer');
+ state.drafts[current]=area.value;save();updateCount();$('result').classList.remove('on');
+ // Keep the lines being written visible when the virtual keyboard occupies the lower screen.
+ if(document.documentElement.classList.contains('a2-typing')&&area.selectionStart>=area.value.length-1){
+  requestAnimationFrame(()=>{area.scrollTop=Math.max(0,area.scrollHeight-area.clientHeight);});
+ }
+});
+$('questionsToggle').addEventListener('pointerdown',e=>{
+ if(document.activeElement===$('answer'))e.preventDefault();
+});
+$('questionsToggle').onclick=()=>{
+ const root=document.documentElement;
+ const open=root.classList.toggle('a2-questions-open');
+ $('questionsToggle').setAttribute('aria-expanded',String(open));
+ $('questionsToggle').textContent=open?'Sakrij pitanja ▴':'Pitanja (4) ▾';
+ fitA2QuestionsToKeyboard();
+ if(root.classList.contains('a2-typing'))$('answer').focus({preventScroll:true});
+};
 $('check').onclick=grade;
 
 const initial=location.hash.match(/^#mejl-(\d+)$/);if(initial)openMail(Number(initial[1])-1);else {renderCards();showWelcome()}
@@ -485,9 +582,9 @@ function fitA2Viewport(){
  // writing area and the check button above Android/iOS virtual keyboards.
  const visibleHeight=vv?vv.height:window.innerHeight;
  const visibleTop=vv?vv.offsetTop:0;
- root.style.setProperty('--a2-vh',Math.max(160,Math.round(visibleHeight))+'px');
+ root.style.setProperty('--a2-vh',Math.max(110,Math.round(visibleHeight))+'px');
  root.style.setProperty('--a2-vtop',Math.max(0,Math.round(visibleTop))+'px');
- root.classList.toggle('a2-typing',document.activeElement===$('answer'));
+ root.classList.toggle('a2-typing',document.activeElement===$('answer') && $('workspace').classList.contains('writing'));
  requestAnimationFrame(()=>{
   fitA2QuestionsToKeyboard();
   if(!$('workspace').classList.contains('writing'))fitFullEmailWithoutScroll();
@@ -541,10 +638,10 @@ function fitA2QuestionsToKeyboard(){
  const foot=editor.querySelector('.foot');
  const h=editor.clientHeight;
  // Give priority to the student's text and a fixed control row above the keyboard.
- const minWriting=Math.min(102,Math.max(44,Math.round(h*0.34)));
+ const minWriting=Math.min(170,Math.max(65,Math.round(h*0.65)));
  const maxQuestions=Math.max(58,h-(foot?.offsetHeight||45)-minWriting-8);
  block.style.setProperty('max-height',maxQuestions+'px');
- for(const size of [10.8,10.4,10,9.6,9.2]){
+ for(const size of [10.3,10,9.7,9.4,9]){
   block.style.setProperty('--a2-q-size',size+'px');
   if(block.scrollHeight<=maxQuestions+2)break;
  }
