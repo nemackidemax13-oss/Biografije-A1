@@ -102,7 +102,7 @@ async function grade(){
   const timeout=setTimeout(()=>ctl.abort(),57000);
   let resp;
   try{
-   resp=await fetch('https://a1nivo.nemackidemax13.workers.dev/api/check-a2-email',{
+   resp=await fetch('https://a2mejlovi.nemackidemax13.workers.dev/api/check-a2-email',{
     method:'POST',headers:{'Content-Type':'application/json'},signal:ctl.signal,
     body:JSON.stringify({mailIndex:originalIndex,answer:txt})
    });
