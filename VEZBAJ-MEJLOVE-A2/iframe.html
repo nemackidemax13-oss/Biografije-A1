@@ -439,7 +439,7 @@ let current=0;
 function save(){try{localStorage.setItem(STORE,JSON.stringify(state));}catch(e){$('saveLabel').textContent='Čuvanje nije dostupno u ovom pregledaču.'}}
 function countWords(s){return (String(s).match(/[\p{L}\p{N}]+(?:['’\-][\p{L}\p{N}]+)*/gu)||[]).length;}
 function esc(s){return String(s??'').replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]})}
-function questionHtml(m){return '<b>PITANJA · ODGOVORI NA SVA ČETIRI</b><ol>'+m.questions.map(q=>'<li>'+esc(q)+'</li>').join('')+'</ol>'}
+function questionHtml(m){return '<b>PITANJA</b><ol>'+m.questions.map(q=>'<li>'+esc(q)+'</li>').join('')+'</ol>'}
 function showWelcome(){
  state.current=current;save();$('answer').blur();
  $('workspace').classList.remove('writing');
