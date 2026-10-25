@@ -413,14 +413,14 @@ header{flex:none;background:linear-gradient(110deg,#0a275e,#1657a3);color:#fff;p
 }
 
 /* A2 Serbian reference translations: small red text below every German task and question. */
-.sr-situation{font-size:9px;line-height:1.16;color:#c52743;margin-top:3px;font-weight:600}
+.sr-situation{font-size:9.6px;line-height:1.16;color:#c52743;margin-top:3px;font-weight:600}
 .mail-body-de{white-space:pre-wrap}
-.mail-body-sr{white-space:pre-wrap;color:#c52743;font-size:9px;line-height:1.17;margin-top:8px;padding-top:6px;border-top:1px dashed #f0aeb9}
+.mail-body-sr{white-space:pre-wrap;color:#c52743;font-size:9.6px;line-height:1.17;margin-top:8px;padding-top:6px;border-top:1px dashed #f0aeb9}
 .question-de{display:block}
-.question-sr{display:block;color:#c52743!important;font-size:var(--a2-tr-size,8.5px)!important;line-height:1.08!important;font-weight:550!important;margin-top:1px;overflow-wrap:anywhere}
+.question-sr{display:block;color:#c52743!important;font-size:var(--a2-tr-size,9.1px)!important;line-height:1.08!important;font-weight:550!important;margin-top:1px;overflow-wrap:anywhere}
 @media(max-width:700px){
- .sr-situation{font-size:8.5px;line-height:1.12}
- .mail-body-sr{font-size:8.4px;line-height:1.13;margin-top:6px;padding-top:5px}
+ .sr-situation{font-size:9.1px;line-height:1.12}
+ .mail-body-sr{font-size:9px;line-height:1.13;margin-top:6px;padding-top:5px}
  .workspace.writing .writing-questions li{padding:1px 0!important}
  .workspace.writing .writing-questions ol{margin-top:2px!important}
  html.a2-typing .question-sr{line-height:1.04!important}
@@ -755,7 +755,7 @@ function fitA2QuestionsToKeyboard(){
  const sizes=[11.4,11.1,10.8,10.4,10,9.7];
  for(const size of sizes){
   block.style.setProperty('--a2-q-size',size+'px');
-  block.style.setProperty('--a2-tr-size',Math.max(7.0,size-2.9)+'px');
+  block.style.setProperty('--a2-tr-size',Math.max(7.6,size-2.3)+'px');
   if(block.scrollHeight<=free)break;
  }
  fitA2DraftToSpace();
