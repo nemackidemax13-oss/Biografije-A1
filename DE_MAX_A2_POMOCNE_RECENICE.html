@@ -45,6 +45,15 @@ h1 em{color:#ffb574;font-style:normal}
 @media(min-width:700px){.app{border-inline:1px solid #d0d9e4}.header{padding-top:13px}.content{padding:10px 13px 0}}
 @media(max-height:640px){.header{padding:7px 12px}.header h1{margin:5px 0 2px;font-size:18px}.subtitle{font-size:9px}.categories{padding:5px 9px}.categories .arrow{height:34px;flex-basis:39px;font-size:22px}.content{padding-top:5px}.phrase{padding:6px 8px 5px;margin-bottom:5px}.de{font-size:13px}.sr{font-size:11px}.num{font-size:8px;margin-bottom:2px}.listen{margin-top:5px}.listen button{min-height:25px;padding:3px 8px}.paging{height:41px}}
 @media(prefers-reduced-motion:no-preference){button{transition:background .15s,border-color .15s}}
+.audioBar{display:flex;align-items:center;gap:7px;padding:6px 11px;background:white;border-bottom:1px solid #e2e8f0;flex-shrink:0}
+.audioBar button{border:1px solid #cbdbea;border-radius:9px;flex:1;min-height:35px;padding:7px 9px;background:#f7f9fc;color:#355879;font-size:12px;font-weight:850}
+.audioBar button.selected{background:#18548b;border-color:#18548b;color:white}
+.audioBar button.stop{flex:0 0 42px;background:#fff2f4;border-color:#edcbd2;color:#bb2946;font-size:17px}
+.phrase{display:flex;align-items:center;gap:9px;padding:7px 9px 6px;margin-bottom:5px}
+.phraseText{flex:1;min-width:0}
+.listen{flex:none;margin-top:0}
+.listen button{display:grid;place-items:center;min-width:39px;width:39px;height:39px;min-height:39px;padding:0;border-radius:9px;font-size:19px}
+@media(max-height:640px){.audioBar{padding:4px 9px}.audioBar button{min-height:29px;padding:4px 7px}.phrase{padding:5px 7px 4px;margin-bottom:4px}.listen{margin-top:0}.listen button{min-width:33px;width:33px;min-height:33px;height:33px;padding:0;font-size:16px}}
 </style>
 </head>
 <body>
@@ -52,20 +61,25 @@ h1 em{color:#ffb574;font-style:normal}
   <header class="header">
     <div class="brand"><span class="level">A2</span></div>
     <h1>Pomoćne <em>rečenice</em></h1>
-    <p class="subtitle">Gemeinsam etwas planen · Nemački i srpski izgovor</p>
+    <p class="subtitle">Gemeinsam etwas planen · Nemački izgovor i srpski prevod</p>
   </header>
   <nav class="categories" id="categories" aria-label="Kategorije pomoćnih rečenica">
     <button class="arrow" type="button" data-step="-1" aria-label="Prethodna kategorija">❮</button>
     <div class="catCenter" aria-live="polite"><strong id="catName"></strong><small id="catPage"></small></div>
     <button class="arrow" type="button" data-step="1" aria-label="Sledeća kategorija">❯</button>
   </nav>
+  <div class="audioBar" role="group" aria-label="Nemački izgovor">
+    <button type="button" id="autoMode" aria-pressed="false">▶ Auto</button>
+    <button type="button" id="manualMode" class="selected" aria-pressed="true">🔊 Ručno</button>
+    <button type="button" id="stopSound" class="stop" aria-label="Zaustavi">■</button>
+  </div>
   <main class="content" id="content" tabindex="-1"></main>
   <nav class="paging" aria-label="Stranice rečenica">
     <button class="arrow" type="button" id="prevPage" aria-label="Prethodna stranica rečenica">❮</button>
     <div class="pageInfo"><strong id="pageLabel">1 / 1</strong><small id="pageRange">Pomoćne rečenice</small></div>
     <button class="arrow" type="button" id="nextPage" aria-label="Sledeća stranica rečenica">❯</button>
   </nav>
-  <div id="notice" role="status" aria-live="polite">Izaberi kategoriju i slušaj rečenice na nemačkom ili srpskom.</div>
+  <div id="notice" role="status" aria-live="polite">Auto ili ručni nemački izgovor, sa srpskim prevodom.</div>
 </div>
 <script>
 "use strict";
@@ -73,7 +87,10 @@ const categories=[{"name":"Predlozi","deName":"Vorschläge","description":"Predl
 const nav=document.getElementById("categories");
 const content=document.getElementById("content");
 const notice=document.getElementById("notice");
-let categoryIndex=0,pageIndex=0,pages=[],active=null,sequence=0;
+const autoButton=document.getElementById("autoMode");
+const manualButton=document.getElementById("manualMode");
+const stopButton=document.getElementById("stopSound");
+let categoryIndex=0,pageIndex=0,pages=[],active=null,sequence=0,mode='manual';
 let voices=[];
 const safe=s=>String(s).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[ch]));
 function updateVoices(){voices=("speechSynthesis" in window)?window.speechSynthesis.getVoices():[]}
@@ -87,7 +104,7 @@ function resetSpeech(){
   active=null;
 }
 function phraseHtml(p,i){
-  return '<article class="phrase" data-index="'+i+'"><div class="num">REČENICA '+String(i+1).padStart(2,'0')+'</div><div class="de" lang="de">'+safe(p.de)+'</div><div class="sr" lang="sr">'+safe(p.sr)+'</div><div class="listen"><button type="button" data-lang="de" data-index="'+i+'" aria-label="Slušaj nemački izgovor: '+safe(p.de)+'">🔊 DE</button><button type="button" class="srButton" data-lang="sr" data-index="'+i+'" aria-label="Slušaj srpski izgovor: '+safe(p.sr)+'">🔊 SR</button></div></article>';
+  return '<article class="phrase" data-index="'+i+'"><div class="phraseText"><div class="num">REČENICA '+String(i+1).padStart(2,'0')+'</div><div class="de" lang="de">'+safe(p.de)+'</div><div class="sr" lang="sr">'+safe(p.sr)+'</div></div><div class="listen"><button type="button" data-index="'+i+'" aria-label="Slušaj nemački: '+safe(p.de)+'">🔊</button></div></article>';
 }
 function buildPages(){
   const c=categories[categoryIndex],style=getComputedStyle(content),section=content.querySelector(".section");
@@ -131,41 +148,73 @@ function pickVoice(lang){
   if(lang==="de")return voices.find(v=>/^de[-_](DE|AT)/i.test(v.lang))||voices.find(v=>/^de([-_]|$)/i.test(v.lang))||null;
   return voices.find(v=>/^sr([-_]|$)/i.test(v.lang))||voices.find(v=>/^(bs|hr)([-_]|$)/i.test(v.lang))||null;
 }
-function speak(index,lang,btn){
-  if(active?.button===btn){resetSpeech();notice.textContent="Izgovor je zaustavljen.";return}
-  resetSpeech();
-  if(!("speechSynthesis" in window)){notice.textContent="Pregledač ne podržava glasovni izgovor.";return}
-  const phrase=categories[categoryIndex].phrases[index];
-  if(!phrase)return;
-  const voice=pickVoice(lang);
-  const utterance=new SpeechSynthesisUtterance(phrase[lang]);
-  utterance.lang=voice?voice.lang:(lang==="de"?"de-DE":"sr-RS");
-  if(voice)utterance.voice=voice;
-  utterance.rate=lang==="de"?.87:.94;
-  utterance.pitch=1;
-  const call=sequence;
-  active={button:btn,utterance};
-  btn.classList.add("active");
-  btn.closest(".phrase")?.classList.add("playing");
-  notice.textContent="Slušanje: "+(lang==="de"?"nemački":"srpski");
-  const finish=()=>{if(call!==sequence)return;resetSpeech();notice.textContent="Izaberi sledeću rečenicu za slušanje."};
-  utterance.onend=finish;
-  utterance.onerror=e=>{if(call!==sequence)return;resetSpeech();notice.textContent=e.error==="canceled"?"Izgovor je zaustavljen.":"Glas nije dostupan na ovom uređaju. Proveri glasove u pregledaču."};
-  try{window.speechSynthesis.speak(utterance)}catch(e){resetSpeech();notice.textContent="Izgovor nije dostupan u ovom pregledaču."}
+function syncMode(){
+  autoButton.classList.toggle("selected",mode==="auto");
+  manualButton.classList.toggle("selected",mode==="manual");
+  autoButton.setAttribute("aria-pressed",String(mode==="auto"));
+  manualButton.setAttribute("aria-pressed",String(mode==="manual"));
+}
+function playGerman(index,ticket,after){
+  if(ticket!==sequence)return;
+  if(!("speechSynthesis" in window)){
+    notice.textContent="Nemački izgovor nije dostupan u pregledaču.";
+    mode="manual";syncMode();return;
+  }
+  const p=categories[categoryIndex].phrases[index];
+  if(!p)return;
+  const voice=pickVoice("de");
+  const u=new SpeechSynthesisUtterance(p.de);
+  u.lang=voice?voice.lang:"de-DE";if(voice)u.voice=voice;u.rate=.88;u.pitch=1;
+  const card=content.querySelector('.phrase[data-index="'+index+'"]');
+  if(card){card.classList.add("playing");card.querySelector("button")?.classList.add("active")}
+  active={index,utterance:u};
+  notice.textContent="Nemački · Rečenica "+(index+1);
+  function clean(){card?.classList.remove("playing");card?.querySelector("button")?.classList.remove("active");active=null}
+  u.onend=()=>{if(ticket!==sequence)return;clean();if(after)after();else notice.textContent="Spremno za slušanje."};
+  u.onerror=e=>{if(ticket!==sequence)return;clean();if(e.error!=="canceled"&&e.error!=="interrupted"){notice.textContent="Nemački glas nije dostupan.";mode="manual";syncMode()}};
+  try{speechSynthesis.speak(u)}catch(e){clean();mode="manual";syncMode();notice.textContent="Glas nije dostupan."}
+}
+function autoNext(ids,i,ticket){
+  if(ticket!==sequence||mode!=="auto")return;
+  if(i>=ids.length){notice.textContent="Završene rečenice na ovoj stranici.";return}
+  playGerman(ids[i],ticket,()=>autoNext(ids,i+1,ticket));
+}
+function startAuto(){
+  resetSpeech();mode="auto";syncMode();
+  const ids=(pages[pageIndex]||[]).slice();
+  if(ids.length)autoNext(ids,0,sequence);
+}
+function setManual(){
+  resetSpeech();mode="manual";syncMode();
+  notice.textContent="Ručno: pritisni zvučnik pored nemačke rečenice.";
+}
+function moveCategory(step){
+  resetSpeech();categoryIndex=(categoryIndex+step+categories.length)%categories.length;pageIndex=0;render();
+  if(mode==="auto")startAuto();
+}
+function movePage(step){
+  resetSpeech();pageIndex=(pageIndex+step+pages.length)%pages.length;showPage();
+  if(mode==="auto")startAuto();
 }
 nav.addEventListener("click",e=>{
- const b=e.target.closest("button[data-step]");if(!b)return;
- resetSpeech();categoryIndex=(categoryIndex+Number(b.dataset.step)+categories.length)%categories.length;pageIndex=0;render();notice.textContent="Izaberi rečenicu za slušanje.";
+  const b=e.target.closest("button[data-step]");
+  if(b)moveCategory(Number(b.dataset.step));
 });
 content.addEventListener("click",e=>{
- const b=e.target.closest("button[data-lang]");if(b)speak(Number(b.dataset.index),b.dataset.lang,b);
+  const b=e.target.closest("button[data-index]");if(!b)return;
+  const i=Number(b.dataset.index);
+  if(active?.index===i){setManual();return}
+  resetSpeech();mode="manual";syncMode();playGerman(i,sequence,null);
 });
-document.getElementById("prevPage").addEventListener("click",()=>{resetSpeech();pageIndex=(pageIndex-1+pages.length)%pages.length;showPage()});
-document.getElementById("nextPage").addEventListener("click",()=>{resetSpeech();pageIndex=(pageIndex+1)%pages.length;showPage()});
+autoButton.addEventListener("click",startAuto);
+manualButton.addEventListener("click",setManual);
+stopButton.addEventListener("click",setManual);
+document.getElementById("prevPage").addEventListener("click",()=>movePage(-1));
+document.getElementById("nextPage").addEventListener("click",()=>movePage(1));
 let resizeFrame=0;
 window.addEventListener("resize",()=>{cancelAnimationFrame(resizeFrame);resizeFrame=requestAnimationFrame(()=>{resetSpeech();render()})});
 document.addEventListener("visibilitychange",()=>{if(document.hidden)resetSpeech()});
-render();
+render();syncMode();
 </script>
 </body>
 </html>
