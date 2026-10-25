@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="sr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0a1a35"><title>DE-MAX | ÖSD A2 – Usmeni dijalozi</title>
+<style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0a1a35;color:white;font-family:system-ui,Arial;text-align:center;padding:20px;box-sizing:border-box}main{max-width:460px}h1{font-size:23px}p{line-height:1.5;color:#cbd5e1}.dots{color:#30dfb3;font-size:32px}</style></head>
+<body><main><div class="dots">● ● ●</div><h1>DE-MAX · ÖSD A2</h1><p id="status">Učitavanje dijaloga, prevoda i audio-zapisa…</p></main>
+<script>
+(async function(){
+  try {
+    const names=Array.from({length:11},(_,i)=>"DE_MAX_A2_DIJALOZI_AUDIO/part_"+String(i).padStart(2,"0")+".txt");
+    const parts=await Promise.all(names.map(async function(name){
+      const response=await fetch(name);
+      if(!response.ok) throw new Error("Nedostaje deo aplikacije: "+name+" ("+response.status+")");
+      return response.text();
+    }));
+    document.open();
+    document.write(parts.join(""));
+    document.close();
+  } catch(error) {
+    document.getElementById("status").textContent="Aplikacija trenutno ne može da se učita. Osvežite stranicu. Detalj: "+error.message;
+  }
+})();
+</script></body></html>
