@@ -739,7 +739,7 @@ function a2OpeningPresent(text){
 }
 function a2ClosingPresent(text){
  const end=String(text||"").trim().split(/\n/).slice(-4).join(" ");
- return /(?:liebe|viele|herzliche|beste|freundliche)\s+gr(?:ü|ue|u|ü)s(?:s|ß)e|bis\s+bald|mit\s+freundlichen\s+gr(?:ü|ue|u)ßen|^lg\b/im.test(end);
+ return /(?:liebe|viele|herzliche|beste|freundliche)\s+gr(?:ü|ue|u)(?:ß|ss)e|bis\s+bald|mit\s+freundlichen\s+gr(?:ü|ue|u)(?:ß|ss)en|^lg\b/im.test(end);
 }
 async function gradeA2(body,env){
  const index=body&&body.mailIndex,answer=body&&body.answer;
