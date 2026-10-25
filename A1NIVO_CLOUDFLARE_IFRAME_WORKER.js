@@ -678,6 +678,70 @@ async function gradeRafaela(body,env){
 }
 
 
+
+// A2 DOPUNA: nezavisna provera A2 mejlova; A1 provera ostaje potpuno nepromenjena.
+const A2_MAILS = [{"title":"Arbeit gefunden","situation":"Sie bekommen von Ihrem Freund Ahmet folgendes E-Mail:","received":"Liebe/Lieber …,\n\nbei mir gibt es Neuigkeiten. Ich habe endlich Arbeit gefunden! Seit einem Monat arbeite ich als Verkäufer in einer Bäckerei. Leider habe ich nur am Sonntag frei, da mache ich mit meiner Familie meistens einen kleinen Ausflug.\n\nUnd du? Wie geht es dir? Was machst du eigentlich? Arbeitest du? Und was machst du so in deiner Freizeit, z. B. am Wochenende?\n\nHast du Zeit und Lust, uns nächsten Sonntag zu besuchen?\n\nLiebe Grüße\nAhmet","questions":["Wie geht es dir?","Was machst du eigentlich? Arbeitest du?","Was machst du in deiner Freizeit, z. B. am Wochenende?","Hast du Zeit und Lust, uns nächsten Sonntag zu besuchen?"],"to":"Ahmet"},{"title":"Reise","situation":"Sie bekommen von Ihrem Freund Michael folgendes E-Mail:","received":"Liebe/Lieber …,\n\nwie geht es dir? Stell dir vor, ich fahre nächste Woche nach Österreich. Dort werde ich Wien, Salzburg und Innsbruck besuchen. Ich freue mich sehr darauf. Hast du schon einmal eine Reise gemacht? Wohin bist du gefahren? Was gibt es bei dir Neues?\n\nWir haben uns so lange nicht mehr gesehen. Nach meiner Reise müssen wir uns unbedingt treffen. Dann zeige ich dir auch meine Fotos.\n\nWann hast du Zeit?\n\nBis bald und liebe Grüße\nMichael","questions":["Wie geht es dir?","Hast du schon einmal eine Reise gemacht? Wohin bist du gefahren?","Was gibt es bei dir Neues?","Wann hast du Zeit?"],"to":"Michael"},{"title":"Kurze Reise","situation":"Sie bekommen von Ihrer Freundin Klara folgendes E-Mail:","received":"Liebe/Lieber …,\n\nwas gibt es bei dir Neues? Bei mir in der Arbeit ist gerade ziemlich viel los. Zum Glück habe ich nächsten Monat Urlaub! Ich möchte gerne eine kurze Reise machen, aber ich habe noch keine Idee, wohin. Wenn du Lust hast, können wir ja zusammen wegfahren.\n\nWohin möchtest du gerne fahren? Und was möchtest du dort machen? Von mir aus können wir fünf bis sechs Tage wegfahren, wie lange hast du Zeit?\n\nSchreib mir bald!\nLiebe Grüße\nKlara","questions":["Was gibt es bei dir Neues?","Wohin möchtest du gerne fahren?","Was möchtest du dort machen?","Wie lange hast du Zeit?"],"to":"Klara"},{"title":"Kino!","situation":"Sie bekommen von Ihrem Freund Matthias folgendes E-Mail:","received":"Liebe/Lieber …,\n\nab Freitag ist der neue Film im Kino, den wir uns ansehen wollten. Ich möchte dich gerne einladen. Wann möchtest du ins Kino gehen? Wo sollen wir uns treffen?\n\nIch freue mich schon sehr! Ich gehe ja wirklich oft ins Kino, was ist denn dein liebstes Hobby?\n\nWenn du Lust hast, dann können wir nach dem Kino noch etwas unternehmen. Hast du eine Idee, was wir machen können?\n\nBis dann, ich freu mich!\nLiebe Grüße\nMatthias","questions":["Wann möchtest du ins Kino gehen?","Wo sollen wir uns treffen?","Was ist dein liebstes Hobby?","Was könnten wir nach dem Kino machen?"],"to":"Matthias"},{"title":"Wörterbuch leihen","situation":"Sie bekommen von Ihrem Freund Ivo folgendes E-Mail:","received":"Liebe/Lieber …!\n\nIch bin bald mit meinem Deutschkurs fertig! Nächste Woche habe ich die Prüfung. Du hast ja gesagt, dass du mir dein Wörterbuch leihst. Wann kann ich denn zu dir kommen und es abholen?\n\nVielleicht können wir danach etwas zusammen machen. Hast du eine Idee?\n\nDu hast ja auch einen Deutschkurs besucht und eine sehr gute Note bekommen. Wie hat dir der Kurs gefallen und welchen Tipp kannst du mir für meine Prüfung geben?\n\nIch freue mich darauf, dich wiederzusehen. :)\n\nLiebe Grüße\nIvo","questions":["Wann kann Ivo zu dir kommen?","Was willst du machen?","Wie hat dir der Deutschkurs gefallen?","Welchen Tipp kannst du geben?"],"to":"Ivo"},{"title":"Neue Wohnung","situation":"Sie bekommen von Ihrer Kollegin Hannah folgendes E-Mail:","received":"Liebe/Lieber …,\n\nendlich habe ich eine größere Wohnung gefunden und kann gleich einziehen. Du hast gesagt, dass du mir beim Packen helfen willst. Wann hast du Zeit?\nIch kann dich zu Hause abholen. Da fällt mir ein: Du hast ja auch eine neue Adresse. Wo wohnst du jetzt? Wie gefällt dir die Wohnung? Bist du zufrieden?\nIn drei Wochen möchte ich in meiner neuen Wohnung eine große Party machen. Hast du ein paar Tipps für die Party?\n\nLiebe Grüße\nHannah","questions":["Wann hast du Zeit?","Wo wohnst du jetzt?","Wie gefällt dir die Wohnung? Bist du zufrieden?","Hast du ein paar Tipps für die Party?"],"to":"Hannah"},{"title":"Deutsch lernen","situation":"Sie bekommen von Daniel, einem Kollegen aus dem Deutschkurs, folgendes E-Mail:","received":"Hallo …,\n\njetzt haben wir uns schon lange nicht mehr gesehen. Was machst du immer? Wie geht es dir beim Deutschlernen?\n\nIch war in den Ferien sehr viel unterwegs und habe schon fast alles vergessen. Wenn du willst, können wir uns nächste Woche einmal treffen und zusammen ein bisschen Deutsch lernen. Hast du Zeit? Und wann?\n\nAch ja, unser Deutschlehrer hat bald Geburtstag. Was sollen wir unserem Lehrer schenken? Hast du eine Idee?\n\nBis bald!\nDaniel","questions":["Was machst du immer?","Wie geht es dir beim Deutschlernen?","Hast du Zeit? Und wann?","Was sollen wir unserem Lehrer schenken? Hast du eine Idee?"],"to":"Daniel"},{"title":"Reise – drugi model","situation":"Sie bekommen von Ihrem Freund Michael folgendes E-Mail (weiterer Modellsatz):","received":"Liebe/Lieber …,\n\nwie geht es dir? Stell dir vor, ich fahre nächste Woche nach Österreich. Dort werde ich Wien, Salzburg und Innsbruck besuchen. Ich freue mich sehr darauf. Hast du schon einmal eine Reise gemacht? Wohin bist du gefahren? Was gibt es bei dir Neues?\n\nWir haben uns so lange nicht mehr gesehen. Nach meiner Reise müssen wir uns unbedingt treffen. Dann zeige ich dir auch meine Fotos.\n\nWann hast du Zeit?\n\nBis bald und liebe Grüße\nMichael","questions":["Wie geht es dir?","Hast du schon einmal eine Reise gemacht? Wohin bist du gefahren?","Was gibt es bei dir Neues?","Wann hast du Zeit?"],"to":"Michael"}];
+const A2_OUTPUT_FORMAT = {
+ type:"json_schema",json_schema:{
+  name:"demax_osd_a2_email_review",strict:true,
+  schema:{type:"object",properties:{
+   score:{type:"integer"},
+   correctedText:{type:"string"},
+   feedback:{type:"string"},
+   questionFeedback:{type:"array",items:{type:"string"}}
+  },required:["score","correctedText","feedback","questionFeedback"],additionalProperties:false}
+ }
+};
+async function gradeA2(body,env){
+ const index=body?.mailIndex, answer=body?.answer;
+ if(!Number.isInteger(index)||index<0||index>=A2_MAILS.length||
+    typeof answer!=="string"||!answer.trim()||answer.length>2200)
+  return {status:400,data:{error:"Izaberi A2 mejl i napisi odgovor (do 2200 znakova)."}};
+ const words=(answer.match(/[\p{L}\p{N}]+(?:['’\-][\p{L}\p{N}]+)*/gu)||[]).length;
+ if(words<20)return {status:422,data:{error:"Mejl je prekratak za A2 ocenjivanje. Napisano je "+words+" reci. Cilj je oko 50 reci."}};
+ const task=A2_MAILS[index];
+ const system="Ti si precizan i nepristrasan profesor nemackog na ÖSD A2 nivou. Oceni samo ucenikov odgovor, nikad primljeni mejl. " +
+  "Tvoj odgovor mora biti tacan JSON zadate seme, na srpskom jeziku osim ispravljenog mejla na nemackom. " +
+  "Pitanja ocenjuj pojedinacno, ne nagradjuj odgovore koji nisu dati. " +
+  "Sacuvaj ucenikove namere i informacije, ne izmisljaj radnju, datum, vreme, osobe ili cinjenice. " +
+  "Ispravi gramatiku, padeze, red reci, velika slova, pozdrav i znakove interpunkcije. " +
+  "Ako nedostaju odgovori, u komentaru reci da ih ucenik dopise; ne izmisljaj ih u ispravljenom mejlu. " +
+  "Ocena 0 do 15 sluzi samo za vezbu, nije zvanicni ÖSD rezultat. " +
+  "Priblizno 50 reci je cilj, a blaga odstupanja ne kaznjavaj automatski.";
+ const user="A2 ZADATAK "+(index+1)+" – "+task.title+
+  "\nSITUACIJA:\n"+task.situation+
+  "\nPRIMLJENI MEJL (NE ocenjuj ga):\n"+task.received+
+  "\nPITANJA NA KOJA UČENIK TREBA DA ODGOVORI:\n"+task.questions.map((q,i)=>(i+1)+". "+q).join("\n")+
+  "\nUČENIKOV ODGOVOR KOJI SE OCENJUJE:\n"+answer+
+  "\nVRATI score od 0 do 15, correctedText sa celim ispravljenim odgovorom, " +
+  "feedback kratak i jasan na srpskom sa objasnjenjem kljucnih gresaka, " +
+  "questionFeedback tacno 4 komentara redom, navedi kada odgovor nedostaje. " +
+  "Oceni sadrzaj sva 4 pitanja, jezik A2, formu mejla, zavrsni pozdrav i razumljivost.";
+ const c=new AbortController(), timer=setTimeout(()=>c.abort(),45000);
+ let resp;
+ try{
+  resp=await fetch("https://api.openai.com/v1/chat/completions",{method:"POST",signal:c.signal,
+   headers:{"Content-Type":"application/json","Authorization":"Bearer "+env.OPENAI_API_KEY},
+   body:JSON.stringify({model:env.OPENAI_MODEL||"gpt-4.1-mini",temperature:0,
+    max_completion_tokens:2000,response_format:A2_OUTPUT_FORMAT,
+    messages:[{role:"system",content:system},{role:"user",content:user}]})});
+ }catch{return {status:502,data:{error:"AI servis trenutno nije dostupan. Pokusaj ponovo."}}}
+ finally{clearTimeout(timer)}
+ if(!resp.ok)return {status:resp.status===429?429:502,data:{error:resp.status===429?"OpenAI je dostigao limit.":"OpenAI servis je vratio gresku."}};
+ const out=await resp.json().catch(()=>null);
+ let data;try{data=JSON.parse(out?.choices?.[0]?.message?.content||"");}
+ catch{return {status:502,data:{error:"AI nije vratio ispravnu A2 proveru."}}}
+ if(!Number.isInteger(data?.score)||data.score<0||data.score>15||
+    typeof data?.correctedText!=="string"||typeof data?.feedback!=="string"||
+    !Array.isArray(data?.questionFeedback)||data.questionFeedback.length!==4||
+    data.questionFeedback.some(x=>typeof x!=="string"))
+  return {status:502,data:{error:"AI rezultat nije prosao proveru strukture."}};
+ return {status:200,data:{score:data.score,correctedText:data.correctedText.slice(0,2500),
+  feedback:(data.feedback+"\n\n"+data.questionFeedback.map((x,i)=>(i+1)+". "+x).join("\n")).slice(0,2500),
+  questionFeedback:data.questionFeedback,verificationVersion:"a2-four-questions-v1"}};
+}
+// KRAJ A2 DOPUNE
+
 const A1_IFRAME_PATHS = new Set([
   "/VEZBAJ-MEJLOVE-A1",
   "/VEZBAJ-MEJLOVE-A1/",
@@ -724,7 +788,7 @@ export default {
       return json({status:"ok",openaiConfigured:Boolean(env.OPENAI_API_KEY),tasks:35,provider:"OpenAI",rulesVersion:"a1-35-evidence-perspective-v2-2026-10-18",iframeEnabled:true},200,origin);
     if(request.method==="GET" && A1_IFRAME_PATHS.has(url.pathname))
       return serveA1Iframe(url.pathname);
-    if(url.pathname!=="/api/check-email" && url.pathname!=="/api/rafaela-review")
+    if(url.pathname!=="/api/check-email" && url.pathname!=="/api/rafaela-review" && url.pathname!=="/api/check-a2-email")
       return json({error:"Nepoznata putanja. Koristi /health, /api/check-email ili /api/rafaela-review."},404,origin);
     if(!SITE_ORIGINS.has(origin))
       return json({error:"Nedozvoljena web adresa."},403,origin);
@@ -746,7 +810,7 @@ export default {
       if(text.length>MAX_BODY_BYTES)return json({error:"Mejl je predugacak."},413,origin);
       let body;
       try {body=JSON.parse(text);}catch{return json({error:"Neispravan zahtev."},400,origin);}
-      const result=url.pathname==="/api/rafaela-review"?await gradeRafaela(body,env):await grade(body,env);
+      const result=url.pathname==="/api/check-a2-email"?await gradeA2(body,env):(url.pathname==="/api/rafaela-review"?await gradeRafaela(body,env):await grade(body,env));
       return json(result.data,result.status,origin);
     } catch {
       return json({error:"Greska na serveru. Pokusaj kasnije."},500,origin);
