@@ -250,11 +250,13 @@ function enterWriting(){
  $('workspace').classList.add('writing');
  updateNav();
  $('answer').focus({preventScroll:true});
+ requestAnimationFrame(fitA2QuestionsToKeyboard);
 }
 function leaveWriting(){
  $('answer').blur();
  $('workspace').classList.remove('writing');
  updateNav();
+ requestAnimationFrame(fitFullEmailWithoutScroll);
 }
 $('navTitle').onclick=()=>{if($('workspace').classList.contains('writing'))leaveWriting();};
 
@@ -296,7 +298,7 @@ function fitFullEmailWithoutScroll(){
   return content.getBoundingClientRect().height;
  }
  if(measure(1)<=available)return;
- let low=0.35,high=1;
+ let low=0.20,high=1;
  if(measure(low)>available){
   measure(low);
   return;
@@ -305,7 +307,7 @@ function fitFullEmailWithoutScroll(){
   const mid=(low+high)/2;
   if(measure(mid)<=available)low=mid;else high=mid;
  }
- measure(Math.max(0.35,low-0.005));
+ measure(Math.max(0.20,low-0.005));
 }
 /* Keep all questions readable above the answer box and the mobile keyboard. */
 function fitA2QuestionsToKeyboard(){
@@ -321,24 +323,6 @@ function fitA2QuestionsToKeyboard(){
   if(block.offsetHeight<=maxQuestions)break;
  }
 }
-const oldFitViewport=fitA2Viewport;
-fitA2Viewport=function(){
- oldFitViewport();
- requestAnimationFrame(()=>{
-  fitFullEmailWithoutScroll();
-  fitA2QuestionsToKeyboard();
- });
-};
-const oldEnterWriting=enterWriting;
-enterWriting=function(){
- oldEnterWriting();
- requestAnimationFrame(fitA2QuestionsToKeyboard);
-};
-const oldLeaveWriting=leaveWriting;
-leaveWriting=function(){
- oldLeaveWriting();
- requestAnimationFrame(fitFullEmailWithoutScroll);
-};
 window.addEventListener('orientationchange',()=>requestAnimationFrame(fitFullEmailWithoutScroll));
 window.addEventListener('resize',()=>requestAnimationFrame(fitFullEmailWithoutScroll));
 window.visualViewport?.addEventListener('resize',()=>requestAnimationFrame(fitA2QuestionsToKeyboard));
