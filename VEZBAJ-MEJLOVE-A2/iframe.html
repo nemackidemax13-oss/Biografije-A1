@@ -1,4 +1,4 @@
-<!doctype html><html lang="sr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content"><meta name="theme-color" content="#0b3474"><title>DE-MAX Tutin • ÖSD A2 – Vežbaj mejlove</title><style>
+<!doctype html><html lang="sr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content"><meta name="theme-color" content="#0b3474"><title>A2 mejl vežbe • ÖSD A2</title><style>
 :root{--navy:#0d2d69;--blue:#1554b7;--red:#d52c45;--ink:#1b2b47;--line:#d8e3f5;--soft:#f1f6ff;--green:#138451}
 *{box-sizing:border-box}html,body{height:100%;margin:0}body{font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:#e8f0fc;color:var(--ink)}button,textarea,select{font:inherit}button{cursor:pointer;touch-action:manipulation}.app{height:100vh;height:100dvh;max-width:1050px;margin:auto;background:#fff;display:flex;flex-direction:column;box-shadow:0 2px 25px #122c5320;overflow:hidden}
 header{flex:none;background:linear-gradient(110deg,#0a275e,#1657a3);color:#fff;padding:6px 12px 8px;box-shadow:0 2px 8px #0c285533}
@@ -13,10 +13,69 @@ header{flex:none;background:linear-gradient(110deg,#0a275e,#1657a3);color:#fff;p
 .hide{display:none!important}.back{border:0;background:transparent;color:#1654bc;font-weight:900;font-size:11px}.modal{position:fixed;inset:0;background:#0c255cbb;z-index:10;display:none;align-items:center;justify-content:center;padding:12px}.modal.on{display:flex}.modal .inside{width:min(700px,100%);max-height:88dvh;overflow:auto;background:white;padding:15px;border-radius:14px;box-shadow:0 15px 80px #14284a66}
 @media(max-width:700px){.app{width:100%}.cards{grid-template-columns:repeat(2,1fr)}header{padding:5px 8px}.brand{font-size:18px}.workspace{display:flex;flex-direction:column}.prompt,.answer{flex:1;min-height:0;border:0}.workspace.writing .prompt{display:none}.workspace:not(.writing) .answer{display:none}.prompt-scroller{padding:9px 10px 15px}.email-body{font-size:12.5px;padding:10px 11px;line-height:1.36}.questions{padding:8px 10px}.questions li{font-size:11.5px}.mobile-start{display:block!important}.q-mini{display:block}.ptitle{min-height:39px}.editor{padding:7px 9px 10px}.hero{padding:10px}.hero-main{padding:15px}.hero h1{font-size:23px}.mail-card{padding:11px}.mail-card strong{font-size:12px}.mail-card span{font-size:20px}.msg{font-size:10px}}
 @media(min-width:701px){.mobile-start{display:none!important}.editor-label .back{display:none}.q-mini{display:none}}
+
+/* A2 mobile redesign v3: A1 app/worker untouched. */
+.nav{display:grid;grid-template-columns:44px minmax(0,1fr) 44px 48px;gap:7px}
+.nav #prev,.nav #next{background:#df2941;color:#fff;border:0;border-radius:9px;font-size:25px;font-weight:900}
+.nav #homeButton{background:#138b51;color:#fff;border:0;border-radius:9px;font-size:24px;font-weight:900}
+.nav #navTitle{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:#f3f7ff;color:#143e86;border:1px solid #b7cef3;border-radius:9px;font-size:12px;font-weight:850;padding:0 7px}
+.nav #navTitle.can-return{background:#dbeafb}
+.nav button:disabled{opacity:.4;cursor:default}
+.hero{overflow:hidden;min-height:0;display:flex;flex-direction:column;padding:10px 13px;gap:0}
+.hero-main{flex:none;padding:12px 10px;border-radius:12px}
+.hero-main h1{font-size:20px;line-height:1.15;margin:0 0 3px}
+.hero-main p{font-size:11px}
+.summary{margin:8px 2px 6px;flex:none;font-size:11px}
+.cards{display:grid;flex:1;min-height:0;grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:8px}
+.mail-card{display:flex;flex-direction:column;justify-content:center;overflow:hidden;min-height:0;padding:7px 9px}
+.mail-card span{font-size:19px;margin:0 0 3px}
+.mail-card strong{font-size:12px;line-height:1.28;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.mail-card small{font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px}
+@media(max-width:700px){
+ html,body{overflow:hidden;width:100%}
+ .app{height:var(--a2-vh,100dvh);max-height:100dvh;overflow:hidden}
+ header{padding:5px 7px 6px}
+ .top{min-height:27px}
+ .brand{font-size:17px;letter-spacing:0;font-style:normal;text-shadow:none;font-weight:950}
+ .pill{font-size:9px;padding:4px 7px}
+ .nav{grid-template-columns:43px minmax(0,1fr) 43px 46px;gap:5px;margin-top:3px}
+ .nav button{height:34px}
+ .nav #navTitle{font-size:11px}
+ .hero{padding:7px;overflow:hidden}
+ .hero-main{padding:8px 7px;border-radius:10px}
+ .hero-main h1{font-size:17px}
+ .hero-main p{font-size:10px}
+ .summary{font-size:10px;margin:6px 2px 5px}
+ .cards{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(4,minmax(0,1fr));gap:6px}
+ .mail-card{padding:4px 8px;border-radius:9px}
+ .mail-card span{font-size:15px;line-height:1.1;margin-bottom:1px}
+ .mail-card strong{font-size:11px;line-height:1.18}
+ .mail-card small{font-size:9px;margin-top:2px}
+ .workspace.writing .answer{height:100%;flex:1;min-height:0;display:flex;flex-direction:column}
+ .workspace.writing .editor{min-height:0;flex:1;display:flex;flex-direction:column;gap:3px;padding:4px 6px 3px}
+ .workspace.writing .editor-label,.workspace.writing .q-mini,.workspace.writing .msg{display:none!important}
+ .workspace.writing .editor textarea{flex:1;min-height:0;resize:none;padding:10px;font-size:16px;line-height:1.45}
+ .workspace.writing .foot{flex:none;position:sticky;bottom:0;z-index:4;margin:0;padding:4px 0 max(4px,env(safe-area-inset-bottom));background:#fff}
+ .workspace.writing .check{padding:10px 12px;font-size:12px}
+ .workspace.writing .word-count{font-size:11px}
+ body:has(.workspace.writing) header .top{display:none}
+ body:has(.workspace.writing) header .nav{margin-top:0}
+ .answer:has(.result.on) .editor{flex:0 0 38%}
+ .answer:has(.result.on) .result{flex:1;min-height:0;max-height:none}
+}
+@media(max-width:700px) and (max-height:510px){
+ .hero-main{padding:5px}
+ .hero-main h1{font-size:15px}
+ .hero-main p{display:none}
+ .mail-card span{display:none}
+ .mail-card strong{font-size:10px}
+ .mail-card small{font-size:8px}
+ .summary{margin:4px 2px}
+}
 </style></head><body>
-<div class="app"><header><div class="top"><div class="brand">DE-MAX <small>TUTIN</small></div><div class="pill">ÖSD A2 · 8 MEJLOVA</div></div>
-<div class="nav"><button id="prev" aria-label="Prethodni mejl">‹</button><select id="choose" aria-label="Odaberi mejl"></select><button id="next" aria-label="Sledeći mejl">›</button><button id="homeButton" aria-label="Svi mejlovi" title="Svi mejlovi">⌂</button></div></header>
-<section id="home" class="hero"><div class="hero-main"><div class="hero-brand">DE-MAX <small>TUTIN</small></div><div style="font-size:11px;font-weight:850;letter-spacing:.7px;color:#c6e0ff">ÖSD A2 · VEŽBANJE PISANJA</div><h1>Izaberi mejl</h1><p>Pročitaj postavku, odgovori na sva pitanja i vežbaj nemački.</p></div><div class="summary"><span>MEJLOVI ZA VEŽBANJE</span><span id="summary">0 / 8 napisano</span></div><div id="cards" class="cards"></div></section>
+<div class="app"><header><div class="top"><div class="brand">A2 mejl vežbe</div><div class="pill">8 mejlova · 15 bodova</div></div>
+<div class="nav"><button id="prev" aria-label="Prethodni mejl">‹</button><button id="navTitle" type="button" aria-label="Trenutni mejl; tokom pisanja vrati na postavku">Izaberi mejl</button><button id="next" aria-label="Sledeći mejl">›</button><button id="homeButton" type="button" aria-label="Svi mejlovi" title="Svi mejlovi">⌂</button></div></header>
+<section id="home" class="hero"><div class="hero-main"><h1>Izaberi mejl</h1><p>ÖSD A2 · 8 zadataka za vežbanje pisanja</p></div><div class="summary"><span>MEJLOVI ZA VEŽBANJE</span><span id="summary">0 / 8 napisano</span></div><div id="cards" class="cards"></div></section>
 <main id="workspace" class="workspace hide">
 <section class="panel prompt"><div class="ptitle"><strong id="number">1. mejl</strong><div class="buttons"><button id="readAll" class="btn-sm" type="button">⤢ Cela postavka</button><button id="startWriting" class="start mobile-start" type="button">✎ Piši mejl</button></div></div>
 <div id="promptScroll" class="prompt-scroller"><div class="label">SITUATION</div><div id="situation" class="situation"></div><div class="email"><div class="email-head"><div><b>Von:</b> <span id="senderEmail"></span></div><div><b>Betreff:</b> <span id="subject"></span></div></div><div id="original" class="email-body"></div></div><div id="questions" class="questions"></div><div class="notes">Schreiben Sie <strong>circa 50 Wörter</strong>. Beantworten Sie alle Fragen. Schreiben Sie einen Gruß am Ende.</div><p style="text-align:center"><button class="start mobile-start" id="startWritingBottom">✎ Piši mejl</button></p></div></section>
@@ -38,10 +97,10 @@ function save(){try{localStorage.setItem(STORE,JSON.stringify(state));}catch(e){
 function countWords(s){return (String(s).match(/[\p{L}\p{N}]+(?:['’\-][\p{L}\p{N}]+)*/gu)||[]).length;}
 function esc(s){return String(s??'').replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]})}
 function questionHtml(m){return '<b>PITANJA · ODGOVORI NA SVA ČETIRI</b><ol>'+m.questions.map(q=>'<li>'+esc(q)+'</li>').join('')+'</ol>'}
-function showHome(){state.current=current;save();$('workspace').classList.add('hide');$('home').classList.remove('hide');document.body.classList.remove('in-mail');renderCards();history.replaceState(null,'',location.pathname+location.search);}
+function showHome(){state.current=current;save();$('answer').blur();$('workspace').classList.remove('writing');$('workspace').classList.add('hide');$('home').classList.remove('hide');renderCards();updateNav();history.replaceState(null,'',location.pathname+location.search);}
 function renderCards(){let finished=0;$('cards').replaceChildren();MAILS.forEach((m,i)=>{const wc=countWords(state.drafts[i]||'');if(wc>=50)finished++;const b=document.createElement('button');b.className='mail-card'+(wc>=50?' complete':'');b.innerHTML='<span>'+(wc>=50?'✅':'✉️')+'</span><strong>'+(i+1)+'. mejl · '+esc(m.title)+'</strong><small>'+(wc>=50?'Napisan · vežbaj ponovo':wc+' / 50 reči')+'</small>';b.onclick=()=>openMail(i);$('cards').append(b)});$('summary').textContent=finished+' / '+MAILS.length+' napisano';}
-function renderMail(){let m=MAILS[current];$('number').textContent=(current+1)+'. mejl · '+m.title;$('choose').value=String(current);$('prev').disabled=current===0;$('next').disabled=current===MAILS.length-1;$('situation').textContent=m.situation;$('senderEmail').textContent=m.email;$('subject').textContent=m.subject;$('original').textContent=m.body;$('questions').innerHTML=questionHtml(m);$('miniQuestions').innerHTML=questionHtml(m);$('answer').value=state.drafts[current]||'';$('result').classList.remove('on');$('result').innerHTML='';$('promptScroll').scrollTop=0;updateCount();}
-function openMail(i){current=Math.max(0,Math.min(MAILS.length-1,Number(i)||0));state.current=current;state.visited[current]=true;save();$('home').classList.add('hide');$('workspace').classList.remove('hide');$('workspace').classList.remove('writing');renderMail();location.hash='mejl-'+(current+1);}
+function renderMail(){let m=MAILS[current];$('number').textContent=(current+1)+'. mejl · '+m.title;updateNav();$('situation').textContent=m.situation;$('senderEmail').textContent=m.email;$('subject').textContent=m.subject;$('original').textContent=m.body;$('questions').innerHTML=questionHtml(m);$('miniQuestions').innerHTML=questionHtml(m);$('answer').value=state.drafts[current]||'';$('result').classList.remove('on');$('result').innerHTML='';$('promptScroll').scrollTop=0;updateCount();}
+function openMail(i){current=Math.max(0,Math.min(MAILS.length-1,Number(i)||0));state.current=current;state.visited[current]=true;$('answer').blur();save();$('home').classList.add('hide');$('workspace').classList.remove('hide');$('workspace').classList.remove('writing');renderMail();location.hash='mejl-'+(current+1);}
 function updateCount(){
  const n=countWords($('answer').value),remaining=Math.max(0,50-n);
  $('count').textContent=remaining>0?n+' / 50 reči · još '+remaining:n+' reči ✓';
@@ -120,15 +179,49 @@ async function grade(){
 }
 $('prev').onclick=()=>{if(current>0)openMail(current-1)};
 $('next').onclick=()=>{if(current<MAILS.length-1)openMail(current+1)};
-$('choose').onchange=e=>openMail(Number(e.target.value));
+function updateNav(){
+ const isHome=!$('home').classList.contains('hide');
+ const isWriting=$('workspace').classList.contains('writing');
+ const title=$('navTitle');
+ title.textContent=isHome?'Izaberi mejl':(isWriting?'← Postavka · '+(current+1)+'/'+MAILS.length:(current+1)+' / '+MAILS.length+' · '+MAILS[current].title);
+ title.classList.toggle('can-return',!isHome&&isWriting);
+ $('prev').disabled=!isHome&&current===0;
+ $('next').disabled=!isHome&&current===MAILS.length-1;
+}
+function enterWriting(){
+ $('workspace').classList.add('writing');
+ updateNav();
+ $('answer').focus({preventScroll:true});
+}
+function leaveWriting(){
+ $('answer').blur();
+ $('workspace').classList.remove('writing');
+ updateNav();
+}
+$('navTitle').onclick=()=>{if($('workspace').classList.contains('writing'))leaveWriting();};
+
 $('homeButton').onclick=showHome;
-$('startWriting').onclick=$('startWritingBottom').onclick=()=>{$('workspace').classList.add('writing');$('answer').focus({preventScroll:true})};
-$('backToTask').onclick=()=>$('workspace').classList.remove('writing');
+$('startWriting').onclick=$('startWritingBottom').onclick=enterWriting;
+$('backToTask').onclick=leaveWriting;
 $('answer').addEventListener('input',()=>{state.drafts[current]=$('answer').value;save();updateCount();$('result').classList.remove('on')});
 $('check').onclick=grade;
 $('readAll').onclick=()=>{const m=MAILS[current];$('modalContent').innerHTML='<p style="margin:12px 0">'+esc(m.situation)+'</p><div class="email"><div class="email-head">Von: '+esc(m.email)+' · Betreff: '+esc(m.subject)+'</div><div class="email-body">'+esc(m.body)+'</div></div><div class="questions">'+questionHtml(m)+'</div>';$('readModal').classList.add('on')};
 $('closeModal').onclick=()=>$('readModal').classList.remove('on');
 $('readModal').addEventListener('click',e=>{if(e.target.id==='readModal')$('readModal').classList.remove('on')});
-MAILS.forEach((m,i)=>{const o=document.createElement('option');o.value=i;o.textContent=(i+1)+'. mejl — '+m.title;$('choose').append(o)});
-const initial=location.hash.match(/^#mejl-(\d+)$/);if(initial)openMail(Number(initial[1])-1);else {renderCards();$('choose').value=String(state.current||0)}
+
+const initial=location.hash.match(/^#mejl-(\d+)$/);if(initial)openMail(Number(initial[1])-1);else {renderCards();updateNav()}
+
+/* Keep the answer box and check bar visible above a mobile virtual keyboard. */
+function fitA2Viewport(){
+ if(!window.matchMedia('(max-width:700px)').matches){
+  document.documentElement.style.removeProperty('--a2-vh');
+  return;
+ }
+ const vv=window.visualViewport;
+ const currentHeight=vv?vv.height:window.innerHeight;
+ document.documentElement.style.setProperty('--a2-vh',Math.max(260,Math.floor(currentHeight))+'px');
+}
+window.addEventListener('resize',fitA2Viewport);
+window.visualViewport?.addEventListener('resize',fitA2Viewport);
+fitA2Viewport();
 </script></body></html>
