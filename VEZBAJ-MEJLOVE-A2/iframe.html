@@ -321,6 +321,31 @@ header{flex:none;background:linear-gradient(110deg,#0a275e,#1657a3);color:#fff;p
   .workspace.writing .editor textarea{font-size:16px!important}
  }
 }
+/* A2 MOBILE V13 — stop vertical finger scrolling while composing.
+   Keep caret movement/automatic textarea positioning and result scrolling. */
+@media(max-width:700px){
+ html:has(.workspace.writing),body:has(.workspace.writing){
+  overflow:hidden!important;
+  overscroll-behavior-y:none!important;
+ }
+ .workspace.writing,.workspace.writing .answer{
+  overflow:hidden!important;
+  overscroll-behavior-y:none!important;
+ }
+ .workspace.writing .editor{
+  overflow:hidden!important;
+  overscroll-behavior-y:none!important;
+  touch-action:pan-x pinch-zoom!important;
+ }
+ .workspace.writing .editor textarea{
+  overflow-x:hidden!important;
+  overflow-y:hidden!important;
+  touch-action:pan-x pinch-zoom!important;
+  overscroll-behavior-y:none!important;
+  scrollbar-width:none!important;
+ }
+ .workspace.writing .editor textarea::-webkit-scrollbar{display:none!important}
+}
 /* Retain the first-screen instruction layout. */
 .welcome{
  flex:1;min-height:0;overflow:hidden;
