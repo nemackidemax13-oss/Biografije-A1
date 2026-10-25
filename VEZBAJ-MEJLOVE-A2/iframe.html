@@ -15,9 +15,9 @@ header{flex:none;background:linear-gradient(110deg,#0a275e,#1657a3);color:#fff;p
 @media(min-width:701px){.mobile-start{display:none!important}.editor-label .back{display:none}.q-mini{display:none}}
 
 /* A2 mobile redesign v3: A1 app/worker untouched. */
-.nav{display:grid;grid-template-columns:44px minmax(0,1fr) 44px 48px;gap:7px}
+.nav{display:grid;grid-template-columns:44px minmax(0,1fr) 44px 92px;gap:7px}
 .nav #prev,.nav #next{background:#df2941;color:#fff;border:0;border-radius:9px;font-size:25px;font-weight:900}
-.nav #homeButton{background:#138b51;color:#fff;border:0;border-radius:9px;font-size:24px;font-weight:900}
+.nav #homeButton{background:#138b51;color:#fff;border:0;border-radius:9px;font-size:10px;font-weight:900;white-space:nowrap;letter-spacing:0;padding:0 4px}
 .nav #navTitle{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:#f3f7ff;color:#143e86;border:1px solid #b7cef3;border-radius:9px;font-size:12px;font-weight:850;padding:0 7px}
 .nav #navTitle.can-return{background:#dbeafb}
 .nav button:disabled{opacity:.4;cursor:default}
@@ -38,7 +38,7 @@ header{flex:none;background:linear-gradient(110deg,#0a275e,#1657a3);color:#fff;p
  .top{min-height:27px}
  .brand{font-size:17px;letter-spacing:0;font-style:normal;text-shadow:none;font-weight:950}
  .pill{font-size:9px;padding:4px 7px}
- .nav{grid-template-columns:43px minmax(0,1fr) 43px 46px;gap:5px;margin-top:3px}
+ .nav{grid-template-columns:43px minmax(0,1fr) 43px 85px;gap:5px;margin-top:3px}
  .nav button{height:34px}
  .nav #navTitle{font-size:11px}
  .hero{padding:7px;overflow:hidden}
@@ -427,7 +427,7 @@ header{flex:none;background:linear-gradient(110deg,#0a275e,#1657a3);color:#fff;p
 }
 </style></head><body>
 <div class="app"><header><div class="top"><div class="brand">A2 mejl vežbe</div><div class="pill">13 mejlova · 15 bodova</div></div>
-<div class="nav"><button id="prev" aria-label="Prethodni mejl">‹</button><button id="navTitle" type="button" aria-label="Trenutni mejl; tokom pisanja vrati na postavku">Izaberi mejl</button><button id="next" aria-label="Sledeći mejl">›</button><button id="homeButton" type="button" aria-label="Svi mejlovi" title="Svi mejlovi">⌂</button></div></header>
+<div class="nav"><button id="prev" aria-label="Prethodni mejl">‹</button><button id="navTitle" type="button" aria-label="Trenutni mejl; tokom pisanja vrati na postavku">Izaberi mejl</button><button id="next" aria-label="Sledeći mejl">›</button><button id="homeButton" type="button" aria-label="Povratak na sve mejlove" title="Povratak na sve mejlove">svi mejlovi</button></div></header>
 <section id="welcome" class="welcome" aria-label="Početna strana A2 mejl vežbe">
  <div class="welcome-content">
  <div class="welcome-eyebrow">A2 MEJL VEŽBE</div>
@@ -622,7 +622,7 @@ function leaveWriting(){
 }
 $('navTitle').onclick=()=>{if($('workspace').classList.contains('writing'))leaveWriting();};
 
-$('homeButton').onclick=showWelcome;
+$('homeButton').onclick=showHome;
 $('chooseMailButton').onclick=showHome;
 $('startWriting').onclick=enterWriting;
 $('backToTask').onclick=leaveWriting;
