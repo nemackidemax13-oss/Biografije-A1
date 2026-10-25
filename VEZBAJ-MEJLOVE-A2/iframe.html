@@ -643,7 +643,10 @@ function fitA2Viewport(){
  // Reserve phone keyboard space after focus when there is no usable geometry.
  if(typing&&!shrunk&&!hasKeyboardGeometry&&a2FocusStarted&&
     performance.now()-a2FocusStarted>220){
-  usable=Math.min(usable,Math.max(200,Math.floor(original*0.55)));
+  // Calibrated for mobile browsers that overlay the keyboard without shrinking
+  // visualViewport: remove the small blank strip between the check bar and keyboard.
+  // Only adjust this fallback; real keyboard geometry remains authoritative.
+  usable=Math.min(usable,Math.max(200,Math.floor(original*0.55)+19));
  }
  usable=Math.max(120,Math.floor(usable));
  root.style.setProperty('--a2-vh',usable+'px');
