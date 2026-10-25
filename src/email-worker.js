@@ -838,7 +838,7 @@ async function gradeA2(body,env){
   tenseFeedback:data.tenseFeedback.slice(0,1500),
   contextIssues:data.contextIssues.slice(0,10).map(x=>x.slice(0,600)),
   grammarCorrections:data.grammarCorrections.slice(0,12)
- }}};
+ }};
 }
 // KRAJ A2 DOPUNE
 
