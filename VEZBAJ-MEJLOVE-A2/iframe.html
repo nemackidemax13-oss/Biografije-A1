@@ -247,7 +247,7 @@ function showAiResult(d){
  const m=MAILS[current];
  const max=15,score=Number(d.score);
  const grade=Number.isInteger(score)&&score>=0&&score<=max;
- if(!grade||d.verificationVersion!=='a2-de-max-50-words-rubric-v2'||!d.rubric||!Array.isArray(d.questionFeedback)||d.questionFeedback.length!==4||!d.translationSr||!d.correctedText)throw Error('Server nije vratio kompletnu novu A2 proveru. Potrebno je objaviti ažurirani Cloudflare Worker.');
+ if(!grade||!['a2-de-max-50-words-rubric-v2','a2-de-max-26-min-50-target-v3'].includes(d.verificationVersion)||!d.rubric||!Array.isArray(d.questionFeedback)||d.questionFeedback.length!==4||!d.translationSr||!d.correctedText)throw Error('Server nije vratio kompletnu novu A2 proveru. Potrebno je objaviti ažurirani Cloudflare Worker.');
  const pass=score>=3;
  const rub=d.rubric;
  const rows=[['Pitanja',rub.questions,8],['Gramatika',rub.grammar,4],['Početni pozdrav',rub.opening,1],['Završni pozdrav',rub.closing,1],['Povezanost',rub.coherence,1]];
