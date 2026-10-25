@@ -1,4 +1,4 @@
-<!doctype html><html lang="sr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content"><meta name="theme-color" content="#0b3474"><title>A2 mejl vežbe • ÖSD A2</title><style>
+<!doctype html><html lang="sr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content"><meta name="theme-color" content="#0b3474"><title>A2 mejl vežbe</title><style>
 :root{--navy:#0d2d69;--blue:#1554b7;--red:#d52c45;--ink:#1b2b47;--line:#d8e3f5;--soft:#f1f6ff;--green:#138451}
 *{box-sizing:border-box}html,body{height:100%;margin:0}body{font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:#e8f0fc;color:var(--ink)}button,textarea,select{font:inherit}button{cursor:pointer;touch-action:manipulation}.app{height:100vh;height:100dvh;max-width:1050px;margin:auto;background:#fff;display:flex;flex-direction:column;box-shadow:0 2px 25px #122c5320;overflow:hidden}
 header{flex:none;background:linear-gradient(110deg,#0a275e,#1657a3);color:#fff;padding:6px 12px 8px;box-shadow:0 2px 8px #0c285533}
@@ -130,14 +130,56 @@ header{flex:none;background:linear-gradient(110deg,#0a275e,#1657a3);color:#fff;p
  .workspace.writing .foot{padding:2px 0!important}
  .workspace.writing .check{padding:8px 9px}
 }
+
+/* Welcome screen — instruction page before choosing an email. */
+.welcome{flex:1;min-height:0;overflow:hidden;display:flex;align-items:center;justify-content:center;background:linear-gradient(155deg,#eaf2ff 0%,#ffffff 80%);padding:clamp(8px,2vh,18px)}
+.welcome-content{width:min(560px,100%);max-height:100%;display:flex;flex-direction:column;align-items:stretch;gap:clamp(6px,1.3vh,13px)}
+.welcome-eyebrow{font-weight:900;color:#2058ad;text-align:center;font-size:clamp(12px,2.2vh,15px);letter-spacing:1.3px}
+.welcome h1{margin:0;text-align:center;font-size:clamp(19px,3.4vh,28px);color:#123875;line-height:1.14}
+.welcome-rules{display:grid;gap:clamp(5px,1.1vh,10px)}
+.welcome-rule{display:flex;align-items:center;gap:11px;min-height:0;padding:clamp(7px,1.45vh,13px) 12px;border:1px solid #d6e4f6;background:#fff;border-radius:12px;box-shadow:0 3px 10px #1740780a;font-size:clamp(12px,2vh,15px);line-height:1.3;color:#183d78}
+.welcome-rule .rule-symbol{font-size:18px;flex:none;color:#155cbd;font-weight:900;width:23px;text-align:center}
+.welcome-rule.rule-alert{border-color:#f2c8d0;background:#fff6f7;color:#a32235}
+.welcome-rule.rule-alert .rule-symbol{color:#d92f4b}
+.welcome-go{border:0;background:linear-gradient(110deg,#0d9859,#0a7744);color:#fff;font-size:clamp(15px,2.5vh,19px);font-weight:900;border-radius:12px;padding:clamp(10px,2vh,15px) 15px;box-shadow:0 4px 15px #0a79462a}
+.welcome-go span{margin-left:8px}
+@media(max-width:700px){
+ .welcome{padding:8px}
+ .welcome-content{gap:clamp(5px,1vh,10px)}
+ .welcome h1{font-size:clamp(18px,3vh,23px)}
+ .welcome-rule{padding:clamp(6px,1.25vh,10px) 9px;font-size:clamp(11.5px,1.7vh,14px);gap:7px}
+ .welcome-rule .rule-symbol{font-size:16px;width:20px}
+ .welcome-go{padding:clamp(9px,1.6vh,13px) 10px}
+}
+@media(max-width:700px) and (max-height:550px){
+ .welcome-eyebrow{display:none}
+ .welcome-content{gap:4px}
+ .welcome-rule{padding:5px 8px;font-size:11.5px}
+ .welcome-go{padding:8px}
+ .welcome h1{font-size:18px}
+}
 </style></head><body>
 <div class="app"><header><div class="top"><div class="brand">A2 mejl vežbe</div><div class="pill">8 mejlova · 15 bodova</div></div>
 <div class="nav"><button id="prev" aria-label="Prethodni mejl">‹</button><button id="navTitle" type="button" aria-label="Trenutni mejl; tokom pisanja vrati na postavku">Izaberi mejl</button><button id="next" aria-label="Sledeći mejl">›</button><button id="homeButton" type="button" aria-label="Svi mejlovi" title="Svi mejlovi">⌂</button></div></header>
-<section id="home" class="hero"><div class="hero-main"><h1>Izaberi mejl</h1><p>ÖSD A2 · 8 zadataka za vežbanje pisanja</p></div><div class="summary"><span>MEJLOVI ZA VEŽBANJE</span><span id="summary">0 / 8 napisano</span></div><div id="cards" class="cards"></div></section>
+<section id="welcome" class="welcome" aria-label="Početna strana A2 mejl vežbe">
+ <div class="welcome-content">
+ <div class="welcome-eyebrow">A2 MEJL VEŽBE</div>
+ <h1>Uputstvo za pisanje mejla</h1>
+ <div class="welcome-rules">
+  <div class="welcome-rule"><span class="rule-symbol">⏱</span><span><b>Mejl: 30 minuta</b></span></div>
+  <div class="welcome-rule"><span class="rule-symbol">★</span><span><b>15 bodova / prolaz 3</b></span></div>
+  <div class="welcome-rule"><span class="rule-symbol">✎</span><span><b>Napisati 50 reči</b></span></div>
+  <div class="welcome-rule rule-alert"><span class="rule-symbol">!</span><span><b>Ukoliko napišete manje od 26 reči, mejl se ne boduje.</b></span></div>
+  <div class="welcome-rule"><span class="rule-symbol">✓</span><span><b>Na kraju mejla dodajte pozdrav!</b></span></div>
+ </div>
+ <button id="chooseMailButton" class="welcome-go" type="button">Izaberi mejl <span aria-hidden="true">›</span></button>
+ </div>
+</section>
+<section id="home" class="hero hide"><div class="hero-main"><h1>Izaberi mejl</h1><p>A2 · 8 zadataka za vežbanje pisanja</p></div><div class="summary"><span>MEJLOVI ZA VEŽBANJE</span><span id="summary">0 / 8 napisano</span></div><div id="cards" class="cards"></div></section>
 <main id="workspace" class="workspace hide">
 <section class="panel prompt"><div class="ptitle"><strong id="number">1. mejl</strong><div class="buttons"><button id="startWriting" class="start mobile-start" type="button">✎ Piši mejl</button></div></div>
-<div id="promptScroll" class="prompt-scroller"><div id="promptFit" class="prompt-fit"><div class="label">SITUATION</div><div id="situation" class="situation"></div><div class="email"><div class="email-head"><div><b>Von:</b> <span id="senderEmail"></span></div><div><b>Betreff:</b> <span id="subject"></span></div></div><div id="original" class="email-body"></div></div><div class="notes">Schreiben Sie <strong>mindestens 50 Wörter</strong>. Schreiben Sie einen Gruß am Ende.</div></div></div></section>
-<section class="panel answer"><div class="editor"><div class="editor-label"><strong>2. NAPIŠI SVOJ ODGOVOR</strong><button class="back" id="backToTask" type="button">← Postavka</button><small>A2 · min. 50 reči · prolaz 3/15</small></div><div id="questions" class="questions writing-questions" aria-label="Četiri pitanja iz postavke"></div><textarea id="answer" spellcheck="true" placeholder="Liebe/Lieber ...&#10;&#10;vielen Dank für deine E-Mail.&#10;&#10;...&#10;&#10;Liebe Grüße"></textarea><div class="foot"><span id="count" class="word-count">0 / 50 reči</span><button id="check" class="check" type="button">✓ Proveri mejl</button></div><div class="msg" id="saveLabel">Unesi najmanje 50 reči; ne zaboravi završni pozdrav.</div></div><div id="result" class="result" aria-live="polite"></div></section>
+<div id="promptScroll" class="prompt-scroller"><div id="promptFit" class="prompt-fit"><div class="label">SITUATION</div><div id="situation" class="situation"></div><div class="email"><div class="email-head"><div><b>Von:</b> <span id="senderEmail"></span></div><div><b>Betreff:</b> <span id="subject"></span></div></div><div id="original" class="email-body"></div></div><div class="notes">Schreiben Sie <strong>circa 50 Wörter</strong>. Schreiben Sie einen Gruß am Ende.</div></div></div></section>
+<section class="panel answer"><div class="editor"><div class="editor-label"><strong>2. NAPIŠI SVOJ ODGOVOR</strong><button class="back" id="backToTask" type="button">← Postavka</button><small>A2 · cilj 50 reči · prolaz 3/15</small></div><div id="questions" class="questions writing-questions" aria-label="Četiri pitanja iz postavke"></div><textarea id="answer" spellcheck="true" placeholder="Liebe/Lieber ...&#10;&#10;vielen Dank für deine E-Mail.&#10;&#10;...&#10;&#10;Liebe Grüße"></textarea><div class="foot"><span id="count" class="word-count">0 / 50 reči</span><button id="check" class="check" type="button">✓ Proveri mejl</button></div><div class="msg" id="saveLabel">Cilj: 50 reči. Ispod 26 reči nema ocenjivanja. Dodaj završni pozdrav.</div></div><div id="result" class="result" aria-live="polite"></div></section>
 </main></div>
 <script id="mailData" type="application/json">[{"title":"Arbeit gefunden","from":"Ahmet","subject":"Arbeit gefunden","email":"h.ahmet@gmx.at","situation":"Sie bekommen von Ihrem Freund Ahmet folgendes E-Mail:","body":"Liebe/Lieber …,\n\nbei mir gibt es Neuigkeiten. Ich habe endlich Arbeit gefunden! Seit einem Monat arbeite ich als Verkäufer in einer Bäckerei. Leider habe ich nur am Sonntag frei, da mache ich mit meiner Familie meistens einen kleinen Ausflug.\n\nUnd du? Wie geht es dir? Was machst du eigentlich? Arbeitest du? Und was machst du so in deiner Freizeit, z. B. am Wochenende?\n\nHast du Zeit und Lust, uns nächsten Sonntag zu besuchen?\n\nLiebe Grüße\nAhmet","questions":["Wie geht es dir?","Was machst du eigentlich? Arbeitest du?","Was machst du in deiner Freizeit, z. B. am Wochenende?","Hast du Zeit und Lust, uns nächsten Sonntag zu besuchen?"]},{"title":"Reise","from":"Michael","subject":"Reise","email":"michael.morris@hotmail.com","situation":"Sie bekommen von Ihrem Freund Michael folgendes E-Mail:","body":"Liebe/Lieber …,\n\nwie geht es dir? Stell dir vor, ich fahre nächste Woche nach Österreich. Dort werde ich Wien, Salzburg und Innsbruck besuchen. Ich freue mich sehr darauf. Hast du schon einmal eine Reise gemacht? Wohin bist du gefahren? Was gibt es bei dir Neues?\n\nWir haben uns so lange nicht mehr gesehen. Nach meiner Reise müssen wir uns unbedingt treffen. Dann zeige ich dir auch meine Fotos.\n\nWann hast du Zeit?\n\nBis bald und liebe Grüße\nMichael","questions":["Wie geht es dir?","Hast du schon einmal eine Reise gemacht? Wohin bist du gefahren?","Was gibt es bei dir Neues?","Wann hast du Zeit?"]},{"title":"Kurze Reise","from":"Klara","subject":"kurze Reise","email":"klara_lara@yahoo.de","situation":"Sie bekommen von Ihrer Freundin Klara folgendes E-Mail:","body":"Liebe/Lieber …,\n\nwas gibt es bei dir Neues? Bei mir in der Arbeit ist gerade ziemlich viel los. Zum Glück habe ich nächsten Monat Urlaub! Ich möchte gerne eine kurze Reise machen, aber ich habe noch keine Idee, wohin. Wenn du Lust hast, können wir ja zusammen wegfahren.\n\nWohin möchtest du gerne fahren? Und was möchtest du dort machen? Von mir aus können wir fünf bis sechs Tage wegfahren, wie lange hast du Zeit?\n\nSchreib mir bald!\nLiebe Grüße\nKlara","questions":["Was gibt es bei dir Neues?","Wohin möchtest du gerne fahren?","Was möchtest du dort machen?","Wie lange hast du Zeit?"]},{"title":"Kino!","from":"Matthias","subject":"Kino!","email":"matthias.93@gmx.at","situation":"Sie bekommen von Ihrem Freund Matthias folgendes E-Mail:","body":"Liebe/Lieber …,\n\nab Freitag ist der neue Film im Kino, den wir uns ansehen wollten. Ich möchte dich gerne einladen. Wann möchtest du ins Kino gehen? Wo sollen wir uns treffen?\n\nIch freue mich schon sehr! Ich gehe ja wirklich oft ins Kino, was ist denn dein liebstes Hobby?\n\nWenn du Lust hast, dann können wir nach dem Kino noch etwas unternehmen. Hast du eine Idee, was wir machen können?\n\nBis dann, ich freu mich!\nLiebe Grüße\nMatthias","questions":["Wann möchtest du ins Kino gehen?","Wo sollen wir uns treffen?","Was ist dein liebstes Hobby?","Was könnten wir nach dem Kino machen?"]},{"title":"Wörterbuch leihen","from":"Ivo","subject":"Wörterbuch leihen","email":"ivo89@gmx.at","situation":"Sie bekommen von Ihrem Freund Ivo folgendes E-Mail:","body":"Liebe/Lieber …!\n\nIch bin bald mit meinem Deutschkurs fertig! Nächste Woche habe ich die Prüfung. Du hast ja gesagt, dass du mir dein Wörterbuch leihst. Wann kann ich denn zu dir kommen und es abholen?\n\nVielleicht können wir danach etwas zusammen machen. Hast du eine Idee?\n\nDu hast ja auch einen Deutschkurs besucht und eine sehr gute Note bekommen. Wie hat dir der Kurs gefallen und welchen Tipp kannst du mir für meine Prüfung geben?\n\nIch freue mich darauf, dich wiederzusehen. :)\n\nLiebe Grüße\nIvo","questions":["Wann kann ich denn zu dir kommen und es abholen?","Hast du eine Idee, was wir danach zusammen machen können?","Wie hat dir der Deutschkurs gefallen?","Welchen Tipp kannst du geben?"]},{"title":"Neue Wohnung","from":"Hannah","subject":"Neue Wohnung!","email":"Hannah.M@yahoo.com","situation":"Sie bekommen von Ihrer Kollegin Hannah folgendes E-Mail:","body":"Liebe/Lieber …,\n\nendlich habe ich eine größere Wohnung gefunden und kann gleich einziehen. Du hast gesagt, dass du mir beim Packen helfen willst. Wann hast du Zeit?\nIch kann dich zu Hause abholen. Da fällt mir ein: Du hast ja auch eine neue Adresse. Wo wohnst du jetzt? Wie gefällt dir die Wohnung? Bist du zufrieden?\nIn drei Wochen möchte ich in meiner neuen Wohnung eine große Party machen. Hast du ein paar Tipps für die Party?\n\nLiebe Grüße\nHannah","questions":["Wann hast du Zeit?","Wo wohnst du jetzt?","Wie gefällt dir die Wohnung? Bist du zufrieden?","Hast du ein paar Tipps für die Party?"]},{"title":"Deutsch lernen","from":"Daniel","subject":"Deutsch lernen","email":"danielopes@aon.com","situation":"Sie bekommen von Daniel, einem Kollegen aus dem Deutschkurs, folgendes E-Mail:","body":"Hallo …,\n\njetzt haben wir uns schon lange nicht mehr gesehen. Was machst du immer? Wie geht es dir beim Deutschlernen?\n\nIch war in den Ferien sehr viel unterwegs und habe schon fast alles vergessen. Wenn du willst, können wir uns nächste Woche einmal treffen und zusammen ein bisschen Deutsch lernen. Hast du Zeit? Und wann?\n\nAch ja, unser Deutschlehrer hat bald Geburtstag. Was sollen wir unserem Lehrer schenken? Hast du eine Idee?\n\nBis bald!\nDaniel","questions":["Was machst du immer?","Wie geht es dir beim Deutschlernen?","Hast du Zeit? Und wann?","Was sollen wir unserem Lehrer schenken? Hast du eine Idee?"]},{"title":"Reise – drugi model","from":"Michael","subject":"Reise","email":"michael.morris@hotmail.com","situation":"Sie bekommen von Ihrem Freund Michael folgendes E-Mail (weiterer Modellsatz):","body":"Liebe/Lieber …,\n\nwie geht es dir? Stell dir vor, ich fahre nächste Woche nach Österreich. Dort werde ich Wien, Salzburg und Innsbruck besuchen. Ich freue mich sehr darauf. Hast du schon einmal eine Reise gemacht? Wohin bist du gefahren? Was gibt es bei dir Neues?\n\nWir haben uns so lange nicht mehr gesehen. Nach meiner Reise müssen wir uns unbedingt treffen. Dann zeige ich dir auch meine Fotos.\n\nWann hast du Zeit?\n\nBis bald und liebe Grüße\nMichael","questions":["Wie geht es dir?","Hast du schon einmal eine Reise gemacht? Wohin bist du gefahren?","Was gibt es bei dir Neues?","Wann hast du Zeit?"]}]</script>
 <script>
@@ -154,17 +196,36 @@ function save(){try{localStorage.setItem(STORE,JSON.stringify(state));}catch(e){
 function countWords(s){return (String(s).match(/[\p{L}\p{N}]+(?:['’\-][\p{L}\p{N}]+)*/gu)||[]).length;}
 function esc(s){return String(s??'').replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]})}
 function questionHtml(m){return '<b>PITANJA · ODGOVORI NA SVA ČETIRI</b><ol>'+m.questions.map(q=>'<li>'+esc(q)+'</li>').join('')+'</ol>'}
-function showHome(){state.current=current;save();$('answer').blur();$('workspace').classList.remove('writing');$('workspace').classList.add('hide');$('home').classList.remove('hide');renderCards();updateNav();history.replaceState(null,'',location.pathname+location.search);}
+function showWelcome(){
+ state.current=current;save();$('answer').blur();
+ $('workspace').classList.remove('writing');
+ $('workspace').classList.add('hide');
+ $('home').classList.add('hide');
+ $('welcome').classList.remove('hide');
+ updateNav();
+ history.replaceState(null,'',location.pathname+location.search);
+}
+function showHome(){
+ state.current=current;save();$('answer').blur();
+ $('workspace').classList.remove('writing');
+ $('workspace').classList.add('hide');
+ $('welcome').classList.add('hide');
+ $('home').classList.remove('hide');
+ renderCards();updateNav();
+ history.replaceState(null,'',location.pathname+location.search);
+}
 function renderCards(){let finished=0;$('cards').replaceChildren();MAILS.forEach((m,i)=>{const wc=countWords(state.drafts[i]||'');if(wc>=50)finished++;const b=document.createElement('button');b.className='mail-card'+(wc>=50?' complete':'');b.innerHTML='<span>'+(wc>=50?'✅':'✉️')+'</span><strong>'+(i+1)+'. mejl · '+esc(m.title)+'</strong><small>'+(wc>=50?'Napisan · vežbaj ponovo':wc+' / 50 reči')+'</small>';b.onclick=()=>openMail(i);$('cards').append(b)});$('summary').textContent=finished+' / '+MAILS.length+' napisano';}
 function renderMail(){let m=MAILS[current];$('number').textContent=(current+1)+'. mejl · '+m.title;updateNav();$('situation').textContent=m.situation;$('senderEmail').textContent=m.email;$('subject').textContent=m.subject;$('original').textContent=m.body;$('questions').innerHTML=questionHtml(m);$('answer').value=state.drafts[current]||'';$('result').classList.remove('on');$('result').innerHTML='';$('promptScroll').scrollTop=0;updateCount();requestAnimationFrame(fitFullEmailWithoutScroll);}
-function openMail(i){current=Math.max(0,Math.min(MAILS.length-1,Number(i)||0));state.current=current;state.visited[current]=true;$('answer').blur();save();$('home').classList.add('hide');$('workspace').classList.remove('hide');$('workspace').classList.remove('writing');renderMail();location.hash='mejl-'+(current+1);}
+function openMail(i){current=Math.max(0,Math.min(MAILS.length-1,Number(i)||0));state.current=current;state.visited[current]=true;$('answer').blur();save();$('welcome').classList.add('hide');$('home').classList.add('hide');$('workspace').classList.remove('hide');$('workspace').classList.remove('writing');renderMail();location.hash='mejl-'+(current+1);}
 function updateCount(){
- const n=countWords($('answer').value),remaining=Math.max(0,50-n);
- $('count').textContent=remaining>0?n+' / 50 reči · još '+remaining:n+' reči ✓';
- $('count').classList.toggle('good',n>=50);
- $('check').disabled=n<50;
- $('check').title=n<50?'Napiši još '+remaining+' reči pre provere.':'Proveri A2 mejl (15 bodova, prolaz od 3)';
- $('saveLabel').textContent=n<50?'Za ocenjivanje napiši još '+remaining+' reči. Ne zaboravi pozdrav na kraju.':'Spreman za A2 proveru! Proveri sva pitanja i završni pozdrav. Tekst se čuva na ovom uređaju.';
+ const n=countWords($('answer').value);
+ const toTarget=Math.max(0,50-n);
+ const toMinimum=Math.max(0,26-n);
+ $('count').textContent=n<26?n+' reči · još '+toMinimum+' do provere':n<50?n+' / 50 reči':'Napisano: '+n+' reči ✓';
+ $('count').classList.toggle('good',n>=26);
+ $('check').disabled=n<26;
+ $('check').title=n<26?'Mejl se ne boduje ako ima manje od 26 reči.':n<50?'Mejl može da se oceni. Cilj je 50 reči.':'Proveri A2 mejl (15 bodova; prolaz 3)';
+ $('saveLabel').textContent=n<26?'Za proveru napiši još '+toMinimum+' reči (cilj: 50). Dodaj završni pozdrav.':n<50?'Možeš proveriti mejl. Preporuka: napiši još '+toTarget+' reči do cilja od 50.':'Spremno za proveru! Ne zaboravi završni pozdrav.';
 }
 
 function localReview(reason){
@@ -173,7 +234,7 @@ function localReview(reason){
  const box=$('result');
  const info=reason?'<p class="warn"><b>AI ocenjivanje nije dostupno:</b> '+esc(reason)+'</p>':'';
  box.innerHTML='<h3>Osnovna provera · bez AI ocene</h3>'+info
-   +'<p>'+(n>=50?'✓':'•')+' Broj reči: '+n+' (minimum 50)</p>'
+   +'<p>'+(n>=26?'✓':'•')+' Broj reči: '+n+' (cilj: 50; ispod 26 se ne boduje)</p>'
    +'<p>'+(hasClosing?'✓ Pronađen završni pozdrav.':'• Nedostaje završni pozdrav: Liebe Grüße / Viele Grüße / Bis bald.')+'</p>'
    +'<p>Proveri četiri pitanja, ich / wir / du i vremena Präsens / Perfekt.</p>'
    +'<p><b>Važno:</b> Bez povezane AI provere nema bodova, ispravljenog mejla niti prevoda. Tvoj tekst je sačuvan.</p>';
@@ -190,7 +251,7 @@ function showAiResult(d){
  const pass=score>=3;
  const rub=d.rubric;
  const rows=[['Pitanja',rub.questions,8],['Gramatika',rub.grammar,4],['Početni pozdrav',rub.opening,1],['Završni pozdrav',rub.closing,1],['Povezanost',rub.coherence,1]];
- let html='<h3>ÖSD A2 · De-Max vežba</h3><div style="padding:10px;background:#eaf3ff;border-radius:10px"><strong style="font-size:24px;color:#0a347e">'+score+' / 15</strong> <span style="font-weight:800;color:'+(pass?'#13834b':'#ad3144')+'">'+(pass?'✓ PROLAZ':'✕ NIJE POLOŽIO')+'</span><p style="margin:5px 0 0;font-size:11px">Prag u ovoj De-Max vežbi: 3 / 15 · min. 50 reči. Ovo nije zvanična ÖSD ocena.</p></div>';
+ let html='<h3>A2 · De-Max vežba</h3><div style="padding:10px;background:#eaf3ff;border-radius:10px"><strong style="font-size:24px;color:#0a347e">'+score+' / 15</strong> <span style="font-weight:800;color:'+(pass?'#13834b':'#ad3144')+'">'+(pass?'✓ PROLAZ':'✕ NIJE POLOŽIO')+'</span><p style="margin:5px 0 0;font-size:11px">Prag u ovoj De-Max vežbi: 3 / 15 · cilj 50 reči · ispod 26 reči nema ocene.</p></div>';
  html+='<div style="margin:9px 0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px">'+rows.map(r=>'<div style="border:1px solid #d9e4f5;padding:7px;border-radius:6px">'+esc(r[0])+': <b>'+Number(r[1])+'/'+r[2]+'</b></div>').join('')+'</div>';
  html+='<h3>Odgovori na četiri pitanja</h3><ol style="padding-left:20px">'+m.questions.map((q,i)=>'<li style="margin-bottom:8px"><b>'+esc(q)+'</b><div style="font-size:11px;color:#305383">Bodovi: '+Number(d.questionPoints?.[i]??0)+'/2</div><div>'+esc(d.questionFeedback[i])+'</div></li>').join('')+'</ol>';
  html+=resultSection('Komentar profesora',d.feedback,false);
@@ -208,7 +269,7 @@ function showAiResult(d){
 }
 async function grade(){
  const txt=$('answer').value,n=countWords(txt);
- if(n<50){localReview('Mejl mora imati najmanje 50 reči. Nedostaje '+(50-n)+' reči.');return;}
+ if(n<26){localReview('Mejl se ne boduje sa manje od 26 reči. Nedostaje '+(26-n)+' reči.');return;}
  state.drafts[current]=txt;save();
  const btn=$('check');
  btn.disabled=true;btn.textContent='AI proverava…';
@@ -224,7 +285,7 @@ async function grade(){
    });
   }finally{clearTimeout(timeout)}
   const d=await resp.json().catch(()=>({}));
-  if(!resp.ok)throw Error(d.error||'AI provera nije dostupna (HTTP '+resp.status+').');
+  if(!resp.ok){if(resp.status===422&&n>=26)throw Error('Potrebno je objaviti ažurirani A2 Worker da bi se ocenjivali mejlovi sa 26–49 reči.');throw Error(d.error||'AI provera nije dostupna (HTTP '+resp.status+').');}
   if(originalIndex!==current||$('answer').value!==txt)return; // ignore late results
   showAiResult(d);
  }catch(err){
@@ -237,13 +298,14 @@ async function grade(){
 $('prev').onclick=()=>{if(current>0)openMail(current-1)};
 $('next').onclick=()=>{if(current<MAILS.length-1)openMail(current+1)};
 function updateNav(){
+ const isWelcome=!$('welcome').classList.contains('hide');
  const isHome=!$('home').classList.contains('hide');
  const isWriting=$('workspace').classList.contains('writing');
  const title=$('navTitle');
- title.textContent=isHome?'Izaberi mejl':(isWriting?'← Postavka · '+(current+1)+'/'+MAILS.length:(current+1)+' / '+MAILS.length+' · '+MAILS[current].title);
- title.classList.toggle('can-return',!isHome&&isWriting);
- $('prev').disabled=!isHome&&current===0;
- $('next').disabled=!isHome&&current===MAILS.length-1;
+ title.textContent=isWelcome?'Uputstvo':isHome?'Izaberi mejl':(isWriting?'← Postavka · '+(current+1)+'/'+MAILS.length:(current+1)+' / '+MAILS.length+' · '+MAILS[current].title);
+ title.classList.toggle('can-return',!isWelcome&&!isHome&&isWriting);
+ $('prev').disabled=isWelcome||(!isHome&&current===0);
+ $('next').disabled=isWelcome||(!isHome&&current===MAILS.length-1);
 }
 function enterWriting(){
  $('workspace').classList.add('writing');
@@ -259,13 +321,14 @@ function leaveWriting(){
 }
 $('navTitle').onclick=()=>{if($('workspace').classList.contains('writing'))leaveWriting();};
 
-$('homeButton').onclick=showHome;
+$('homeButton').onclick=showWelcome;
+$('chooseMailButton').onclick=showHome;
 $('startWriting').onclick=enterWriting;
 $('backToTask').onclick=leaveWriting;
 $('answer').addEventListener('input',()=>{state.drafts[current]=$('answer').value;save();updateCount();$('result').classList.remove('on')});
 $('check').onclick=grade;
 
-const initial=location.hash.match(/^#mejl-(\d+)$/);if(initial)openMail(Number(initial[1])-1);else {renderCards();updateNav()}
+const initial=location.hash.match(/^#mejl-(\d+)$/);if(initial)openMail(Number(initial[1])-1);else {renderCards();showWelcome()}
 
 /* Keep the answer box and check bar visible above a mobile virtual keyboard. */
 function fitA2Viewport(){
