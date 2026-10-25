@@ -346,6 +346,29 @@ header{flex:none;background:linear-gradient(110deg,#0a275e,#1657a3);color:#fff;p
  }
  .workspace.writing .editor textarea::-webkit-scrollbar{display:none!important}
 }
+/* V14: hard lock the page against vertical gestures while composing.
+   The fixed keyboard layout and all four questions remain unchanged. */
+@media(max-width:700px){
+ html:has(.workspace.writing), body:has(.workspace.writing){
+  position:relative;
+  overflow:hidden!important;
+  overscroll-behavior:none!important;
+ }
+ html:has(.workspace.writing) .app{
+  overflow:hidden!important;
+  overscroll-behavior:none!important;
+ }
+ .workspace.writing,
+ .workspace.writing .answer,
+ .workspace.writing .editor,
+ .workspace.writing .writing-questions{
+  overscroll-behavior:none!important;
+ }
+ html.a2-typing .workspace.writing .editor textarea{
+  overflow-y:hidden!important;
+  touch-action:none!important;
+ }
+}
 /* Retain the first-screen instruction layout. */
 .welcome{
  flex:1;min-height:0;overflow:hidden;
@@ -639,6 +662,20 @@ window.addEventListener('orientationchange',()=>{
  a2FullScreenHeight=0;
  setTimeout(fitA2Viewport,150);
 });
+// Safari and some Android browsers pan a fixed page on a vertical touch
+// even with overflow:hidden. Cancel only swipes while the keyboard editor is
+// open; preserve normal scrolling of the AI feedback after checking.
+function a2LockWritingSwipes(){
+ return window.matchMedia('(max-width:700px)').matches
+  && $('workspace').classList.contains('writing')
+  && !$('result').classList.contains('on');
+}
+document.addEventListener('touchmove',event=>{
+ if(a2LockWritingSwipes()&&event.cancelable)event.preventDefault();
+},{passive:false,capture:true});
+document.addEventListener('wheel',event=>{
+ if(a2LockWritingSwipes()&&event.cancelable)event.preventDefault();
+},{passive:false,capture:true});
 $('answer').addEventListener('focus',()=>{
  a2FocusStarted=performance.now();
  fitA2Viewport();
