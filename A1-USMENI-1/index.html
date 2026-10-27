@@ -132,7 +132,7 @@ button:focus-visible{outline:3px solid #1964e2;outline-offset:3px}
         <div class="bioRow"><p class="german">Ich komme aus Serbien, aus Tutin.</p><small class="translation">Dolazim iz Srbije, iz Tutina.</small></div>
         <div class="bioRow"><p class="german">Ich bin ledig und ich lebe mit meiner Familie.</p><small class="translation">Neudata sam i živim sa svojom porodicom.</small></div>
       </div>
-      <div class="cardFoot"><button type="button" class="audioBtn" id="playIntro">▶ Slušaj rečenicu po rečenicu</button><span class="footInfo" id="audioStatus" aria-live="polite">Automatski izgovor rečenica</span></div>
+      <div class="cardFoot"><button type="button" class="audioBtn" id="playIntro">▶ Slušaj sve rečenice</button><span class="footInfo" id="audioStatus" aria-live="polite">Automatski izgovor svih 6 rečenica</span></div>
     </article>
     <article class="infoCard">
       <div class="cardHeading"><h2>Themen wählen</h2><span>Dva načina da kažeš izbor</span></div>
@@ -204,11 +204,13 @@ for(const btn of buttons){
 document.getElementById('reset').addEventListener('click',()=>{chosen.length=0;stopAudio();render()});
 
 let audioTimer = null;
+let autoStartTimer = null;
+let autoNeedsGesture = true;
 
 function resetAudioButtons(){
   for(const b of document.querySelectorAll('.audioBtn')){
     b.classList.remove('playing');
-    b.textContent=b.id==='playIntro'?'▶ Slušaj rečenicu po rečenicu':'🔊 Slušaj';
+    b.textContent=b.id==='playIntro'?'▶ Slušaj sve rečenice':'🔊 Slušaj';
   }
   document.querySelectorAll('.bioRow.is-speaking,.example.is-speaking').forEach(el=>el.classList.remove('is-speaking'));
   activeButton=null;
@@ -247,7 +249,15 @@ if('speechSynthesis' in window){
 
 // Jedna SpeechSynthesisUtterance po recenici; automatski prelazi na sledecu.
 function playSound(button, first, second, isAutostart=false){
-  if(activeButton===button&&!isAutostart){stopAudio();return;}
+  if(activeButton===button&&!isAutostart){
+    autoNeedsGesture=false;
+    if(autoStartTimer!==null){clearTimeout(autoStartTimer);autoStartTimer=null;}
+    stopAudio();return;
+  }
+  if(!isAutostart){
+    autoNeedsGesture=false;
+    if(autoStartTimer!==null){clearTimeout(autoStartTimer);autoStartTimer=null;}
+  }
   stopAudio();
   if(!('speechSynthesis' in window)){
     if(!isAutostart)alert('Ovaj pregledač ne podržava izgovor. Pokušaj u Chrome-u ili Edge-u.');
@@ -256,9 +266,14 @@ function playSound(button, first, second, isAutostart=false){
   refreshVoices();
   const selected=germanVoices[0]||null;
   const parts=first
-    ?[document.getElementById(second?'choice2':'choice1')]
-    :Array.from(document.querySelectorAll('.bioLines .bioRow'));
-  const getText=el=>first?el.querySelector('b').textContent.trim():el.querySelector('p.german').textContent.trim();
+    ?[document.getElementById(second?'choice2':'choice1').closest('.example')]
+    :[
+      ...document.querySelectorAll('.bioLines .bioRow'),
+      ...document.querySelectorAll('.examples .example')
+    ];
+  const getText=el=>el.classList.contains('example')
+    ?el.querySelector('b').textContent.trim()
+    :el.querySelector('p.german').textContent.trim();
   let index=0;
   const token=playToken;
   const status=document.getElementById('audioStatus');
@@ -277,7 +292,7 @@ function playSound(button, first, second, isAutostart=false){
     document.querySelectorAll('.bioRow.is-speaking,.example.is-speaking').forEach(el=>el.classList.remove('is-speaking'));
     const element=parts[index];
     element.classList.add('is-speaking');
-    status.textContent=(first?'Primer izbora':'Predstavljanje')+' · '+(index+1)+' / '+parts.length;
+    status.textContent=(element.classList.contains('example')?'Izbor tema':'Predstavljanje')+' · '+(index+1)+' / '+parts.length;
     const utterance=new SpeechSynthesisUtterance(getText(element));
     utterance.lang='de-DE';
     if(selected)utterance.voice=selected;
@@ -287,6 +302,7 @@ function playSound(button, first, second, isAutostart=false){
     let started=false;
     utterance.onstart=()=>{
       started=true;
+      autoNeedsGesture=false;
       if(audioTimer!==null){clearTimeout(audioTimer);audioTimer=null;}
     };
     utterance.onend=()=>{
@@ -299,7 +315,12 @@ function playSound(button, first, second, isAutostart=false){
       if(token!==playToken)return;
       if(audioTimer!==null){clearTimeout(audioTimer);audioTimer=null;}
       resetAudioButtons();
-      status.textContent='Pritisni ▶ za izgovor.';
+      if(isAutostart&&!started){
+        autoNeedsGesture=true;
+        status.textContent='Na telefonu dodirni stranicu da zvuk počne automatski.';
+      }else{
+        status.textContent='Pritisni ▶ za izgovor.';
+      }
       if(!isAutostart&&e.error!=='canceled'&&e.error!=='interrupted'){
         alert('Nemački glas nije dostupan. Pokušaj u Chrome-u ili Edge-u.');
       }
@@ -310,7 +331,8 @@ function playSound(button, first, second, isAutostart=false){
       audioTimer=setTimeout(()=>{
         if(token===playToken&&!started){
           stopAudio();
-          status.textContent='Za zvuk dodirni ▶ Slušaj rečenicu po rečenicu.';
+          autoNeedsGesture=true;
+          status.textContent='Dodirni bilo gde na stranici – zvuk kreće automatski.';
         }
       },2500);
     }
@@ -320,9 +342,30 @@ function playSound(button, first, second, isAutostart=false){
 document.getElementById('playIntro').addEventListener('click',e=>playSound(e.currentTarget,false,false));
 document.getElementById('playChoice1').addEventListener('click',e=>playSound(e.currentTarget,true,false));
 document.getElementById('playChoice2').addEventListener('click',e=>playSound(e.currentTarget,true,true));
-// Pokusaj automatsko pustanje cim se stranica ucita; rucno dugme ostaje dostupno.
-setTimeout(()=>playSound(document.getElementById('playIntro'),false,false,true),650);
-document.addEventListener('keydown',e=>{if(e.key==='Escape')stopAudio()});
+// Autoplay na racunaru; ako mobilni browser blokira zvuk, prvi dodir pokrece ceo niz.
+autoStartTimer=setTimeout(()=>{
+  autoStartTimer=null;
+  if(autoNeedsGesture)playSound(document.getElementById('playIntro'),false,false,true);
+},650);
+document.addEventListener('click',e=>{
+  if(!autoNeedsGesture||e.target.closest('.audioBtn,a'))return;
+  // Poziva se unutar korisnickog klika, jer mobilni browser trazi gest za zvuk.
+  if(autoStartTimer!==null){clearTimeout(autoStartTimer);autoStartTimer=null;}
+  autoNeedsGesture=false;
+  playSound(document.getElementById('playIntro'),false,false,true);
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){
+    autoNeedsGesture=false;
+    if(autoStartTimer!==null){clearTimeout(autoStartTimer);autoStartTimer=null;}
+    stopAudio();
+  }
+  else if(autoNeedsGesture&&['Enter',' '].includes(e.key)&&!e.target.closest('.audioBtn,a')){
+    if(autoStartTimer!==null){clearTimeout(autoStartTimer);autoStartTimer=null;}
+    autoNeedsGesture=false;
+    playSound(document.getElementById('playIntro'),false,false,true);
+  }
+});
 render();
 </script>
 </body>
