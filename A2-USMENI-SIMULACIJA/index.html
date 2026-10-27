@@ -210,7 +210,7 @@ main{min-height:0;flex:1;display:flex;flex-direction:column;overflow:hidden;back
     <p class="intro-sub">ÖSD A2 · Interaktivna simulacija<br>Predstavljanje → 6 tema → izaberi 5 → po 2 pitanja</p>
     <div class="chips"><span>🎙 Mikrofon</span><span>🔊 Nemački izgovor</span><span>✓ Brza provera</span></div>
     <button class="btn primary start" id="begin">Započni simulaciju →</button>
-    <small>Dozvolite mikrofon u pregledaču. Chrome i Edge su preporučeni.<br>Možete i pisati odgovore bez mikrofona.</small>
+    <small>Dozvolite mikrofon u pregledaču. Chrome i Edge su preporučeni.<br>Možete i pisati odgovore bez mikrofona.<br>Na telefonima bez direktnog prepoznavanja, snimak se šalje DE-MAX Worker-u radi pretvaranja govora u tekst.</small>
   </section>
   <section id="introExam" class="screen">
    <div class="scroll">
@@ -744,7 +744,7 @@ const DM_MIC={
  stream:null,pending:null,allowed:false,
  recognition:null,media:null,mediaResolve:null,mediaPromise:null,
  mediaChunks:[],mediaKey:"",mediaDiscard:false,
- serial:0,lastError:"",fileUrl:null,
+ serial:0,lastError:"",fileUrl:null,audioReady:null,audioProbe:null,
  transcribeURL:"https://usmenia1prvideo.nemackidemax13.workers.dev/api/a1-transcribe"
 };
 function dmMicStatus(message,link=false){
@@ -797,6 +797,23 @@ async function dmPermit(fromTap){
   return false
  }).finally(()=>{DM_MIC.pending=null});
  return DM_MIC.pending
+}
+
+async function dmProbeAudio(){
+ if(DM_MIC.audioReady!==null)return DM_MIC.audioReady;
+ if(DM_MIC.audioProbe)return DM_MIC.audioProbe;
+ DM_MIC.audioProbe=(async()=>{
+  const ac=new AbortController(),timeout=setTimeout(()=>ac.abort(),5000);
+  try{
+   const res=await fetch(DM_MIC.transcribeURL,{
+    method:"POST",body:new FormData(),mode:"cors",cache:"no-store",signal:ac.signal
+   });
+   DM_MIC.audioReady=[400,413,415,422].includes(res.status);
+   return DM_MIC.audioReady
+  }catch(e){DM_MIC.audioReady=false;return false}
+  finally{clearTimeout(timeout);DM_MIC.audioProbe=null}
+ })();
+ return DM_MIC.audioProbe
 }
 function dmMarkLive(on){
  app.recording=!!on;
@@ -965,9 +982,18 @@ async function startMic(fromTap=false){
  const isApple=/iPhone|iPad|iPod/i.test(navigator.userAgent||"")||
   (/Macintosh/i.test(navigator.userAgent||"")&&navigator.maxTouchPoints>1);
  // Safari/iPhone: snimanje preko Workera, gde SpeechRecognition može da bude nestabilan.
- if(isApple&&window.MediaRecorder)return dmRecordFallback(false);
+ if(isApple&&window.MediaRecorder){
+  // Na iPhone-u dajemo prednost snimanju samo ako je A1 Worker zaista dostupan.
+  const route=await dmProbeAudio();
+  if(serial!==DM_MIC.serial||respondKey()!==currentKey)return;
+  if(route)return dmRecordFallback(false)
+ }
  if(SR&&dmSpeechRecognize())return;
- return dmRecordFallback(false)
+ if(window.MediaRecorder){
+  if(!DM_MIC.audioReady)dmMicStatus("Nema pouzdane veze za automatsku transkripciju. Možete snimiti govor, ali će možda biti potrebno da odgovor napišete.");
+  return dmRecordFallback(false)
+ }
+ dmMicStatus("Ovaj pregledač ne podržava prepoznavanje nemačkog. Odgovor možete napisati.",true)
 }
 async function dmFinishAudio(){
  if(DM_MIC.media){
@@ -1014,6 +1040,7 @@ async function handleButton(action){
 // Ovo mora biti sinhrono u click handleru zbog iOS/Android pravila.
 $("begin").addEventListener("click",()=>{
  if(!DM_MIC.allowed&&!DM_MIC.pending)dmPermit(true);
+ dmProbeAudio();
 },true);
 const oldRestartA2=$("restart").onclick;
 $("restart").onclick=()=>{
@@ -1023,6 +1050,15 @@ $("restart").onclick=()=>{
 window.addEventListener("pagehide",()=>{
  dmInvalidate();dmReleaseStream()
 });
+// Sprečava da kandidat slučajno pređe na drugi ekran pre završetka snimanja.
+for(const id of ["introNext","speakNext"]){
+ $(id).addEventListener("click",e=>{
+  if(DM_MIC.media||DM_MIC.recognition){
+   e.stopImmediatePropagation();e.preventDefault();
+   dmMicStatus("Prvo pritisnite ■ Završi govor, pa zatim „Dalje”.");
+  }
+ },true)
+}
 document.addEventListener("visibilitychange",()=>{
  if(document.visibilityState==="hidden"){dmInvalidate();dmReleaseStream()}
 });
