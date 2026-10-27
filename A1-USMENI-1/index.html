@@ -69,6 +69,9 @@ button:focus-visible{outline:3px solid #1964e2;outline-offset:3px}
 .bioRow{margin-bottom:5px}
 .bioRow:last-child{margin-bottom:0}
 .bioLines .translation{display:block;color:#111;font-weight:500;font-size:clamp(10px,.76vw,12px);line-height:1.17;margin-top:1px}
+.bioRow.is-speaking{background:#fff3c9;outline:2px solid #ebb23b;border-radius:6px;padding:2px 5px;margin-left:-5px;transition:background .2s}
+.example.is-speaking{background:#fff3c9;border-color:#e6aa30}
+.cardFoot{flex-wrap:wrap}.footInfo{flex:1;min-width:130px}
 .cardFoot{padding:7px 14px 12px;display:flex;align-items:center;gap:9px}
 .audioBtn{border:0;background:#db2133;color:white;font-size:13px;font-weight:850;padding:8px 13px;border-radius:9px;cursor:pointer;min-width:132px;box-shadow:0 4px 11px #d326352a}
 .audioBtn:hover{background:#bf1727}.audioBtn.playing{background:#ac1724}
@@ -129,7 +132,7 @@ button:focus-visible{outline:3px solid #1964e2;outline-offset:3px}
         <div class="bioRow"><p class="german">Ich komme aus Serbien, aus Tutin.</p><small class="translation">Dolazim iz Srbije, iz Tutina.</small></div>
         <div class="bioRow"><p class="german">Ich bin ledig und ich lebe mit meiner Familie.</p><small class="translation">Neudata sam i živim sa svojom porodicom.</small></div>
       </div>
-      <div class="cardFoot"><button type="button" class="audioBtn" id="playIntro">🔊 Slušaj primer</button></div>
+      <div class="cardFoot"><button type="button" class="audioBtn" id="playIntro">▶ Slušaj rečenicu po rečenicu</button><span class="footInfo" id="audioStatus" aria-live="polite">Automatski izgovor rečenica</span></div>
     </article>
     <article class="infoCard">
       <div class="cardHeading"><h2>Themen wählen</h2><span>Dva načina da kažeš izbor</span></div>
@@ -200,21 +203,23 @@ for(const btn of buttons){
 }
 document.getElementById('reset').addEventListener('click',()=>{chosen.length=0;stopAudio();render()});
 
+let audioTimer = null;
+
 function resetAudioButtons(){
   for(const b of document.querySelectorAll('.audioBtn')){
     b.classList.remove('playing');
-    b.textContent=b.id==='playIntro'?'🔊 Slušaj primer':'🔊 Slušaj';
+    b.textContent=b.id==='playIntro'?'▶ Slušaj rečenicu po rečenicu':'🔊 Slušaj';
   }
+  document.querySelectorAll('.bioRow.is-speaking,.example.is-speaking').forEach(el=>el.classList.remove('is-speaking'));
   activeButton=null;
 }
 function stopAudio(){
   playToken++;
-  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+  if(audioTimer!==null){clearTimeout(audioTimer);audioTimer=null;}
+  if('speechSynthesis' in window)window.speechSynthesis.cancel();
   resetAudioButtons();
 }
-// Automatski bira Google nemački glas ako ga pregledač nudi.
-// Ne postoji javni način da se Google TTS glas instalira/aktivira iz samog HTML-a.
-// Ako Google glas nije dostupan, bira najbolji dostupni nemački glas.
+// Koristi najprirodniji dostupan nemacki glas sa uredjaja.
 function voiceScore(v){
   const name=(v.name||'').toLowerCase();
   const lang=(v.lang||'').toLowerCase();
@@ -240,47 +245,83 @@ if('speechSynthesis' in window){
   setTimeout(refreshVoices,1500);
 }
 
-function playSound(button, first, second){
-  if(activeButton===button){stopAudio();return;}
+// Jedna SpeechSynthesisUtterance po recenici; automatski prelazi na sledecu.
+function playSound(button, first, second, isAutostart=false){
+  if(activeButton===button&&!isAutostart){stopAudio();return;}
   stopAudio();
   if(!('speechSynthesis' in window)){
-    alert('Ovaj pregledač ne podržava izgovor. Otvori aplikaciju u Microsoft Edge-u.');
+    if(!isAutostart)alert('Ovaj pregledač ne podržava izgovor. Pokušaj u Chrome-u ili Edge-u.');
     return;
   }
-  // Osveži glasove kad korisnik klikne – lista se može učitati kasnije.
   refreshVoices();
-  const selected=germanVoices[0] || null;
-  let sentence='';
-  if(!first){
-    sentence=Array.from(document.querySelectorAll('.bioLines p')).map(p=>p.textContent.trim()).join(' ');
-  } else {
-    sentence=document.getElementById(second?'choice2':'choice1').textContent.trim();
-  }
+  const selected=germanVoices[0]||null;
+  const parts=first
+    ?[document.getElementById(second?'choice2':'choice1')]
+    :Array.from(document.querySelectorAll('.bioLines .bioRow'));
+  const getText=el=>first?el.querySelector('b').textContent.trim():el.querySelector('p.german').textContent.trim();
+  let index=0;
   const token=playToken;
-  const utterance=new SpeechSynthesisUtterance(sentence);
-  utterance.lang='de-DE';
-  if(selected) utterance.voice=selected;
-  utterance.rate=0.94;
-  utterance.pitch=1;
-  utterance.volume=1;
+  const status=document.getElementById('audioStatus');
   activeButton=button;
   button.classList.add('playing');
   button.textContent='■ Zaustavi';
-  utterance.onend=()=>{if(token===playToken)resetAudioButtons();};
-  utterance.onerror=e=>{
-    if(token===playToken){
+
+  function nextSentence(){
+    audioTimer=null;
+    if(token!==playToken)return;
+    if(index>=parts.length){
       resetAudioButtons();
-      // 'canceled' i 'interrupted' nisu greške kada korisnik zaustavi zvuk.
-      if(e.error!=='canceled'&&e.error!=='interrupted'){
-        alert('Nemački glas nije dostupan u ovom pregledaču. Pokušaj u Chrome-u ili Edge-u.');
-      }
+      status.textContent='Sve rečenice su pročitane ✓';
+      return;
     }
-  };
-  window.speechSynthesis.speak(utterance);
+    document.querySelectorAll('.bioRow.is-speaking,.example.is-speaking').forEach(el=>el.classList.remove('is-speaking'));
+    const element=parts[index];
+    element.classList.add('is-speaking');
+    status.textContent=(first?'Primer izbora':'Predstavljanje')+' · '+(index+1)+' / '+parts.length;
+    const utterance=new SpeechSynthesisUtterance(getText(element));
+    utterance.lang='de-DE';
+    if(selected)utterance.voice=selected;
+    utterance.rate=0.90;
+    utterance.pitch=1;
+    utterance.volume=1;
+    let started=false;
+    utterance.onstart=()=>{
+      started=true;
+      if(audioTimer!==null){clearTimeout(audioTimer);audioTimer=null;}
+    };
+    utterance.onend=()=>{
+      if(token!==playToken)return;
+      if(audioTimer!==null){clearTimeout(audioTimer);audioTimer=null;}
+      index++;
+      audioTimer=setTimeout(nextSentence,500);
+    };
+    utterance.onerror=e=>{
+      if(token!==playToken)return;
+      if(audioTimer!==null){clearTimeout(audioTimer);audioTimer=null;}
+      resetAudioButtons();
+      status.textContent='Pritisni ▶ za izgovor.';
+      if(!isAutostart&&e.error!=='canceled'&&e.error!=='interrupted'){
+        alert('Nemački glas nije dostupan. Pokušaj u Chrome-u ili Edge-u.');
+      }
+    };
+    window.speechSynthesis.speak(utterance);
+    // Na telefonu je za automatski zvuk nekad potreban prvi korisnicki dodir.
+    if(isAutostart&&index===0){
+      audioTimer=setTimeout(()=>{
+        if(token===playToken&&!started){
+          stopAudio();
+          status.textContent='Za zvuk dodirni ▶ Slušaj rečenicu po rečenicu.';
+        }
+      },2500);
+    }
+  }
+  nextSentence();
 }
 document.getElementById('playIntro').addEventListener('click',e=>playSound(e.currentTarget,false,false));
 document.getElementById('playChoice1').addEventListener('click',e=>playSound(e.currentTarget,true,false));
 document.getElementById('playChoice2').addEventListener('click',e=>playSound(e.currentTarget,true,true));
+// Pokusaj automatsko pustanje cim se stranica ucita; rucno dugme ostaje dostupno.
+setTimeout(()=>playSound(document.getElementById('playIntro'),false,false,true),650);
 document.addEventListener('keydown',e=>{if(e.key==='Escape')stopAudio()});
 render();
 </script>
