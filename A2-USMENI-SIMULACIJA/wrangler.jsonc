@@ -1,0 +1,16 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "demax-a2-usmeni",
+  "main": "./cloudflare-worker.js",
+  "compatibility_date": "2026-10-28",
+  "ratelimits": [
+    {
+      "name": "A2_RATE_LIMIT",
+      "namespace_id": "2026102802",
+      "simple": {
+        "limit": 20,
+        "period": 60
+      }
+    }
+  ]
+}
