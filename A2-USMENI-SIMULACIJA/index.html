@@ -248,7 +248,7 @@ main{min-height:0;flex:1;display:flex;flex-direction:column;overflow:hidden;back
   </section>
   <section id="results" class="screen">
    <div class="scroll"><p class="eyebrow">SIMULACIJA ZAVRŠENA</p><h2>Bravo! Završili ste ÖSD A2 simulaciju</h2>
-    <p class="sub">Rezultati su sačuvani lokalno u ovom pregledaču. Nisu poslati na server.</p>
+    <p class="sub">Rezultati se čuvaju lokalno. Pri AI proveri tekst odgovora šalje se AI servisu radi ocenjivanja.</p>
     <div class="glass" style="margin:12px 0"><div class="bigStat" id="resultScore"></div><div style="text-align:center;color:#53749a;font-weight:850;font-size:12px"><span id="scoreCaption">Orijentacioni bodovi bez AI-ja</span></div></div>
     <div class="resultRows" id="resultRows"></div>
     <p class="disclaimer" id="resultDisclaimer">Orijentacioni rezultat bez potpune AI provere nije zvanična ÖSD ocena.</p>
@@ -459,6 +459,30 @@ aiSave.onclick=()=>{
  try{if(v)localStorage.setItem("demax_a2_ai_worker_url",v);else localStorage.removeItem("demax_a2_ai_worker_url")}catch(e){}
  aiNote.textContent=v?"Adresa je sačuvana. AI će biti aktivan ako Worker podržava DE-MAX A2 API i CORS.":"AI nije povezan. Koristi se osnovna provera.";
 };
+
+const DEFAULT_A2_WORKER_URL="https://demax-a2-usmeni.nemackidemax13.workers.dev/api/a2-usmeni";
+function autoConnectA2Worker(){
+ if(app.aiEndpoint)return;
+ const controller=new AbortController();
+ const timeout=setTimeout(()=>controller.abort(),5000);
+ fetch(DEFAULT_A2_WORKER_URL,{method:"GET",cache:"no-store",signal:controller.signal})
+  .then(async response=>response.ok?response.json():null)
+  .then(status=>{
+   if(app.aiEndpoint)return;
+   if(status?.ok&&status?.configured){
+    app.aiEndpoint=DEFAULT_A2_WORKER_URL;
+    aiField.value=app.aiEndpoint;
+    aiNote.textContent="✓ Cloudflare AI je povezan. Odgovori se proveravaju na A2 nivou.";
+    aiConfig.textContent="✓ AI provera · povezana";
+   }else{
+    aiNote.textContent="AI još nije aktivan: objavite A2 Worker i dodajte OPENAI_API_KEY u Cloudflare.";
+    aiField.placeholder=DEFAULT_A2_WORKER_URL;
+   }
+  })
+  .catch(()=>{if(!app.aiEndpoint){aiNote.textContent="AI još nije povezan. Osnovna provera ostaje dostupna.";aiField.placeholder=DEFAULT_A2_WORKER_URL;}})
+  .finally(()=>clearTimeout(timeout));
+}
+setTimeout(autoConnectA2Worker,0);
 
 function neutralQuestion(t,q){
  return !!q&&(!/^Familie\b/i.test(t.title)||!forbiddenSpouse.test(q))
