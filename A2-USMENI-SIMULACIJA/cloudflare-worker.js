@@ -3,7 +3,7 @@
 // Production: deploy with wrangler.jsonc to enable A2_RATE_LIMIT.
 const TRUSTED_ORIGIN = "https://nemackidemax13-oss.github.io";
 const API_PATH = "/api/a2-usmeni";
-const A2_IFRAME_URL = "https://nemackidemax13-oss.github.io/Biografije-A1/DE-MAX_A2_USMENI_AUTO_IFRAME.html?v=controls-20261028-2";
+const A2_IFRAME_URL = "https://nemackidemax13-oss.github.io/Biografije-A1/DE-MAX_A2_USMENI_AUTO_IFRAME.html?v=intro-clean-20261028-3";
 
 // GET / and /embed: A2 application in an iframe. API key stays in a Cloudflare Secret.
 function embedPage() {
