@@ -587,7 +587,13 @@ function finishRecognition(){
  if(r){try{r.stop()}catch(e){}}
 }
 function endMic(){finishRecognition()}
-function stopAudio(){app.sayToken++;try{if("speechSynthesis" in window)speechSynthesis.cancel()}catch(e){}}
+const A2_VOICE={watchdog:null,micTimer:null};
+function stopAudio(){
+ app.sayToken++;
+ if(A2_VOICE.watchdog){clearTimeout(A2_VOICE.watchdog);A2_VOICE.watchdog=null}
+ if(A2_VOICE.micTimer){clearTimeout(A2_VOICE.micTimer);A2_VOICE.micTimer=null}
+ try{if("speechSynthesis" in window)window.speechSynthesis.cancel()}catch(e){}
+}
 function startMic(){
  if(app.screen!=="introExam"&&app.screen!=="speaking")return;
  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
@@ -621,25 +627,56 @@ function startMic(){
  try{r.start();app.recording=true;$("micLight").classList.add("live");statusSet("🔴 Slušam. Govorite bez vremenskog ograničenja; završite sami.")}
  catch(e){app.rec=null;statusSet("Mikrofon nije mogao da se pokrene. Možete pisati odgovor.")}
 }
+// Izgovor i automatski mikrofon preuzeti iz DE-MAX A1 USMENI AUTO_IFRAME.
 function speakPrompt(autoMic){
  stopEverything();
- const p=getPrompt();if(!p)return;const token=app.sayToken;
- statusSet("🔊 Ispitivač govori. Mikrofon se automatski uključuje posle pitanja...");
- const activate=()=>{
-  if(token!==app.sayToken)return;
-  statusSet("🎙 Pitanje je završeno. Uključujem mikrofon...");
-  if(autoMic)startMic(false);
+ const p=getPrompt();if(!p)return;
+ const token=app.sayToken;
+ const key=respondKey();
+ statusSet("🔊 Ispitivač govori nemački. Posle pitanja uključuje se mikrofon...");
+ const startListening=(delay=400)=>{
+  if(!autoMic||token!==app.sayToken||respondKey()!==key)return;
+  if(A2_VOICE.micTimer)clearTimeout(A2_VOICE.micTimer);
+  A2_VOICE.micTimer=setTimeout(()=>{
+   A2_VOICE.micTimer=null;
+   if(token!==app.sayToken||respondKey()!==key)return;
+   statusSet("🎙 Pitanje je završeno. Uključujem mikrofon...");
+   startMic(false);
+  },delay);
  };
  if(!window.SpeechSynthesisUtterance||!("speechSynthesis" in window)){
-  statusSet("Izgovor nije dostupan. Uključujem mikrofon...");
-  if(autoMic)startMic(false);return
+  statusSet("Izgovor nije dostupan. Pokušavam da uključim mikrofon...");
+  startListening(280);
+  return;
  }
- const u=new SpeechSynthesisUtterance(p.q);u.lang="de-DE";u.rate=.84;u.pitch=1;
- const vs=speechSynthesis.getVoices();const v=vs.find(v=>/^de/i.test(v.lang));if(v)u.voice=v;
  let finished=false;
- const done=()=>{if(finished||token!==app.sayToken)return;finished=true;activate()};
- u.onend=done;u.onerror=done;
- try{speechSynthesis.speak(u)}catch(e){done()}
+ const done=()=>{
+  if(finished||token!==app.sayToken)return;
+  finished=true;
+  if(A2_VOICE.watchdog){clearTimeout(A2_VOICE.watchdog);A2_VOICE.watchdog=null}
+  startListening(400);
+ };
+ try{
+  const u=new SpeechSynthesisUtterance(p.q);
+  u.lang="de-DE";u.rate=.91;u.pitch=1;u.volume=1;
+  const voices=window.speechSynthesis.getVoices();
+  const de=voices.filter(v=>/^de[-_]/i.test(v.lang));
+  u.voice=de.find(v=>/google/i.test(v.name))||
+          de.find(v=>/natural|premium/i.test(v.name))||
+          de[0]||null;
+  u.onend=done;
+  u.onerror=done;
+  window.speechSynthesis.speak(u);
+  // Neki mobilni pregledači ne pokreću onend; A1 zaštita od zaglavljivanja.
+  A2_VOICE.watchdog=setTimeout(()=>{
+   A2_VOICE.watchdog=null;
+   if(token!==app.sayToken||finished)return;
+   try{window.speechSynthesis.cancel()}catch(e){}
+   done();
+  },Math.min(19000,Math.max(6500,p.q.length*115)));
+ }catch(e){
+  done();
+ }
 }
 function buildFeedback(el,result,prompt,section){
  el.replaceChildren();
