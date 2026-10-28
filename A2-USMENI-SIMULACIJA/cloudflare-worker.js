@@ -3,6 +3,39 @@
 // Production: deploy with wrangler.jsonc to enable A2_RATE_LIMIT.
 const TRUSTED_ORIGIN = "https://nemackidemax13-oss.github.io";
 const API_PATH = "/api/a2-usmeni";
+const A2_IFRAME_URL = "https://nemackidemax13-oss.github.io/Biografije-A1/DE-MAX_A2_USMENI_AUTO_IFRAME.html?v=controls-20261028-2";
+
+// GET / and /embed: A2 application in an iframe. API key stays in a Cloudflare Secret.
+function embedPage() {
+ const markup = `<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>DE-MAX A2 | USMENI AUTO_IFRAME</title>
+<style>
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;overflow:hidden;background:#fff;font-family:system-ui,Arial,sans-serif}
+main{height:100vh;height:100dvh;display:flex;flex-direction:column}
+header{height:38px;flex:none;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:0 11px;background:#f3f8ff;border-bottom:1px solid #dce9fc;color:#124078;font-size:12px;font-weight:850}
+header a{background:#1957bd;color:white;padding:6px 9px;border-radius:7px;text-decoration:none;font-size:11px}
+iframe{width:100%;flex:1;min-height:0;border:0;display:block}
+</style>
+</head>
+<body><main>
+<header><span>DE-MAX · A2 USMENI AUTO</span><a href="${A2_IFRAME_URL}" target="_blank" rel="noopener noreferrer">Otvori direktno</a></header>
+<iframe src="${A2_IFRAME_URL}" title="DE-MAX A2 usmena simulacija" allow="microphone; autoplay; fullscreen" allowfullscreen loading="eager"></iframe>
+</main></body></html>`;
+ return new Response(markup, {
+  status:200,
+  headers:{
+   "Content-Type":"text/html; charset=utf-8",
+   "Cache-Control":"no-store",
+   "Permissions-Policy":'microphone=(self "https://nemackidemax13-oss.github.io"), autoplay=(self "https://nemackidemax13-oss.github.io")',
+   "Content-Security-Policy":"default-src 'none'; style-src 'unsafe-inline'; frame-src https://nemackidemax13-oss.github.io; base-uri 'none'; form-action 'none'"
+  }
+ });
+}
+
 function headers(origin) {
   return {
     "Content-Type": "application/json; charset=utf-8",
@@ -63,7 +96,10 @@ export default {
   async fetch(request, env) {
     const path = new URL(request.url).pathname;
     const origin = request.headers.get("Origin") || "";
-    if (path !== API_PATH && path !== "/") return json({ error: "Nepoznata putanja" }, 404, origin);
+    if (request.method === "GET" && (path === "/" || path === "/embed")) {
+      return embedPage();
+    }
+    if (path !== API_PATH) return json({ error: "Nepoznata putanja" }, 404, origin);
     if (request.method === "OPTIONS") {
       return new Response(null, {
         status: origin === TRUSTED_ORIGIN ? 204 : 403,
@@ -74,7 +110,6 @@ export default {
       return json({ ok: true, service: "DE-MAX A2", configured: Boolean(env.OPENAI_API_KEY), rateLimit: Boolean(env.A2_RATE_LIMIT) }, 200, origin);
     }
     if (request.method !== "POST") return json({ error: "Metod nije dozvoljen" }, 405, origin);
-    if (path !== API_PATH) return json({ error: "Nepoznata putanja" }, 404, origin);
     if (origin !== TRUSTED_ORIGIN) return json({ error: "Zabranjen Origin" }, 403, origin);
     if (!env.OPENAI_API_KEY) return json({ error: "OPENAI_API_KEY nije podešen kao Cloudflare Secret" }, 503, origin);
     if (env.A2_RATE_LIMIT) {
