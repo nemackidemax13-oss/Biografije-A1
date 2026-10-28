@@ -193,6 +193,27 @@ main{min-height:0;flex:1;display:flex;flex-direction:column;overflow:hidden;back
 #results .resultSectionInfo{font-size:10px;color:#6a819f;font-weight:500;margin-left:4px}
 #speaking #speakHint:not([hidden]){max-height:42dvh;overflow-y:auto}
 
+
+/* DE-MAX A2: mobilna dugmad su uvek vidljiva iznad navigacije. */
+#introExam>.quick-controls,#speaking>.quick-controls{
+ flex:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:6px;padding:7px 11px 6px;background:#fff;border-top:1px solid #e4edf9;
+}
+#introExam>.quick-controls .btn,#speaking>.quick-controls .btn{
+ min-width:0;min-height:36px;padding:6px 5px;font-size:11px;border-radius:10px;
+}
+#introExam>.actions{grid-template-columns:minmax(0,.75fr) minmax(0,1.25fr) minmax(0,1.4fr);gap:5px;}
+#introExam>.actions .btn{min-width:0;font-size:10.5px;padding:7px 3px;white-space:normal;min-height:40px}
+#introExam>.actions.topics-ready{grid-template-columns:1fr 1.45fr}
+#introExam>.actions [hidden]{display:none!important}
+#speaking>.scroll .grid2{display:none}
+#introExam>.scroll .grid2{display:none}
+@media(max-height:580px){
+ #introExam>.quick-controls,#speaking>.quick-controls{padding-top:4px;padding-bottom:4px;gap:4px}
+ #introExam>.quick-controls .btn,#speaking>.quick-controls .btn{min-height:32px;font-size:10px}
+ #introExam>.actions .btn{min-height:35px}
+}
+
 </style>
 </head>
 <body>
@@ -219,10 +240,10 @@ main{min-height:0;flex:1;display:flex;flex-direction:column;overflow:hidden;back
     <div class="examiner"><div class="role">PRÜFERIN / PRÜFER</div><div class="de" id="introDe"></div><div class="sr" id="introSr"></div><div class="state" id="introState"></div></div>
     <div class="answerbox"><span class="fieldlabel">VAŠ ODGOVOR – MIKROFON ILI PISANJE</span><textarea id="introText" lang="de" placeholder="Vaš odgovor će se pojaviti ovde..."></textarea></div>
     <div class="status" id="introStatus" aria-live="polite"></div>
-    <div class="grid2"><button class="btn soft" data-act="listen">🎙 Govori</button><button class="btn" data-act="repeat">🔊 Ponovi pitanje</button><button class="btn red" data-act="stop">■ Završi govor</button><button class="btn" data-act="check">💡 Proveri odgovor</button></div>
+    
     <div class="hint" id="introHint" hidden></div>
    </div>
-   <div class="actions"><button class="btn red" id="introBack">‹ Nazad</button><button class="btn green" id="introNext">Dalje ›</button></div>
+   <div class="quick-controls"><button class="btn soft" data-act="listen">🎙 Govori</button><button class="btn" data-act="repeat">🔊 Ponovi pitanje</button><button class="btn red" data-act="stop">■ Završi govor</button><button class="btn" data-act="check">💡 Proveri odgovor</button></div><div class="actions" id="introActions"><button class="btn red" id="introBack">‹ Nazad</button><button class="btn green" id="introNext">Sledeće pitanje ›</button><button class="btn primary" id="introTopics">Nastavi na teme ›</button></div>
   </section>
   <section id="choose" class="screen">
    <div class="scroll">
@@ -241,10 +262,10 @@ main{min-height:0;flex:1;display:flex;flex-direction:column;overflow:hidden;back
     <div class="examiner"><div class="role">ISPITIVAČ · PRÜFERIN / PRÜFER</div><div class="de" id="speakDe"></div><div class="sr" id="speakSr"></div><div class="state" id="speakState"></div></div>
     <div class="answerbox"><span class="fieldlabel">VAŠ ODGOVOR · MIKROFON ILI PISANJE</span><textarea id="speakText" lang="de" placeholder="Vaš odgovor će se ovde pojaviti..."></textarea></div>
     <div class="status" id="speakStatus" aria-live="polite"></div>
-    <div class="grid2"><button class="btn soft" data-act="listen">🎙 Govori</button><button class="btn" data-act="repeat">🔊 Ponovi pitanje</button><button class="btn red" data-act="stop">■ Završi govor</button><button class="btn" data-act="example">💡 Primer / provera</button></div>
+    
     <div class="hint" id="speakHint" hidden></div>
    </div>
-   <div class="actions"><button class="btn red" id="speakBack">‹ Nazad</button><button class="btn green" id="speakNext">Dalje · pitanja ›</button></div>
+   <div class="quick-controls"><button class="btn soft" data-act="listen">🎙 Govori</button><button class="btn" data-act="repeat">🔊 Ponovi pitanje</button><button class="btn red" data-act="stop">■ Završi govor</button><button class="btn" data-act="example">💡 Primer / provera</button></div><div class="actions"><button class="btn red" id="speakBack">‹ Nazad</button><button class="btn green" id="speakNext">Dalje · pitanja ›</button></div>
   </section>
   <section id="results" class="screen">
    <div class="scroll"><p class="eyebrow">SIMULACIJA ZAVRŠENA</p><h2>Bravo! Završili ste ÖSD A2 simulaciju</h2>
@@ -321,7 +342,11 @@ function showIntro(){
  text("introIndex","Pitanje "+(app.intro+1)+" / "+INTRO.length+" · Mikrofon se sam uključuje posle pitanja.");
  const p=INTRO[app.intro];text("introDe",p.q);text("introSr",p.qt);text("introState","● Ispitivač postavlja pitanje");
  $("introBack").textContent=app.intro===0?"‹ Početna":"‹ Nazad";
- $("introNext").textContent=app.intro===INTRO.length-1?"Nastavi na teme ›":"Sledeće pitanje ›";
+ const lastIntro=app.intro===INTRO.length-1;
+  $("introNext").textContent="Sledeće pitanje ›";
+  $("introNext").hidden=lastIntro;
+  $("introActions").classList.toggle("topics-ready",lastIntro);
+  $("introTopics").textContent="Nastavi na teme ›";
  text("introStatus","Pitanje može da se čuje automatski.");fillAnswer();speakPrompt(true)
 }
 function makeOffer(){
@@ -414,6 +439,7 @@ function downloadTxt(){
 document.querySelectorAll("[data-act]").forEach(b=>b.addEventListener("click",()=>handleButton(b.dataset.act)));
 $("begin").onclick=()=>{app.intro=0;app.responses={};makeOffer();showIntro()};
 $("introNext").onclick=advanceIntro;$("introBack").onclick=backIntro;
+ $("introTopics").onclick=()=>{saveAnswer();stopEverything();showChoose()};
 $("chooseBack").onclick=()=>{app.intro=INTRO.length-1;showIntro()};
 $("changeOffer").onclick=()=>{makeOffer();renderChoice()};
 $("autoChoose").onclick=()=>{app.chosen=shuffled(app.offer).slice(0,5);renderChoice()};
