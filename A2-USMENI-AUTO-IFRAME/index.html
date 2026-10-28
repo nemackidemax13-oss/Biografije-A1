@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="sr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="description" content="DE-MAX A2 usmeni — mobilni iframe sa automatskim pitanjima i mikrofonom nakon prve dozvole.">
+  <title>DE-MAX A2 | AUTO_IFRAME • Android i iPhone</title>
+  <style>
+    :root{color-scheme:light}
+    *{box-sizing:border-box}
+    html,body{margin:0;width:100%;height:100%;overflow:hidden;overscroll-behavior:none;background:#fff;font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+    .page{height:100vh;height:100dvh;display:flex;flex-direction:column;min-height:0;overflow:hidden}
+    .toolbar{flex:none;height:37px;padding:0 max(10px,env(safe-area-inset-right)) 0 max(11px,env(safe-area-inset-left));display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px solid #d9e6f7;background:#f5f9ff;color:#183d75}
+    .toolbar strong{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .toolbar a{display:inline-block;padding:6px 8px;border-radius:7px;background:#1957bd;color:#fff;font-size:11px;font-weight:700;text-decoration:none;white-space:nowrap}
+    iframe{display:block;flex:1;width:100%;min-height:0;height:100%;border:0;background:#fff}
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="toolbar">
+      <strong>DE-MAX TUTIN · A2 usmeni · AUTO</strong>
+      <a href="../DE-MAX_A2_USMENI_AUTO_IFRAME.html?v=mobile-a2-mic-20261028" target="_blank" rel="noopener noreferrer" aria-label="Otvori A2 usmeni direktno ako iframe ne dozvoljava mikrofon">↗ Direktno</a>
+    </div>
+    <!-- Same-origin GitHub Pages frame. Do not sandbox: it can block mic permission. -->
+    <!-- Microphone needs a trusted tap on START inside the iframe and one browser consent. -->
+    <iframe
+      id="demax-a2"
+      title="DE-MAX A2 — usmeni ispit sa automatskim mikrofonom"
+      src="../DE-MAX_A2_USMENI_AUTO_IFRAME.html?v=mobile-a2-mic-20261028"
+      allow="microphone; autoplay; fullscreen"
+      loading="eager"
+      referrerpolicy="strict-origin-when-cross-origin"
+      allowfullscreen
+    ></iframe>
+  </div>
+  <p class="sr-only">Na iPhone i Android telefonu pritisnite Start unutar aplikacije, zatim prihvatite browser zahtev za mikrofon. Posle pitanja mikrofon se automatski pokreće kada pregledač to dozvoli.</p>
+</body>
+</html>
