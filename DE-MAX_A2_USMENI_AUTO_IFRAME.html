@@ -590,7 +590,30 @@ function finishRecognition(){
  if(r){try{r.stop()}catch(e){}}
 }
 function endMic(){finishRecognition()}
-const A2_VOICE={watchdog:null,micTimer:null};
+// A1/Replit stil izgovora: biramo najkvalitetniji dostupni nemacki glas.
+const A2_VOICE={watchdog:null,micTimer:null,voices:[]};
+function dmVoiceScore(v){
+ const name=(v.name||"").toLowerCase(),lang=(v.lang||"").toLowerCase();
+ let score=0;
+ if(/google/.test(name))score+=1000;
+ if(/natural|neural/.test(name))score+=200;
+ if(/online|premium/.test(name))score+=80;
+ if(/katja|seraphina|amala/.test(name))score+=20;
+ if(lang==="de-de")score+=15;
+ if(/desktop|espeak|mbrola/.test(name))score-=35;
+ return score;
+}
+function dmRefreshVoices(){
+ if(!("speechSynthesis" in window))return;
+ A2_VOICE.voices=window.speechSynthesis.getVoices()
+  .filter(v=>/^de(?:[-_]|$)/i.test(v.lang||""))
+  .sort((a,b)=>dmVoiceScore(b)-dmVoiceScore(a));
+}
+if("speechSynthesis" in window){
+ dmRefreshVoices();
+ window.speechSynthesis.addEventListener?.("voiceschanged",dmRefreshVoices);
+ window.addEventListener("pageshow",dmRefreshVoices);
+}
 function stopAudio(){
  app.sayToken++;
  if(A2_VOICE.watchdog){clearTimeout(A2_VOICE.watchdog);A2_VOICE.watchdog=null}
@@ -660,13 +683,21 @@ function speakPrompt(autoMic){
   startListening(400);
  };
  try{
-  // Isti TTS profil kao DE-MAX A1 AUTO_IFRAME: de-DE, rate .91, pitch 1.
+  // Izgovor A1: de-DE, 0.90, normalna visina i puna jacina.
+  // Prioritet: Google nemacki, prirodni/neuralni glas, pa lokalni nemacki.
   const u=new SpeechSynthesisUtterance(p.q);
-  u.lang="de-DE";u.rate=.91;u.pitch=1;
-  const voices=window.speechSynthesis.getVoices(),de=voices.filter(v=>/^de[-_]/i.test(v.lang));
-  u.voice=de.find(v=>/google/i.test(v.name))||de.find(v=>/natural|premium/i.test(v.name))||de[0]||null;
+  u.lang="de-DE";u.rate=.90;u.pitch=1;u.volume=1;
+  dmRefreshVoices();
+  const selected=A2_VOICE.voices[0]||null;
+  if(selected)u.voice=selected;
+  u.onstart=()=>{if(token===app.sayToken)statusSet("🔊 Ispitivač govori nemački...");};
   u.onend=done;
-  u.onerror=done;
+  u.onerror=(e)=>{
+   if(token!==app.sayToken)return;
+   if(e?.error==="not-allowed")statusSet("Za zvuk dodirnite 🔊 Ponovi pitanje.");
+   done();
+  };
+  if(window.speechSynthesis.paused)window.speechSynthesis.resume();
   window.speechSynthesis.speak(u);
   // Neki mobilni pregledači ne pokreću onend; A1 zaštita od zaglavljivanja.
   A2_VOICE.watchdog=setTimeout(()=>{
