@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#103b80">
+<title>DE-MAX | A2 Worker - kopiraj ceo kod</title>
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:#edf3ff;color:#183355}
+main{max-width:960px;margin:0 auto;padding:clamp(12px,3vw,30px)}
+header{background:linear-gradient(125deg,#0e387b,#216bd4);color:#fff;border-radius:18px;padding:24px 20px;box-shadow:0 12px 25px #17335f24}
+header small{font-weight:850;letter-spacing:.15em;color:#cfe1ff}
+h1{font-size:clamp(23px,4vw,32px);margin:8px 0 10px}
+header p{margin:0;line-height:1.5;color:#e3eeff}
+.panel{background:#fff;padding:18px;border-radius:18px;margin-top:15px;border:1px solid #d8e3f5}
+.actions{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin-bottom:12px}
+button,.actionlink{font:inherit;border:0;border-radius:11px;padding:13px 17px;cursor:pointer;font-weight:800;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+button.primary{background:#13975f;color:#fff;flex:1 1 220px;min-height:51px}
+button.secondary{background:#e7efff;color:#144b99}
+button:disabled{opacity:.55;cursor:progress}
+.actionlink{background:#edf3ff;color:#144b99}
+textarea{display:block;width:100%;height:min(67vh,710px);min-height:360px;resize:vertical;line-height:1.48;font:12.5px/1.48 ui-monospace,SFMono-Regular,Consolas,monospace;color:#142942;background:#f8faff;border:1px solid #cad9ef;border-radius:12px;padding:15px;white-space:pre;tab-size:2}
+.status{min-height:24px;margin:8px 0;color:#245486;font-weight:700;font-size:13px}
+.instructions{font-size:14px;line-height:1.6}
+.instructions strong{color:#104f9d}
+footer{font-size:12px;text-align:center;color:#677f9d;margin-top:13px}
+</style>
+</head>
+<body>
+<main>
+<header>
+<small>DE-MAX TUTIN · A2 USMENI</small>
+<h1>Kompletan Cloudflare Worker</h1>
+<p>Otvori ovu stranicu, klikni <b>KOPIRAJ CEO KOD</b>, pa nalepi u Cloudflare Worker editor.</p>
+</header>
+<section class="panel">
+<div class="actions">
+<button type="button" class="primary" id="copy" disabled>📋 Kopiraj ceo kod</button>
+<button type="button" class="secondary" id="select">Označi sve (Ctrl+A)</button>
+<a class="actionlink" href="./DEMAX_A2_USMENI_WORKER_ZVUK.js" target="_blank" rel="noopener">Otvori samo kod ↗</a>
+</div>
+<p class="status" id="status" role="status">Učitavam kompletan Worker kod...</p>
+<textarea id="source" readonly spellcheck="false" aria-label="Ceo Cloudflare Worker JavaScript kod"></textarea>
+</section>
+<section class="panel instructions">
+<strong>Kako da zameniš kod u Cloudflare-u:</strong>
+<ol>
+<li>Otvori Cloudflare → Workers &amp; Pages → postojeći <b>A2 usmeni Worker</b> (ne A1 i ne A2 mejlovi).</li>
+<li>Izaberi <b>Edit code</b>, pa u editoru pritisni <b>Ctrl+A</b> i <b>Ctrl+V</b>.</li>
+<li>Klikni <b>Deploy</b> i proveri da je <b>OPENAI_API_KEY</b> podešen u <b>Settings → Variables and Secrets</b>.</li>
+<li>De-Max aplikacija treba da otvara <b>glavnu HTTPS adresu tog Workera</b> radi direktnog prikaza A2.</li>
+</ol>
+<div>Napomena: ako ugrađeni Android/iPhone WebView zabranjuje automatsko puštanje glasa, to se mora dozvoliti i u podešavanjima aplikacije. Worker to sam ne može zaobići.</div>
+</section>
+<footer>DE-MAX · A2 usmena simulacija · 29.10.2026.</footer>
+</main>
+<script>
+(function(){
+const ta=document.getElementById("source");
+const status=document.getElementById("status");
+const btn=document.getElementById("copy");
+const select=document.getElementById("select");
+function mark(){ta.focus();ta.select();ta.setSelectionRange(0,ta.value.length)}
+select.addEventListener("click",()=>{mark();status.textContent="Ceo kod je označen. Pritisni Ctrl+C za kopiranje."});
+btn.addEventListener("click",async()=>{
+if(!ta.value)return;
+try{
+if(navigator.clipboard&&navigator.clipboard.writeText){
+  await navigator.clipboard.writeText(ta.value);
+  status.textContent="✓ Ceo Worker kod je kopiran. Nalepi ga u Cloudflare editor (Ctrl+V).";
+}else throw Error("clipboard");
+}catch(e){
+mark();
+const ok=document.execCommand("copy");
+status.textContent=ok?"✓ Ceo kod je kopiran. Nalepi u Cloudflare.":"Kod je označen. Pritisni Ctrl+C.";
+}
+});
+fetch("./DEMAX_A2_USMENI_WORKER_ZVUK.js?v=20261029-1",{cache:"no-store"})
+.then(r=>{if(!r.ok)throw Error("HTTP "+r.status);return r.text()})
+.then(s=>{if(!s.includes("export default"))throw Error("Worker nije učitan");ta.value=s;btn.disabled=false;status.textContent="Spremno: "+s.split("\n").length+" redova koda. Klikni zeleno dugme za kopiranje.";})
+.catch(e=>{status.textContent="Ne mogu automatski učitati kod. Klikni „Otvori samo kod“ iznad.";});
+})();
+</script>
+</body>
+</html>
