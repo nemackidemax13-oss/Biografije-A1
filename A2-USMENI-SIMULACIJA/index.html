@@ -240,7 +240,7 @@ main{min-height:0;flex:1;display:flex;flex-direction:column;overflow:hidden;back
     <p class="intro-sub">ÖSD A2 · Interaktivna simulacija<br>Predstavljanje → 6 tema → izaberi 5 → po 2 pitanja</p>
     <div class="chips"><span>🎙 Mikrofon</span><span>🔊 Nemački izgovor</span><span>✓ Brza provera</span></div>
     <button class="btn green start" id="begin">Započni simulaciju →</button>
-    <small>Dozvolite mikrofon u pregledaču. Chrome i Edge su preporučeni.<br>Možete i pisati odgovore bez mikrofona.<br>Na telefonima bez direktnog prepoznavanja, snimak se šalje DE-MAX Worker-u radi pretvaranja govora u tekst.</small>
+    
   </section>
   <section id="introExam" class="screen">
    <div class="scroll">
@@ -659,13 +659,11 @@ function speakPrompt(autoMic){
   startListening(400);
  };
  try{
+  // Isti TTS profil kao DE-MAX A1 AUTO_IFRAME: de-DE, rate .91, pitch 1.
   const u=new SpeechSynthesisUtterance(p.q);
-  u.lang="de-DE";u.rate=.91;u.pitch=1;u.volume=1;
-  const voices=window.speechSynthesis.getVoices();
-  const de=voices.filter(v=>/^de[-_]/i.test(v.lang));
-  u.voice=de.find(v=>/google/i.test(v.name))||
-          de.find(v=>/natural|premium/i.test(v.name))||
-          de[0]||null;
+  u.lang="de-DE";u.rate=.91;u.pitch=1;
+  const voices=window.speechSynthesis.getVoices(),de=voices.filter(v=>/^de[-_]/i.test(v.lang));
+  u.voice=de.find(v=>/google/i.test(v.name))||de.find(v=>/natural|premium/i.test(v.name))||de[0]||null;
   u.onend=done;
   u.onerror=done;
   window.speechSynthesis.speak(u);
