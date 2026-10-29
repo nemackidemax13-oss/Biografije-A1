@@ -314,6 +314,98 @@ body.writing.keyboardOpen .writerPage .results{max-height:35%}
  body.writing.keyboardOpen .writerPage .grade{font-size:12px;padding:8px 9px}
 }
 
+
+/* TELC B1: A2-compatible keyboard and email layout; A2 files are unchanged. */
+@media(max-width:700px){
+ html,body{height:100%!important;width:100%!important;margin:0!important;overflow:hidden!important;overscroll-behavior:none!important}
+ body.tasking .app,body.writing .app{
+  position:fixed!important;top:var(--b1-vtop,0px)!important;left:0!important;right:0!important;
+  width:100%!important;height:var(--b1-vh,100dvh)!important;
+  max-height:var(--b1-vh,100dvh)!important;margin:0!important;overflow:hidden!important
+ }
+ body.writing .writerPage{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+ body.writing .writerPage .editor{flex:1;min-height:0;display:flex;flex-direction:column;gap:3px;padding:5px 6px}
+ body.writing .writerPage .writingPoints{
+  flex:none;min-height:0;max-height:48%;overflow-y:auto;
+  border:1px solid #b7d2f6;border-left:4px solid #2b57b0;border-radius:7px;background:#edf5ff;
+  padding:5px 8px;margin:0
+ }
+ body.writing .writerPage .writingPoints li{font-size:var(--b1-q-font,12.1px)}
+ body.writing .writerPage .writingPoints li .sr{font-size:var(--b1-tr-font,11.2px)}
+ body.writing .writerPage textarea{flex:1;min-height:0;resize:none;overflow-y:auto;overscroll-behavior:contain}
+ body.writing .writerPage .actions{
+  display:flex!important;align-items:center;justify-content:space-between;
+  gap:6px;flex:none;min-height:34px;padding:3px 1px max(3px,env(safe-area-inset-bottom));
+  border-top:1px solid #dce8f8;background:#fff
+ }
+ body.writing .writerPage .actions .count{display:block;font-size:10px;font-weight:900;white-space:nowrap}
+ body.writing .writerPage .grade{
+  flex:none;width:auto;min-height:30px;padding:7px 12px;font-size:12px;
+  border-radius:7px;white-space:nowrap
+ }
+ html.b1-typing body header,html.b1-typing body footer{display:none!important}
+ html.b1-typing .writerPage{
+  position:fixed!important;left:0!important;right:0!important;
+  top:var(--b1-vtop,0px)!important;bottom:auto!important;
+  width:100%!important;height:var(--b1-vh,100dvh)!important;
+  max-height:var(--b1-vh,100dvh)!important;display:flex!important;
+  flex-direction:column!important;background:#fff!important;
+  overflow:hidden!important;z-index:90!important;margin:0!important;padding:0!important;
+ }
+ html.b1-typing .writerPage .writerTop,html.b1-typing .writerPage .editHead,
+ html.b1-typing .writerPage .notice{display:none!important}
+ html.b1-typing .writerPage .editor{
+  display:grid!important;grid-template-columns:minmax(0,1fr)!important;
+  grid-template-rows:max-content minmax(0,1fr) max-content!important;
+  height:100%!important;min-height:0!important;flex:1!important;
+  align-content:stretch!important;overflow:hidden!important;
+  padding:8px 5px 2px!important;gap:3px!important
+ }
+ html.b1-typing .writerPage .writingPoints{
+  display:block!important;grid-row:1!important;
+  width:100%!important;max-height:min(53%,220px)!important;min-height:0!important;
+  overflow-y:auto!important;overscroll-behavior:contain!important;
+  padding:4px 7px!important;margin:0!important;
+ }
+ html.b1-typing .writerPage .writingPoints h3{font-size:10px!important;line-height:1.13!important}
+ html.b1-typing .writerPage .writingPoints li{
+  font-size:var(--b1-q-font,11.3px)!important;
+  font-weight:700!important;line-height:1.15!important;margin:0!important
+ }
+ html.b1-typing .writerPage .writingPoints li .sr{
+  font-size:var(--b1-tr-font,10.2px)!important;line-height:1.13!important;margin-top:1px!important
+ }
+ html.b1-typing .writerPage textarea{
+  display:block!important;grid-row:2!important;flex:none!important;
+  width:100%!important;height:100%!important;min-height:0!important;max-height:100%!important;
+  margin:0!important;align-self:stretch!important;justify-self:stretch!important;
+  padding:8px 10px!important;border-radius:8px!important;background:#fff!important;
+  font-size:16px!important;line-height:1.35!important;overflow-x:hidden!important;
+  overflow-y:auto!important;overscroll-behavior:contain!important;resize:none!important
+ }
+ html.b1-typing .writerPage .actions{
+  display:flex!important;grid-row:3!important;flex:none!important;position:relative!important;
+  bottom:auto!important;min-height:34px!important;margin:0!important;
+  padding:2px 2px max(2px,env(safe-area-inset-bottom))!important;
+  background:#fff!important;z-index:96!important
+ }
+ html.b1-typing .writerPage .grade{
+  display:block!important;flex:none!important;width:auto!important;
+  min-height:30px!important;padding:7px 12px!important;font-size:11.5px!important
+ }
+ html.b1-typing .writerPage .results:not(.hidden){max-height:38%;flex:1;overflow-y:auto}
+}
+@media(max-width:700px) and (max-height:410px){
+ html.b1-typing .writerPage .editor{padding-top:3px!important;gap:2px!important}
+ html.b1-typing .writerPage .writingPoints{padding:2px 6px!important}
+ html.b1-typing .writerPage .writingPoints li{line-height:1.10!important}
+}
+@supports (-webkit-touch-callout:none){
+ @media(max-width:700px){
+  body.writing .writerPage textarea{font-size:16px!important}
+ }
+}
+
 </style>
 </head>
 <body class="intro">
@@ -377,18 +469,18 @@ body.writing.keyboardOpen .writerPage .results{max-height:35%}
     <button type="button" id="backTask" class="secondary">← POSTAVKA</button>
     <span id="writerName" class="name">TELC B1 · MEJL 1</span>
   </div>
-  <div class="writingPoints">
-    <h3>ČETIRI PITANJA <span>· crveno: prevod</span></h3>
-    <ol id="writerPoints"></ol>
-  </div>
   <div class="editor">
+    <div class="writingPoints" aria-label="Četiri pitanja i prevodi">
+      <h3>ČETIRI PITANJA <span>· crveno: prevod</span></h3>
+      <ol id="writerPoints"></ol>
+    </div>
     <div class="editHead"><span>✎ PIŠI MEJL</span><span id="counter" class="count">0 reči</span><button id="exportBtn" type="button">Sačuvaj TXT</button></div>
     <textarea id="draft" spellcheck="true" aria-label="Ovde napiši svoj B1 mejl" placeholder="Liebe ...,
 
 vielen Dank für deine Nachricht.
 
 ..."></textarea>
-    <div class="actions"><button id="gradeBtn" class="grade" type="button">✓ PROVERI MEJL</button></div>
+    <div class="actions"><span id="liveCounter" class="count">0 reči</span><button id="gradeBtn" class="grade" type="button">✓ PROVERI MEJL</button></div>
     <div id="status" class="notice">Obradi sve četiri tačke, napiši uvod i pozdrav. Odgovor se čuva lokalno.</div>
   </div>
   <div id="results" class="results hidden" aria-live="polite"></div>
@@ -419,6 +511,8 @@ function overview(){
 }
 function screen(name){
  for(const id of ["welcome","mailList","taskScreen","writerScreen"])$(id).classList.toggle("hidden",id!==name);
+ if(name!=="writerScreen")$("draft").blur();
+ document.documentElement.classList.remove("b1-typing");
  document.body.classList.toggle("writing",name==="writerScreen");
  document.body.classList.toggle("tasking",name==="taskScreen");
  document.body.classList.toggle("intro",name==="welcome");
@@ -476,9 +570,53 @@ function fitTaskLetter(){
  // Na manjim ekranima skroluje se samo tekst dužeg mejla, koji ostaje čitljiv.
  if(el.scrollHeight>el.clientHeight+3)el.style.overflowY="auto";
 }
+
+let b1FullScreenHeight=0,b1FocusStarted=0;
+function b1Mobile(){return window.matchMedia("(max-width:700px)").matches}
 function updateViewportHeight(){
- const v=window.visualViewport;
- document.documentElement.style.setProperty("--app-height",(v?Math.round(v.height):window.innerHeight)+"px");
+ const root=document.documentElement;
+ if(!b1Mobile()){
+  root.classList.remove("b1-typing");
+  root.style.removeProperty("--b1-vh");
+  root.style.removeProperty("--b1-vtop");
+  root.style.setProperty("--app-height",window.innerHeight+"px");
+  return;
+ }
+ const vv=window.visualViewport;
+ const shown=vv&&vv.height>0?vv.height:window.innerHeight;
+ const layout=window.innerHeight>0?window.innerHeight:shown;
+ const top=vv&&Number.isFinite(vv.offsetTop)?Math.max(0,vv.offsetTop):0;
+ const typing=document.body.classList.contains("writing")&&document.activeElement===$("draft");
+ if(!typing)b1FullScreenHeight=Math.max(b1FullScreenHeight,shown,layout);
+ const vk=navigator.virtualKeyboard;
+ const rect=vk&&vk.boundingRect;
+ const geometry=!!(rect&&rect.height>90&&rect.top>0);
+ let usable=Math.min(shown,layout,geometry?rect.top-top:Infinity);
+ const full=b1FullScreenHeight||Math.max(shown,layout);
+ if(typing&&full-usable<=100&&!geometry&&b1FocusStarted&&performance.now()-b1FocusStarted>220){
+   // A2 fallback za aplikacije unutar iframe-a, kada browser ne prijavi tastaturu.
+   usable=Math.min(usable,Math.max(200,Math.floor(full*.55)+19));
+ }
+ usable=Math.max(120,Math.floor(usable));
+ root.style.setProperty("--b1-vh",usable+"px");
+ root.style.setProperty("--b1-vtop",Math.floor(top)+"px");
+ root.style.setProperty("--app-height",usable+"px");
+ root.classList.toggle("b1-typing",typing);
+ if(typing)requestAnimationFrame(fitB1QuestionsToKeyboard);
+}
+function fitB1QuestionsToKeyboard(){
+ if(!b1Mobile()||!document.body.classList.contains("writing"))return;
+ const block=document.querySelector(".writingPoints");
+ const editor=document.querySelector(".writerPage .editor");
+ if(!block||!editor||editor.clientHeight<70)return;
+ const footer=editor.querySelector(".actions");
+ const available=Math.max(72,Math.min(editor.clientHeight*.53,
+   editor.clientHeight-(footer?.offsetHeight||38)-72));
+ for(const size of [12.1,11.7,11.3,10.9,10.5,10,9.6]){
+  block.style.setProperty("--b1-q-font",size+"px");
+  block.style.setProperty("--b1-tr-font",Math.max(8.9,size-1)+"px");
+  if(block.scrollHeight<=available+1)break;
+ }
 }
 function fitIntro(){
  const panel=document.querySelector("#welcome .tip");
@@ -492,11 +630,24 @@ function fitIntro(){
  // On extremely short screens never cut off instructions.
  panel.style.overflowY=panel.scrollHeight>panel.clientHeight+3?"auto":"hidden";
 }
-function startWriting(){if(current<0)return;screen("writerScreen")}
+function startWriting(){
+ if(current<0)return;
+ screen("writerScreen");
+ const field=$("draft");
+ // A2 način rada: odmah otvori tastaturu i prikaži nastavak postojećeg mejla.
+ try{field.focus({preventScroll:true})}catch(e){field.focus()}
+ if(field.value){
+  field.setSelectionRange(field.value.length,field.value.length);
+ }
+ b1FocusStarted=performance.now();
+ updateViewportHeight();
+ requestAnimationFrame(()=>{fitB1QuestionsToKeyboard();if(field.value)field.scrollTop=field.scrollHeight;});
+}
 function backTask(){if(current<0)return;screen("taskScreen")}
 function updateCount(){
  const n=countWords($("draft").value);
  $("counter").textContent=n+" reči"+(n>=80?" ✓":"");
+ $("liveCounter").textContent=n+" reči"+(n>=80?" ✓":"");
  $("gradeBtn").disabled=n===0;
  $("status").textContent="Sačuvano lokalno · 4 tačke · Uvod · Pozdrav · AI ocena je informativna.";
 }
@@ -565,15 +716,34 @@ $("resetClock").onclick=startTimer;
 $("gradeBtn").onclick=grade;
 $("exportBtn").onclick=exportDraft;
 $("draft").addEventListener("focus",()=>{
- if(window.matchMedia("(max-width:700px)").matches)document.body.classList.add("keyboardOpen");
+ if(b1Mobile())document.body.classList.add("keyboardOpen");
+ b1FocusStarted=performance.now();
  updateViewportHeight();
+ [100,250,400,650].forEach(ms=>setTimeout(updateViewportHeight,ms));
 });
 $("draft").addEventListener("blur",()=>{
- // Zadrži dugme na istom mestu dok se dodir za AI proveru ne završi.
- setTimeout(()=>{if(document.activeElement!==$("draft"))document.body.classList.remove("keyboardOpen")},350);
+ b1FocusStarted=0;
+ document.documentElement.classList.remove("b1-typing");
+ // Ne pomeraj dugme dok traje dodir kojim se pokreće AI provera.
+ setTimeout(()=>{
+  if(document.activeElement!==$("draft"))document.body.classList.remove("keyboardOpen");
+  updateViewportHeight();
+ },180);
 });
-window.addEventListener("resize",()=>{updateViewportHeight();requestAnimationFrame(fitTaskLetter);requestAnimationFrame(fitIntro)});
-if(window.visualViewport)window.visualViewport.addEventListener("resize",()=>{updateViewportHeight();requestAnimationFrame(fitTaskLetter);requestAnimationFrame(fitIntro)});
+window.addEventListener("resize",()=>{
+ updateViewportHeight();
+ requestAnimationFrame(fitTaskLetter);
+ requestAnimationFrame(fitIntro);
+});
+if(window.visualViewport){
+ window.visualViewport.addEventListener("resize",updateViewportHeight);
+ window.visualViewport.addEventListener("scroll",updateViewportHeight);
+}
+navigator.virtualKeyboard?.addEventListener?.("geometrychange",updateViewportHeight);
+window.addEventListener("orientationchange",()=>{
+ b1FullScreenHeight=0;
+ setTimeout(updateViewportHeight,150);
+});
 updateViewportHeight();
 screen("welcome");
 fetch("./tasks.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw Error("HTTP "+r.status);return r.json()}).then(t=>{
