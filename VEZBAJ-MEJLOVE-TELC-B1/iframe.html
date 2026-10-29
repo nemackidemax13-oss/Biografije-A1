@@ -422,7 +422,7 @@ body.writing.keyboardOpen .writerPage .results{max-height:35%}
   overflow:hidden!important;
   overflow-y:hidden!important;
   overscroll-behavior:none!important;
-  max-height:none;
+  max-height:var(--b1-q-max,none)!important;
   padding:var(--b1-q-pad,5px) 6px!important;
  }
  body.writing .writerPage .writingPoints h3,
@@ -463,6 +463,7 @@ body.writing.keyboardOpen .writerPage .results{max-height:35%}
   padding:2px 1px max(2px,env(safe-area-inset-bottom))!important;
  }
  html.b1-typing .writerPage .editor{grid-template-rows:auto minmax(38px,1fr) auto!important}
+ html.b1-typing .writerPage .writingPoints h3{display:none!important}
  html.b1-typing .writerPage textarea{min-height:38px!important}
 }
 
@@ -702,7 +703,7 @@ function fitB1QuestionsToKeyboard(){
  block.style.setProperty("--b1-q-gap","3px");
  block.style.setProperty("--b1-q-pad","5px");
  block.style.setProperty("--b1-q-inset","22px");
- block.style.maxHeight=available+"px";
+ block.style.setProperty("--b1-q-max",available+"px");
  block.style.overflowY="hidden";
  const fits=()=>block.scrollHeight<=Math.min(available,block.clientHeight)+2;
  // Prvo smanji razmake, zatim font samo koliko je potrebno.
@@ -722,7 +723,7 @@ function fitB1QuestionsToKeyboard(){
  // Ako ima prostora, dodatno ga prepusti pitanjima, ali ne pokrivaj editor.
  if(!fits()){
   const emergency=Math.max(available,Math.floor(h-(actions?.offsetHeight||34)-header-33-9));
-  block.style.maxHeight=emergency+"px";
+  block.style.setProperty("--b1-q-max",emergency+"px");
  }
 }
 function scheduleB1QuestionFit(){
