@@ -1241,6 +1241,47 @@ header .topRight #homeBtn{
  align-self:flex-end!important;
 }
 
+
+/* Isti odbrojavajući sat na postavci i tokom pisanja: iznad pitanja, na sredini uz dugme Nazad. */
+.writerPage .writerClock{
+ position:absolute!important;
+ top:6px!important;
+ left:50%!important;
+ transform:translateX(-50%)!important;
+ display:flex!important;
+ align-items:center!important;
+ justify-content:center!important;
+ z-index:170!important;
+ width:max-content!important;
+ min-width:78px!important;
+ height:28px!important;
+ padding:4px 8px!important;
+ border:1px solid #f5c1c8!important;
+ border-radius:7px!important;
+ background:#fff7f7!important;
+ color:#d0223b!important;
+ font-size:12px!important;
+ line-height:1!important;
+ font-weight:950!important;
+ font-variant-numeric:tabular-nums!important;
+ white-space:nowrap!important;
+ pointer-events:none!important;
+}
+.writerPage .writerClock.timeLow{
+ color:#ad152e!important;background:#ffe3e6!important;
+}
+@media(max-width:700px){
+ body.writing .writerPage .writerClock,
+ html.b1-typing .writerPage .writerClock{
+  position:absolute!important;top:5px!important;
+  left:50%!important;transform:translateX(-50%)!important;
+  z-index:181!important;
+  min-width:70px!important;height:26px!important;
+  padding:3px 5px!important;font-size:11px!important;
+  border-radius:6px!important;
+ }
+}
+
 </style>
 </head>
 <body class="intro">
@@ -1300,6 +1341,7 @@ header .topRight #homeBtn{
   <div class="taskFooter"><button id="startWriting" type="button" class="nextStep">PIŠI MEJL <span class="arrow" aria-hidden="true">➜</span></button></div>
 </section>
 <section id="writerScreen" class="writerPage hidden">
+  <span id="writerClock" class="writerClock" role="timer" aria-label="Preostalo vreme za pisanje mejla">⏱ 30:00</span>
   <button id="backAllMails" class="backAllMails" type="button" aria-label="Nazad na svih 20 mejlova">← Nazad</button>
   <div class="writerTop">
     <button type="button" id="backTask" class="secondary">← POSTAVKA</button>
@@ -1386,7 +1428,15 @@ function screen(name){
 function showHome(){current=-1;clearInterval(ticker);screen("welcome");history.replaceState(null,"",location.pathname+location.search);overview()}
 function showList(){current=-1;clearInterval(ticker);screen("mailList");history.replaceState(null,"",location.pathname+location.search);overview()}
 function backFromMailList(){showHome();}
-function renderClock(){const mm=Math.floor(timer/60),ss=timer%60;$("clock").textContent="⏱ "+String(mm).padStart(2,"0")+":"+String(ss).padStart(2,"0");$("clock").style.color=timer<60?"#bb1d35":""}
+function renderClock(){
+ const mm=String(Math.floor(timer/60)).padStart(2,"0");
+ const ss=String(timer%60).padStart(2,"0");
+ const display="⏱ "+mm+":"+ss;
+ $("clock").textContent=display;
+ $("writerClock").textContent=display;
+ $("clock").classList.toggle("timeLow",timer<60);
+ $("writerClock").classList.toggle("timeLow",timer<60);
+}
 function startTimer(){clearInterval(ticker);timer=1800;renderClock();startedAt=Date.now();ticker=setInterval(()=>{if(current<0)return;timer=Math.max(0,1800-Math.floor((Date.now()-startedAt)/1000));renderClock();if(timer===0)clearInterval(ticker)},1000)}
 function openMail(i){
  if(!mails[i])return;
