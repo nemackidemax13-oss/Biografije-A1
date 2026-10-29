@@ -1398,8 +1398,8 @@ function updateReceivedLanguage(){
   situation.append(node("div",m.srSituation,"situationSr"));
  }
  // Nemački original i odgovarajući srpski pasusi, samo na zahtev kandidata.
- const original=String(m.body||"").split(/\\n\\s*\\n/);
- const translated=String(m.srBody||"").split(/\\n\\s*\\n/);
+ const original=String(m.body||"").split(/\n\s*\n/);
+ const translated=String(m.srBody||"").split(/\n\s*\n/);
  const container=$("received");
  container.replaceChildren();
  original.forEach((de,i)=>{
