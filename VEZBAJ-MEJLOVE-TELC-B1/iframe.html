@@ -1027,6 +1027,37 @@ html.b1-typing .writingPoints li{color:#121212!important}
   white-space:nowrap!important;
  }
 }
+
+/* Tri jasna statusa: bela-nevežbano, zelena-započeto, plava-trenutno izabrano.
+   Kvačica se pojavljuje SAMO kada je AI provera uspešno vratila rezultat. */
+.tile{position:relative}
+.tile.practiced{background:#e9f8ee!important;border-color:#75be8a!important}
+.tile.practiced strong{color:#136a3d!important}
+.tile.verified{background:#ddf6e6!important;border:2px solid #23894f!important}
+.tile.verified::after{
+ content:"✓";position:absolute;top:2px;right:3px;
+ display:flex;align-items:center;justify-content:center;
+ width:15px;height:15px;border-radius:50%;
+ background:#17834b;color:#fff;font-size:11px;font-weight:900;
+ box-shadow:0 0 0 1px #fff;
+ pointer-events:none;
+}
+.tile.selected,.tile.selected.practiced,.tile.selected.verified{
+ background:#e1eeff!important;border:2px solid #156ad4!important;
+ box-shadow:0 0 0 1px #a9cbf5!important;
+}
+.tile.selected strong,.tile.selected.practiced strong,.tile.selected.verified strong{color:#0d4f9d!important}
+body.listing .groupTitle{justify-content:flex-end!important}
+@media(max-width:700px){
+ body.listing .topRight .homeNav{
+  font-size:9px!important;white-space:nowrap!important;
+  padding:5px 7px!important;
+ }
+ body.listing .tile.verified::after{
+  width:13px;height:13px;font-size:10px;top:1px;right:1px;
+ }
+}
+
 </style>
 </head>
 <body class="intro">
@@ -1065,7 +1096,7 @@ html.b1-typing .writingPoints li{color:#121212!important}
 <section id="mailList" class="mailList hidden">
   <h2>IZABERITE MEJL</h2>
   
-  <div class="groupTitle"><span>LISTA MEJLOVA</span><span id="overview">0 / 20 započeto</span></div>
+  <div class="groupTitle"><span id="overview">0 / 20 provereno</span></div>
   <div id="tiles" class="tiles"></div>
 </section>
 <section id="taskScreen" class="taskPage hidden">
@@ -1128,17 +1159,24 @@ const $=id=>document.getElementById(id);
 const countWords=v=>(String(v).match(/[\p{L}\p{N}]+(?:[-’'][\p{L}\p{N}]+)*/gu)||[]).length;
 function save(){try{localStorage.setItem(STORAGE,JSON.stringify(state))}catch(e){$("status").textContent="Lokalno čuvanje nije dostupno."}}
 function node(tag,text,cls){const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e}
+function validB1Result(i){
+ const r=state.last[i],n=Number(r?.total);
+ return Boolean(r&&r.total!==undefined&&r.total!==null&&Number.isFinite(n)&&n>=0&&n<=45);
+}
 function overview(){
- const completed=mails.filter((m,i)=>Boolean(state.last[i])).length;
- $("overview").textContent=completed+" / "+mails.length+" odrađeno";
+ const checked=mails.filter((m,i)=>validB1Result(i)).length;
+ $("overview").textContent=checked+" / "+mails.length+" AI provereno";
  $("tiles").replaceChildren();
  mails.forEach((m,i)=>{
   const selected=state.selected===i;
-  const done=Boolean(state.last[i]);
-  const b=node("button",undefined,"tile"+(done?" done":"")+(selected?" selected":""));
+  const practiced=countWords(state.drafts[i]||"")>0;
+  const verified=validB1Result(i);
+  const b=node("button",undefined,"tile"+(practiced?" practiced":"")+(verified?" verified":"")+(selected?" selected":""));
   b.type="button";
   b.setAttribute("aria-pressed",String(selected));
-  b.setAttribute("aria-label",(i+1)+". "+m.title+(selected?", izabrani mejl":"")+(done?", odrađeno":""));
+  const status=verified?"AI proveren mejl, "+Number(state.last[i].total)+" od 45 vežbačkih bodova":practiced?"vežba započeta":"još nije vežbano";
+  b.setAttribute("aria-label",(i+1)+". "+m.title+", "+status+(selected?", trenutno izabran":""));
+  b.title=(i+1)+". "+m.title+" · "+status;
   b.append(node("strong",(i+1)+". "+m.title));
   b.onclick=()=>openMail(i);
   $("tiles").append(b);
@@ -1152,8 +1190,8 @@ function screen(name){
  document.body.classList.toggle("tasking",name==="taskScreen");
  document.body.classList.toggle("intro",name==="welcome");
  document.body.classList.toggle("listing",name==="mailList");
- $("homeBtn").textContent=name==="mailList"?"← NAZAD NA POSTAVKU":"MEJLOVI";
- $("homeBtn").title=name==="mailList"?"Povratak na postavku izabranog mejla":"Izaberite mejl";
+ $("homeBtn").textContent=name==="mailList"?"← NAZAD NA UPUTSTVO":"MEJLOVI";
+ $("homeBtn").title=name==="mailList"?"Povratak na početno uputstvo":"Izaberite mejl";
  document.body.classList.remove("keyboardOpen");
  $("navBar").classList.toggle("hidden",name!=="taskScreen"&&name!=="writerScreen");
  document.querySelectorAll(".taskNav").forEach(e=>e.classList.toggle("hidden",name!=="taskScreen"&&name!=="writerScreen"));
@@ -1164,11 +1202,7 @@ function screen(name){
 }
 function showHome(){current=-1;clearInterval(ticker);screen("welcome");history.replaceState(null,"",location.pathname+location.search);overview()}
 function showList(){current=-1;clearInterval(ticker);screen("mailList");history.replaceState(null,"",location.pathname+location.search);overview()}
-function backFromMailList(){
- const selected=state.selected;
- if(Number.isInteger(selected)&&selected>=0&&mails[selected])openMail(selected);
- else showHome();
-}
+function backFromMailList(){showHome();}
 function renderClock(){const mm=Math.floor(timer/60),ss=timer%60;$("clock").textContent="⏱ "+String(mm).padStart(2,"0")+":"+String(ss).padStart(2,"0");$("clock").style.color=timer<60?"#bb1d35":""}
 function startTimer(){clearInterval(ticker);timer=1800;renderClock();startedAt=Date.now();ticker=setInterval(()=>{if(current<0)return;timer=Math.max(0,1800-Math.floor((Date.now()-startedAt)/1000));renderClock();if(timer===0)clearInterval(ticker)},1000)}
 function openMail(i){
@@ -1180,7 +1214,7 @@ function openMail(i){
  $("prevBtn").disabled=i===0;$("nextBtn").disabled=i===mails.length-1;
  $("situation").textContent=m.situation;
  $("letterTitle").textContent="Von: "+m.from+" · Betreff: "+m.subject;
- $("translationToggle").dataset.lang="sr";
+ $("translationToggle").dataset.lang="de";
  updateReceivedLanguage();
  $("writerPoints").replaceChildren();
  m.questions.forEach((q,j)=>{
@@ -1413,7 +1447,13 @@ $("translationToggle").onclick=()=>{
 };
 $("prevBtn").onclick=()=>{if(current>0)openMail(current-1)};
 $("nextBtn").onclick=()=>{if(current>=0&&current<mails.length-1)openMail(current+1)};
-$("draft").addEventListener("input",()=>{if(current<0)return;state.drafts[current]=$("draft").value;save();updateCount();$("results").classList.add("hidden");scheduleB1QuestionFit()});
+$("draft").addEventListener("input",()=>{
+ if(current<0)return;
+ state.drafts[current]=$("draft").value;
+ // Ranija AI ocena se ne prikazuje kao potvrda za promenjen mejl.
+ if(state.last[current])delete state.last[current];
+ save();updateCount();$("results").classList.add("hidden");scheduleB1QuestionFit();
+});
 $("resetClock").onclick=startTimer;
 $("gradeBtn").onclick=grade;
 $("exportBtn").onclick=exportDraft;
