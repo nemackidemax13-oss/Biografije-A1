@@ -550,6 +550,77 @@ body.writing.keyboardOpen .writerPage .results{max-height:35%}
  }
 }
 
+
+/* Izbor TELC B1 mejlova: svih 20 istovremeno, bez listanja i bez dodatnih stranica. */
+@media(max-width:700px){
+ body.listing .app{
+  height:var(--app-height,100dvh)!important;
+  max-height:var(--app-height,100dvh)!important;
+  min-height:0!important;
+  overflow:hidden!important;
+ }
+ body.listing .main{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+ body.listing footer{display:none}
+ body.listing .mailList{
+  flex:1;min-height:0;min-width:0;width:100%;max-width:none;
+  margin:0;padding:6px 7px 8px;
+  display:flex;flex-direction:column;gap:3px;overflow:hidden;
+ }
+ body.listing .mailList h2{
+  flex:none;font-size:14px;line-height:1.16;margin:0 1px;color:#123f85;
+ }
+ body.listing .mailList p{
+  flex:none;font-size:10px;line-height:1.13;margin:0 1px 2px;color:#4c6586;
+ }
+ body.listing .groupTitle{
+  flex:none;font-size:10px;margin:2px 1px 3px;gap:4px;align-items:center;
+ }
+ body.listing .tiles{
+  display:grid!important;flex:1;min-height:0;width:100%;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  grid-template-rows:repeat(5,minmax(0,1fr))!important;
+  grid-auto-flow:row;gap:5px!important;margin:0!important;
+  overflow:hidden!important;
+ }
+ body.listing .tile{
+  min-width:0;min-height:0;height:100%;width:100%;
+  padding:4px 3px!important;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:2px;text-align:center;
+  border-radius:7px;overflow:hidden;
+ }
+ body.listing .tile .i{font-size:15px;line-height:1;margin:0;flex:none}
+ body.listing .tile strong{
+  display:-webkit-box;-webkit-box-orient:vertical;
+  -webkit-line-clamp:3;line-clamp:3;overflow:hidden;
+  width:100%;min-height:0;max-height:3.45em;
+  font-size:9.1px;line-height:1.15;font-weight:800;
+  margin:0;overflow-wrap:anywhere;
+ }
+ body.listing .tile small{
+  display:block;min-width:0;max-width:100%;
+  margin:0;flex:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  font-size:7.3px;line-height:1.12;
+ }
+ body.listing .tile.selected{border-width:2px}
+ body.listing .tile.done.selected{border-width:2px}
+}
+@media(max-width:700px) and (max-height:650px){
+ body.listing .mailList{padding:4px 6px 5px;gap:2px}
+ body.listing .mailList p{font-size:9px}
+ body.listing .groupTitle{margin:1px}
+ body.listing .tiles{gap:3px!important}
+ body.listing .tile{padding:2px!important;gap:1px}
+ body.listing .tile .i{font-size:12px}
+ body.listing .tile strong{font-size:8.5px;line-height:1.1;max-height:3.3em}
+ body.listing .tile small{font-size:6.9px}
+}
+@media(max-width:350px){
+ body.listing .tiles{gap:3px!important}
+ body.listing .tile strong{font-size:8px}
+ body.listing .tile small{font-size:6.6px}
+}
+
 </style>
 </head>
 <body class="intro">
@@ -587,7 +658,7 @@ body.writing.keyboardOpen .writerPage .results{max-height:35%}
 </section>
 <section id="mailList" class="mailList hidden">
   <h2>IZABERITE MEJL</h2>
-  <p>Izaberi jednu od 20 TELC B1 tema. Najpre pročitaj postavku, zatim pritisni <b>PIŠI MEJL</b>.</p>
+  <p>Svih 20 mejlova je ovde. Dodirni mejl da pročitaš postavku.</p>
   <div class="groupTitle"><span>LISTA MEJLOVA</span><span id="overview">0 / 20 započeto</span></div>
   <div id="tiles" class="tiles"></div>
 </section>
@@ -678,6 +749,7 @@ function screen(name){
  document.body.classList.toggle("writing",name==="writerScreen");
  document.body.classList.toggle("tasking",name==="taskScreen");
  document.body.classList.toggle("intro",name==="welcome");
+ document.body.classList.toggle("listing",name==="mailList");
  document.body.classList.remove("keyboardOpen");
  $("navBar").classList.toggle("hidden",name!=="taskScreen"&&name!=="writerScreen");
  document.querySelectorAll(".taskNav").forEach(e=>e.classList.toggle("hidden",name!=="taskScreen"&&name!=="writerScreen"));
