@@ -208,13 +208,75 @@ body.tasking .main,body.writing .main{flex:1;min-height:0;display:flex;flex-dire
  .writingPoints li .sr{font-size:9px}
 }
 
+
+/* TELC B1 mobilni prikaz: sažet uvod, pravilno poravnanje pitanja i AI dugme iznad tastature */
+.bar{justify-content:space-between}
+.topRight{width:100%;justify-content:space-between}
+.topRight .tag{font-size:9px}
+.topRight .homeNav{font-size:9px;padding:4px 7px;border-radius:6px}
+.welcome .introTitle{padding:8px 10px;border-radius:9px}
+.welcome .introTitle h1{font-size:15px;line-height:1.2}
+.welcome .tip{margin:7px 0 6px;padding:10px 12px}
+.welcome .tip p{font-size:12.5px;line-height:1.4;margin:6px 0}
+.welcome .tip .tipNote{font-size:11.5px;color:#56657a;border-top:1px solid #d5e2f3;padding-top:5px}
+.welcome #openList{padding:6px 10px;font-size:11px;gap:5px;border-radius:7px;min-height:28px}
+.welcome #openList .arrow{font-size:13px}
+.taskHeading{font-size:13.5px}
+.taskPaper .situation{font-size:11.2px;line-height:1.28;max-height:none;overflow:visible;padding:5px 7px}
+.taskPaper .letterBody{font-size:13.2px;line-height:1.26}
+.writingPoints ol{list-style:none;counter-reset:point;margin:0;padding-left:0;display:grid;grid-template-columns:1fr;gap:5px}
+.writingPoints li{position:relative;list-style:none;counter-increment:point;padding-left:22px;margin:0;font-size:12.1px;font-weight:800;line-height:1.25}
+.writingPoints li::before{content:counter(point) ".";position:absolute;left:0;top:0;font-weight:900;color:#174b91}
+.writingPoints li>span{display:block}
+.writingPoints li .sr{display:block!important;margin:2px 0 0!important;padding:0!important;text-align:left;color:#c6223d;font-size:11.2px;font-weight:650;line-height:1.22}
+.writerPage .actions{flex:none;display:flex}
+.writerPage .grade{display:block;width:100%;flex:1;min-height:34px;padding:8px 10px;font-size:13px}
+.writerPage .editor{min-height:0}
+.writerPage textarea{min-height:42px}
+body.writing.keyboardOpen .writerPage .actions{display:flex!important;visibility:visible!important;flex:none}
+body.writing.keyboardOpen .writerPage .grade{display:block!important;min-height:34px;padding:7px 10px}
+body.writing.keyboardOpen .writerPage .notice{display:none}
+body.writing.keyboardOpen .editHead #exportBtn{display:none}
+body.writing.keyboardOpen .writerPage .editor{padding:4px 7px 5px;gap:4px}
+body.writing.keyboardOpen .writingPoints{padding:4px 7px 5px;flex:none}
+body.writing.keyboardOpen .writingPoints ol{gap:2px}
+body.writing.keyboardOpen .writingPoints li{font-size:11.3px;line-height:1.14}
+body.writing.keyboardOpen .writingPoints li .sr{font-size:10.3px;line-height:1.12;margin-top:1px!important}
+body.writing.keyboardOpen .writerPage textarea{flex:1;min-height:35px}
+@media(max-width:700px){
+ body.intro .app{height:var(--app-height,100dvh);min-height:0;overflow:hidden}
+ body.intro .main{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+ body.intro .welcome{flex:1;min-height:0;width:100%;margin:0 auto;padding:6px 8px 7px;display:flex;flex-direction:column;gap:4px;overflow:hidden}
+ body.intro .introTitle{flex:none;padding:7px 9px;border-radius:7px}
+ body.intro .introTitle h1{font-size:13.5px}
+ body.intro .welcome .tip{flex:1;min-height:0;margin:0;padding:7px 9px;overflow:hidden}
+ body.intro .welcome .tip p{font-size:12.5px;line-height:1.3;margin:5px 0}
+ body.intro .welcome .tip .tipNote{font-size:11px}
+ body.intro .welcome #openList{flex:none;align-self:flex-end;width:max-content;margin:1px 0 0;padding:6px 10px;font-size:11px;min-height:27px}
+ body.intro footer{display:none}
+ .taskPaper .situation{font-size:11.2px;line-height:1.27}
+ .taskPaper .letterBody{font-size:13.2px}
+ .writingPoints{padding:5px 8px;max-height:none;overflow:hidden}
+ .writingPoints ol{gap:4px;padding-left:0}
+ .writingPoints li{font-size:12.1px;line-height:1.25;padding-left:22px}
+ .writingPoints li .sr{font-size:11.2px;line-height:1.22}
+ .writerPage .grade{font-size:13px;padding:8px 9px}
+ .topRight .homeNav{font-size:9px;padding:4px 6px}
+}
+@media(max-width:355px){
+ .writingPoints li{font-size:11.4px}
+ .writingPoints li .sr{font-size:10.4px}
+ body.writing.keyboardOpen .writingPoints li{font-size:10.5px}
+ body.writing.keyboardOpen .writingPoints li .sr{font-size:9.6px}
+}
+
 </style>
 </head>
 <body>
 <div class="app">
 <header>
   <div class="bar">
-   <div class="logo">De-Max</div>
+   
    <div class="topRight">
     <span class="tag">TELC B1 · SCHREIBEN</span>
     <button type="button" id="homeBtn" class="homeNav" title="Lista svih mejlova">MEJLOVI <span aria-hidden="true">❯</span></button>
@@ -230,24 +292,20 @@ body.tasking .main,body.writing .main{flex:1;min-height:0;display:flex;flex-dire
 
 <section id="welcome" class="welcome">
   <div class="introTitle">
-    <h1>✉ TELC B1 – UPUTSTVO ZA IZRADU MEJLA</h1>
-    <p>30 minuta · Četiri obavezne tačke · AI vežba do 45 bodova</p>
+    <h1>TELC B1 · Uputstvo pisanja mejla</h1>
   </div>
   <div class="tip">
-   <h2>UPUTSTVO ZA IZRADU MEJLA – TELC B1</h2>
-   <p><b>1.</b> Pročitajte celu primljenu poruku ili oglas. Obratite pažnju ko piše, kome se obraćate i šta je već poznato u situaciji.</p>
-   <p><b>2.</b> U odgovoru sadržajno obradite <b>sve četiri tačke</b> ispod poruke. Redosled možete slobodno organizovati, ali odgovor mora biti logičan i povezan.</p>
-   <p><b>3.</b> Napišite prikladnu <b>Anrede</b>, uvod, glavni deo, završetak i <b>Grußformel</b>. Datum i predmet dodajte kada odgovaraju formatu i postavci zadatka.</p>
-   <p><b>4.</b> Koristite odgovarajuće obraćanje: <b>du/dein</b> za bliske ljude, a <b>Sie/Ihr</b> za formalne primaoce. Ne menjajte činjenice iz primljenog mejla.</p>
-   <p><b>5.</b> Vreme rada je <b>30 minuta</b>. Korisna vežba je približno 80–120 reči, ali TELC B1 u ovim zadacima ne propisuje čvrst minimum reči; važnije je da odgovor ispunjava zadatak.</p>
-   <p><b>6.</b> Kliknite <b>AI proveri mejl</b> za analizu sadržaja, jezika, svake tačke i bolji primer teksta. Ocena je vežbačka, nije zvaničan TELC rezultat.</p>
-   <p><b>Bodovanje:</b> I. Berücksichtigung der Leitpunkte (0/1/3/5), II. Kommunikative Gestaltung (0/1/3/5), III. Formale Richtigkeit (0/1/3/5). Zbir × 3 = <b>maksimalno 45 bodova</b>. Ne postoji poseban prag prolaza samo za ovaj zadatak.</p>
-   <p>Odgovori se automatski čuvaju <b>lokalno na ovom uređaju</b>. AI provera koristi zaseban De-Max B1 Worker; tekst se šalje na proveru tek kada pritisnete dugme <b>PROVERI MEJL</b>.</p>
+   <p><b>1.</b> Pročitaj primljeni mejl ili oglas i utvrdi kome odgovaraš.</p>
+   <p><b>2.</b> Odgovori na <b>sve četiri tačke</b> iz zadatka, jasno i povezano.</p>
+   <p><b>3.</b> Napiši obraćanje (<b>Anrede</b>), uvod, odgovore i završni pozdrav (<b>Grußformel</b>).</p>
+   <p><b>4.</b> Prijatelju piši <b>du/dein</b>, a u formalnoj poruci <b>Sie/Ihr</b>. Poštuj činjenice iz mejla.</p>
+   <p><b>5.</b> Vežbaj oko <b>30 minuta</b>; približno 80–120 reči je koristan cilj, ne obavezan minimum.</p>
+   <p><b>6.</b> Pritisni <b>PROVERI MEJL</b> za AI analizu odgovora, jezika i ispravke.</p>
+   <p class="tipNote">Do 45 vežbačkih bodova (nije zvanična ocena). Odgovor se čuva lokalno, a AI proveri šalje se tek kada pritisneš dugme.</p>
   </div>
   <button type="button" id="openList" class="nextStep"><span>MEJLOVI</span><span class="arrow" aria-hidden="true">➜</span></button>
 </section>
 <section id="mailList" class="mailList hidden">
-  <button id="backIntro" type="button" class="secondary">← UPUTSTVO</button>
   <h2>✉ IZABERI MEJL</h2>
   <p>Izaberi jednu od 20 TELC B1 tema. Najpre pročitaj postavku, zatim pritisni <b>PIŠI MEJL</b>.</p>
   <div class="groupTitle"><span>LISTA MEJLOVA</span><span id="overview">0 / 20 započeto</span></div>
@@ -319,12 +377,14 @@ function screen(name){
  for(const id of ["welcome","mailList","taskScreen","writerScreen"])$(id).classList.toggle("hidden",id!==name);
  document.body.classList.toggle("writing",name==="writerScreen");
  document.body.classList.toggle("tasking",name==="taskScreen");
+ document.body.classList.toggle("intro",name==="welcome");
  document.body.classList.remove("keyboardOpen");
  $("navBar").classList.toggle("hidden",name!=="taskScreen"&&name!=="writerScreen");
  document.querySelectorAll(".taskNav").forEach(e=>e.classList.toggle("hidden",name!=="taskScreen"&&name!=="writerScreen"));
  window.scrollTo(0,0);
  if(name==="taskScreen")requestAnimationFrame(fitTaskLetter);
  updateViewportHeight();
+ if(name==="welcome")requestAnimationFrame(fitIntro);
 }
 function showHome(){current=-1;clearInterval(ticker);screen("welcome");history.replaceState(null,"",location.pathname+location.search);overview()}
 function showList(){current=-1;clearInterval(ticker);screen("mailList");history.replaceState(null,"",location.pathname+location.search);overview()}
@@ -361,10 +421,10 @@ function updateReceivedLanguage(){
 function fitTaskLetter(){
  const el=$("received");
  if(!el||!document.body.classList.contains("tasking"))return;
- el.style.fontSize="12px";
- el.style.lineHeight="1.22";
+ el.style.fontSize="13.2px";
+ el.style.lineHeight="1.26";
  el.style.overflowY="hidden";
- for(let size=12;size>=8.2;size-=.35){
+ for(let size=13.2;size>=9.2;size-=.3){
   el.style.fontSize=size.toFixed(2)+"px";
   if(el.scrollHeight<=el.clientHeight+2)break;
  }
@@ -374,6 +434,18 @@ function fitTaskLetter(){
 function updateViewportHeight(){
  const v=window.visualViewport;
  document.documentElement.style.setProperty("--app-height",(v?Math.round(v.height):window.innerHeight)+"px");
+}
+function fitIntro(){
+ const panel=document.querySelector("#welcome .tip");
+ if(!panel||!document.body.classList.contains("intro")||!window.matchMedia("(max-width:700px)").matches)return;
+ const paras=panel.querySelectorAll("p");
+ paras.forEach(p=>p.style.fontSize="");
+ for(let size=12.5;size>=10.5;size-=0.4){
+   paras.forEach(p=>p.style.fontSize=size.toFixed(1)+"px");
+   if(panel.scrollHeight<=panel.clientHeight+2)break;
+ }
+ // On extremely short screens never cut off instructions.
+ panel.style.overflowY=panel.scrollHeight>panel.clientHeight+3?"auto":"hidden";
 }
 function startWriting(){if(current<0)return;screen("writerScreen")}
 function backTask(){if(current<0)return;screen("taskScreen")}
@@ -435,7 +507,6 @@ function exportDraft(){
 
 $("homeBtn").onclick=showList;
 $("openList").onclick=showList;
-$("backIntro").onclick=showHome;
 $("startWriting").onclick=startWriting;
 $("backTask").onclick=backTask;
 $("translationToggle").onclick=()=>{
@@ -453,8 +524,8 @@ $("draft").addEventListener("focus",()=>{
  updateViewportHeight();
 });
 $("draft").addEventListener("blur",()=>document.body.classList.remove("keyboardOpen"));
-window.addEventListener("resize",()=>{updateViewportHeight();requestAnimationFrame(fitTaskLetter)});
-if(window.visualViewport)window.visualViewport.addEventListener("resize",()=>{updateViewportHeight();requestAnimationFrame(fitTaskLetter)});
+window.addEventListener("resize",()=>{updateViewportHeight();requestAnimationFrame(fitTaskLetter);requestAnimationFrame(fitIntro)});
+if(window.visualViewport)window.visualViewport.addEventListener("resize",()=>{updateViewportHeight();requestAnimationFrame(fitTaskLetter);requestAnimationFrame(fitIntro)});
 updateViewportHeight();
 fetch("./tasks.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw Error("HTTP "+r.status);return r.json()}).then(t=>{
  if(!Array.isArray(t)||t.length!==20||t.some(m=>!Array.isArray(m.questions)||m.questions.length!==4))throw Error("Baza nije potpuna");
