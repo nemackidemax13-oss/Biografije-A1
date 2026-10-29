@@ -2,7 +2,7 @@
 // Naziv Worker-a: b1mejlovi
 // Secret: OPENAI_API_KEY (Cloudflare > Settings > Variables and Secrets)
 // Ruta: POST /api/check-b1-email
-const ORIGINS=new Set(["https://nemackidemax13-oss.github.io","https://biografije-a1.pages.dev"]);
+const ORIGINS=new Set(["https://nemackidemax13-oss.github.io","https://biografije-a1.pages.dev","https://de-max-a-1-aplikacija.replit.app"]);
 const TASK_URL="https://nemackidemax13-oss.github.io/Biografije-A1/VEZBAJ-MEJLOVE-TELC-B1/tasks.json";
 const MODEL="gpt-4.1-mini",MAX_BODY=9000,MAX_ANSWER=4500;
 let cached=null,expires=0;
