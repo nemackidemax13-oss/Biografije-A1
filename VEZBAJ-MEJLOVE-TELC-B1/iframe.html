@@ -1019,6 +1019,14 @@ html.b1-typing .writingPoints li{color:#121212!important}
  body.listing .tile strong{font-size:8.7px!important}
 }
 
+
+@media(max-width:700px){
+ body.listing .topRight .homeNav{
+  font-size:9px!important;
+  padding:5px 8px!important;
+  white-space:nowrap!important;
+ }
+}
 </style>
 </head>
 <body class="intro">
@@ -1144,6 +1152,8 @@ function screen(name){
  document.body.classList.toggle("tasking",name==="taskScreen");
  document.body.classList.toggle("intro",name==="welcome");
  document.body.classList.toggle("listing",name==="mailList");
+ $("homeBtn").textContent=name==="mailList"?"← NAZAD NA POSTAVKU":"MEJLOVI";
+ $("homeBtn").title=name==="mailList"?"Povratak na postavku izabranog mejla":"Izaberite mejl";
  document.body.classList.remove("keyboardOpen");
  $("navBar").classList.toggle("hidden",name!=="taskScreen"&&name!=="writerScreen");
  document.querySelectorAll(".taskNav").forEach(e=>e.classList.toggle("hidden",name!=="taskScreen"&&name!=="writerScreen"));
@@ -1154,6 +1164,11 @@ function screen(name){
 }
 function showHome(){current=-1;clearInterval(ticker);screen("welcome");history.replaceState(null,"",location.pathname+location.search);overview()}
 function showList(){current=-1;clearInterval(ticker);screen("mailList");history.replaceState(null,"",location.pathname+location.search);overview()}
+function backFromMailList(){
+ const selected=state.selected;
+ if(Number.isInteger(selected)&&selected>=0&&mails[selected])openMail(selected);
+ else showHome();
+}
 function renderClock(){const mm=Math.floor(timer/60),ss=timer%60;$("clock").textContent="⏱ "+String(mm).padStart(2,"0")+":"+String(ss).padStart(2,"0");$("clock").style.color=timer<60?"#bb1d35":""}
 function startTimer(){clearInterval(ticker);timer=1800;renderClock();startedAt=Date.now();ticker=setInterval(()=>{if(current<0)return;timer=Math.max(0,1800-Math.floor((Date.now()-startedAt)/1000));renderClock();if(timer===0)clearInterval(ticker)},1000)}
 function openMail(i){
@@ -1387,7 +1402,7 @@ function exportDraft(){
  const a=document.createElement("a");a.href=url;a.download="DE-MAX_TELC_B1_Mejl_"+(current+1)+".txt";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),4000);
 }
 
-$("homeBtn").onclick=showList;
+$("homeBtn").onclick=()=>document.body.classList.contains("listing")?backFromMailList():showList();
 $("openList").onclick=showList;
 $("backAllMails").onclick=()=>{if(document.activeElement===$("draft"))$("draft").blur();showList();};
 $("startWriting").onclick=startWriting;
