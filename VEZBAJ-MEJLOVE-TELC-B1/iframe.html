@@ -690,6 +690,167 @@ body.writing.keyboardOpen .writerPage .results{max-height:35%}
  body.listing .tile strong{font-size:8.9px!important}
 }
 
+
+/* B1: pregled mejlova inspirisan A1 izborom, ali bez koverti i natpisa. */
+@media(max-width:700px){
+ body.listing .app{height:var(--app-height,100dvh)!important}
+ body.listing .mailList{
+  overflow-y:auto!important;
+  overscroll-behavior:contain!important;
+  justify-content:flex-start!important;
+  background:#f5f9ff!important;
+  padding:12px 9px 20px!important;
+  gap:9px!important;
+  scrollbar-width:none!important;
+ }
+ body.listing .mailList::-webkit-scrollbar{display:none!important}
+ body.listing .mailList h2{
+  font-size:21px!important;
+  line-height:1.2!important;
+  color:#fff!important;
+  background:linear-gradient(120deg,#0b3c87,#1b6bd4)!important;
+  padding:17px 10px!important;
+  text-align:center!important;
+  border-radius:13px!important;
+  margin:0!important;
+  letter-spacing:.25px;
+ }
+ body.listing .mailList p{font-size:12px!important;line-height:1.3!important;margin:0 3px!important}
+ body.listing .groupTitle{font-size:11px!important;margin:5px 3px 0!important}
+ body.listing .tiles{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  grid-template-rows:none!important;
+  grid-auto-rows:minmax(93px,auto)!important;
+  flex:none!important;
+  height:auto!important;min-height:auto!important;
+  gap:9px!important;
+  margin:0!important;
+  overflow:visible!important;
+ }
+ body.listing .tile{
+  min-height:93px!important;height:auto!important;
+  padding:10px 5px!important;
+  border-radius:12px!important;
+  box-shadow:0 3px 10px #102e6712!important;
+ }
+ body.listing .tile strong{
+  font-size:12px!important;
+  line-height:1.22!important;
+  display:block!important;
+  max-height:none!important;
+  -webkit-line-clamp:unset!important;
+  line-clamp:unset!important;
+  white-space:normal!important;
+  overflow-wrap:anywhere!important;
+ }
+}
+@media(max-width:370px){
+ body.listing .tiles{gap:6px!important;grid-auto-rows:minmax(85px,auto)!important}
+ body.listing .tile{min-height:85px!important}
+ body.listing .tile strong{font-size:11px!important}
+}
+
+/* Originalna nemačka postavka crno, crveni prevod ispod, isti levi rub. */
+.taskPaper .letterBody{
+ text-align:left!important;text-align-last:auto!important;
+ hyphens:none!important;
+ color:#121419!important;white-space:normal!important;
+}
+.taskPaper .b1-letter-pair{margin:0 0 11px 0;padding:0}
+.taskPaper .b1-de-letter{
+ white-space:pre-line;color:#171717!important;
+ font-weight:550;line-height:1.39;text-align:left;
+ margin:0;padding:0;
+}
+.taskPaper .b1-sr-letter{
+ white-space:pre-line;color:#c32443!important;
+ font-weight:600;line-height:1.27;
+ text-align:left;margin:3px 0 0;padding:0;
+ border:0;
+}
+.taskPaper .situation{color:#151515!important}
+@media(max-width:700px){
+ .taskPaper .b1-letter-pair{margin-bottom:7px}
+ .taskPaper .b1-sr-letter{font-size:.91em}
+}
+
+/* Pitanja crna, prevodi crveni i poravnati ispod iste rečenice. */
+.writingPoints li,
+body.writing .writingPoints li,
+html.b1-typing .writingPoints li{color:#121212!important}
+.writingPoints li::before{color:#141414!important}
+.writingPoints li .de{
+ display:block!important;
+ width:max-content!important;max-width:none!important;
+ white-space:nowrap!important;
+ overflow:visible!important;
+ color:#151515!important;
+ text-align:left!important;
+ font-weight:800!important;
+ font-stretch:condensed;
+ transform-origin:left center;
+}
+.writingPoints li .sr{
+ display:block!important;
+ text-align:left!important;
+ color:#c11e3d!important;
+ font-weight:550!important;
+ white-space:normal!important;
+}
+@media(max-width:700px){
+ body.writing .writingPoints li .de,
+ html.b1-typing .writingPoints li .de{
+  white-space:nowrap!important;max-width:none!important;
+  font-size:inherit!important;line-height:1.18!important;
+ }
+ body.writing .writingPoints li .sr,
+ html.b1-typing .writingPoints li .sr{
+  font-size:var(--b1-tr-size,9.7px)!important;
+  line-height:1.12!important;
+ }
+ body.writing .writingPoints li{
+  overflow:hidden!important;
+ }
+}
+
+/* Plavo dugme povratka na sve mejlove u gornjem desnom uglu. */
+.writerPage{position:relative}
+.backAllMails{
+ position:absolute;right:8px;top:5px;z-index:160;
+ background:#195dbf;border:1px solid #9ac5ff;color:#fff;
+ border-radius:7px;padding:5px 11px;min-height:30px;
+ font-size:12px;font-weight:850;white-space:nowrap;
+ box-shadow:0 2px 6px #003b6a30;
+}
+@media(max-width:700px){
+ body.writing .writerPage .writerTop{padding-right:95px}
+ html.b1-typing .writerPage .backAllMails{
+  display:block!important;position:absolute!important;top:5px!important;right:8px!important;
+  z-index:190!important;min-height:27px!important;
+  font-size:10px!important;padding:4px 9px!important;
+ }
+}
+
+/* Dok se piše mejl, ni jedan gest ne pomera celu stranicu. */
+@media(max-width:700px){
+ body.writing,body.writing .app,body.writing .main,
+ body.writing .writerPage,body.writing .writerPage .editor{
+  overflow:hidden!important;overscroll-behavior:none!important;
+ }
+ body.writing .writingPoints{
+  touch-action:none!important;overflow:hidden!important;overscroll-behavior:none!important;
+ }
+ body.writing .writerPage textarea{
+  overscroll-behavior:none!important;
+  scrollbar-width:none!important;
+ }
+ body.writing .writerPage textarea::-webkit-scrollbar{display:none!important}
+ html.b1-typing body,html.b1-typing .app,html.b1-typing .writerPage{
+  overscroll-behavior:none!important;
+ }
+}
+
 </style>
 </head>
 <body class="intro">
@@ -749,6 +910,7 @@ body.writing.keyboardOpen .writerPage .results{max-height:35%}
   <div class="taskFooter"><button id="startWriting" type="button" class="nextStep">PIŠI MEJL <span class="arrow" aria-hidden="true">➜</span></button></div>
 </section>
 <section id="writerScreen" class="writerPage hidden">
+  <button id="backAllMails" class="backAllMails" type="button" aria-label="Nazad na svih 20 mejlova">← Nazad</button>
   <div class="writerTop">
     <button type="button" id="backTask" class="secondary">← POSTAVKA</button>
     <span id="writerName" class="name">TELC B1 · MEJL 1</span>
@@ -835,11 +997,11 @@ function openMail(i){
  $("prevBtn").disabled=i===0;$("nextBtn").disabled=i===mails.length-1;
  $("situation").textContent=m.situation;
  $("letterTitle").textContent="Von: "+m.from+" · Betreff: "+m.subject;
- $("translationToggle").dataset.lang="de";
+ $("translationToggle").dataset.lang="sr";
  updateReceivedLanguage();
  $("writerPoints").replaceChildren();
  m.questions.forEach((q,j)=>{
-  const b=node("li");b.append(node("span",q),node("span",m.srQuestions[j],"sr"));$("writerPoints").append(b);
+  const b=node("li");b.append(node("span",q,"de"),node("span",m.srQuestions[j],"sr"));$("writerPoints").append(b);
  });
  $("draft").value=state.drafts[i]||"";
  $("results").classList.add("hidden");$("results").replaceChildren();
@@ -847,12 +1009,20 @@ function openMail(i){
 }
 function updateReceivedLanguage(){
  if(current<0||!mails[current])return;
- const m=mails[current],serbian=$("translationToggle").dataset.lang==="sr";
- $("received").textContent=serbian?(m.srBody||"Prevod ovog mejla nije dostupan."):m.body;
- $("received").lang=serbian?"sr":"de";
- $("letterTitle").textContent=serbian?"PREVOD NA SRPSKI":"Von: "+m.from+" · Betreff: "+m.subject;
- $("translationToggle").innerHTML=serbian?"↩ ORIGINAL NA NEMAČKOM":"🇷🇸 PREVOD MEJLA <span aria-hidden=\"true\">↓</span>";
- $("translationToggle").setAttribute("aria-label",serbian?"Vrati originalni mejl na nemačkom":"Prikaži prevod primljenog mejla na srpski");
+ const m=mails[current],showSr=$("translationToggle").dataset.lang==="sr";
+ const original=String(m.body||"").split(/\n\s*\n/);
+ const translated=String(m.srBody||"").split(/\n\s*\n/);
+ const container=$("received");
+ container.replaceChildren();
+ original.forEach((de,i)=>{
+  const pair=node("div",undefined,"b1-letter-pair");
+  pair.append(node("div",de,"b1-de-letter"));
+  if(showSr&&translated[i])pair.append(node("div",translated[i],"b1-sr-letter"));
+  container.append(pair);
+ });
+ $("letterTitle").textContent="Von: "+m.from+" · Betreff: "+m.subject;
+ $("translationToggle").textContent=showSr?"🇷🇸 SAKRIJ PREVOD ↑":"🇷🇸 PRIKAŽI PREVOD ↓";
+ $("translationToggle").setAttribute("aria-label",showSr?"Sakrij crveni prevod mejla":"Prikaži crveni prevod ispod nemačkog teksta");
  requestAnimationFrame(fitTaskLetter);
 }
 function fitTaskLetter(){
@@ -949,6 +1119,19 @@ function fitB1QuestionsToKeyboard(){
   block.style.setProperty("--b1-q-gap","0px");
   block.style.setProperty("--b1-q-pad","1px");
  }
+ fitGermanQuestionLines();
+}
+function fitGermanQuestionLines(){
+ // Duži Leitpunkt ostaje na jednom redu, bez skraćivanja njegovog teksta.
+ document.querySelectorAll("#writerPoints li").forEach(li=>{
+  const text=li.querySelector(".de");
+  if(!text)return;
+  text.style.transform="none";
+  const width=Math.max(10,li.clientWidth-(parseFloat(getComputedStyle(li).paddingLeft)||0)-2);
+  const natural=text.scrollWidth;
+  const factor=Math.min(1,width/Math.max(1,natural));
+  text.style.transform=factor<.999?"scaleX("+factor.toFixed(4)+")":"none";
+ });
 }
 function scheduleB1QuestionFit(){
  if(b1QuestionsFitPending)return;
@@ -1043,6 +1226,7 @@ function exportDraft(){
 
 $("homeBtn").onclick=showList;
 $("openList").onclick=showList;
+$("backAllMails").onclick=()=>{if(document.activeElement===$("draft"))$("draft").blur();showList();};
 $("startWriting").onclick=startWriting;
 $("backTask").onclick=backTask;
 $("translationToggle").onclick=()=>{
@@ -1089,6 +1273,20 @@ if(typeof ResizeObserver!=="undefined"){
  const b1ResizeObserver=new ResizeObserver(()=>scheduleB1QuestionFit());
  b1ResizeObserver.observe(document.querySelector(".writerPage .editor"));
 }
+
+/* Gesture lock in writing mode: A1-style fixed editor, no page up/down swipe. */
+function b1WriterSwipeLocked(event){
+ if(!b1Mobile()||!document.body.classList.contains("writing"))return false;
+ if(!$("results").classList.contains("hidden")&&event.target.closest("#results"))return false;
+ return true;
+}
+document.addEventListener("touchmove",event=>{
+ if(b1WriterSwipeLocked(event)&&event.cancelable)event.preventDefault();
+},{passive:false,capture:true});
+document.addEventListener("wheel",event=>{
+ if(b1WriterSwipeLocked(event)&&event.cancelable)event.preventDefault();
+},{passive:false,capture:true});
+
 updateViewportHeight();
 screen("welcome");
 fetch("./tasks.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw Error("HTTP "+r.status);return r.json()}).then(t=>{
