@@ -38,28 +38,38 @@ pre{white-space:pre;overflow:auto;max-height:65vh;margin:0;padding:14px;border:1
  <h2>Kako se povezuje</h2>
  <ol class="steps">
   <li>Otvori <a href="https://dash.cloudflare.com/" target="_blank" rel="noopener noreferrer">Cloudflare Dashboard</a> → <b>Workers &amp; Pages</b> → Worker <code>b1mejlovi</code> → <b>Edit code</b>.</li>
-  <li>Pritisni zeleno dugme <b>KOPIRAJ CEO WORKER</b>, zameni postojeći sadržaj Cloudflare editora i klikni <b>Deploy</b>.</li>
+  <li><b>Izaberi odgovarajući format:</b> za novi Cloudflare Worker sa <code>export default</code> izaberi <b>KOPIRAJ NOVI WORKER (MODULE)</b>. Ako stari Worker počinje sa <code>addEventListener("fetch",...)</code>, izaberi <b>KOPIRAJ STARI WORKER (CLASSIC)</b>.</li>
+  <li>U Cloudflare editoru <b>označi SAV postojeći kod (Ctrl+A)</b>, zameni ga kopiranim kodom i pritisni <b>Deploy</b>. Nemoj lepiti novi kod unutar starog <code>fetch()</code> ili ispod starog koda.</li>
   <li>Otvori <b>Settings → Variables and Secrets → Add</b> i izaberi tip <b>Secret</b>. Naziv: <code>OPENAI_API_KEY</code>; u vrednost unesi svoj OpenAI API ključ. Sačuvaj/deploy promenu.</li>
   <li>Proveri <a href="https://b1mejlovi.nemackidemax13.workers.dev/health" target="_blank" rel="noopener noreferrer">/health</a>: treba da piše <code>"tasks":20</code> i <code>"keyConfigured":true</code>. To potvrđuje konfiguraciju, ne i uspešnost AI provere.</li>
   <li>Aplikacija već koristi <code>https://b1mejlovi.nemackidemax13.workers.dev/api/check-b1-email</code>. Ako zameniš kod baš u Workeru <code>b1mejlovi</code>, frontend ne mora da se menja.</li>
  </ol>
+ <p class="notice"><b>Ako Cloudflare javlja grešku:</b> <code>Unexpected token 'export'</code> ili <code>addEventListener is not defined</code> znači da format koda ne odgovara tipu Workera. Izaberi drugo dugme. <code>OPENAI_API_KEY nije podešen</code> znači da treba dodati Secret. <code>401</code> znači da OpenAI nije prihvatio ključ, a <code>429</code> da su dostignuti API limit ili kvota. Poruka <code>Failed to fetch</code> najčešće znači da Worker nije dostupan na adresi iz aplikacije ili nije uspešno objavljen.</p>
  <p class="notice"><b>Važno:</b> OpenAI ključ se nikad ne unosi u ovaj JavaScript fajl niti u HTML; čuva se samo kao Cloudflare Secret. AI pozivi se naplaćuju prema OpenAI korišćenju. Postavi rate limiting i ograničenja troškova. Cilj 80 reči je preporuka za vežbu, ne automatski zvanični telc uslov. Rezultat je AI procena za vežbanje.</p>
 </section>
 <section class="card">
  <div class="ribbon">
-  <button id="copy" disabled>KOPIRAJ CEO WORKER</button>
+  <button id="copy" disabled>KOPIRAJ NOVI WORKER · MODULE</button>
+  <button id="copyClassic" class="secondary" disabled>KOPIRAJ STARI WORKER · CLASSIC</button>
   <button id="select" class="secondary" disabled>OZNAČI KOD</button>
   <span id="copyStatus" role="status">Učitavanje koda…</span>
  </div>
- <pre id="code" tabindex="0">Učitavanje svih 20 zadataka…</pre>
+ <pre id="code" tabindex="0">Učitavanje obe verzije sa svih 20 zadataka…</pre>
+ <p class="notice">Na ekranu se prikazuje poslednja verzija koju si izabrao. Dugme OZNAČI KOD može poslužiti za ručno kopiranje.</p>
 </section>
 </main>
 <script>
-let workerSource="";
+const versions={module:"",classic:""};
+let active="module";
 const code=document.getElementById("code");
 const copy=document.getElementById("copy");
+const copyClassic=document.getElementById("copyClassic");
 const select=document.getElementById("select");
 const status=document.getElementById("copyStatus");
+const files={
+ module:"./WORKER-TELC-B1-20-ZADATAKA.js?v=2",
+ classic:"./WORKER-TELC-B1-KLASICNI.js?v=2"
+};
 function fallbackCopy(text){
  const ta=document.createElement("textarea");
  ta.value=text;ta.style.cssText="position:fixed;left:-9999px;top:0";
@@ -68,32 +78,64 @@ function fallbackCopy(text){
  ta.remove();
  if(!ok)throw Error("Kopiranje nije uspelo.");
 }
-copy.addEventListener("click",async()=>{
- if(!workerSource)return;
- try{
-  if(navigator.clipboard?.writeText)await navigator.clipboard.writeText(workerSource);
-  else fallbackCopy(workerSource);
-  status.textContent="✓ Kopirano! Zalepi u Cloudflare Worker.";
+function showVersion(type){
+ const source=versions[type];
+ if(!source)return;
+ active=type;
+ code.textContent=source;
+ select.disabled=false;
+ status.textContent="Prikazan "+(type==="module"?"MODULE":"CLASSIC")+" Worker: svih 20 zadataka · "+source.length.toLocaleString("sr-RS")+" znakova";
+}
+async function copyVersion(type){
+ const source=versions[type];
+ if(!source){status.textContent="Izabrana verzija još nije učitana.";return;}
+ showVersion(type);
+ try {
+  if(navigator.clipboard?.writeText)await navigator.clipboard.writeText(source);
+  else fallbackCopy(source);
+  status.textContent="✓ Kopiran ceo "+(type==="module"?"MODULE":"CLASSIC")+" Worker! Zalepi umesto celog starog koda.";
  }catch{
-  try{fallbackCopy(workerSource);status.textContent="✓ Kopirano! Zalepi u Cloudflare Worker.";}
-  catch{status.textContent="Kopiranje blokirano. Koristi OZNAČI KOD pa kopiraj ručno.";}
+  try{
+   fallbackCopy(source);
+   status.textContent="✓ Kopiran ceo "+(type==="module"?"MODULE":"CLASSIC")+" Worker!";
+  }catch{
+   status.textContent="Pregledač je blokirao kopiranje. Koristi OZNAČI KOD pa kopiraj ručno.";
+  }
  }
-});
+}
+copy.addEventListener("click",()=>copyVersion("module"));
+copyClassic.addEventListener("click",()=>copyVersion("classic"));
 select.addEventListener("click",()=>{
+ if(!versions[active])return;
  const range=document.createRange();
  range.selectNodeContents(code);
- const s=window.getSelection();s.removeAllRanges();s.addRange(range);
- status.textContent="Kod je označen. Kopiraj ga.";
+ const selection=window.getSelection();
+ selection.removeAllRanges();selection.addRange(range);
+ status.textContent="Kod je označen. Kopiraj ga ručno.";
 });
-fetch("./WORKER-TELC-B1-20-ZADATAKA.js?v=1",{cache:"no-store"}).then(async r=>{
- if(!r.ok)throw Error("HTTP "+r.status);
- return await r.text();
-}).then(text=>{
- if(!text.includes("const TASKS = [")||!text.includes("export default"))throw Error("Fajl nije kompletan.");
- workerSource=text;code.textContent=text;
- copy.disabled=false;select.disabled=false;
- status.textContent="Spremno za kopiranje · 20 zadataka · "+text.length.toLocaleString("sr-RS")+" znakova";
-}).catch(e=>{status.textContent="Ne mogu da učitam kod: "+e.message;code.textContent="Proveri da li je Worker JavaScript fajl objavljen u istom folderu.";});
+async function load(type){
+ try{
+  const response=await fetch(files[type],{cache:"no-store"});
+  if(!response.ok)throw Error("HTTP "+response.status);
+  const txt=await response.text();
+  if(!txt.includes("const TASKS = [")||!txt.includes('"/api/check-b1-email"')&&!txt.includes("/api/check-b1-email"))
+   throw Error("Fajl nije kompletan");
+  if(type==="module"&&!txt.includes("export default"))throw Error("Nije MODULE kod");
+  if(type==="classic"&&!txt.includes('addEventListener("fetch"'))throw Error("Nije CLASSIC kod");
+  versions[type]=txt;
+  if(type==="module")copy.disabled=false;
+  else copyClassic.disabled=false;
+  if(type===active||!versions[active])showVersion(type);
+ }catch(e){
+  status.textContent="Problem sa "+type+" verzijom: "+e.message+". Otvori rezervni GitHub link.";
+ }
+}
+Promise.allSettled([load("module"),load("classic")]).then(()=>{
+ if(!versions.module&&!versions.classic){
+  code.textContent="Kod još nije dostupan sa GitHub Pages. Otvori rezervni GitHub link ispod.";
+ }else if(versions.module)showVersion("module");
+});
+
 </script>
 </body>
 </html>
