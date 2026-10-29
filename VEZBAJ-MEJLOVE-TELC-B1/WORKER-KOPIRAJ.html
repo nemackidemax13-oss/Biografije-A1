@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0f3275">
+<title>De-Max – TELC B1 Worker sa 20 zadataka</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:#142d48;background:#edf3fc}
+main{max-width:1120px;margin:auto;padding:16px 14px 40px}
+.hero{background:linear-gradient(125deg,#0c316e,#1a65b5);color:white;border-radius:16px;padding:22px 18px;box-shadow:0 5px 20px #0f3d8130}
+.kicker{font-size:12px;opacity:.85;font-weight:800;letter-spacing:1.2px}
+h1{font-size:clamp(20px,4vw,32px);margin:7px 0 8px}
+.hero p{font-size:14px;line-height:1.55;max-width:780px;margin:0}
+.card{background:white;border:1px solid #cbdaf0;border-radius:14px;padding:15px;margin-top:14px;box-shadow:0 3px 10px #10285112}
+h2{margin:0 0 10px;font-size:17px;color:#123d81}
+.steps{margin:0;padding-left:21px;font-size:14px;line-height:1.9}
+code,kbd{background:#eef4fc;padding:2px 5px;border-radius:4px;color:#0d418a}
+.notice{font-size:12px;line-height:1.45;color:#59677c}
+.ribbon{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:10px}
+button{cursor:pointer;border:0;border-radius:9px;padding:12px 18px;color:white;background:#10854c;font-weight:900;font-size:14px}
+button.secondary{background:#2055a2}
+button:disabled{opacity:.45;cursor:not-allowed}
+#copyStatus{font-size:13px;font-weight:700;color:#215b3e}
+pre{white-space:pre;overflow:auto;max-height:65vh;margin:0;padding:14px;border:1px solid #24334a;border-radius:10px;background:#111b2b;color:#f0f4ff;font-size:11.5px;line-height:1.52;tab-size:2}
+@media(max-width:650px){main{padding:10px 8px 28px}.hero{padding:17px 12px}.card{padding:12px}pre{max-height:60vh;font-size:10px}button{flex:1}}
+</style>
+</head>
+<body>
+<main>
+<header class="hero">
+  <div class="kicker">DE-MAX TUTIN · GOTOV CLOUDFLARE WORKER</div>
+  <h1>TELC B1 · AI provera svih 20 mejlova</h1>
+  <p>Jedan kompletan JavaScript Worker za kopiranje u Cloudflare. Prepoznaje svih 20 postavki i četiri pitanja po mejlu, proverava nemačku gramatiku i boduje do 45 poena. Postojeća A1 i A2 aplikacija ostaju netaknute.</p>
+</header>
+<section class="card">
+ <h2>Kako se povezuje</h2>
+ <ol class="steps">
+  <li>Otvori <a href="https://dash.cloudflare.com/" target="_blank" rel="noopener noreferrer">Cloudflare Dashboard</a> → <b>Workers &amp; Pages</b> → Worker <code>b1mejlovi</code> → <b>Edit code</b>.</li>
+  <li>Pritisni zeleno dugme <b>KOPIRAJ CEO WORKER</b>, zameni postojeći sadržaj Cloudflare editora i klikni <b>Deploy</b>.</li>
+  <li>Otvori <b>Settings → Variables and Secrets → Add</b> i izaberi tip <b>Secret</b>. Naziv: <code>OPENAI_API_KEY</code>; u vrednost unesi svoj OpenAI API ključ. Sačuvaj/deploy promenu.</li>
+  <li>Proveri <a href="https://b1mejlovi.nemackidemax13.workers.dev/health" target="_blank" rel="noopener noreferrer">/health</a>: treba da piše <code>"tasks":20</code> i <code>"keyConfigured":true</code>. To potvrđuje konfiguraciju, ne i uspešnost AI provere.</li>
+  <li>Aplikacija već koristi <code>https://b1mejlovi.nemackidemax13.workers.dev/api/check-b1-email</code>. Ako zameniš kod baš u Workeru <code>b1mejlovi</code>, frontend ne mora da se menja.</li>
+ </ol>
+ <p class="notice"><b>Važno:</b> OpenAI ključ se nikad ne unosi u ovaj JavaScript fajl niti u HTML; čuva se samo kao Cloudflare Secret. AI pozivi se naplaćuju prema OpenAI korišćenju. Postavi rate limiting i ograničenja troškova. Cilj 80 reči je preporuka za vežbu, ne automatski zvanični telc uslov. Rezultat je AI procena za vežbanje.</p>
+</section>
+<section class="card">
+ <div class="ribbon">
+  <button id="copy" disabled>KOPIRAJ CEO WORKER</button>
+  <button id="select" class="secondary" disabled>OZNAČI KOD</button>
+  <span id="copyStatus" role="status">Učitavanje koda…</span>
+ </div>
+ <pre id="code" tabindex="0">Učitavanje svih 20 zadataka…</pre>
+</section>
+</main>
+<script>
+let workerSource="";
+const code=document.getElementById("code");
+const copy=document.getElementById("copy");
+const select=document.getElementById("select");
+const status=document.getElementById("copyStatus");
+function fallbackCopy(text){
+ const ta=document.createElement("textarea");
+ ta.value=text;ta.style.cssText="position:fixed;left:-9999px;top:0";
+ document.body.appendChild(ta);ta.select();
+ const ok=document.execCommand("copy");
+ ta.remove();
+ if(!ok)throw Error("Kopiranje nije uspelo.");
+}
+copy.addEventListener("click",async()=>{
+ if(!workerSource)return;
+ try{
+  if(navigator.clipboard?.writeText)await navigator.clipboard.writeText(workerSource);
+  else fallbackCopy(workerSource);
+  status.textContent="✓ Kopirano! Zalepi u Cloudflare Worker.";
+ }catch{
+  try{fallbackCopy(workerSource);status.textContent="✓ Kopirano! Zalepi u Cloudflare Worker.";}
+  catch{status.textContent="Kopiranje blokirano. Koristi OZNAČI KOD pa kopiraj ručno.";}
+ }
+});
+select.addEventListener("click",()=>{
+ const range=document.createRange();
+ range.selectNodeContents(code);
+ const s=window.getSelection();s.removeAllRanges();s.addRange(range);
+ status.textContent="Kod je označen. Kopiraj ga.";
+});
+fetch("./WORKER-TELC-B1-20-ZADATAKA.js?v=1",{cache:"no-store"}).then(async r=>{
+ if(!r.ok)throw Error("HTTP "+r.status);
+ return await r.text();
+}).then(text=>{
+ if(!text.includes("const TASKS = [")||!text.includes("export default"))throw Error("Fajl nije kompletan.");
+ workerSource=text;code.textContent=text;
+ copy.disabled=false;select.disabled=false;
+ status.textContent="Spremno za kopiranje · 20 zadataka · "+text.length.toLocaleString("sr-RS")+" znakova";
+}).catch(e=>{status.textContent="Ne mogu da učitam kod: "+e.message;code.textContent="Proveri da li je Worker JavaScript fajl objavljen u istom folderu.";});
+</script>
+</body>
+</html>
