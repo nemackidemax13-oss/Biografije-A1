@@ -538,218 +538,295 @@ function makeOffer(){
 }
 
 /* DE-MAX A2: ispitivač izgovara pitanje, kandidat glasom potvrđuje izbor. */
-const DM_CHOOSE={accepted:false,heard:"",rec:null,media:null,stream:null,
-  serial:0,playing:false,uploading:false,autoRetries:0,listening:false,recordTimer:null,pending:null};
-function dmChooseMessage(value){const el=document.getElementById("dmChooseStatus");if(el)el.textContent=value}
+
+/* DE-MAX A2: glasan izbor tema kroz DE-MAX transkripcioni Worker + A2 bazu.
+   Prvo se pita "Welche Themen wählen Sie?" bez pisanog pitanja,
+   zatim automatski počinje snimanje, pa se govor proverava kroz A2 bazu.
+   Ako AI Worker može da prepozna teme, može dopuniti lokalna prepoznavanja. */
+const DM_CHOOSE={
+ accepted:false,heard:"",rec:null,media:null,stream:null,pending:null,
+ serial:0,uploading:false,recordTimer:null,promptTimer:null,
+ listening:false,autoRetries:0,workerSegments:0,processing:false
+};
+function dmChooseMessage(value){
+ const el=document.getElementById("dmChooseStatus");if(el)el.textContent=value||"";
+}
 function dmChooseDisplay(){
- const active=app.screen==="choose",box=document.getElementById("choose");
- if(!box)return;
+ const box=document.getElementById("choose");if(!box)return;
  box.classList.remove("dm-choose-locked");
  const heard=document.getElementById("dmChooseHeard");
  if(heard){heard.hidden=!DM_CHOOSE.heard;heard.textContent=DM_CHOOSE.heard?"Prepoznato: "+DM_CHOOSE.heard:""}
- const next=document.getElementById("chooseNext");
- if(next&&active)next.disabled=app.chosen.length!==5;
- const mic=document.getElementById("dmChooseMic");
- if(mic)mic.textContent=(DM_CHOOSE.rec||DM_CHOOSE.media)?"■ Završi govor":"🎙 Govori";
+ const btn=document.getElementById("chooseNext");
+ if(btn&&app.screen==="choose")btn.disabled=app.chosen.length!==5;
 }
-function dmChooseNormalize(s){
- return String(s||"").toLocaleLowerCase("de").normalize("NFD").replace(/[\u0300-\u036f]/g,"")
-  .replace(/ß/g,"ss").replace(/\b5\b/g,"funf").replace(/\bfuenf\b/g,"funf")
-  .replace(/\bwaehle\b/g,"wahle").replace(/[.,!?]/g," ").replace(/\s+/g," ").trim();
+function dmChooseNormalize(value){
+ return String(value||"").toLocaleLowerCase("de").normalize("NFD")
+  .replace(/[\u0300-\u036f]/g,"").replace(/ß/g,"ss")
+  .replace(/[^a-z0-9]+/g," ").replace(/\s+/g," ").trim();
 }
-
 function dmChooseVoiceNames(value){
- const clean=dmChooseNormalize(value);
+ const normalized=dmChooseNormalize(value),matches=[];
  const aliases={
   "Filme":["film"],"Hobbys":["hobby","hobbies"],"Bücher":["buch","buecher"],
   "In Österreich":["osterreich","oesterreich"],
-  "Lieblingsgetränk":["lieblingsgetraenk"],"Lieblingsfarbe":["lieblings farbe"],
-  "Lieblingskleidung":["lieblings kleidung"],"Lieblingsessen":["lieblings essen"],
-  "Lieblingslied":["lieblings lied"],"Wohnort":["wohn ort"],"Freizeit":["freie zeit"]
+  "Lieblingsgetränk":["lieblingsgetraenk","lieblings getrank"],
+  "Lieblingsfarbe":["lieblings farbe"],"Lieblingskleidung":["lieblings kleidung"],
+  "Lieblingsessen":["lieblings essen"],"Lieblingslied":["lieblings lied"],
+  "Wohnort":["wohn ort"],"Freizeit":["freie zeit"],
+  "Sprachen":["sprache"],"Freunde":["freund"],"Tiere":["tier"],
+  "Reisen":["reise"],"Urlaub":["ferien"],"Musik":["musik"]
  };
- const found=[];
  for(const id of app.offer){
-  const name=TOPICS[id].title.split(" · ")[0];
-  const forms=[name,...(aliases[name]||[])].map(dmChooseNormalize);
+  const title=TOPICS[id].title.split(" · ")[0];
   let first=Infinity;
-  for(const form of forms){
-   const pattern=new RegExp("(?:^| )"+form+"(?= |$)");
-   const match=pattern.exec(clean);
-   if(match)first=Math.min(first,match.index);
+  for(const variant of [title,...(aliases[title]||[])]){
+   const term=dmChooseNormalize(variant);
+   const index=(" "+normalized+" ").indexOf(" "+term+" ");
+   if(index>=0)first=Math.min(first,index);
   }
-  if(first!==Infinity)found.push({id,first});
+  if(first!==Infinity)matches.push({id,first});
  }
- return found.sort((a,b)=>a.first-b.first).map(entry=>entry.id)
+ return matches.sort((x,y)=>x.first-y.first).map(x=>x.id);
 }
-function dmChooseHeard(value){
- if(app.screen!=="choose")return;
- const val=String(value||"").trim();if(!val)return;
- DM_CHOOSE.heard=val;
- let newTopics=0;
- for(const id of dmChooseVoiceNames(val)){
+function dmChooseApplyIds(ids){
+ if(app.screen!=="choose"||!Array.isArray(ids))return 0;
+ let count=0;
+ for(const id of ids){
   if(app.chosen.length>=5)break;
-  if(!app.chosen.includes(id)){app.chosen.push(id);newTopics++}
+  if(app.offer.includes(id)&&!app.chosen.includes(id)){app.chosen.push(id);count++}
  }
- if(newTopics)renderChoice();else dmChooseDisplay();
+ if(count)renderChoice();
  if(app.chosen.length===5){
   DM_CHOOSE.accepted=true;DM_CHOOSE.listening=false;
-  dmChooseMessage("✓ Pet tema je izabrano. Pritisnite „Potvrdi 5 tema”.");
- }else if(newTopics){
-  dmChooseMessage("✓ Prepoznato "+app.chosen.length+" od 5 tema. Izgovorite preostale nazive.");
- }else{
-  dmChooseMessage("Izgovorite nazive tema prikazanih na slici ili pritisnite „Izaberi automatski”.");
+  dmChooseMessage("✓ Pet tema je prepoznato. Pritisnite „Potvrdi 5 tema”.");
+ }else if(count){
+  dmChooseMessage("✓ Prepoznato "+app.chosen.length+" od 5 tema. Recite i ostale nazive.");
  }
+ return count;
 }
-
-function dmChooseStop(discard=false,keepStream=false){
- DM_CHOOSE.listening=false;
+function dmChooseHeard(value){
+ if(app.screen!=="choose")return 0;
+ const transcript=String(value||"").trim();if(!transcript)return 0;
+ DM_CHOOSE.heard=transcript;
+ const n=dmChooseApplyIds(dmChooseVoiceNames(transcript));
+ if(!n&&app.chosen.length<5)dmChooseMessage("Možete izgovoriti nazive tema, izabrati ih dodirom ili automatski.");
+ dmChooseDisplay();return n;
+}
+// Opciona AI pomoć samo za nazive iz šest stvarno ponuđenih tema.
+// Ako A2 Worker ne podržava ovu operaciju, lokalna baza ostaje aktivna.
+async function dmChooseAskAI(transcript,serial){
+ if(!app.aiEndpoint||!validWorkerUrl(app.aiEndpoint)||app.screen!=="choose")return;
+ const choices=app.offer.map(id=>TOPICS[id].title.split(" · ")[0]);
+ let result;
+ try{
+  result=await requestWorker({
+   type:"match_topics",section:"choose",transcript,
+   candidates:choices,maxSelections:5,
+   instructions:"Iz teksta nemačkog govora izdvoji samo jasno pomenute teme iz candidates. Ne dodaj teme koje nisu izgovorene. Vrati JSON {topics:[...]}. Ne dopunjavaj do pet ako nisu izgovorene."
+  });
+ }catch(e){return}
+ if(serial!==DM_CHOOSE.serial||app.screen!=="choose")return;
+ const names=Array.isArray(result?.topics)?result.topics:
+             Array.isArray(result?.selectedTopics)?result.selectedTopics:[];
+ const ids=[];
+ for(const item of names.slice(0,5)){
+  const name=typeof item==="string"?item:String(item?.name||"");
+  const clean=dmChooseNormalize(name);
+  const id=app.offer.find(x=>dmChooseNormalize(TOPICS[x].title.split(" · ")[0])===clean);
+  if(id!==undefined)ids.push(id);
+ }
+ dmChooseApplyIds(ids);
+}
+async function dmChooseProcessTranscript(transcript,serial){
+ if(serial!==DM_CHOOSE.serial||app.screen!=="choose")return;
+ const val=String(transcript||"").trim();if(!val)return;
+ dmChooseHeard(val);
+ if(app.chosen.length<5)await dmChooseAskAI(val,serial);
+}
+function dmChooseStop(discard=true,keepStream=false){
+ DM_CHOOSE.listening=false;DM_CHOOSE.serial++;
  if(DM_CHOOSE.recordTimer){clearTimeout(DM_CHOOSE.recordTimer);DM_CHOOSE.recordTimer=null}
- DM_CHOOSE.serial++;
- const rec=DM_CHOOSE.rec;DM_CHOOSE.rec=null;
- if(rec){rec.onresult=rec.onerror=rec.onend=null;try{discard?rec.abort():rec.stop()}catch(e){}}
+ if(DM_CHOOSE.promptTimer){clearTimeout(DM_CHOOSE.promptTimer);DM_CHOOSE.promptTimer=null}
+ const r=DM_CHOOSE.rec;DM_CHOOSE.rec=null;
+ if(r){r.onresult=r.onend=r.onerror=null;try{discard?r.abort():r.stop()}catch(e){}}
  const m=DM_CHOOSE.media;DM_CHOOSE.media=null;
  if(m){if(discard)m.onstop=null;try{if(m.state!=="inactive")m.stop()}catch(e){}}
- if(!keepStream&&DM_CHOOSE.stream){try{DM_CHOOSE.stream.getTracks().forEach(t=>t.stop())}catch(e){}DM_CHOOSE.stream=null}
- DM_CHOOSE.uploading=false;
- dmChooseDisplay();
+ if(!keepStream&&DM_CHOOSE.stream){
+  try{DM_CHOOSE.stream.getTracks().forEach(t=>t.stop())}catch(e){}
+  DM_CHOOSE.stream=null;
+ }
+ DM_CHOOSE.uploading=false;DM_CHOOSE.processing=false;dmChooseDisplay();
 }
 function dmChooseSpeechRecognition(){
  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
  if(!SR)return false;
- let r;
- try{r=new SR()}catch(e){return false}
+ let r;try{r=new SR()}catch(e){return false}
  const serial=DM_CHOOSE.serial;
- const isApple=/iPhone|iPad|iPod/i.test(navigator.userAgent||"");
  DM_CHOOSE.rec=r;
- r.lang="de-DE";r.continuous=!isApple;r.interimResults=true;r.maxAlternatives=1;
+ const apple=/iPhone|iPad|iPod/i.test(navigator.userAgent||"");
+ r.lang="de-DE";r.continuous=!apple;r.interimResults=true;r.maxAlternatives=1;
+ let finalSeen="";
  r.onresult=e=>{
   if(serial!==DM_CHOOSE.serial||app.screen!=="choose")return;
-  let value="";
-  for(let i=0;i<e.results.length;i++)value+=(value?" ":"")+(e.results[i]?.[0]?.transcript||"");
-  if(value.trim())dmChooseHeard(value);
+  let full="";
+  for(let i=0;i<e.results.length;i++)full+=(full?" ":"")+(e.results[i]?.[0]?.transcript||"");
+  if(full&&full!==finalSeen){
+   finalSeen=full;
+   dmChooseHeard(full);
+  }
   if(app.chosen.length===5){DM_CHOOSE.listening=false;try{r.stop()}catch(e){}}
  };
  r.onerror=e=>{
-  if(serial!==DM_CHOOSE.serial||app.screen!=="choose")return;
-  const blocked=["not-allowed","service-not-allowed","language-not-supported","audio-capture"].includes(e.error);
-  if(blocked){
+  if(serial!==DM_CHOOSE.serial)return;
+  if(["not-allowed","service-not-allowed","audio-capture"].includes(e.error)){
    DM_CHOOSE.listening=false;
-   dmChooseMessage("Mikrofon nije dostupan; teme možete izabrati dodirom ili automatski.");
-  }else if(e.error!=="no-speech")dmChooseMessage("Prepoznavanje nije uspelo; teme možete izabrati dodirom.");
+   dmChooseMessage("Za mikrofon je potrebna dozvola. Možete izabrati teme dodirom ili automatski.");
+  }
  };
  r.onend=()=>{
   if(serial!==DM_CHOOSE.serial)return;
-  DM_CHOOSE.rec=null;dmChooseDisplay();
-  if(app.screen==="choose"&&DM_CHOOSE.listening&&app.chosen.length<5&&DM_CHOOSE.autoRetries<12){
+  DM_CHOOSE.rec=null;
+  if(app.screen==="choose"&&DM_CHOOSE.listening&&app.chosen.length<5&&DM_CHOOSE.autoRetries<7){
    DM_CHOOSE.autoRetries++;
    setTimeout(()=>{
-    if(serial!==DM_CHOOSE.serial||app.screen!=="choose"||!DM_CHOOSE.listening||DM_CHOOSE.rec||app.chosen.length===5)return;
-    if(!dmChooseSpeechRecognition())dmChooseMessage("Možete izabrati teme dodirom ili automatski.");
-   },250);
+    if(serial===DM_CHOOSE.serial&&app.screen==="choose"&&DM_CHOOSE.listening&&!DM_CHOOSE.rec)
+     dmChooseSpeechRecognition();
+   },400);
   }
  };
- try{r.start();DM_CHOOSE.listening=true;dmChooseDisplay();return true}
- catch(e){DM_CHOOSE.rec=null;DM_CHOOSE.listening=false;dmChooseDisplay();return false}
+ try{r.start();DM_CHOOSE.listening=true;return true}
+ catch(e){DM_CHOOSE.rec=null;return false}
 }
-
+// Worker-first: MediaRecorder automatski snima nemački i šalje ga postojećem
+// transkripcionom Worker-u; A2 AI + lokalna baza zatim određuju ponuđene teme.
 async function dmChooseRecordFallback(){
- if(app.screen!=="choose")return;
- if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){
-  dmChooseMessage("Ovaj pregledač ne podržava snimanje. Možete preći na ručni izbor.");
-  document.getElementById("dmChooseManual").hidden=false;return;
- }
+ if(app.screen!=="choose"||DM_CHOOSE.media||DM_CHOOSE.uploading||app.chosen.length>=5)return false;
+ if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder)return false;
  const serial=DM_CHOOSE.serial;
  let stream=DM_CHOOSE.stream;
- if(!stream&&DM_CHOOSE.pending){try{stream=await DM_CHOOSE.pending}catch(e){}}
+ if(!stream&&DM_CHOOSE.pending)try{stream=await DM_CHOOSE.pending}catch(e){}
  if(!stream){
-  try{stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}})}
-  catch(e){if(serial!==DM_CHOOSE.serial)return;dmChooseMessage("Dozvolite mikrofon ili izaberite automatski.");return}
+  try{stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}})}
+  catch(e){return false}
  }
  if(serial!==DM_CHOOSE.serial||app.screen!=="choose"){
-  if(stream&&stream!==DM_CHOOSE.stream)stream.getTracks().forEach(t=>t.stop());
-  return
+  if(stream!==DM_CHOOSE.stream)stream?.getTracks().forEach(track=>track.stop());
+  return false;
  }
  DM_CHOOSE.stream=stream;
  let mime="";
- try{mime=["audio/webm;codecs=opus","audio/mp4","audio/webm"].find(x=>MediaRecorder.isTypeSupported(x))||""}catch(e){}
+ try{mime=["audio/webm;codecs=opus","audio/mp4","audio/webm","audio/ogg;codecs=opus"].find(type=>MediaRecorder.isTypeSupported(type))||""}catch(e){}
  let recorder;
  try{recorder=mime?new MediaRecorder(stream,{mimeType:mime}):new MediaRecorder(stream)}
- catch(e){dmChooseStop(true);dmChooseMessage("Snimanje nije podržano.");document.getElementById("dmChooseManual").hidden=false;return}
- DM_CHOOSE.media=recorder;
+ catch(e){return false}
  const chunks=[];
- recorder.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
+ DM_CHOOSE.media=recorder;
+ recorder.ondataavailable=e=>{if(e.data?.size)chunks.push(e.data)};
  recorder.onstop=async()=>{
-  if(serial!==DM_CHOOSE.serial)return;
-  DM_CHOOSE.media=null;
   if(DM_CHOOSE.recordTimer){clearTimeout(DM_CHOOSE.recordTimer);DM_CHOOSE.recordTimer=null}
-  if(DM_CHOOSE.stream){DM_CHOOSE.stream.getTracks().forEach(t=>t.stop());DM_CHOOSE.stream=null}
-  dmChooseDisplay();
-  const blob=new Blob(chunks,{type:recorder.mimeType||mime||"audio/mp4"});
-  if(blob.size<500){dmChooseMessage("Snimak je prazan. Pokušajte ponovo.");return}
-  DM_CHOOSE.uploading=true;dmChooseMessage("Prepoznajem Vaš nemački odgovor...");
-  const form=new FormData();form.append("language","de");form.append("file",blob,blob.type.includes("mp4")?"izbor.mp4":"izbor.webm");
-  const ac=new AbortController(),timer=setTimeout(()=>ac.abort(),30000);
-  try{
-   const url=(typeof DM_MIC!=="undefined"&&DM_MIC.transcribeURL)||"https://usmenia1prvideo.nemackidemax13.workers.dev/api/a1-transcribe";
-   const res=await fetch(url,{method:"POST",body:form,signal:ac.signal,mode:"cors"});
-   const data=await res.json().catch(()=>({}));
-   if(!res.ok)throw Error(data.error||"HTTP "+res.status);
-   if(serial!==DM_CHOOSE.serial||app.screen!=="choose")return;
-   dmChooseHeard(data.text||data.transcript||"");
-   if(!DM_CHOOSE.heard)dmChooseMessage("Govor nije prepoznat. Dodirnite „Govori” ponovo.");
-  }catch(e){
-   if(serial===DM_CHOOSE.serial){dmChooseMessage("Prepoznavanje nije uspelo. Pokušajte ponovo ili izaberite teme bez mikrofona.");document.getElementById("dmChooseManual").hidden=false}
-  }finally{clearTimeout(timer);DM_CHOOSE.uploading=false}
+  if(serial!==DM_CHOOSE.serial||app.screen!=="choose")return;
+  DM_CHOOSE.media=null;DM_CHOOSE.uploading=true;
+  if(DM_CHOOSE.stream){
+   try{DM_CHOOSE.stream.getTracks().forEach(t=>t.stop())}catch(e){}
+   DM_CHOOSE.stream=null;
+  }
+  const type=(recorder.mimeType||mime||"audio/webm").split(";")[0];
+  const blob=new Blob(chunks,{type});
+  let workerOK=false;
+  if(blob.size>500){
+   const form=new FormData();
+   const ext=type.includes("mp4")?"mp4":type.includes("ogg")?"ogg":"webm";
+   form.append("language","de");
+   form.append("file",blob,"izbor-tema."+ext);
+   const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),30000);
+   try{
+    const url=(typeof DM_MIC!=="undefined"&&DM_MIC.transcribeURL)||"";
+    if(!url)throw Error("Transkripcioni Worker nije podešen");
+    const response=await fetch(url,{method:"POST",body:form,signal:controller.signal,mode:"cors"});
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok)throw Error(data.error||"Worker HTTP "+response.status);
+    const transcript=String(data.text||data.transcript||"").trim();
+    if(!transcript)throw Error("Nema prepoznatog govora");
+    workerOK=true;
+    await dmChooseProcessTranscript(transcript,serial);
+   }catch(e){
+    dmChooseMessage("Worker nije prepoznao govor; koristi se rezervno prepoznavanje.");
+   }finally{clearTimeout(timeout)}
+  }
+  if(serial!==DM_CHOOSE.serial||app.screen!=="choose")return;
+  DM_CHOOSE.uploading=false;
+  if(app.chosen.length>=5)return;
+  if(workerOK&&DM_CHOOSE.workerSegments<3&&DM_CHOOSE.listening){
+   DM_CHOOSE.workerSegments++;
+   setTimeout(()=>{
+    if(serial===DM_CHOOSE.serial&&app.screen==="choose"&&DM_CHOOSE.listening)
+      dmChooseRecordFallback().then(ok=>{
+       if(!ok&&!dmChooseSpeechRecognition())
+        dmChooseMessage("Teme izaberite dodirom ili žutim dugmetom.");
+      });
+   },300);
+  }else if(!dmChooseSpeechRecognition()){
+   DM_CHOOSE.listening=false;
+   dmChooseMessage("Možete izabrati teme dodirom ili žutim dugmetom.");
+  }
  };
- try{recorder.start(250);dmChooseMessage("🎙 Slušam nazive pet tema.");DM_CHOOSE.recordTimer=setTimeout(()=>{if(DM_CHOOSE.media===recorder&&recorder.state!=="inactive")try{recorder.stop()}catch(e){}},11000)}
- catch(e){dmChooseStop(true);dmChooseMessage("Snimanje nije moglo da se pokrene.");document.getElementById("dmChooseManual").hidden=false}
- dmChooseDisplay();
+ try{
+  recorder.start(250);DM_CHOOSE.listening=true;
+  DM_CHOOSE.recordTimer=setTimeout(()=>{
+   if(DM_CHOOSE.media===recorder&&recorder.state!=="inactive")
+    try{recorder.stop()}catch(e){}
+  },11500);
+  return true;
+ }catch(e){DM_CHOOSE.media=null;return false}
 }
-function dmChooseStartMic(fromTap=false){
- if(app.screen!=="choose"||app.chosen.length===5||DM_CHOOSE.rec||DM_CHOOSE.media||DM_CHOOSE.uploading)return;
- if(!dmChooseSpeechRecognition()){
-  dmChooseRecordFallback();
+async function dmChooseStartMic(){
+ if(app.screen!=="choose"||app.chosen.length>=5||DM_CHOOSE.rec||DM_CHOOSE.media||DM_CHOOSE.uploading)return;
+ DM_CHOOSE.listening=true;
+ const ok=await dmChooseRecordFallback();
+ if(!ok&&app.screen==="choose"&&DM_CHOOSE.listening&&!dmChooseSpeechRecognition()){
+  DM_CHOOSE.listening=false;
+  dmChooseMessage("Dozvolite mikrofon u pregledaču; teme se mogu izabrati dodirom ili automatski.");
  }
 }
-// Na iPhone/iPad-u dozvola se inicira iz stvarnog korisničkog dodira
-// na "Nastavi na teme", ne iz kasnijeg asinhronog TTS događaja.
+// Preduzmi korak za dozvolu još iz dodira na "Nastavi na teme".
 document.getElementById("introForward").addEventListener("click",()=>{
- const ios=/iPhone|iPad|iPod/i.test(navigator.userAgent||"");
- if(!ios||!navigator.mediaDevices?.getUserMedia||DM_CHOOSE.stream||DM_CHOOSE.pending)return;
+ if(!navigator.mediaDevices?.getUserMedia||DM_CHOOSE.stream||DM_CHOOSE.pending)return;
  DM_CHOOSE.pending=navigator.mediaDevices.getUserMedia({
-  audio:{echoCancellation:true,noiseSuppression:true}
+  audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}
  }).then(stream=>{
   if(app.screen!=="introExam"&&app.screen!=="choose"){
-   stream.getTracks().forEach(t=>t.stop());return null;
+   stream.getTracks().forEach(t=>t.stop());return null
   }
-  DM_CHOOSE.stream=stream;
-  return stream;
+  DM_CHOOSE.stream=stream;return stream;
  }).catch(()=>null).finally(()=>{DM_CHOOSE.pending=null});
 },true);
 function dmChooseSpeak(){
  if(app.screen!=="choose")return;
  dmChooseStop(true,true);
- dmChooseDisplay();
  dmChooseMessage("");
  if(!("speechSynthesis" in window)||!window.SpeechSynthesisUtterance){
-  dmChooseMessage("Izgovorite nazive pet ponuđenih tema.");dmChooseStartMic(false);return;
+  dmChooseStartMic();return
  }
- const token=DM_CHOOSE.serial;
- const u=new SpeechSynthesisUtterance("Welche Themen wählen Sie?");
- u.lang="de-DE";u.rate=.91;u.pitch=1;u.volume=1;
- const voices=window.speechSynthesis.getVoices().filter(v=>/^de(?:[-_]|$)/i.test(v.lang));
- u.voice=voices.find(v=>/google/i.test(v.name))||voices.find(v=>/natural/i.test(v.name))||voices[0]||null;
- u.onend=()=>{
-  if(token!==DM_CHOOSE.serial||app.screen!=="choose"||app.chosen.length===5)return;
-  dmChooseStartMic(false);
+ const serial=DM_CHOOSE.serial;
+ const utterance=new SpeechSynthesisUtterance("Welche Themen wählen Sie?");
+ utterance.lang="de-DE";utterance.rate=.92;utterance.pitch=1;
+ const voices=speechSynthesis.getVoices().filter(v=>/^de(?:[-_]|$)/i.test(v.lang));
+ if(voices.length)utterance.voice=voices.find(v=>/google/i.test(v.name))||voices[0];
+ let started=false;
+ const start=()=>{
+  if(started||serial!==DM_CHOOSE.serial||app.screen!=="choose")return;
+  started=true;
+  if(DM_CHOOSE.promptTimer){clearTimeout(DM_CHOOSE.promptTimer);DM_CHOOSE.promptTimer=null}
+  dmChooseStartMic();
  };
- u.onerror=()=>{
-  if(token!==DM_CHOOSE.serial||app.screen!=="choose")return;
-  dmChooseStartMic(false);
- };
- try{window.speechSynthesis.cancel();window.speechSynthesis.speak(u)}
- catch(e){dmChooseStartMic(false)}
+ utterance.onend=start;utterance.onerror=start;
+ try{
+  speechSynthesis.cancel();
+  speechSynthesis.speak(utterance);
+  DM_CHOOSE.promptTimer=setTimeout(start,6500);
+ }catch(e){start()}
 }
+
 function showChoose(){
  stopEverything();if(!app.offer.length)makeOffer();stage("choose","2 / 4 · IZBOR TEMA");DM_CHOOSE.autoRetries=0;DM_CHOOSE.heard="";renderChoice();dmChooseSpeak()
 }
