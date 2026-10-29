@@ -138,14 +138,89 @@ body.writing .main{flex:1;min-height:0;display:flex;flex-direction:column}
 @supports (-webkit-touch-callout: none){
  @media(max-width:700px){.writerPage textarea{font-size:16px;line-height:1.2}}
 }
+
+/* 2026-10-29: kompaktniji TELC B1 mobilni prikaz */
+:root{--app-height:100dvh}
+header{padding:5px 9px}
+.logo{font-size:19px;white-space:nowrap}.logo small{display:none}
+.bar{gap:6px}
+.topRight{display:flex;align-items:center;justify-content:flex-end;gap:5px;min-width:0}
+.tag{font-size:9px;padding:4px 7px;white-space:nowrap}
+.topRight .homeNav{background:#0d874d;color:#fff;border:1px solid #69ca91;border-radius:7px;padding:5px 8px;font-size:10px;font-weight:900;white-space:nowrap}
+.topRight .homeNav span{font-size:12px}
+.controls{margin-top:4px;gap:4px}
+.controls .navArrow{height:27px;min-width:33px;font-size:19px;border-radius:7px;padding:0 8px}
+.controls .navCounter{padding:5px 4px;font-size:10px;border-radius:7px}
+.welcome #openList{width:max-content;margin:9px 0 0 auto;border-radius:8px;font-size:13px;padding:8px 13px;gap:7px;box-shadow:0 2px 6px #0d563021}
+.welcome #openList .arrow,.taskFooter .arrow{font-size:16px}
+body.tasking .app,body.writing .app{height:var(--app-height,100dvh);min-height:0;overflow:hidden}
+body.tasking footer,body.writing footer{display:none}
+body.tasking .main,body.writing .main{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+.taskPage{flex:1;min-height:0;height:auto;padding:5px 7px 5px;gap:4px;overflow:hidden;display:flex;flex-direction:column}
+.taskTop{flex:none;padding:4px 6px;border-radius:6px;gap:4px;font-size:10px;flex-wrap:nowrap}
+.taskTop #taskName{font-size:10px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.taskTop #clock{white-space:nowrap;font-size:10px}
+.taskTop .secondary{padding:4px 6px;font-size:9px;white-space:nowrap}
+.taskPaper{margin:0 auto;max-width:850px;flex:1;min-height:0;display:flex;flex-direction:column;gap:3px;overflow:hidden}
+.taskHeading{flex:none;margin:2px 2px 1px;font-size:12px;color:#0d3476;line-height:1.15}
+.taskPaper .situation{flex:none;font-size:10px;line-height:1.21;padding:4px 6px;margin:0;max-height:17%;overflow:hidden}
+.taskPaper .letter{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden;border-radius:7px}
+.taskPaper .letterHeader{flex:none;font-size:9px;padding:4px 7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.taskPaper .letterBody{flex:1;min-height:0;padding:5px 7px;font-size:12px;line-height:1.22;white-space:pre-line;overflow:hidden;overflow-wrap:anywhere}
+.translationToggle{flex:none;align-self:flex-end;background:#eff5ff;color:#1855a0;border:1px solid #bfd2eb;padding:6px 9px;border-radius:7px;font-size:10px;font-weight:850;line-height:1.1;min-height:26px}
+.taskFooter{flex:none;position:static;max-width:850px;width:100%;margin:0 auto;padding:1px 0 2px;background:#fff}
+.taskFooter .nextStep{width:max-content;min-width:0;max-width:100%;margin-left:auto;padding:7px 13px;font-size:12px;border-radius:8px;gap:7px;box-shadow:0 2px 5px #135a2b24}
+.writerPage{min-height:0}
+.writerTop{padding:4px 7px;gap:6px}
+.writerTop .secondary{font-size:10px;padding:5px 8px}
+.writingPoints{flex:none;max-height:none;overflow:hidden;padding:5px 9px;background:#f3f7ff}
+.writingPoints h3{font-size:11px;margin:0 0 3px}
+.writingPoints h3 span{font-size:9px;font-weight:600;color:#bc2e46}
+.writingPoints ol{grid-template-columns:1fr;gap:3px;padding-left:19px}
+.writingPoints li{font-size:11px;font-weight:800;line-height:1.23;color:#1c4e91}
+.writingPoints li .sr{display:block;margin:1px 0 0;color:#c6223d;font-size:10px;font-weight:650;line-height:1.2}
+.writerPage .editor{padding:6px 8px;gap:4px}
+.writerPage .editHead{font-size:11px}
+.writerPage textarea{flex:1;min-height:40px;font-size:16px;line-height:1.33;padding:8px 10px}
+.writerPage .grade{padding:8px 11px;font-size:12px}
+.writerPage .notice{font-size:9px;line-height:1.15}
+@media(max-width:700px){
+ header{padding:4px 7px}.logo{font-size:17px}.tag{font-size:8px;padding:4px 5px}
+ .topRight .homeNav{font-size:9px;padding:4px 6px}
+ .writerTop{padding:3px 7px}
+ .writingPoints{padding:4px 7px}
+ .writingPoints ol{grid-template-columns:1fr;gap:2px;padding-left:18px}
+ .writingPoints li{font-size:10.8px;line-height:1.2}
+ .writingPoints li .sr{display:block;margin:1px 0 0;font-size:9.7px;color:#c6223d}
+ .writerPage .editor{padding:4px 7px;gap:3px}
+ .writerPage .editHead{font-size:10px}
+ .writerPage .grade{padding:7px;font-size:11px}
+ body.writing.keyboardOpen .writerTop{display:none}
+ body.writing.keyboardOpen header .controls{display:none!important}
+ body.writing.keyboardOpen .writerPage .actions,
+ body.writing.keyboardOpen .writerPage .notice{display:none}
+ body.writing.keyboardOpen .editHead #exportBtn{display:none}
+}
+@media(max-width:355px){
+ .tag{font-size:7px}
+ .taskPaper .situation{font-size:9px}
+ .writingPoints li{font-size:10px}
+ .writingPoints li .sr{font-size:9px}
+}
+
 </style>
 </head>
 <body>
 <div class="app">
 <header>
-  <div class="bar"><div class="logo">De-Max <small>TUTIN · 13 godina sa Vama!</small></div><div class="tag">TELC B1 · SCHREIBEN · AI</div></div>
-  <div class="controls">
-   <button type="button" id="homeBtn" class="homeNav" title="Nazad na uputstvo i sve mejlove">MEJLOVI</button>
+  <div class="bar">
+   <div class="logo">De-Max</div>
+   <div class="topRight">
+    <span class="tag">TELC B1 · SCHREIBEN</span>
+    <button type="button" id="homeBtn" class="homeNav" title="Lista svih mejlova">MEJLOVI <span aria-hidden="true">❯</span></button>
+   </div>
+  </div>
+  <div class="controls hidden" id="navBar">
    <button type="button" id="prevBtn" class="navArrow taskNav hidden" aria-label="Prethodni mejl" title="Prethodni mejl">❮</button>
    <span id="navCounter" class="navCounter taskNav hidden" aria-live="polite">1 / 20</span>
    <button type="button" id="nextBtn" class="navArrow taskNav hidden" aria-label="Sledeći mejl" title="Sledeći mejl">❯</button>
@@ -185,15 +260,15 @@ body.writing .main{flex:1;min-height:0;display:flex;flex-direction:column}
     <button id="resetClock" type="button" class="secondary">↻ Vreme</button>
   </div>
   <div class="taskPaper">
-    <h2 style="font-size:18px;color:#0c3273;margin:9px 2px">POSTAVKA MEJLA</h2>
+    <h2 class="taskHeading">POSTAVKA MEJLA</h2>
     <div id="situation" class="situation"></div>
     <div class="letter">
       <div class="letterHeader" id="letterTitle">Primljeni mejl</div>
       <div class="letterBody" id="received"></div>
     </div>
-    <div class="points"><h3>ODGOVORI NA SVE ČETIRI TAČKE</h3><ol id="points"></ol></div>
+    <button type="button" class="translationToggle" id="translationToggle" aria-label="Prikaži prevod primljenog mejla na srpski">🇷🇸 PREVOD MEJLA <span aria-hidden="true">↓</span></button>
   </div>
-  <div class="taskFooter"><button id="startWriting" type="button" class="nextStep">PIŠI MEJL <span class="arrow" aria-hidden="true">↓</span></button></div>
+  <div class="taskFooter"><button id="startWriting" type="button" class="nextStep">PIŠI MEJL <span class="arrow" aria-hidden="true">➜</span></button></div>
 </section>
 <section id="writerScreen" class="writerPage hidden">
   <div class="writerTop">
@@ -201,7 +276,7 @@ body.writing .main{flex:1;min-height:0;display:flex;flex-direction:column}
     <span id="writerName" class="name">TELC B1 · MEJL 1</span>
   </div>
   <div class="writingPoints">
-    <h3>ČETIRI PITANJA – NAPIŠI ODGOVOR NA SVAKO</h3>
+    <h3>ČETIRI PITANJA <span>· crveno: prevod</span></h3>
     <ol id="writerPoints"></ol>
   </div>
   <div class="editor">
@@ -243,8 +318,13 @@ function overview(){
 function screen(name){
  for(const id of ["welcome","mailList","taskScreen","writerScreen"])$(id).classList.toggle("hidden",id!==name);
  document.body.classList.toggle("writing",name==="writerScreen");
+ document.body.classList.toggle("tasking",name==="taskScreen");
+ document.body.classList.remove("keyboardOpen");
+ $("navBar").classList.toggle("hidden",name!=="taskScreen"&&name!=="writerScreen");
  document.querySelectorAll(".taskNav").forEach(e=>e.classList.toggle("hidden",name!=="taskScreen"&&name!=="writerScreen"));
  window.scrollTo(0,0);
+ if(name==="taskScreen")requestAnimationFrame(fitTaskLetter);
+ updateViewportHeight();
 }
 function showHome(){current=-1;clearInterval(ticker);screen("welcome");history.replaceState(null,"",location.pathname+location.search);overview()}
 function showList(){current=-1;clearInterval(ticker);screen("mailList");history.replaceState(null,"",location.pathname+location.search);overview()}
@@ -259,15 +339,41 @@ function openMail(i){
  $("prevBtn").disabled=i===0;$("nextBtn").disabled=i===mails.length-1;
  $("situation").textContent=m.situation;
  $("letterTitle").textContent="Von: "+m.from+" · Betreff: "+m.subject;
- $("received").textContent=m.body;
- $("points").replaceChildren();$("writerPoints").replaceChildren();
+ $("translationToggle").dataset.lang="de";
+ updateReceivedLanguage();
+ $("writerPoints").replaceChildren();
  m.questions.forEach((q,j)=>{
-  const a=node("li");a.append(node("span",q),node("span",m.srQuestions[j],"sr"));$("points").append(a);
-  const b=node("li");b.append(node("span",q),node("span",m.srQuestions[j]));$("writerPoints").append(b);
+  const b=node("li");b.append(node("span",q),node("span",m.srQuestions[j],"sr"));$("writerPoints").append(b);
  });
  $("draft").value=state.drafts[i]||"";
  $("results").classList.add("hidden");$("results").replaceChildren();
  updateCount();startTimer();location.hash="mejl-"+(i+1);screen("taskScreen");
+}
+function updateReceivedLanguage(){
+ if(current<0||!mails[current])return;
+ const m=mails[current],serbian=$("translationToggle").dataset.lang==="sr";
+ $("received").textContent=serbian?(m.srBody||"Prevod ovog mejla nije dostupan."):m.body;
+ $("letterTitle").textContent=serbian?"PREVOD NA SRPSKI":"Von: "+m.from+" · Betreff: "+m.subject;
+ $("translationToggle").innerHTML=serbian?"↩ ORIGINAL NA NEMAČKOM":"🇷🇸 PREVOD MEJLA <span aria-hidden=\"true\">↓</span>";
+ $("translationToggle").setAttribute("aria-label",serbian?"Vrati originalni mejl na nemačkom":"Prikaži prevod primljenog mejla na srpski");
+ requestAnimationFrame(fitTaskLetter);
+}
+function fitTaskLetter(){
+ const el=$("received");
+ if(!el||!document.body.classList.contains("tasking"))return;
+ el.style.fontSize="12px";
+ el.style.lineHeight="1.22";
+ el.style.overflowY="hidden";
+ for(let size=12;size>=8.2;size-=.35){
+  el.style.fontSize=size.toFixed(2)+"px";
+  if(el.scrollHeight<=el.clientHeight+2)break;
+ }
+ // Na izuzetno niskim ekranima sadržaj mora ostati čitljiv i dostupan.
+ if(el.scrollHeight>el.clientHeight+3)el.style.overflowY="auto";
+}
+function updateViewportHeight(){
+ const v=window.visualViewport;
+ document.documentElement.style.setProperty("--app-height",(v?Math.round(v.height):window.innerHeight)+"px");
 }
 function startWriting(){if(current<0)return;screen("writerScreen")}
 function backTask(){if(current<0)return;screen("taskScreen")}
@@ -332,12 +438,24 @@ $("openList").onclick=showList;
 $("backIntro").onclick=showHome;
 $("startWriting").onclick=startWriting;
 $("backTask").onclick=backTask;
+$("translationToggle").onclick=()=>{
+ $("translationToggle").dataset.lang=$("translationToggle").dataset.lang==="sr"?"de":"sr";
+ updateReceivedLanguage();
+};
 $("prevBtn").onclick=()=>{if(current>0)openMail(current-1)};
 $("nextBtn").onclick=()=>{if(current>=0&&current<mails.length-1)openMail(current+1)};
 $("draft").addEventListener("input",()=>{if(current<0)return;state.drafts[current]=$("draft").value;save();updateCount();$("results").classList.add("hidden")});
 $("resetClock").onclick=startTimer;
 $("gradeBtn").onclick=grade;
 $("exportBtn").onclick=exportDraft;
+$("draft").addEventListener("focus",()=>{
+ if(window.matchMedia("(max-width:700px)").matches)document.body.classList.add("keyboardOpen");
+ updateViewportHeight();
+});
+$("draft").addEventListener("blur",()=>document.body.classList.remove("keyboardOpen"));
+window.addEventListener("resize",()=>{updateViewportHeight();requestAnimationFrame(fitTaskLetter)});
+if(window.visualViewport)window.visualViewport.addEventListener("resize",()=>{updateViewportHeight();requestAnimationFrame(fitTaskLetter)});
+updateViewportHeight();
 fetch("./tasks.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw Error("HTTP "+r.status);return r.json()}).then(t=>{
  if(!Array.isArray(t)||t.length!==20||t.some(m=>!Array.isArray(m.questions)||m.questions.length!==4))throw Error("Baza nije potpuna");
  mails=t;overview();const mt=location.hash.match(/mejl-(\d+)/);if(mt&&Number(mt[1])>=1&&Number(mt[1])<=20)openMail(Number(mt[1])-1);
