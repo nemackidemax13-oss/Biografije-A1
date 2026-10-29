@@ -353,6 +353,21 @@ main{min-height:0;flex:1;display:flex;flex-direction:column;overflow:hidden;back
 #choose #autoChoose.btn.yellow{background:#ffdc49!important;color:#332600!important;border:2px solid #e5ae16!important;font-weight:900;box-shadow:0 2px 0 #cf9710}
 #choose #autoChoose.btn.yellow:active{background:#f5cb2d!important}
 
+
+/* A2: mali natpis u gornjem desnom uglu izbora tema. */
+#choose>.scroll>h2{
+  grid-row:1!important;
+  justify-self:end!important;
+  width:100%!important;
+  margin:0!important;
+  padding:0 4px 1px!important;
+  text-align:right!important;
+  font-size:11px!important;
+  line-height:1.25!important;
+  font-weight:800!important;
+  letter-spacing:.12px!important;
+}
+
 </style>
 <script>
 // Minimalna provera A2 AI Workera; izbegava JS gresku pri ocenjivanju.
@@ -399,7 +414,7 @@ function validWorkerUrl(value){
   </section>
   <section id="choose" class="screen">
    <div class="scroll">
-    <h2>Izaberite 5 od 6 tema</h2>
+    <h2>Izaberite 5 tema</h2>
     <div class="dm-choose-hidden" aria-live="polite">
       <span id="dmChooseStatus"></span>
       <span id="dmChooseHeard" hidden></span>
