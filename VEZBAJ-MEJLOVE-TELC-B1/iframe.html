@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
+<meta name="theme-color" content="#103c82">
+<title>De-Max · TELC B1 mejlovi · AI provera</title>
+<style>
+:root{--navy:#0c2c68;--blue:#1757a9;--red:#cc3249;--ink:#1d2d46;--line:#d1def0;--green:#137a4a;--soft:#f0f6ff}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:var(--ink);background:#e9eff9}
+button,textarea,select{font:inherit}button{cursor:pointer;touch-action:manipulation}
+.app{width:100%;max-width:1100px;margin:auto;min-height:100vh;min-height:100dvh;background:#fff;display:flex;flex-direction:column;box-shadow:0 3px 22px #16326620}
+header{position:sticky;top:0;z-index:3;background:linear-gradient(115deg,#082963,#1959a9);color:#fff;padding:9px 13px;box-shadow:0 2px 8px #102b4840}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.logo{font-weight:1000;font-style:italic;font-size:22px;letter-spacing:-1.2px;text-shadow:1px 1px #c63e58;line-height:1}.logo small{font-weight:700;font-style:normal;font-size:10px;letter-spacing:.1px;display:block;opacity:.9;margin-top:3px}
+.tag{font-size:12px;font-weight:900;border:1px solid #ffffff80;padding:7px 10px;border-radius:30px}
+.controls{margin-top:9px;display:flex;gap:6px}.controls button,.controls select{height:36px;border:1px solid #ffffff80;border-radius:9px;font-size:12px;font-weight:800}.controls button{color:#fff;background:#ffffff1e;padding:0 10px}.controls select{flex:1;min-width:0;background:#fff;color:#163d7c;padding:0 7px}
+.main{flex:1;min-height:0}
+.hidden{display:none!important}
+.welcome{padding:20px 14px 40px;max-width:840px;margin:auto}
+.hero{background:linear-gradient(125deg,#0d3476,#1766b3);color:#fff;border-radius:18px;padding:24px 18px;text-align:center}
+.hero .big{font-size:25px;font-weight:950}.hero p{font-size:13px;opacity:.9;line-height:1.55}
+.hero button,.primary{background:#13814c;color:#fff;border:0;border-radius:10px;padding:12px 21px;font-weight:900}
+.tip{margin:18px auto;padding:15px;border:1px solid var(--line);border-radius:14px;background:#f7faff}
+.tip h2{margin:0 0 9px;font-size:17px;color:var(--navy)}
+.tip p{margin:7px 0;font-size:13px;line-height:1.6}
+.tip ul{margin:8px 0;padding-left:21px;line-height:1.75;font-size:13px}
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:14px}
+.tile{border:1px solid #c6d6ed;background:#fff;text-align:left;padding:13px 11px;border-radius:13px;min-height:98px;color:#1a467f}
+.tile strong{font-size:12px;display:block;margin:7px 0 5px}.tile small{font-size:10px;color:#64788f}.tile.done{background:#effcf5;border-color:#96d5af}.tile .i{font-size:22px}
+.groupTitle{display:flex;justify-content:space-between;margin:16px 2px 8px;font-size:13px;font-weight:900;color:var(--navy)}
+.workspace{height:calc(100dvh - 94px);min-height:480px;display:grid;grid-template-rows:54% 46%;overflow:hidden}
+.panel{display:flex;min-height:0;flex-direction:column}
+.prompt{border-bottom:4px solid var(--blue)}
+.panelHead{flex:none;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#edf4ff;padding:7px 10px;border-bottom:1px solid #d5e2f3;font-weight:900;color:#164a91;font-size:12px}
+.panelHead button{border:1px solid #bfd0e7;color:#174f9c;background:#fff;border-radius:7px;padding:5px 9px;font-size:11px}
+.scroll{min-height:0;flex:1;overflow:auto;overscroll-behavior:contain;padding:11px 13px;background:#fff}
+.situation{padding:8px 10px;background:#fff3f4;border-left:3px solid var(--red);font-size:12px;margin:0 0 9px;border-radius:6px;line-height:1.5}
+.letter{border:1px solid #d1dded;border-radius:10px;overflow:hidden;background:#fff}
+.letterHeader{font-size:11px;background:#edf3fc;color:#344d76;padding:7px 10px;border-bottom:1px solid #d1dded}
+.letterBody{white-space:pre-wrap;line-height:1.48;font-size:13px;padding:11px 13px}
+.points{border:1px solid #cbdcf3;background:#f2f7ff;border-radius:10px;padding:10px 13px;margin-top:9px}
+.points h3{font-size:13px;color:var(--navy);margin:0 0 7px}
+.points ol{margin:0;padding-left:21px}.points li{margin:0 0 9px;font-size:12px;font-weight:750;color:#1b4c8c}
+.points li .sr{display:block;font-size:11px;color:#5a6178;font-weight:500;margin-top:3px}
+.editor{min-height:0;padding:9px 10px;display:flex;flex-direction:column;gap:8px}
+.editHead{font-size:12px;font-weight:900;color:#133e7b;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.editHead button{background:#fff;border:1px solid #bbcceb;color:#1a55a4;padding:6px 8px;border-radius:8px;font-size:11px}
+textarea{flex:1;min-height:84px;width:100%;resize:none;border:1.5px solid #b5cce9;border-radius:10px;padding:11px 12px;font-size:15px;line-height:1.5;outline:0;color:#1e2b40;background:#fff}
+textarea:focus{border-color:#2e6ebc;box-shadow:0 0 0 3px #2f70be18}
+.actions{display:flex;align-items:center;gap:10px;justify-content:space-between;flex-wrap:wrap}
+.count{font-size:11px;font-weight:850;color:#225b9e}
+.grade{padding:9px 15px;background:var(--green);color:#fff;border:0;border-radius:9px;font-size:13px;font-weight:900}.grade:disabled{opacity:.55}
+.notice{font-size:11px;color:#63738c;line-height:1.35}
+.results{padding:12px 14px;background:#f8fbff;border-top:2px solid #aac9ed;overflow:auto;max-height:58%;flex:none}
+.results h3{color:#103d83;font-size:16px;margin:0 0 10px}
+.scorebox{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.scorebox>div{padding:9px;background:#fff;border-radius:9px;border:1px solid #d2def0;font-size:11px;text-align:center}
+.scorebox b{display:block;font-size:21px;color:#1654a3}.scoreTotal{font-size:26px;font-weight:1000;color:#0e7a49;margin:10px 0}
+.results p,.results li{font-size:12px;line-height:1.6}.results h4{font-size:13px;color:#164788;margin:11px 0 6px}
+.results ul{padding-left:21px;margin:6px 0}.chip{padding:3px 8px;display:inline-block;border-radius:99px;background:#dfedff;color:#154a8a;font-size:11px;font-weight:800}
+.corrected{white-space:pre-wrap;background:white;border:1px solid #d2e0f3;border-radius:9px;padding:12px;line-height:1.6;font-size:12px}
+.err{border:1px solid #edb7b8;background:#fff3f2;padding:10px;border-radius:9px;color:#8b2735;line-height:1.5;font-size:12px}
+.footer{font-size:10px;padding:10px 12px;text-align:center;color:#78879a}
+@media(max-width:700px){
+ .tiles{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .welcome{padding:13px 10px 25px}.hero{padding:18px 12px}.hero .big{font-size:22px}
+ .workspace{height:calc(100dvh - 93px);min-height:0;grid-template-rows:53% 47%}
+ .scroll{padding:7px 9px}.letterBody{padding:9px 10px;font-size:12px}.points{padding:7px 9px}.points li{font-size:11.2px;margin-bottom:5px}.points li .sr{font-size:10.4px}
+ .editor{padding:7px}.editHead{font-size:11px}
+ textarea{font-size:16px}
+ .results{max-height:50%}
+ .tag{font-size:10px}
+}
+@media(min-width:900px){.workspace{grid-template-columns:54% 46%;grid-template-rows:100%;height:calc(100dvh - 95px)}.prompt{border-bottom:none;border-right:4px solid var(--blue)}.editor{padding:15px}.results{max-height:60%}}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="bar"><div class="logo">De-Max <small>TUTIN · 13 godina sa Vama!</small></div><div class="tag">TELC B1 · SCHREIBEN · AI</div></div>
+  <div class="controls">
+   <button type="button" id="homeBtn" title="Početna">⌂</button>
+   <button type="button" id="prevBtn" title="Prethodni mejl">‹</button>
+   <select id="mailSelect" aria-label="Izaberi mejl"><option value="">Izaberi mejl</option></select>
+   <button type="button" id="nextBtn" title="Sledeći mejl">›</button>
+   <button type="button" id="allBtn">Svi mejlovi</button>
+  </div>
+</header>
+<main class="main">
+<section id="welcome" class="welcome">
+  <div class="hero"><div class="big">✉ TELC B1 – VEŽBAJ MEJLOVE</div>
+   <p>20 zadataka iz priloženog materijala · 30 minuta · 4 obavezne tačke · AI procena do 45 bodova</p>
+   <button id="openList" type="button">Izaberi mejl ›</button>
+  </div>
+  <div class="tip">
+   <h2>Uputstvo za TELC B1 pisanje</h2>
+   <p><b>1.</b> Pročitajte celu primljenu poruku ili oglas. Obratite pažnju ko piše, kome se obraćate i šta je već poznato u situaciji.</p>
+   <p><b>2.</b> U odgovoru sadržajno obradite <b>sve četiri tačke</b> ispod poruke. Redosled možete slobodno organizovati, ali odgovor mora biti logičan i povezan.</p>
+   <p><b>3.</b> Napišite prikladnu <b>Anrede</b>, uvod, glavni deo, završetak i <b>Grußformel</b>. Datum i predmet dodajte kada odgovaraju formatu i postavci zadatka.</p>
+   <p><b>4.</b> Koristite odgovarajuće obraćanje: <b>du/dein</b> za bliske ljude, a <b>Sie/Ihr</b> za formalne primaoce. Ne menjajte činjenice iz primljenog mejla.</p>
+   <p><b>5.</b> Vreme rada je <b>30 minuta</b>. Korisna vežba je približno 80–120 reči, ali TELC B1 u ovim zadacima ne propisuje čvrst minimum reči; važnije je da odgovor ispunjava zadatak.</p>
+   <p><b>6.</b> Kliknite <b>AI proveri mejl</b> za analizu sadržaja, jezika, svake tačke i bolji primer teksta. Ocena je vežbačka, nije zvaničan TELC rezultat.</p>
+   <p><b>Bodovanje:</b> I. Berücksichtigung der Leitpunkte (0/1/3/5), II. Kommunikative Gestaltung (0/1/3/5), III. Formale Richtigkeit (0/1/3/5). Zbir × 3 = <b>maksimalno 45 bodova</b>. Ne postoji poseban prag prolaza samo za ovaj zadatak.</p>
+   <p>Odgovori se automatski čuvaju <b>lokalno u ovom pregledaču</b>. Nema Google Drive povezivanja. Za AI analizu tekst se šalje zasebnom De-Max Cloudflare Worker-u, kada bude objavljen.</p>
+  </div>
+  <div class="groupTitle"><span>ZADACI ZA PISANJE</span><span id="overview">0 / 20 napisano</span></div>
+  <div id="tiles" class="tiles"></div>
+</section>
+<section id="workspace" class="workspace hidden">
+ <article class="panel prompt">
+  <div class="panelHead"><span id="taskName">Postavka</span><span id="clock">⏱ 30:00</span><button type="button" id="resetClock">↻ Vreme</button></div>
+  <div class="scroll" id="promptScroll">
+    <div id="situation" class="situation"></div>
+    <div class="letter"><div class="letterHeader"><span id="letterTitle">Primljeni mejl</span></div><div class="letterBody" id="received"></div></div>
+    <div class="points"><h3>ČETIRI OBAVEZNE TAČKE / 4 LEITPUNKTE</h3><ol id="points"></ol></div>
+  </div>
+ </article>
+ <article class="panel response">
+  <div class="editor">
+   <div class="editHead"><span>✎ NAPIŠI SVOJ ODGOVOR (B1)</span><button id="exportBtn" type="button">Sačuvaj TXT</button></div>
+   <textarea id="draft" spellcheck="true" placeholder="Liebe ...,
+
+vielen Dank für deine Nachricht. ..."></textarea>
+   <div class="actions"><span id="counter" class="count">0 reči</span><button id="gradeBtn" class="grade" type="button">✓ AI proveri mejl</button></div>
+   <div id="status" class="notice">Obradi sve 4 tačke, odgovori na poruku i ne zaboravi pozdrav.</div>
+  </div>
+  <div id="results" class="results hidden" aria-live="polite"></div>
+ </article>
+</section>
+</main>
+<footer class="footer">De-Max Tutin · TELC B1 vežba · AI ocena je informativna, nije zvanično TELC ocenjivanje.</footer>
+</div>
+<script>
+"use strict";
+const API="https://b1mejlovi.nemackidemax13.workers.dev/api/check-b1-email";
+const STORAGE="demax_telc_b1_mail_v1";
+let mails=[],current=-1,timer=1800,ticker=null,startedAt=0;
+let state={drafts:{},last:{}};
+try{const found=JSON.parse(localStorage.getItem(STORAGE)||"null");if(found&&typeof found==="object"){state={drafts:found.drafts||{},last:found.last||{}}}}catch(e){}
+const $=id=>document.getElementById(id);
+const countWords=v=>(String(v).match(/[\p{L}\p{N}]+(?:[-’'][\p{L}\p{N}]+)*/gu)||[]).length;
+function save(){try{localStorage.setItem(STORAGE,JSON.stringify(state))}catch(e){$("status").textContent="Lokalno čuvanje nije dostupno."}}
+function node(tag,text,cls){const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e}
+function overview(){
+ $("overview").textContent=Object.values(state.drafts).filter(x=>countWords(x)>=1).length+" / "+mails.length+" započeto";
+ $("tiles").replaceChildren();
+ mails.forEach((m,i)=>{
+  const b=node("button",undefined,"tile"+(state.drafts[i]?" done":""));
+  b.type="button";b.append(node("div",state.drafts[i]?"✅":"✉","i"),node("strong",(i+1)+". "+m.title),node("small",state.drafts[i]?countWords(state.drafts[i])+" reči · nastavi":"Otvori zadatak"));
+  b.onclick=()=>openMail(i);$("tiles").append(b);
+ });
+}
+function showHome(){
+ current=-1;clearInterval(ticker);$("workspace").classList.add("hidden");$("welcome").classList.remove("hidden");$("mailSelect").value="";overview();
+}
+function renderClock(){const mm=Math.floor(timer/60),ss=timer%60;$("clock").textContent="⏱ "+String(mm).padStart(2,"0")+":"+String(ss).padStart(2,"0");$("clock").style.color=timer<60?"#bb1d35":""}
+function startTimer(){clearInterval(ticker);timer=1800;renderClock();startedAt=Date.now();ticker=setInterval(()=>{if(current<0)return;timer=Math.max(0,1800-Math.floor((Date.now()-startedAt)/1000));renderClock();if(timer===0)clearInterval(ticker)},1000)}
+function openMail(i){
+ if(!mails[i])return;
+ current=i;const m=mails[i];$("welcome").classList.add("hidden");$("workspace").classList.remove("hidden");$("taskName").textContent=(i+1)+". mejl · "+m.title;$("mailSelect").value=String(i);
+ $("situation").textContent=m.situation;
+ $("letterTitle").textContent="Von: "+m.from+" · Betreff: "+m.subject;
+ $("received").textContent=m.body;
+ $("points").replaceChildren();
+ m.questions.forEach((q,j)=>{const li=node("li");li.append(node("span",q),node("span",m.srQuestions[j],"sr"));$("points").append(li)});
+ $("draft").value=state.drafts[i]||"";$("promptScroll").scrollTop=0;$("results").classList.add("hidden");$("results").replaceChildren();updateCount();startTimer();
+ location.hash="mejl-"+(i+1);
+}
+function updateCount(){
+ const n=countWords($("draft").value);
+ $("counter").textContent=n+" reči"+(n>=80?" ✓":" · B1");
+ $("gradeBtn").disabled=n===0;
+ $("status").textContent="Lokalno sačuvano · Sve 4 tačke · Uvod · Pozdrav · AI ocena je vežbačka.";
+}
+function textSection(root,heading,items){
+ root.append(node("h4",heading));const ul=node("ul");for(const t of items||[]){ul.append(node("li",typeof t==="string"?t:JSON.stringify(t)))}root.append(ul);
+}
+function renderResult(d){
+ const r=$("results");r.replaceChildren();r.classList.remove("hidden");
+ r.append(node("h3","Rezultat AI provere"));
+ const scores=node("div",undefined,"scorebox");
+ [["Sadržaj",d.leitpunkte],["Struktura",d.kommunikativ],["Gramatika",d.formal]].forEach(([label,v])=>{const box=node("div");box.append(node("b",(v??0)+" / 5"),node("span",label));scores.append(box)});
+ r.append(scores,node("div",(d.total??0)+" / 45 bodova","scoreTotal"),node("p",d.summary||""));
+ r.append(node("h4","Odgovori na sve 4 tačke"));
+ const ul=node("ul");
+ (d.points||[]).forEach((p,i)=>{ul.append(node("li",(p.answered?"✓ ":"✗ ")+(i+1)+". "+(p.comment||mails[current].questions[i]||"")))});
+ r.append(ul);
+ textSection(r,"Šta je dobro",d.strengths);
+ textSection(r,"Šta treba ispraviti",d.improvements);
+ textSection(r,"Gramatika i izrazi",d.errors);
+ if(d.corrected){r.append(node("h4","Ispravljena verzija odgovora"),node("div",d.corrected,"corrected"))}
+ if(d.example){r.append(node("h4","Primer potpunog B1 odgovora"),node("div",d.example,"corrected"))}
+ r.scrollTop=0;
+}
+async function grade(){
+ if(current<0)return;
+ const answer=$("draft").value.trim();
+ if(!answer){$("status").textContent="Prvo napiši odgovor.";return}
+ const task=mails[current],index=current;
+ const b=$("gradeBtn");b.disabled=true;b.textContent="AI proverava…";
+ $("status").textContent="Analiza četiri tačke, strukture i gramatike…";
+ const ctl=new AbortController();const timeout=setTimeout(()=>ctl.abort(),45000);
+ try{
+  const res=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},signal:ctl.signal,body:JSON.stringify({mailIndex:index,answer})});
+  let result={};try{result=await res.json()}catch{}
+  if(!res.ok)throw Error(result.error||(res.status===404?"B1 Worker još nije objavljen.":"HTTP "+res.status));
+  if(index!==current||$("draft").value.trim()!==answer)return;
+  state.last[index]=result;save();renderResult(result);
+  $("status").textContent="AI provera završena. Rezultat je informativan i može odstupati od zvanične ocene.";
+ }catch(e){
+  if(index!==current)return;
+  $("results").classList.remove("hidden");$("results").replaceChildren(node("div","AI provera nije dostupna: "+(e.name==="AbortError"?"server nije odgovorio na vreme":e.message)+". Potrebno je objaviti zasebni B1 Cloudflare Worker sa OPENAI_API_KEY; A2 Worker se ne menja.","err"));
+  $("status").textContent="Tekst je ostao sačuvan lokalno. Pokušaj ponovo nakon povezivanja B1 Worker-a.";
+ }finally{clearTimeout(timeout);b.textContent="✓ AI proveri mejl";b.disabled=countWords($("draft").value)===0}
+}
+function exportDraft(){
+ if(current<0)return;
+ const m=mails[current],text="DE-MAX TELC B1 – "+m.title+"\n\n"+m.questions.map((x,i)=>(i+1)+". "+x).join("\n")+"\n\nODGOVOR:\n"+$("draft").value;
+ const url=URL.createObjectURL(new Blob([text],{type:"text/plain;charset=utf-8"}));
+ const a=document.createElement("a");a.href=url;a.download="DE-MAX_TELC_B1_Mejl_"+(current+1)+".txt";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),4000);
+}
+$("homeBtn").onclick=showHome;$("allBtn").onclick=showHome;$("openList").onclick=()=>{document.querySelector(".groupTitle").scrollIntoView({behavior:"smooth",block:"start"})};
+$("prevBtn").onclick=()=>{if(current>0)openMail(current-1);else if(current<0)openMail(0)};
+$("nextBtn").onclick=()=>{if(current>=0&&current<mails.length-1)openMail(current+1);else if(current<0)openMail(0)};
+$("mailSelect").onchange=e=>{if(e.target.value!=="")openMail(Number(e.target.value))};
+$("draft").addEventListener("input",()=>{if(current<0)return;state.drafts[current]=$("draft").value;save();updateCount();$("results").classList.add("hidden")});
+$("resetClock").onclick=startTimer;$("gradeBtn").onclick=grade;$("exportBtn").onclick=exportDraft;
+fetch("./tasks.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw Error("HTTP "+r.status);return r.json()}).then(t=>{
+ if(!Array.isArray(t)||t.length!==20||t.some(m=>!Array.isArray(m.questions)||m.questions.length!==4))throw Error("Baza nije potpuna");
+ mails=t;$("mailSelect").replaceChildren(node("option","Izaberi mejl"));$("mailSelect").firstElementChild.value="";
+ mails.forEach((m,i)=>{const option=node("option",(i+1)+". "+m.title);option.value=String(i);$("mailSelect").append(option)});
+ overview();const mt=location.hash.match(/mejl-(\d+)/);if(mt&&Number(mt[1])>=1&&Number(mt[1])<=20)openMail(Number(mt[1])-1);
+}).catch(e=>{const el=$("overview");el.textContent="Greška učitavanja baze: "+e.message;$("openList").disabled=true});
+</script>
+</body></html>
