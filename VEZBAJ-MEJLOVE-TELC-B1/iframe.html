@@ -668,6 +668,28 @@ body.writing.keyboardOpen .writerPage .results{max-height:35%}
  }
 }
 
+
+/* Izbor mejla: samo broj i naziv, bez koverti, ikona ili sitnog teksta. */
+.tile{justify-content:center;align-items:center;text-align:center}
+.tile strong{display:block;margin:0}
+@media(max-width:700px){
+ body.listing .tile{justify-content:center!important;align-items:center!important}
+ body.listing .tile strong{
+  display:-webkit-box!important;
+  font-size:10.1px!important;
+  line-height:1.2!important;
+  max-height:3.6em!important;
+  -webkit-line-clamp:3!important;
+  line-clamp:3!important;
+ }
+}
+@media(max-width:700px) and (max-height:650px){
+ body.listing .tile strong{font-size:9.3px!important;line-height:1.13!important}
+}
+@media(max-width:350px){
+ body.listing .tile strong{font-size:8.9px!important}
+}
+
 </style>
 </head>
 <body class="intro">
@@ -775,16 +797,11 @@ function overview(){
  mails.forEach((m,i)=>{
   const selected=state.selected===i;
   const done=Boolean(state.last[i]);
-  const words=countWords(state.drafts[i]||"");
   const b=node("button",undefined,"tile"+(done?" done":"")+(selected?" selected":""));
   b.type="button";
   b.setAttribute("aria-pressed",String(selected));
   b.setAttribute("aria-label",(i+1)+". "+m.title+(selected?", izabrani mejl":"")+(done?", odrađeno":""));
-  b.append(
-   node("div",done?"✅":selected?"🔵":"✉","i"),
-   node("strong",(i+1)+". "+m.title),
-   node("small",done?"✓ ODRAĐENO":selected?"● IZABRANI MEJL":words?words+" reči · nastavi":"Izaberi mejl")
-  );
+  b.append(node("strong",(i+1)+". "+m.title));
   b.onclick=()=>openMail(i);
   $("tiles").append(b);
  });
