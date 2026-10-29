@@ -406,6 +406,66 @@ body.writing.keyboardOpen .writerPage .results{max-height:35%}
  }
 }
 
+
+/* B1: samo jedan izabrani mejl; tek uspešno AI proveren mejl = ODRAĐENO */
+.tile.selected{background:#e5f0ff;border:2px solid #1769cc;box-shadow:0 0 0 2px #b7d7fa}
+.tile.selected strong{color:#0f4d9c}
+.tile.selected small{color:#1454a4;font-weight:900}
+.tile.done{background:#effcf5;border:1px solid #7ccba1}
+.tile.done small{color:#117948;font-weight:900}
+.tile.done.selected{background:#e5f0ff;border:2px solid #1769cc}
+.tile.done.selected small{color:#117948}
+@media(max-width:700px){
+ body.writing .writerPage .writingPoints,
+ html.b1-typing .writerPage .writingPoints{
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+  overflow-y:hidden!important;
+  overscroll-behavior:none!important;
+  max-height:none;
+  padding:var(--b1-q-pad,5px) 6px!important;
+ }
+ body.writing .writerPage .writingPoints h3,
+ html.b1-typing .writerPage .writingPoints h3{
+  margin:0 0 2px!important;font-size:9px!important;line-height:1.1!important
+ }
+ body.writing .writerPage .writingPoints ol,
+ html.b1-typing .writerPage .writingPoints ol{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  gap:var(--b1-q-gap,2px)!important;
+  margin:0!important;padding-left:0!important;
+ }
+ body.writing .writerPage .writingPoints li,
+ html.b1-typing .writerPage .writingPoints li{
+  padding-left:var(--b1-q-inset,22px)!important;
+  font-size:var(--b1-q-size,12px)!important;
+  line-height:1.13!important;
+  margin:0!important;overflow-wrap:anywhere!important;
+ }
+ body.writing .writerPage .writingPoints li .sr,
+ html.b1-typing .writerPage .writingPoints li .sr{
+  font-size:var(--b1-tr-size,11px)!important;
+  line-height:1.09!important;
+  margin:0!important;padding:0!important;
+ }
+ body.writing .writerPage .actions .grade,
+ html.b1-typing .writerPage .actions .grade{
+  font-size:10.5px!important;
+  padding:4px 8px!important;
+  min-height:26px!important;
+  line-height:1.1!important;
+  border-radius:6px!important;
+ }
+ body.writing .writerPage .actions,
+ html.b1-typing .writerPage .actions{
+  min-height:30px!important;
+  padding:2px 1px max(2px,env(safe-area-inset-bottom))!important;
+ }
+ html.b1-typing .writerPage .editor{grid-template-rows:auto minmax(38px,1fr) auto!important}
+ html.b1-typing .writerPage textarea{min-height:38px!important}
+}
+
 </style>
 </head>
 <body class="intro">
@@ -494,19 +554,37 @@ vielen Dank für deine Nachricht.
 const API="https://b1mejlovi.nemackidemax13.workers.dev/api/check-b1-email";
 const STORAGE="demax_telc_b1_mail_v1";
 let mails=[],current=-1,timer=1800,ticker=null,startedAt=0;
-let state={drafts:{},last:{}};
-try{const found=JSON.parse(localStorage.getItem(STORAGE)||"null");if(found&&typeof found==="object")state={drafts:found.drafts||{},last:found.last||{}}}catch(e){}
+let state={drafts:{},last:{},selected:null};
+try{
+ const found=JSON.parse(localStorage.getItem(STORAGE)||"null");
+ if(found&&typeof found==="object"){
+  state={drafts:found.drafts||{},last:found.last||{},
+   selected:Number.isInteger(found.selected)&&found.selected>=0&&found.selected<20?found.selected:null};
+ }
+}catch(e){}
 const $=id=>document.getElementById(id);
 const countWords=v=>(String(v).match(/[\p{L}\p{N}]+(?:[-’'][\p{L}\p{N}]+)*/gu)||[]).length;
 function save(){try{localStorage.setItem(STORAGE,JSON.stringify(state))}catch(e){$("status").textContent="Lokalno čuvanje nije dostupno."}}
 function node(tag,text,cls){const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e}
 function overview(){
- $("overview").textContent=Object.values(state.drafts).filter(x=>countWords(x)>=1).length+" / "+mails.length+" započeto";
+ const completed=mails.filter((m,i)=>Boolean(state.last[i])).length;
+ $("overview").textContent=completed+" / "+mails.length+" odrađeno";
  $("tiles").replaceChildren();
  mails.forEach((m,i)=>{
-  const b=node("button",undefined,"tile"+(state.drafts[i]?" done":""));
-  b.type="button";b.append(node("div",state.drafts[i]?"✅":"✉","i"),node("strong",(i+1)+". "+m.title),node("small",state.drafts[i]?countWords(state.drafts[i])+" reči · nastavi":"Otvori postavku"));
-  b.onclick=()=>openMail(i);$("tiles").append(b);
+  const selected=state.selected===i;
+  const done=Boolean(state.last[i]);
+  const words=countWords(state.drafts[i]||"");
+  const b=node("button",undefined,"tile"+(done?" done":"")+(selected?" selected":""));
+  b.type="button";
+  b.setAttribute("aria-pressed",String(selected));
+  b.setAttribute("aria-label",(i+1)+". "+m.title+(selected?", izabrani mejl":"")+(done?", odrađeno":""));
+  b.append(
+   node("div",done?"✅":selected?"🔵":"✉","i"),
+   node("strong",(i+1)+". "+m.title),
+   node("small",done?"✓ ODRAĐENO":selected?"● IZABRANI MEJL":words?words+" reči · nastavi":"Izaberi mejl")
+  );
+  b.onclick=()=>openMail(i);
+  $("tiles").append(b);
  });
 }
 function screen(name){
@@ -530,7 +608,7 @@ function renderClock(){const mm=Math.floor(timer/60),ss=timer%60;$("clock").text
 function startTimer(){clearInterval(ticker);timer=1800;renderClock();startedAt=Date.now();ticker=setInterval(()=>{if(current<0)return;timer=Math.max(0,1800-Math.floor((Date.now()-startedAt)/1000));renderClock();if(timer===0)clearInterval(ticker)},1000)}
 function openMail(i){
  if(!mails[i])return;
- current=i;const m=mails[i];
+ current=i;state.selected=i;save();const m=mails[i];
  $("taskName").textContent=(i+1)+". MEJL · "+m.title;
  $("writerName").textContent="MEJL "+(i+1)+" / "+mails.length+" · "+m.title;
  $("navCounter").textContent="MEJL "+(i+1)+" / "+mails.length;
@@ -602,21 +680,58 @@ function updateViewportHeight(){
  root.style.setProperty("--b1-vtop",Math.floor(top)+"px");
  root.style.setProperty("--app-height",usable+"px");
  root.classList.toggle("b1-typing",typing);
- if(typing)requestAnimationFrame(fitB1QuestionsToKeyboard);
+ if(document.body.classList.contains("writing"))scheduleB1QuestionFit();
 }
+
+let b1QuestionsFitPending=false;
 function fitB1QuestionsToKeyboard(){
  if(!b1Mobile()||!document.body.classList.contains("writing"))return;
  const block=document.querySelector(".writingPoints");
  const editor=document.querySelector(".writerPage .editor");
- if(!block||!editor||editor.clientHeight<70)return;
- const footer=editor.querySelector(".actions");
- const available=Math.max(72,Math.min(editor.clientHeight*.53,
-   editor.clientHeight-(footer?.offsetHeight||38)-72));
- for(const size of [12.1,11.7,11.3,10.9,10.5,10,9.6]){
-  block.style.setProperty("--b1-q-font",size+"px");
-  block.style.setProperty("--b1-tr-font",Math.max(8.9,size-1)+"px");
-  if(block.scrollHeight<=available+1)break;
+ const area=$("draft"),button=$("gradeBtn");
+ if(!block||!editor||!area||!button||editor.clientHeight<65)return;
+ // Fit svih 4 pitanja + crvenih prevoda, bez skrolovanja pitanja.
+ const h=editor.clientHeight;
+ const keyboardVisible=document.documentElement.classList.contains("b1-typing");
+ const actions=editor.querySelector(".actions");
+ const header=keyboardVisible?0:(editor.querySelector(".editHead")?.offsetHeight||22);
+ const reserved=(actions?.offsetHeight||34)+header+47+13;
+ const available=Math.max(67,Math.floor(h-reserved));
+ block.style.setProperty("--b1-q-size","12px");
+ block.style.setProperty("--b1-tr-size","11px");
+ block.style.setProperty("--b1-q-gap","3px");
+ block.style.setProperty("--b1-q-pad","5px");
+ block.style.setProperty("--b1-q-inset","22px");
+ block.style.maxHeight=available+"px";
+ block.style.overflowY="hidden";
+ const fits=()=>block.scrollHeight<=Math.min(available,block.clientHeight)+2;
+ // Prvo smanji razmake, zatim font samo koliko je potrebno.
+ const configurations=[
+  [12,11,3,5,22],[11.7,10.7,2,4,21],[11.3,10.3,2,3,20],
+  [10.9,10,1.5,3,19],[10.5,9.7,1,2,18],
+  [10.1,9.4,.5,2,17],[9.7,9.1,0,1,16],[9.3,8.8,0,1,15]
+ ];
+ for(const [q,tr,gap,pad,inset] of configurations){
+  block.style.setProperty("--b1-q-size",q+"px");
+  block.style.setProperty("--b1-tr-size",tr+"px");
+  block.style.setProperty("--b1-q-gap",gap+"px");
+  block.style.setProperty("--b1-q-pad",pad+"px");
+  block.style.setProperty("--b1-q-inset",inset+"px");
+  if(fits())break;
  }
+ // Ako ima prostora, dodatno ga prepusti pitanjima, ali ne pokrivaj editor.
+ if(!fits()){
+  const emergency=Math.max(available,Math.floor(h-(actions?.offsetHeight||34)-header-33-9));
+  block.style.maxHeight=emergency+"px";
+ }
+}
+function scheduleB1QuestionFit(){
+ if(b1QuestionsFitPending)return;
+ b1QuestionsFitPending=true;
+ requestAnimationFrame(()=>{
+  b1QuestionsFitPending=false;
+  fitB1QuestionsToKeyboard();
+ });
 }
 function fitIntro(){
  const panel=document.querySelector("#welcome .tip");
@@ -711,7 +826,7 @@ $("translationToggle").onclick=()=>{
 };
 $("prevBtn").onclick=()=>{if(current>0)openMail(current-1)};
 $("nextBtn").onclick=()=>{if(current>=0&&current<mails.length-1)openMail(current+1)};
-$("draft").addEventListener("input",()=>{if(current<0)return;state.drafts[current]=$("draft").value;save();updateCount();$("results").classList.add("hidden")});
+$("draft").addEventListener("input",()=>{if(current<0)return;state.drafts[current]=$("draft").value;save();updateCount();$("results").classList.add("hidden");scheduleB1QuestionFit()});
 $("resetClock").onclick=startTimer;
 $("gradeBtn").onclick=grade;
 $("exportBtn").onclick=exportDraft;
@@ -734,16 +849,21 @@ window.addEventListener("resize",()=>{
  updateViewportHeight();
  requestAnimationFrame(fitTaskLetter);
  requestAnimationFrame(fitIntro);
+ scheduleB1QuestionFit();
 });
 if(window.visualViewport){
- window.visualViewport.addEventListener("resize",updateViewportHeight);
+ window.visualViewport.addEventListener("resize",()=>{updateViewportHeight();scheduleB1QuestionFit()});
  window.visualViewport.addEventListener("scroll",updateViewportHeight);
 }
 navigator.virtualKeyboard?.addEventListener?.("geometrychange",updateViewportHeight);
 window.addEventListener("orientationchange",()=>{
  b1FullScreenHeight=0;
- setTimeout(updateViewportHeight,150);
+ setTimeout(()=>{updateViewportHeight();scheduleB1QuestionFit()},150);
 });
+if(typeof ResizeObserver!=="undefined"){
+ const b1ResizeObserver=new ResizeObserver(()=>scheduleB1QuestionFit());
+ b1ResizeObserver.observe(document.querySelector(".writerPage .editor"));
+}
 updateViewportHeight();
 screen("welcome");
 fetch("./tasks.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw Error("HTTP "+r.status);return r.json()}).then(t=>{
