@@ -1245,8 +1245,8 @@ async function handleButton(action){
   if(app.screen==="introExam"){
    dmMicStatus("✓ Govor je sačuvan. Pritisnite „Napred na teme” kada završite.");
   }else if(app.screen==="speaking"){
-   dmMicStatus("Govor je sačuvan. Odgovor se proverava.");
-   checkCurrent(true)
+   dmMicStatus("✓ Govor je sačuvan. Ispod su Vaš odgovor i prevod; dalje prelazite ručno.");
+   checkCurrent(false)
   }
   return
  }
@@ -1399,6 +1399,14 @@ document.addEventListener("visibilitychange",()=>{
   const serial=++reviewSerial;
   if(!cached&&app.aiEndpoint)translateAI(kind,key,value,serial,basic);
  }
+ // Ako snimanje traje, sačuvaj kompletan govor pre prelaska na izbor tema.
+ document.getElementById("introForward").addEventListener("click",function(event){
+  if(DM_MIC.recognition||DM_MIC.media){
+   event.preventDefault();
+   event.stopImmediatePropagation();
+   dmMicStatus("Prvo pritisnite ■ Završi govor, zatim Nastavi na teme.");
+  }
+ },true);
  const earlierFillAnswer=fillAnswer;
  fillAnswer=function(){earlierFillAnswer();showAnswerReview()};
  const previousHandle=handleButton;
