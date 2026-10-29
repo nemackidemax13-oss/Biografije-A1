@@ -672,7 +672,7 @@ function dmChooseSpeak(){
  if(app.screen!=="choose")return;
  dmChooseStop(true);
  dmChooseDisplay();
- dmChooseMessage("🔊 Ispitivač izgovara pitanje na nemačkom...");
+ dmChooseMessage("🎙 Mikrofon se automatski uključuje.");
  if(!("speechSynthesis" in window)||!window.SpeechSynthesisUtterance){
   dmChooseMessage("Izgovorite nazive pet ponuđenih tema.");dmChooseStartMic(false);return;
  }
