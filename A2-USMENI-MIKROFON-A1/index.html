@@ -224,6 +224,45 @@ main{min-height:0;flex:1;display:flex;flex-direction:column;overflow:hidden;back
 #introExam>.actions,#introExam>.actions.topics-ready{grid-template-columns:1fr 1.65fr;gap:8px}
 #introExam>.actions .btn{font-size:12px;padding:8px 7px;min-height:42px}
 @media(max-width:360px){#introExam>.quick-controls .btn{font-size:9px}}
+
+/* DE-MAX: kompaktno A2 polje odgovora, prevod ispod i 4 navigaciona dugmeta. */
+#introExam>.scroll{display:flex;flex-direction:column;gap:6px;padding:10px 13px 6px}
+#introExam>.scroll .eyebrow,#introExam>.scroll h2,#introExam>.scroll .sub{margin:0;flex:none}
+#introExam>.scroll h2{font-size:clamp(17px,4.4vw,21px)}
+#introExam .examiner{flex:none;margin:3px 0;padding:11px 10px;border-radius:13px}
+#introExam .examiner .de{font-size:clamp(19px,5vw,24px);margin:6px 0}
+#introExam .answerbox,#speaking .answerbox{flex:none;min-height:0;display:flex;flex-direction:column;margin:0;padding:6px 9px;border-radius:12px;overflow:visible}
+#introExam .answerbox textarea,#speaking .answerbox textarea{
+  flex:none;display:block;width:100%;height:44px!important;min-height:44px!important;max-height:44px!important;
+  resize:none;overflow-y:auto;padding:4px 0 0;margin:0;font-size:13px;line-height:1.3;
+}
+.dm-answer-heading{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.dm-answer-heading .fieldlabel{font-size:9px;line-height:1.2}
+.dm-relisten{flex:none;cursor:pointer;border:1px solid #bfd4ee;background:#eff6ff;color:#184d8e;border-radius:7px;min-height:26px;padding:3px 9px;font-size:10px;font-weight:800}
+.dm-review{flex:none;border:1px solid #cddff4;background:#f7fbff;border-radius:12px;padding:9px 11px;min-height:0;overflow-y:auto;overflow-wrap:anywhere;white-space:normal}
+.dm-review[hidden]{display:none!important}
+.dm-review-label{color:#5b779a;font-size:9px;letter-spacing:.4px;font-weight:900}
+.dm-review-de{color:#17365e;font-weight:750;font-size:14px;line-height:1.45;white-space:pre-wrap;margin:3px 0 7px}
+.dm-review-translation-label{border-top:1px solid #e0eaf6;padding-top:7px}
+.dm-review-sr{color:#263e5a;font-size:13px;line-height:1.45;white-space:pre-wrap;margin:3px 0 0}
+#introExam .dm-review{max-height:min(29dvh,190px)}
+#speaking .dm-review{flex:1 1 auto;max-height:32dvh}
+#introExam .status,#speaking .status{flex:none;min-height:0;font-size:10px;line-height:1.25;padding:2px 1px 0}
+#introExam>.quick-controls,#speaking>.quick-controls{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;padding:6px 11px 5px}
+#introExam>.quick-controls .btn,#speaking>.quick-controls .btn{font-size:11px;min-height:39px;padding:7px 5px}
+#introExam>.actions,#introExam>.actions.topics-ready,#speaking>.actions{grid-template-columns:1fr 1.3fr;gap:7px}
+#introExam>.actions .btn,#speaking>.actions .btn{font-size:12px;min-height:41px}
+@media(max-height:620px){
+ #introExam>.scroll{gap:4px;padding-top:6px}
+ #introExam .examiner{padding:8px}
+ #introExam .examiner .de{font-size:18px}
+ #introExam .dm-review{max-height:24dvh}
+ #speaking .dm-review{max-height:24dvh}
+ #introExam>.quick-controls .btn,#speaking>.quick-controls .btn{min-height:34px}
+ #introExam>.actions .btn,#speaking>.actions .btn{min-height:36px}
+}
+@media(max-width:360px){.dm-review-de{font-size:13px}.dm-review-sr{font-size:12px}}
+
 </style>
 <script>
 // Minimalna provera A2 AI Workera; izbegava JS gresku pri ocenjivanju.
@@ -259,19 +298,18 @@ function validWorkerUrl(value){
     <p class="eyebrow">KORAK 1 · ZU BEGINN</p><h2>Predstavljanje kandidata</h2>
     <p class="sub" id="introIndex">Govorite polako na nemačkom, mikrofon će Vas saslušati.</p>
     <div class="examiner"><div class="role">PRÜFERIN / PRÜFER</div><div class="de" id="introDe"></div><div class="sr" id="introSr"></div><div class="state" id="introState"></div></div>
-    <div class="answerbox"><span class="fieldlabel">VAŠ ODGOVOR – MIKROFON ILI PISANJE</span><textarea id="introText" lang="de" placeholder="Vaš odgovor će se pojaviti ovde..."></textarea></div>
+    <div class="answerbox"><div class="dm-answer-heading"><span class="fieldlabel">VAŠ ODGOVOR · MIKROFON ILI PISANJE</span><button type="button" class="dm-relisten" data-act="listen">🎙 Govori</button></div><textarea id="introText" lang="de" placeholder="Ovde se prikazuje prepoznati govor; možete i pisati."></textarea></div><div id="introReview" class="dm-review" hidden aria-live="polite"><div class="dm-review-label">REKLI STE · NEMAČKI</div><div class="dm-review-de" id="introReviewDe"></div><div class="dm-review-label dm-review-translation-label">PREVOD · SRPSKI</div><div class="dm-review-sr" id="introReviewSr"></div></div>
     <div class="status" id="introStatus" aria-live="polite"></div>
     
     <div class="hint" id="introHint" hidden></div>
    </div>
    <div class="quick-controls">
- <button class="btn soft" data-act="listen">🎙 Govori</button>
- <button class="btn" data-act="repeat">🔊 Ponovi pitanje</button>
  <button class="btn red" data-act="stop">■ Završi govor</button>
+ <button class="btn" data-act="repeat">🔊 Ponovi pitanje</button>
 </div>
 <div class="actions" id="introActions">
  <button class="btn red" id="introBack">‹ Nazad</button>
- <button class="btn green" id="introForward">Napred na teme ›</button>
+ <button class="btn green" id="introForward">Nastavi na teme ›</button>
 </div>
   </section>
   <section id="choose" class="screen">
@@ -289,12 +327,12 @@ function validWorkerUrl(value){
     <p class="sub" id="speakSub"></p>
     <div class="rowTitle"><div class="circleNo" id="topicNo">1</div><div><div class="tiny" id="qType">TEMA · 2–3 REČENICE</div><div class="titleTopic" id="topicName"></div></div></div>
     <div class="examiner"><div class="role">ISPITIVAČ · PRÜFERIN / PRÜFER</div><div class="de" id="speakDe"></div><div class="sr" id="speakSr"></div><div class="state" id="speakState"></div></div>
-    <div class="answerbox"><span class="fieldlabel">VAŠ ODGOVOR · MIKROFON ILI PISANJE</span><textarea id="speakText" lang="de" placeholder="Vaš odgovor će se ovde pojaviti..."></textarea></div>
+    <div class="answerbox"><div class="dm-answer-heading"><span class="fieldlabel">VAŠ ODGOVOR · MIKROFON ILI PISANJE</span><button type="button" class="dm-relisten" data-act="listen">🎙 Govori</button></div><textarea id="speakText" lang="de" placeholder="Ovde se prikazuje prepoznati govor; možete i pisati."></textarea></div><div id="speakReview" class="dm-review" hidden aria-live="polite"><div class="dm-review-label">REKLI STE · NEMAČKI</div><div class="dm-review-de" id="speakReviewDe"></div><div class="dm-review-label dm-review-translation-label">PREVOD · SRPSKI</div><div class="dm-review-sr" id="speakReviewSr"></div></div>
     <div class="status" id="speakStatus" aria-live="polite"></div>
     
     <div class="hint" id="speakHint" hidden></div>
    </div>
-   <div class="quick-controls"><button class="btn soft" data-act="listen">🎙 Govori</button><button class="btn" data-act="repeat">🔊 Ponovi pitanje</button><button class="btn red" data-act="stop">■ Završi govor</button><button class="btn" data-act="example">💡 Primer / provera</button></div><div class="actions"><button class="btn red" id="speakBack">‹ Nazad</button><button class="btn green" id="speakNext">Dalje · pitanja ›</button></div>
+   <div class="quick-controls"><button class="btn red" data-act="stop">■ Završi govor</button><button class="btn" data-act="repeat">🔊 Ponovi pitanje</button></div><div class="actions"><button class="btn red" id="speakBack">‹ Nazad</button><button class="btn green" id="speakNext">Dalje · pitanja ›</button></div>
   </section>
   <section id="results" class="screen">
    <div class="scroll"><p class="eyebrow">SIMULACIJA ZAVRŠENA</p><h2>Bravo! Završili ste ÖSD A2 simulaciju</h2>
@@ -582,12 +620,12 @@ async function evaluateAnswer(key,q,answer,topic,section){
   if(app.aiEndpoint&&answer){
    try{
     const r=await requestWorker({type:"evaluate",section,topic,question:q,answer,maxScore:1,
-     instructions:"Proceni odgovor na nivou nemačkog A2: razumevanje pitanja, gramatiku i potpunost. Vrati JSON {score:0..1,feedback,corrected,suggestedAnswer}. Ne pogađaj pol kandidata."});
+     instructions:"Proceni odgovor na nivou nemačkog A2: razumevanje pitanja, gramatiku i potpunost. Vrati JSON {score:0..1,feedback,corrected,suggestedAnswer,translationSr}. translationSr mora biti veran prevod baš učenikovog nemačkog odgovora na srpski (latinica), bez izmišljanja. Ne pogađaj pol kandidata."});
     if(typeof r.score!=="number"||!Number.isFinite(r.score))throw Error("Worker nije vratio score");
     out={answer,score:Math.max(0,Math.min(1,Math.round(r.score*2)/2)),
      feedback:String(r.feedback||"AI provera je završena.").slice(0,700),
      corrected:String(r.corrected||"").slice(0,500),
-     suggestedAnswer:String(r.suggestedAnswer||"").slice(0,500),kind:"ai"}
+     suggestedAnswer:String(r.suggestedAnswer||"").slice(0,500),translationSr:String(r.translationSr||r.translation_sr||r.translation||"").slice(0,1600),kind:"ai"}
    }catch(e){out.feedback="AI trenutno nije dostupan: "+String(e.message).slice(0,90)+". "+out.feedback}
   }
   if(clean(app.responses[key])===answer)app.evaluations[key]=out;
@@ -1251,6 +1289,132 @@ for(const id of ["speakNext"]){
 document.addEventListener("visibilitychange",()=>{
  if(document.visibilityState==="hidden"){dmInvalidate();dmReleaseStream()}
 });
+
+</script>
+<script>
+
+/* Pregled stvarno izgovorenog odgovora, prevod, i ručno kretanje dalje. */
+(function(){
+ const dmReviewCache=new Map();
+ let reviewSerial=0;
+ const strip=s=>String(s||"").trim().replace(/\s+/g," ");
+ const normalize=s=>strip(s).toLocaleLowerCase("de").replace(/[.!?]+$/,"");
+ function knownAnswer(de){
+  const k=normalize(de);
+  const groups=[...TOPICS,...A2_QUESTION_BANK];
+  for(const group of groups){
+   for(const it of (group.items||[])){
+    if(it.a&&it.at&&normalize(it.a)===k)return it.at;
+    if(Array.isArray(it.alt)&&it.alt.length>1&&normalize(it.alt[0])===k)return it.alt[1];
+   }
+  }
+  return "";
+ }
+ function localTranslation(de){
+  const direct=knownAnswer(de);
+  if(direct)return {text:direct,complete:true};
+  const mapping={
+   "Serbien":"Srbije","Deutschland":"Nemačke","Österreich":"Austrije",
+   "Bosnien":"Bosne","Montenegro":"Crne Gore","Kosovo":"Kosova",
+   "Albanien":"Albanije","Schweiz":"Švajcarske"
+  };
+  const place=v=>mapping[v]||v;
+  const count=v=>({"ein":"jedno","eine":"jedno","zwei":"dvoje","drei":"troje","vier":"četvoro","fünf":"petoro"})[v.toLowerCase()]||v;
+  const result=[],missing=[];
+  const raw=strip(de).replace(/,\s*(?=(?:und\s+)?(?:ich|mein|meine)\b)/gi,". ");
+  const sentences=raw.split(/[.!?]+(?:\s+|$)/).map(x=>x.trim()).filter(Boolean);
+  for(let s of sentences){
+   s=s.replace(/^und\s+/i,"").trim();
+   let m,translated="";
+   if((m=/^ich heiße\s+(.+)$/i.exec(s)))translated="Zovem se "+m[1]+".";
+   else if((m=/^mein name ist\s+(.+)$/i.exec(s)))translated="Moje ime je "+m[1]+".";
+   else if((m=/^ich bin\s+(\d+)\s+jahre alt$/i.exec(s)))translated="Imam "+m[1]+" godina.";
+   else if((m=/^(?:ich\s+)?bin\s+(\d+)\s+jahre alt$/i.exec(s)))translated="Imam "+m[1]+" godina.";
+   else if((m=/^ich komme aus\s+(.+)$/i.exec(s)))translated="Dolazim iz "+place(m[1])+".";
+   else if((m=/^ich (?:wohne|lebe) in\s+(.+)$/i.exec(s)))translated="Živim u "+m[1]+".";
+   else if((m=/^ich bin in\s+(.+)\s+geboren$/i.exec(s)))translated="Rođen(a) sam u "+m[1]+".";
+   else if(/^ich lerne deutsch$/i.test(s))translated="Učim nemački jezik.";
+   else if((m=/^ich spreche\s+(.+)$/i.exec(s)))translated="Govorim "+m[1]+".";
+   else if(/^ich bin verheiratet$/i.test(s))translated="U braku sam.";
+   else if(/^ich bin ledig$/i.test(s))translated="Nisam u braku.";
+   else if(/^ich habe keine kinder$/i.test(s))translated="Nemam dece.";
+   else if((m=/^ich habe\s+(ein|eine|zwei|drei|vier|fünf|\d+)\s+kinder?$/i.exec(s)))translated="Imam "+count(m[1])+" dece.";
+   else if((m=/^ich arbeite als\s+(.+)$/i.exec(s)))translated="Radim kao "+m[1]+".";
+   else if((m=/^ich bin\s+(schüler|schülerin|student|studentin)$/i.exec(s)))translated="Učenik/student sam.";
+   else if((m=/^meine hobbys sind\s+(.+)$/i.exec(s)))translated="Moji hobiji su "+m[1]+".";
+   else if((m=/^ich spiele\s+(.+)$/i.exec(s)))translated="Igram "+m[1]+".";
+   else if(/^ich mache gern sport$/i.test(s))translated="Rado se bavim sportom.";
+   else if(/^ja, gern$/i.test(s))translated="Da, rado.";
+   else if(/^danke$/i.test(s))translated="Hvala.";
+   if(translated)result.push(translated);else missing.push(s);
+  }
+  return {text:result.join(" "),complete:missing.length===0&&result.length>0};
+ }
+ function currentKind(){return app.screen==="introExam"?"intro":app.screen==="speaking"?"speak":null}
+ function outputReady(kind,key,value,sr){
+  if(currentKind()!==kind||respondKey()!==key||strip(textarea().value)!==value)return false;
+  const label=document.getElementById(kind+"ReviewSr");
+  if(label)label.textContent=sr;
+  return true;
+ }
+ async function translateAI(kind,key,value,serial,fallback){
+  if(!app.aiEndpoint)return;
+  try {
+   const p=getPrompt(),section=kind==="intro"?"intro":app.question===-1?"topic":"question";
+   const topic=kind==="intro"?"Predstavljanje":TOPICS[app.chosen[app.topic]].title;
+   const e=await evaluateAnswer(key,p.q,value,topic,section);
+   if(serial!==reviewSerial)return;
+   let sr=strip(e.translationSr||"");
+   if(!sr){
+    try{
+     const r=await requestWorker({type:"translate",text:value,sourceLanguage:"de",targetLanguage:"sr",
+      instructions:"Prevedi isključivo učenikov nemački odgovor na srpski latinicom. Vrati JSON sa translationSr, bez objašnjenja."});
+     sr=strip(r.translationSr||r.translatedText||r.translation||"");
+    }catch(err){}
+   }
+   if(serial===reviewSerial&&sr&&normalize(sr)!==normalize(value)){
+    dmReviewCache.set(value,sr);
+    outputReady(kind,key,value,sr);
+   }else if(serial===reviewSerial&&(!fallback.text||!fallback.complete)){
+    outputReady(kind,key,value,fallback.text?fallback.text+"\n(Ostatak odgovora nije moguće pouzdano automatski prevesti.)":"Za ovaj odgovor prevod trenutno nije dostupan.");
+   }
+  }catch(err){
+   if(serial===reviewSerial&&(!fallback.text||!fallback.complete))
+    outputReady(kind,key,value,fallback.text?fallback.text+"\n(Delimičan prevod – AI trenutno nije dostupan.)":"Prevod nije dostupan. Proverite vezu sa A2 AI Worker-om.");
+  }
+ }
+ function showAnswerReview(){
+  const kind=currentKind();if(!kind)return;
+  const key=respondKey(),value=strip(textarea().value);
+  const block=document.getElementById(kind+"Review");
+  if(!block)return;
+  if(!value){block.hidden=true;return}
+  block.hidden=false;
+  document.getElementById(kind+"ReviewDe").textContent=value;
+  const cached=dmReviewCache.get(value);
+  const basic=localTranslation(value);
+  const sr=cached||basic.text+(basic.text&&!basic.complete?"\n(Delimičan prevod.)":"")||
+   (app.aiEndpoint?"Prevod se priprema…":"Za ceo prevod potreban je dostupan A2 AI Worker.");
+  document.getElementById(kind+"ReviewSr").textContent=sr;
+  const serial=++reviewSerial;
+  if(!cached&&app.aiEndpoint)translateAI(kind,key,value,serial,basic);
+ }
+ const earlierFillAnswer=fillAnswer;
+ fillAnswer=function(){earlierFillAnswer();showAnswerReview()};
+ const previousHandle=handleButton;
+ handleButton=async function(action){
+  await previousHandle(action);
+  if(action==="stop")showAnswerReview();
+ };
+ for(const id of ["introText","speakText"]){
+  const el=document.getElementById(id);
+  let typingTimer=null;
+  el.addEventListener("input",()=>{
+   clearTimeout(typingTimer);
+   typingTimer=setTimeout(showAnswerReview,420);
+  });
+ }
+})();
 
 </script>
 <script>
