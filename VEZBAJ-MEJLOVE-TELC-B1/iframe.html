@@ -104,6 +104,18 @@ textarea:focus{border-color:#2e6ebc;box-shadow:0 0 0 3px #2f70be18}
    <p><b>Bodovanje:</b> I. Berücksichtigung der Leitpunkte (0/1/3/5), II. Kommunikative Gestaltung (0/1/3/5), III. Formale Richtigkeit (0/1/3/5). Zbir × 3 = <b>maksimalno 45 bodova</b>. Ne postoji poseban prag prolaza samo za ovaj zadatak.</p>
    <p>Odgovori se automatski čuvaju <b>lokalno u ovom pregledaču</b>. Nema Google Drive povezivanja. Za AI analizu tekst se šalje zasebnom De-Max Cloudflare Worker-u, kada bude objavljen.</p>
   </div>
+  <details id="b1Setup" style="margin:12px 0;padding:12px;background:#f1f7ff;border:1px solid #bed1ec;border-radius:12px">
+   <summary style="font-size:13px;font-weight:900;color:#194d93;cursor:pointer">⚙ B1 AI povezivanje – izaberi svoj Cloudflare Worker</summary>
+   <p style="font-size:12px;line-height:1.5">Ako se tvoj Worker ne zove <b>b1mejlovi</b>, ovde upiši stvarnu adresu sa Cloudflare-a. API ključ se ovde ne unosi.</p>
+   <label for="b1URL" style="font-size:12px;font-weight:bold">B1 Worker HTTPS adresa</label>
+   <input id="b1URL" type="url" autocomplete="off" spellcheck="false" style="display:block;width:100%;padding:11px;font-size:13px;margin:7px 0;border:1px solid #acc6e7;border-radius:9px" placeholder="https://tvoj-worker.nemackidemax13.workers.dev">
+   <div style="display:flex;flex-wrap:wrap;gap:8px">
+    <button id="b1SaveURL" type="button" style="padding:10px;border:0;border-radius:8px;background:#10854e;color:#fff;font-weight:900">Sačuvaj</button>
+    <button id="b1TestURL" type="button" style="padding:10px;border:0;border-radius:8px;background:#1858af;color:#fff;font-weight:900">Proveri vezu</button>
+   </div>
+   <div id="b1ConnectionResult" style="font-size:12px;margin:10px 0;white-space:pre-wrap" aria-live="polite"></div>
+   <a id="b1StatusLink" href="https://b1mejlovi.nemackidemax13.workers.dev/api/status" target="_blank" rel="noopener noreferrer">Otvori /api/status direktno</a>
+  </details>
   <div class="groupTitle" id="chooseMail"><span>IZABERI MEJL I ZAPOČNI PISANJE</span><span id="overview">0 / 20 napisano</span></div>
   <div id="tiles" class="tiles"></div>
 </section>
@@ -133,7 +145,17 @@ vielen Dank für deine Nachricht. ..."></textarea>
 </div>
 <script>
 "use strict";
-const API="https://b1mejlovi.nemackidemax13.workers.dev/api/check-b1-email";
+const B1_API_DEFAULT="https://b1mejlovi.nemackidemax13.workers.dev/api/check-b1-email";
+const B1_WORKER_URL_KEY="demax_b1_worker_endpoint_v2";
+function b1Normalize(raw){
+ try{
+  const u=new URL(String(raw||"").trim());
+  if(u.protocol!=="https:"||u.username||u.password||!u.hostname.endsWith(".workers.dev"))return "";
+  return u.origin+"/api/check-b1-email";
+ }catch(e){return ""}
+}
+let API=B1_API_DEFAULT;
+try{API=b1Normalize(localStorage.getItem(B1_WORKER_URL_KEY))||B1_API_DEFAULT}catch(e){}
 const STORAGE="demax_telc_b1_mail_v1";
 let mails=[],current=-1,timer=1800,ticker=null,startedAt=0;
 let state={drafts:{},last:{}};
@@ -141,6 +163,29 @@ try{const found=JSON.parse(localStorage.getItem(STORAGE)||"null");if(found&&type
 const $=id=>document.getElementById(id);
 const countWords=v=>(String(v).match(/[\p{L}\p{N}]+(?:[-’'][\p{L}\p{N}]+)*/gu)||[]).length;
 function save(){try{localStorage.setItem(STORAGE,JSON.stringify(state))}catch(e){$("status").textContent="Lokalno čuvanje nije dostupno."}}
+function b1StatusURL(){return new URL("/api/status",API).href}
+function b1Message(message,success=false){const el=$("b1ConnectionResult");el.textContent=message;el.style.color=success?"#087443":"#9b2d43"}
+function b1Sync(){$("b1URL").value=new URL(API).origin;$("b1StatusLink").href=b1StatusURL()}
+function b1Save(){
+ const selected=b1Normalize($("b1URL").value);
+ if(!selected){b1Message("Upiši ispravan HTTPS workers.dev link za B1, bez API ključa.");return false}
+ API=selected;try{localStorage.setItem(B1_WORKER_URL_KEY,API)}catch(e){}
+ b1Sync();b1Message("✓ Adresa je sačuvana. Klikni Proveri vezu.",true);return true;
+}
+async function b1Test(){
+ if(!b1Save())return;
+ const btn=$("b1TestURL");btn.disabled=true;b1Message("Proveravam /api/status...");
+ const ctl=new AbortController(),timeout=setTimeout(()=>ctl.abort(),10000);
+ try{
+  const r=await fetch(b1StatusURL(),{cache:"no-store",signal:ctl.signal});
+  let data={};try{data=await r.json()}catch(e){}
+  if(!r.ok)throw Error("HTTP "+r.status);
+  if(data.service!=="DE-MAX TELC B1"||!data.online)throw Error("Worker radi, ali nije objavljen pravi TELC B1 kod.");
+  if(!data.configured){b1Message("Worker radi, ali OPENAI_API_KEY nije dodat kao Secret na ovom B1 Workeru.");return}
+  b1Message("✓ B1 Worker radi i OpenAI ključ je podešen. Sada proveri mejl.",true);
+ }catch(e){b1Message("Nije moguće povezivanje: "+(e.name==="AbortError"?"isteklo vreme":e.message)+". Proveri direktan /api/status link i CORS dozvole.")}
+ finally{clearTimeout(timeout);btn.disabled=false}
+}
 function node(tag,text,cls){const e=document.createElement(tag);if(text!==undefined)e.textContent=text;if(cls)e.className=cls;return e}
 function overview(){
  $("overview").textContent=Object.values(state.drafts).filter(x=>countWords(x)>=1).length+" / "+mails.length+" započeto";
@@ -210,7 +255,7 @@ async function grade(){
   $("status").textContent="AI provera završena. Rezultat je informativan i može odstupati od zvanične ocene.";
  }catch(e){
   if(index!==current)return;
-  $("results").classList.remove("hidden");$("results").replaceChildren(node("div","AI provera nije dostupna: "+(e.name==="AbortError"?"server nije odgovorio na vreme":e.message)+". Potrebno je objaviti zasebni B1 Cloudflare Worker sa OPENAI_API_KEY; A2 Worker se ne menja.","err"));
+  $("results").classList.remove("hidden");$("results").replaceChildren(node("div","AI provera nije dostupna: "+(e.name==="AbortError"?"server nije odgovorio na vreme":e.message)+". Otvori MEJLOVI → ⚙ B1 AI povezivanje → Proveri vezu. Proveri pravu B1 adresu i CORS; A2 Worker se ne menja.","err"));
   $("status").textContent="Tekst je ostao sačuvan lokalno. Pokušaj ponovo nakon povezivanja B1 Worker-a.";
  }finally{clearTimeout(timeout);b.textContent="✓ AI proveri mejl";b.disabled=countWords($("draft").value)===0}
 }
@@ -225,6 +270,8 @@ $("prevBtn").onclick=()=>{if(current>0)openMail(current-1)};
 $("nextBtn").onclick=()=>{if(current>=0&&current<mails.length-1)openMail(current+1)};
 $("draft").addEventListener("input",()=>{if(current<0)return;state.drafts[current]=$("draft").value;save();updateCount();$("results").classList.add("hidden")});
 $("resetClock").onclick=startTimer;$("gradeBtn").onclick=grade;$("exportBtn").onclick=exportDraft;
+$("b1SaveURL").onclick=b1Save;$("b1TestURL").onclick=b1Test;b1Sync();
+if(new URLSearchParams(location.search).has("b1setup"))$("b1Setup").open=true;
 fetch("./tasks.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw Error("HTTP "+r.status);return r.json()}).then(t=>{
  if(!Array.isArray(t)||t.length!==20||t.some(m=>!Array.isArray(m.questions)||m.questions.length!==4))throw Error("Baza nije potpuna");
  mails=t;
