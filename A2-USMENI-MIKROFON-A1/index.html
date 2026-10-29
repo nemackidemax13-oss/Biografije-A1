@@ -1038,12 +1038,12 @@ function dmSpeechRecognize(){
   dmMarkLive(false);
   const result=clean(app.responses[key]||"");
   try{localStorage.setItem("demax_a2_simulacija_odgovori",JSON.stringify(app.responses))}catch(e){}
-  if(DM_MIC.wantListening&&(!reason||reason==="no-speech")&&DM_MIC.autoRetries<2&&dmTrackLive()){
+  if(DM_MIC.wantListening&&(!reason||reason==="no-speech")&&DM_MIC.autoRetries<2&&(dmTrackLive()||dmUseNativeSpeechFirst())){
    DM_MIC.autoRetries++;
    dmMicStatus("🎙 Nastavljam automatsko slušanje. Govorite pa pritisnite Završi govor.");
    setTimeout(()=>{
     if(serial!==DM_MIC.serial||respondKey()!==key||!DM_MIC.wantListening||DM_MIC.recognition||DM_MIC.media)return;
-    if(dmTrackLive()&&!dmSpeechRecognize())dmMicStatus("Dodirnite 🎙 Govori za nastavak.");
+    if((dmTrackLive()||dmUseNativeSpeechFirst())&&!dmSpeechRecognize())dmMicStatus("Dodirnite 🎙 Govori za nastavak.");
    },250);
    return;
   }
@@ -1126,36 +1126,51 @@ async function dmRecordFallback(auto){
  dmMicStatus("🔴 Snimam nemački. Govorite bez vremenskog ograničenja, zatim pritisnite ■ Završi govor.");
  return true
 }
-async function startMic(fromTap=false){
- if(app.screen!=="introExam"&&app.screen!=="speaking")return;
- const currentKey=respondKey(),serial=DM_MIC.serial;
- if(DM_MIC.recognition||DM_MIC.media){dmMicStatus("Mikrofon već sluša. Završite govor kada budete spremni.");return}
- const ready=await dmPermit(fromTap);
- if(!ready){
-  // Ako uredjaj nema getUserMedia (neki WebView-ovi), pokusaj
-  // nativno prepoznavanje kao A1. Zabranjene dozvole se ne zaobilaze.
-  const SRFallback=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(SRFallback&&DM_MIC.lastError!=="NotAllowedError"&&DM_MIC.lastError!=="PermissionDeniedError"&&DM_MIC.lastError!=="SecurityError"&&dmSpeechRecognize())return;
-  if(!fromTap&&DM_MIC.lastError!=="NotAllowedError"&&DM_MIC.lastError!=="PermissionDeniedError")dmMicStatus("🎙 Za prvi pristup mikrofonu dodirnite Govori. Ako je mikrofon blokiran, dozvolite ga u podesavanjima De-Max aplikacije.");
-  return;
- }
- if(serial!==DM_MIC.serial||respondKey()!==currentKey)return;
+// Koristi isti Web Speech Recognition postupak kao radni A1 u Chrome/Edge.
+// Ne zavisi od prethodnog getUserMedia dozvoljavanja za nativni SR.
+// Ako SR nije podrzan, pokusava bezbedan MediaRecorder fallback uz dozvolu.
+function dmUseNativeSpeechFirst(){
  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
  const isApple=/iPhone|iPad|iPod/i.test(navigator.userAgent||"")||
   (/Macintosh/i.test(navigator.userAgent||"")&&navigator.maxTouchPoints>1);
- // Safari/iPhone: snimanje preko Workera, gde SpeechRecognition može da bude nestabilan.
+ return !!SR&&!isApple;
+}
+async function startMic(fromTap=false){
+ if(app.screen!=="introExam"&&app.screen!=="speaking")return;
+ const key=respondKey(),serial=DM_MIC.serial;
+ if(DM_MIC.recognition||DM_MIC.media){
+  dmMicStatus("🎙 Mikrofon je vec ukljucen. Kada zavrsite, pritisnite Zavrsi govor.");
+  return;
+ }
+ // Ovo je najbitnija razlika: A1 odmah aktivira Web Speech Recognition.
+ // A2 ranije trazi getUserMedia pre nego sto dozvoli r.start(), sto
+ // unutar zasebnog Replit iframe-a moze da bude odbijeno.
+ if(dmUseNativeSpeechFirst()&&dmSpeechRecognize())return;
+ // iPhone i uredjaji bez nativnog Web Speech API-ja koriste stari fallback.
+ const permitted=await dmPermit(fromTap);
+ if(serial!==DM_MIC.serial||respondKey()!==key)return;
+ if(!permitted){
+  // Neki WebView-i omogucavaju SpeechRecognition cak i kada
+  // getUserMedia nije dostupan; bez zaobilazenja korisnicke dozvole.
+  if(!dmUseNativeSpeechFirst()&&(window.SpeechRecognition||window.webkitSpeechRecognition)&&
+     !["NotAllowedError","PermissionDeniedError","SecurityError"].includes(DM_MIC.lastError)&&
+     dmSpeechRecognize())return;
+  if(!DM_MIC.lastError||DM_MIC.lastError==="permission"){
+   dmMicStatus("🎙 Mikrofon nije pokrenut. Dozvolite mikrofon na De-Max stranici ili dodirnite Govori.",true);
+  }
+  return;
+ }
+ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+ const isApple=/iPhone|iPad|iPod/i.test(navigator.userAgent||"")||
+  (/Macintosh/i.test(navigator.userAgent||"")&&navigator.maxTouchPoints>1);
  if(isApple&&window.MediaRecorder){
-  // Na iPhone-u dajemo prednost snimanju samo ako je A1 Worker zaista dostupan.
   const route=await dmProbeAudio();
-  if(serial!==DM_MIC.serial||respondKey()!==currentKey)return;
-  if(route)return dmRecordFallback(false)
+  if(serial!==DM_MIC.serial||respondKey()!==key)return;
+  if(route)return dmRecordFallback(false);
  }
  if(SR&&dmSpeechRecognize())return;
- if(window.MediaRecorder){
-  if(!DM_MIC.audioReady)dmMicStatus("Nema pouzdane veze za automatsku transkripciju. Možete snimiti govor, ali će možda biti potrebno da odgovor napišete.");
-  return dmRecordFallback(false)
- }
- dmMicStatus("Ovaj pregledač ne podržava prepoznavanje nemačkog. Odgovor možete napisati.",true)
+ if(window.MediaRecorder)return dmRecordFallback(false);
+ dmMicStatus("Ovaj pregledac ne podrzava prepoznavanje nemackog govora. Napisite odgovor.",true);
 }
 async function dmFinishAudio(){
  DM_MIC.wantListening=false;
@@ -1207,13 +1222,13 @@ for(const id of ["begin","introBack","chooseBack","chooseNext","speakNext","spea
  $(id).addEventListener("click",()=>{
   if(id==="introBack"&&app.intro===0)return;
   if(id==="speakNext"&&app.question===1&&app.topic===app.chosen.length-1)return;
-  if(!DM_MIC.allowed&&!DM_MIC.pending)dmPermit(true);
+  if(!dmUseNativeSpeechFirst()&&!DM_MIC.allowed&&!DM_MIC.pending)dmPermit(true);
   if(id==="begin")dmProbeAudio();
  },true);
 }
 for(const btn of document.querySelectorAll('[data-act="repeat"]')){
  btn.addEventListener("click",()=>{
-  if(!DM_MIC.allowed&&!DM_MIC.pending)dmPermit(true);
+  if(!dmUseNativeSpeechFirst()&&!DM_MIC.allowed&&!DM_MIC.pending)dmPermit(true);
  },true);
 }
 const oldRestartA2=$("restart").onclick;
@@ -1249,7 +1264,7 @@ document.addEventListener("visibilitychange",()=>{
     if(app.screen==="intro"){
      // Zahtev za mikrofon pre izgovora, kao u A1 usmenom.
      // Kada je dozvola vec zapamcena, dalji govor se ukljucuje sam.
-     dmPermit(false);
+     if(!dmUseNativeSpeechFirst())dmPermit(false);
      app.intro=0;
      app.responses={};
      makeOffer();
