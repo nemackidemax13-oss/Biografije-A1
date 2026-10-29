@@ -524,7 +524,7 @@ function makeOffer(){
 
 /* DE-MAX A2: ispitivač izgovara pitanje, kandidat glasom potvrđuje izbor. */
 const DM_CHOOSE={accepted:false,heard:"",rec:null,media:null,stream:null,
-  serial:0,playing:false,uploading:false,autoRetries:0,listening:false,recordTimer:null};
+  serial:0,playing:false,uploading:false,autoRetries:0,listening:false,recordTimer:null,pending:null};
 function dmChooseMessage(value){const el=document.getElementById("dmChooseStatus");if(el)el.textContent=value}
 function dmChooseDisplay(){
  const active=app.screen==="choose",box=document.getElementById("choose");
@@ -586,7 +586,7 @@ function dmChooseHeard(value){
  }
 }
 
-function dmChooseStop(discard=false){
+function dmChooseStop(discard=false,keepStream=false){
  DM_CHOOSE.listening=false;
  if(DM_CHOOSE.recordTimer){clearTimeout(DM_CHOOSE.recordTimer);DM_CHOOSE.recordTimer=null}
  DM_CHOOSE.serial++;
@@ -594,7 +594,7 @@ function dmChooseStop(discard=false){
  if(rec){rec.onresult=rec.onerror=rec.onend=null;try{discard?rec.abort():rec.stop()}catch(e){}}
  const m=DM_CHOOSE.media;DM_CHOOSE.media=null;
  if(m){if(discard)m.onstop=null;try{if(m.state!=="inactive")m.stop()}catch(e){}}
- if(DM_CHOOSE.stream){try{DM_CHOOSE.stream.getTracks().forEach(t=>t.stop())}catch(e){}DM_CHOOSE.stream=null}
+ if(!keepStream&&DM_CHOOSE.stream){try{DM_CHOOSE.stream.getTracks().forEach(t=>t.stop())}catch(e){}DM_CHOOSE.stream=null}
  DM_CHOOSE.uploading=false;
  dmChooseDisplay();
 }
@@ -644,10 +644,16 @@ async function dmChooseRecordFallback(){
   document.getElementById("dmChooseManual").hidden=false;return;
  }
  const serial=DM_CHOOSE.serial;
- let stream;
- try{stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}})}
- catch(e){if(serial!==DM_CHOOSE.serial)return;dmChooseMessage("Dozvolite mikrofon da biste izgovorili odgovor.");document.getElementById("dmChooseManual").hidden=false;return}
- if(serial!==DM_CHOOSE.serial||app.screen!=="choose"){stream.getTracks().forEach(t=>t.stop());return}
+ let stream=DM_CHOOSE.stream;
+ if(!stream&&DM_CHOOSE.pending){try{stream=await DM_CHOOSE.pending}catch(e){}}
+ if(!stream){
+  try{stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}})}
+  catch(e){if(serial!==DM_CHOOSE.serial)return;dmChooseMessage("Dozvolite mikrofon ili izaberite automatski.");return}
+ }
+ if(serial!==DM_CHOOSE.serial||app.screen!=="choose"){
+  if(stream&&stream!==DM_CHOOSE.stream)stream.getTracks().forEach(t=>t.stop());
+  return
+ }
  DM_CHOOSE.stream=stream;
  let mime="";
  try{mime=["audio/webm;codecs=opus","audio/mp4","audio/webm"].find(x=>MediaRecorder.isTypeSupported(x))||""}catch(e){}
@@ -690,9 +696,24 @@ function dmChooseStartMic(fromTap=false){
   dmChooseRecordFallback();
  }
 }
+// Na iPhone/iPad-u dozvola se inicira iz stvarnog korisničkog dodira
+// na "Nastavi na teme", ne iz kasnijeg asinhronog TTS događaja.
+document.getElementById("introForward").addEventListener("click",()=>{
+ const ios=/iPhone|iPad|iPod/i.test(navigator.userAgent||"");
+ if(!ios||!navigator.mediaDevices?.getUserMedia||DM_CHOOSE.stream||DM_CHOOSE.pending)return;
+ DM_CHOOSE.pending=navigator.mediaDevices.getUserMedia({
+  audio:{echoCancellation:true,noiseSuppression:true}
+ }).then(stream=>{
+  if(app.screen!=="introExam"&&app.screen!=="choose"){
+   stream.getTracks().forEach(t=>t.stop());return null;
+  }
+  DM_CHOOSE.stream=stream;
+  return stream;
+ }).catch(()=>null).finally(()=>{DM_CHOOSE.pending=null});
+},true);
 function dmChooseSpeak(){
  if(app.screen!=="choose")return;
- dmChooseStop(true);
+ dmChooseStop(true,true);
  dmChooseDisplay();
  dmChooseMessage("");
  if(!("speechSynthesis" in window)||!window.SpeechSynthesisUtterance){
