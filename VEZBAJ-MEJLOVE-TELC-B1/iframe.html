@@ -270,6 +270,50 @@ body.writing.keyboardOpen .writerPage textarea{flex:1;min-height:35px}
  body.writing.keyboardOpen .writingPoints li .sr{font-size:9.6px}
 }
 
+
+/* Čitljiva postavka i urednik mejla iznad mobilne tastature */
+.topRight .tag{font-size:10px;letter-spacing:.25px}
+.topRight .homeNav{font-size:10px;padding:5px 10px}
+.mailList h2{font-size:18px;line-height:1.25;margin:6px 1px 6px}
+.taskPaper .letterBody{
+ text-align:justify;text-align-last:left;hyphens:auto;
+ font-size:14px;line-height:1.37;white-space:pre-line;
+ overflow-wrap:break-word;padding:8px 10px;
+}
+.taskPaper .letter{margin:0;width:100%}
+.taskPaper{width:100%;max-width:850px}
+.taskPage{padding-inline:6px}
+.taskPaper .situation{text-align:left;font-size:11.8px;padding-inline:8px}
+.taskHeading{font-size:14px}
+body.writing.keyboardOpen{overflow:hidden}
+body.writing.keyboardOpen .app{height:var(--app-height,100dvh);min-height:0;overflow:hidden}
+body.writing.keyboardOpen header{display:none!important}
+body.writing.keyboardOpen .writerPage{height:100%;min-height:0;overflow:hidden;display:flex;flex-direction:column}
+body.writing.keyboardOpen .writingPoints{
+ flex:0 1 auto;max-height:min(45%,190px);
+ min-height:0;overflow-y:auto;overscroll-behavior:contain;
+}
+body.writing.keyboardOpen .writerPage .editor{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
+body.writing.keyboardOpen .writerPage textarea{
+ flex:1 1 auto;min-height:40px;overflow:auto;resize:none;
+}
+body.writing.keyboardOpen .writerPage .actions{display:flex!important;flex:none;z-index:2}
+body.writing.keyboardOpen .writerPage .grade{display:block!important;width:100%;min-height:38px;flex:none;font-size:13px}
+body.writing.keyboardOpen .writerPage .results{max-height:35%}
+@media(max-width:700px){
+ .topRight .tag{font-size:10px}
+ .topRight .homeNav{font-size:10px;padding:4px 10px}
+ .mailList{padding:9px 10px 22px}
+ .mailList h2{font-size:17px;margin:4px 1px 6px}
+ .taskPaper .letterBody{font-size:14px;line-height:1.37;padding:8px 10px}
+ .taskPaper .situation{font-size:11.8px;line-height:1.3}
+ body.writing.keyboardOpen .writingPoints h3{font-size:10px;margin-bottom:3px}
+ body.writing.keyboardOpen .writingPoints li{font-size:11px;line-height:1.14}
+ body.writing.keyboardOpen .writingPoints li .sr{font-size:10px;line-height:1.13}
+ body.writing.keyboardOpen .writerPage .editHead{flex:none}
+ body.writing.keyboardOpen .writerPage .grade{font-size:12px;padding:8px 9px}
+}
+
 </style>
 </head>
 <body class="intro">
@@ -278,8 +322,8 @@ body.writing.keyboardOpen .writerPage textarea{flex:1;min-height:35px}
   <div class="bar">
    
    <div class="topRight">
-    <span class="tag">TELC B1 · SCHREIBEN</span>
-    <button type="button" id="homeBtn" class="homeNav" title="Lista svih mejlova">MEJLOVI <span aria-hidden="true">❯</span></button>
+    <span class="tag">TELC B1</span>
+    <button type="button" id="homeBtn" class="homeNav" title="Izaberite mejl">MEJLOVI</button>
    </div>
   </div>
   <div class="controls hidden" id="navBar">
@@ -306,7 +350,7 @@ body.writing.keyboardOpen .writerPage textarea{flex:1;min-height:35px}
   <button type="button" id="openList" class="nextStep"><span>MEJLOVI</span><span class="arrow" aria-hidden="true">➜</span></button>
 </section>
 <section id="mailList" class="mailList hidden">
-  <h2>✉ IZABERI MEJL</h2>
+  <h2>IZABERITE MEJL</h2>
   <p>Izaberi jednu od 20 TELC B1 tema. Najpre pročitaj postavku, zatim pritisni <b>PIŠI MEJL</b>.</p>
   <div class="groupTitle"><span>LISTA MEJLOVA</span><span id="overview">0 / 20 započeto</span></div>
   <div id="tiles" class="tiles"></div>
@@ -413,6 +457,7 @@ function updateReceivedLanguage(){
  if(current<0||!mails[current])return;
  const m=mails[current],serbian=$("translationToggle").dataset.lang==="sr";
  $("received").textContent=serbian?(m.srBody||"Prevod ovog mejla nije dostupan."):m.body;
+ $("received").lang=serbian?"sr":"de";
  $("letterTitle").textContent=serbian?"PREVOD NA SRPSKI":"Von: "+m.from+" · Betreff: "+m.subject;
  $("translationToggle").innerHTML=serbian?"↩ ORIGINAL NA NEMAČKOM":"🇷🇸 PREVOD MEJLA <span aria-hidden=\"true\">↓</span>";
  $("translationToggle").setAttribute("aria-label",serbian?"Vrati originalni mejl na nemačkom":"Prikaži prevod primljenog mejla na srpski");
@@ -421,14 +466,14 @@ function updateReceivedLanguage(){
 function fitTaskLetter(){
  const el=$("received");
  if(!el||!document.body.classList.contains("tasking"))return;
- el.style.fontSize="13.2px";
- el.style.lineHeight="1.26";
+ el.style.fontSize="14px";
+ el.style.lineHeight="1.37";
  el.style.overflowY="hidden";
- for(let size=13.2;size>=9.2;size-=.3){
+ for(let size=14;size>=11.5;size-=.25){
   el.style.fontSize=size.toFixed(2)+"px";
   if(el.scrollHeight<=el.clientHeight+2)break;
  }
- // Na izuzetno niskim ekranima sadržaj mora ostati čitljiv i dostupan.
+ // Na manjim ekranima skroluje se samo tekst dužeg mejla, koji ostaje čitljiv.
  if(el.scrollHeight>el.clientHeight+3)el.style.overflowY="auto";
 }
 function updateViewportHeight(){
@@ -523,7 +568,10 @@ $("draft").addEventListener("focus",()=>{
  if(window.matchMedia("(max-width:700px)").matches)document.body.classList.add("keyboardOpen");
  updateViewportHeight();
 });
-$("draft").addEventListener("blur",()=>document.body.classList.remove("keyboardOpen"));
+$("draft").addEventListener("blur",()=>{
+ // Zadrži dugme na istom mestu dok se dodir za AI proveru ne završi.
+ setTimeout(()=>{if(document.activeElement!==$("draft"))document.body.classList.remove("keyboardOpen")},350);
+});
 window.addEventListener("resize",()=>{updateViewportHeight();requestAnimationFrame(fitTaskLetter);requestAnimationFrame(fitIntro)});
 if(window.visualViewport)window.visualViewport.addEventListener("resize",()=>{updateViewportHeight();requestAnimationFrame(fitTaskLetter);requestAnimationFrame(fitIntro)});
 updateViewportHeight();
