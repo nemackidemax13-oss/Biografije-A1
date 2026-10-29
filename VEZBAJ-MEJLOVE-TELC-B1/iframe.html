@@ -1058,6 +1058,47 @@ body.listing .groupTitle{justify-content:flex-end!important}
  }
 }
 
+
+/* Status kartice: samo mejl sa uspešno dobijenim AI rezultatom prikazuje TAČNO.
+   Aktuelni neprovereni mejl je plav, proveren mejl ostaje zelen. */
+.tile.verified::after,.tile.verified.selected::after{
+ display:none!important;content:none!important;
+}
+.tile.verified,.tile.selected.verified,.tile.verified.practiced{
+ background:#ddf6e6!important;
+ border:2px solid #258d4f!important;
+ box-shadow:0 0 0 1px #b5e3c6!important;
+}
+.tile.verified strong,.tile.selected.verified strong,.tile.verified.practiced strong{
+ color:#136e3b!important;
+ font-weight:1000!important;
+ font-size:17px!important;
+ letter-spacing:.2px!important;
+}
+.tile.selected:not(.verified),.tile.selected.practiced:not(.verified){
+ background:#e1eeff!important;
+ border:2px solid #156ad4!important;
+ box-shadow:0 0 0 1px #a9cbf5!important;
+}
+.tile.selected:not(.verified) strong,.tile.selected.practiced:not(.verified) strong{
+ color:#0d4f9d!important;
+}
+@media(max-width:700px){
+ body.listing .tile.verified strong,
+ body.listing .tile.selected.verified strong{
+  color:#136e3b!important;
+  font-size:13px!important;
+  line-height:1.1!important;
+  font-weight:1000!important;
+  white-space:nowrap!important;
+ }
+}
+@media(max-width:700px) and (max-height:630px){
+ body.listing .tile.verified strong,body.listing .tile.selected.verified strong{
+  font-size:11.5px!important;
+ }
+}
+
 </style>
 </head>
 <body class="intro">
@@ -1177,7 +1218,7 @@ function overview(){
   const status=verified?"AI proveren mejl, "+Number(state.last[i].total)+" od 45 vežbačkih bodova":practiced?"vežba započeta":"još nije vežbano";
   b.setAttribute("aria-label",(i+1)+". "+m.title+", "+status+(selected?", trenutno izabran":""));
   b.title=(i+1)+". "+m.title+" · "+status;
-  b.append(node("strong",(i+1)+". "+m.title));
+  b.append(node("strong",verified?"TAČNO":(i+1)+". "+m.title));
   b.onclick=()=>openMail(i);
   $("tiles").append(b);
  });
