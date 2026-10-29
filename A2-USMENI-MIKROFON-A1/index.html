@@ -319,7 +319,7 @@ main{min-height:0;flex:1;display:flex;flex-direction:column;overflow:hidden;back
 #choose #choiceGrid{grid-row:4}
 #choose .choiceCount{grid-row:5}
 #choose .grid2{grid-row:6}
-#choose.dm-choose-locked .bubbleLayer,#choose.dm-choose-locked #choiceGrid,#choose.dm-choose-locked #autoChoose{opacity:.48;pointer-events:none}
+#choose .bubbleLayer,#choose #choiceGrid,#choose #autoChoose{opacity:1;pointer-events:auto}
 @media(max-height:660px){
  #intro .large-logo{width:min(145px,34vw,22dvh);height:min(145px,34vw,22dvh);min-width:90px;min-height:90px}
  #choose>.scroll{padding-top:6px;gap:3px}
@@ -329,6 +329,17 @@ main{min-height:0;flex:1;display:flex;flex-direction:column;overflow:hidden;back
  #choose .dm-choose-controls .btn{min-height:26px;font-size:10px;padding:3px}
  #choose #choiceGrid{height:clamp(82px,15dvh,110px)}
 }
+
+
+/* Jasne teme na A2 izboru, bez zamućenja ili zaključavanja. */
+#choose .topicPortrait,#choose .faceArt,#choose .portraitBubble,
+#choose #choiceGrid,#choose .topicChoice,#choose #autoChoose{
+ opacity:1!important;filter:none!important;backdrop-filter:none!important
+}
+#choose .portraitBubble:not(.selected){background:white;color:#172a43;border:2px solid #253f58}
+#choose .portraitBubble.selected{background:#ccf5dd;color:#075b39;border:2px solid #14875b}
+#choose .topicChoice:not(.selected){background:white;color:#17365f;border:1px solid #cbd9ed}
+#choose .topicChoice.selected{background:#d5f7e4;color:#075c35;border:2px solid #168a58}
 
 </style>
 <script>
@@ -378,7 +389,7 @@ function validWorkerUrl(value){
    <div class="scroll">
     <h2>Izaberite 5 od 6 tema</h2>
     <div class="dm-choose-voice" aria-live="polite">
-      <div id="dmChooseStatus" class="dm-choose-status">Sačekajte pitanje ispitivača, pa odgovorite na nemačkom.</div>
+      <div id="dmChooseStatus" class="dm-choose-status">Posle pitanja izgovorite nazive pet tema ili izaberite automatski.</div>
       <div class="dm-choose-controls"><button type="button" id="dmChooseMic" class="btn soft">🎙 Govori</button><button type="button" id="dmChooseRepeat" class="btn">🔊 Ponovi pitanje</button></div>
       <div id="dmChooseHeard" class="dm-choose-heard" hidden></div>
       <button type="button" id="dmChooseManual" class="dm-choose-manual" hidden>Izaberi teme bez mikrofona</button>
@@ -455,7 +466,20 @@ function startMic(){
  let base=clean(textarea().value),stable="";
  r.onresult=e=>{let interim="";for(let i=e.resultIndex;i<e.results.length;i++){const segment=e.results[i][0].transcript;if(e.results[i].isFinal)stable+=segment+" ";else interim+=segment}textarea().value=[base,stable,interim].filter(Boolean).join(" ").replace(/\s+/g," ").trim();};
  r.onerror=e=>{app.recording=false;$("micLight").classList.remove("live");if(e.error==="not-allowed"||e.error==="service-not-allowed")statusSet("Dozvolite pristup mikrofonu u podešavanjima pregledača ili pišite odgovor.");else if(e.error==="no-speech")statusSet("Nema prepoznatog govora. Dodirnite „Govori” da pokušate ponovo.");else statusSet("Mikrofon: "+e.error+". Možete pisati odgovor.")};
- r.onend=()=>{if(app.rec===r){app.rec=null;app.recording=false;$("micLight").classList.remove("live")}};
+
+ r.onend=()=>{
+  if(serial!==DM_CHOOSE.serial)return;
+  DM_CHOOSE.rec=null;dmChooseDisplay();
+  if(app.screen==="choose"&&app.chosen.length<5&&DM_CHOOSE.autoRetries<5){
+   DM_CHOOSE.autoRetries++;
+   setTimeout(()=>{
+    if(app.screen==="choose"&&serial===DM_CHOOSE.serial&&!DM_CHOOSE.rec&&app.chosen.length<5)
+     dmChooseSpeechRecognize();
+   },300);
+  }else if(app.screen==="choose"&&app.chosen.length<5){
+   dmChooseMessage("Izgovorite još naziva tema ili pritisnite „Izaberi automatski”.");
+  }
+ };
  try{r.start();app.recording=true;$("micLight").classList.add("live");statusSet("🔴 Slušam Vas... Govorite, zatim izaberite „Završi razgovor”.")}catch(e){app.rec=null;statusSet("Mikrofon nije mogao da se pokrene. Dodirnite „Govori” ili pišite.")}}
 function handleButton(action){
  if(action==="listen"){stopAudio();startMic();return}
@@ -489,16 +513,16 @@ function makeOffer(){
 
 /* DE-MAX A2: ispitivač izgovara pitanje, kandidat glasom potvrđuje izbor. */
 const DM_CHOOSE={accepted:false,heard:"",rec:null,media:null,stream:null,
-  serial:0,playing:false,uploading:false};
+  serial:0,playing:false,uploading:false,autoRetries:0};
 function dmChooseMessage(value){const el=document.getElementById("dmChooseStatus");if(el)el.textContent=value}
 function dmChooseDisplay(){
  const active=app.screen==="choose",box=document.getElementById("choose");
  if(!box)return;
- box.classList.toggle("dm-choose-locked",active&&!DM_CHOOSE.accepted);
+ box.classList.remove("dm-choose-locked");
  const heard=document.getElementById("dmChooseHeard");
  if(heard){heard.hidden=!DM_CHOOSE.heard;heard.textContent=DM_CHOOSE.heard?"Prepoznato: "+DM_CHOOSE.heard:""}
  const next=document.getElementById("chooseNext");
- if(next&&active)next.disabled=app.chosen.length!==5||!DM_CHOOSE.accepted;
+ if(next&&active)next.disabled=app.chosen.length!==5;
  const mic=document.getElementById("dmChooseMic");
  if(mic)mic.textContent=(DM_CHOOSE.rec||DM_CHOOSE.media)?"■ Završi govor":"🎙 Govori";
 }
@@ -507,21 +531,50 @@ function dmChooseNormalize(s){
   .replace(/ß/g,"ss").replace(/\b5\b/g,"funf").replace(/\bfuenf\b/g,"funf")
   .replace(/\bwaehle\b/g,"wahle").replace(/[.,!?]/g," ").replace(/\s+/g," ").trim();
 }
+
+function dmChooseVoiceNames(value){
+ const clean=dmChooseNormalize(value);
+ const aliases={
+  "Filme":["film"],"Hobbys":["hobby","hobbies"],"Bücher":["buch","buecher"],
+  "In Österreich":["osterreich","oesterreich"],
+  "Lieblingsgetränk":["lieblingsgetraenk"],"Lieblingsfarbe":["lieblings farbe"],
+  "Lieblingskleidung":["lieblings kleidung"],"Lieblingsessen":["lieblings essen"],
+  "Lieblingslied":["lieblings lied"],"Wohnort":["wohn ort"],"Freizeit":["freie zeit"]
+ };
+ const found=[];
+ for(const id of app.offer){
+  const name=TOPICS[id].title.split(" · ")[0];
+  const forms=[name,...(aliases[name]||[])].map(dmChooseNormalize);
+  let first=Infinity;
+  for(const form of forms){
+   const pattern=new RegExp("(?:^| )"+form+"(?= |$)");
+   const match=pattern.exec(clean);
+   if(match)first=Math.min(first,match.index);
+  }
+  if(first!==Infinity)found.push({id,first});
+ }
+ return found.sort((a,b)=>a.first-b.first).map(entry=>entry.id)
+}
 function dmChooseHeard(value){
  if(app.screen!=="choose")return;
- const val=String(value||"").trim();
- if(!val)return;
+ const val=String(value||"").trim();if(!val)return;
  DM_CHOOSE.heard=val;
- const normalized=dmChooseNormalize(val);
- // Potvrda je uspešna tek kada su ključne reči stvarno prepoznate.
- const valid=/\bich\b/.test(normalized)&&/\bwahl?e\b|\bwahle\b/.test(normalized)&&
-   /\bfunf\b/.test(normalized)&&/\bthemen\b/.test(normalized);
- if(valid){
+ let newTopics=0;
+ for(const id of dmChooseVoiceNames(val)){
+  if(app.chosen.length>=5)break;
+  if(!app.chosen.includes(id)){app.chosen.push(id);newTopics++}
+ }
+ if(newTopics)renderChoice();else dmChooseDisplay();
+ if(app.chosen.length===5){
   DM_CHOOSE.accepted=true;
-  dmChooseMessage("✓ Odgovor je prepoznat. Sada izaberite 5 od 6 tema.");
- }else dmChooseMessage("Čuo sam odgovor, ali ne celu rečenicu „Ich wähle fünf Themen“. Pokušajte ponovo.");
- dmChooseDisplay();
+  dmChooseMessage("✓ Pet tema je izabrano. Pritisnite „Potvrdi 5 tema”.");
+ }else if(newTopics){
+  dmChooseMessage("✓ Prepoznato "+app.chosen.length+" od 5 tema. Izgovorite preostale nazive.");
+ }else{
+  dmChooseMessage("Izgovorite nazive tema prikazanih na slici ili pritisnite „Izaberi automatski”.");
+ }
 }
+
 function dmChooseStop(discard=false){
  DM_CHOOSE.serial++;
  const rec=DM_CHOOSE.rec;DM_CHOOSE.rec=null;
@@ -539,13 +592,13 @@ function dmChooseSpeechRecognition(){
  try{r=new SR()}catch(e){return false}
  const serial=DM_CHOOSE.serial;
  DM_CHOOSE.rec=r;
- r.lang="de-DE";r.continuous=false;r.interimResults=true;r.maxAlternatives=1;
+ r.lang="de-DE";r.continuous=!isApple;r.interimResults=true;r.maxAlternatives=1;
  r.onresult=e=>{
   if(serial!==DM_CHOOSE.serial||app.screen!=="choose")return;
   let val="";
   for(let i=0;i<e.results.length;i++)val+=(val?" ":"")+(e.results[i]?.[0]?.transcript||"");
   if(val.trim())dmChooseHeard(val);
-  if(DM_CHOOSE.accepted){try{r.stop()}catch(e){}}
+  if(app.chosen.length===5){try{r.stop()}catch(e){}}
  };
  r.onerror=e=>{
   if(serial!==DM_CHOOSE.serial||app.screen!=="choose")return;
@@ -609,10 +662,9 @@ async function dmChooseRecordFallback(){
  dmChooseDisplay();
 }
 function dmChooseStartMic(fromTap=false){
- if(app.screen!=="choose"||DM_CHOOSE.accepted||DM_CHOOSE.rec||DM_CHOOSE.media||DM_CHOOSE.uploading)return;
+ if(app.screen!=="choose"||app.chosen.length===5||DM_CHOOSE.rec||DM_CHOOSE.media||DM_CHOOSE.uploading)return;
  if(!dmChooseSpeechRecognition()){
-  if(fromTap)dmChooseRecordFallback();
-  else{dmChooseMessage("Pritisnite „Govori”, pa izgovorite: „Ich wähle fünf Themen”.");document.getElementById("dmChooseManual").hidden=false}
+  dmChooseRecordFallback();
  }
 }
 function dmChooseSpeak(){
@@ -621,7 +673,7 @@ function dmChooseSpeak(){
  dmChooseDisplay();
  dmChooseMessage("🔊 Ispitivač izgovara pitanje na nemačkom...");
  if(!("speechSynthesis" in window)||!window.SpeechSynthesisUtterance){
-  dmChooseMessage("Pritisnite „Govori”, pa recite: „Ich wähle fünf Themen”.");return;
+  dmChooseMessage("Izgovorite nazive pet ponuđenih tema.");dmChooseStartMic(false);return;
  }
  const token=DM_CHOOSE.serial;
  const u=new SpeechSynthesisUtterance("Welche Themen wählen Sie?");
@@ -629,7 +681,7 @@ function dmChooseSpeak(){
  const voices=window.speechSynthesis.getVoices().filter(v=>/^de(?:[-_]|$)/i.test(v.lang));
  u.voice=voices.find(v=>/google/i.test(v.name))||voices.find(v=>/natural/i.test(v.name))||voices[0]||null;
  u.onend=()=>{
-  if(token!==DM_CHOOSE.serial||app.screen!=="choose"||DM_CHOOSE.accepted)return;
+  if(token!==DM_CHOOSE.serial||app.screen!=="choose"||app.chosen.length===5)return;
   dmChooseStartMic(false);
  };
  u.onerror=()=>{
@@ -650,7 +702,7 @@ document.getElementById("dmChooseManual").addEventListener("click",()=>{
 });
 
 function showChoose(){
- stopEverything();if(!app.offer.length)makeOffer();stage("choose","2 / 4 · IZBOR TEMA");renderChoice();if(DM_CHOOSE.accepted){dmChooseMessage("✓ Izaberite pet ponuđenih tema.");dmChooseDisplay()}else{dmChooseSpeak()}
+ stopEverything();if(!app.offer.length)makeOffer();stage("choose","2 / 4 · IZBOR TEMA");DM_CHOOSE.autoRetries=0;DM_CHOOSE.heard="";renderChoice();dmChooseSpeak()
 }
 function renderChoice(){
  const grid=$("choiceGrid"),bubble=$("bubbleLayer");grid.replaceChildren();bubble.replaceChildren();
@@ -658,10 +710,10 @@ function renderChoice(){
  const em=document.createElement("span");em.className="icon";em.textContent=t.icon||"📘";
  const de=document.createElement("span");de.textContent=parts[0];const sr=document.createElement("small");sr.textContent=parts[1]||"";
  const check=document.createElement("span");check.className="check";check.textContent=app.chosen.includes(i)?"✓":"";
- b.append(em,de,sr,check);b.onclick=()=>{if(!DM_CHOOSE.accepted)return;if(app.chosen.includes(i))app.chosen=app.chosen.filter(x=>x!==i);else if(app.chosen.length<5)app.chosen.push(i);renderChoice()};
+ b.append(em,de,sr,check);b.onclick=()=>{if(app.chosen.includes(i))app.chosen=app.chosen.filter(x=>x!==i);else if(app.chosen.length<5)app.chosen.push(i);renderChoice();if(app.chosen.length===5){DM_CHOOSE.accepted=true;dmChooseMessage("✓ Izabrano pet tema. Pritisnite „Potvrdi 5 tema”.");if(DM_CHOOSE.rec)try{DM_CHOOSE.rec.stop()}catch(e){}}};
  const bubbleBtn=document.createElement("button");bubbleBtn.type="button";bubbleBtn.className="portraitBubble portraitBubble"+(app.offer.indexOf(i)+1)+(app.chosen.includes(i)?" selected":"");bubbleBtn.textContent=parts[0];
  bubbleBtn.setAttribute("aria-pressed",String(app.chosen.includes(i)));bubbleBtn.setAttribute("aria-label","Tema "+parts[0]+", "+(app.chosen.includes(i)?"izabrana":"nije izabrana"));bubbleBtn.onclick=b.onclick;bubble.append(bubbleBtn);grid.append(b)});
- text("countChoice",app.chosen.length+" / 5 tema izabrano");$("chooseNext").disabled=app.chosen.length!==5||!DM_CHOOSE.accepted;dmChooseDisplay()
+ text("countChoice",app.chosen.length+" / 5 tema izabrano");$("chooseNext").disabled=app.chosen.length!==5;dmChooseDisplay()
 }
 function chooseQuestions(){
  app.questions=app.chosen.map(i=>{
@@ -730,7 +782,7 @@ $("introBack").onclick=backIntro;
  $("introForward").onclick=()=>{saveAnswer();stopEverything();showChoose()};
 $("chooseBack").onclick=()=>{app.intro=INTRO.length-1;showIntro()};
 $("changeOffer").onclick=()=>{makeOffer();renderChoice()};
-$("autoChoose").onclick=()=>{if(!DM_CHOOSE.accepted)return;app.chosen=shuffled(app.offer).slice(0,5);renderChoice()};
+$("autoChoose").onclick=()=>{dmChooseStop(true);try{speechSynthesis.cancel()}catch(e){}DM_CHOOSE.accepted=true;app.chosen=shuffled(app.offer).slice(0,5);renderChoice();dmChooseMessage("✓ Pet tema je automatski izabrano. Pritisnite „Potvrdi 5 tema”.")};
 $("chooseNext").onclick=()=>{if(app.chosen.length===5)beginSpeaking()};
 $("speakNext").onclick=advanceSpeaking;$("speakBack").onclick=backSpeaking;
 $("download").onclick=downloadTxt;$("restart").onclick=()=>{stopEverything();app.intro=0;app.topic=0;app.question=-1;app.responses={};app.chosen=[];app.questions=[];try{localStorage.removeItem("demax_a2_simulacija_odgovori")}catch(e){}stage("intro","USMENI · A2")};
