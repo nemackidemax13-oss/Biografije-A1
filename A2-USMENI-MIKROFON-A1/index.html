@@ -297,19 +297,19 @@ function validWorkerUrl(value){
    <div class="scroll">
     <p class="eyebrow">KORAK 1 · ZU BEGINN</p><h2>Predstavljanje kandidata</h2>
     <p class="sub" id="introIndex">Govorite polako na nemačkom, mikrofon će Vas saslušati.</p>
-    <div class="examiner"><div class="role">PRÜFERIN / PRÜFER</div><div class="de" id="introDe"></div><div class="sr" id="introSr"></div><div class="state" id="introState"></div></div>
-    <div class="answerbox"><div class="dm-answer-heading"><span class="fieldlabel">VAŠ ODGOVOR · MIKROFON ILI PISANJE</span><button type="button" class="dm-relisten" data-act="listen">🎙 Govori</button></div><textarea id="introText" lang="de" placeholder="Ovde se prikazuje prepoznati govor; možete i pisati."></textarea></div><div id="introReview" class="dm-review" hidden aria-live="polite"><div class="dm-review-label">REKLI STE · NEMAČKI</div><div class="dm-review-de" id="introReviewDe"></div><div class="dm-review-label dm-review-translation-label">PREVOD · SRPSKI</div><div class="dm-review-sr" id="introReviewSr"></div></div>
+    <div class="examiner"><div class="role">PRÜFERIN / PRÜFER</div><div class="de" id="introDe"></div><div class="sr" id="introSr"></div><div class="state" id="introState" hidden></div></div>
+    <div class="answerbox"><div class="dm-answer-heading"><span class="fieldlabel">PREPOZNATI GOVOR · NEMAČKI</span><button type="button" class="dm-relisten" data-act="listen">🎙 Govori</button></div><textarea id="introText" lang="de" placeholder="Ovde će biti prikazano ono što mikrofon prepozna. Tekst možete ispraviti."></textarea></div><div id="introReview" class="dm-review" hidden aria-live="polite"><div class="dm-review-label">REKLI STE · NEMAČKI</div><div class="dm-review-de" id="introReviewDe"></div><div class="dm-review-label dm-review-translation-label">PREVOD · SRPSKI</div><div class="dm-review-sr" id="introReviewSr"></div></div>
     <div class="status" id="introStatus" aria-live="polite"></div>
     
     <div class="hint" id="introHint" hidden></div>
    </div>
    <div class="quick-controls">
- <button class="btn red" data-act="stop">■ Završi govor</button>
+ <button class="btn green" data-act="stop">■ Završi razgovor</button>
  <button class="btn" data-act="repeat">🔊 Ponovi pitanje</button>
 </div>
 <div class="actions" id="introActions">
  <button class="btn red" id="introBack">‹ Nazad</button>
- <button class="btn green" id="introForward">Nastavi na teme ›</button>
+ <button class="btn primary" id="introForward">Nastavi na teme ›</button>
 </div>
   </section>
   <section id="choose" class="screen">
@@ -327,12 +327,12 @@ function validWorkerUrl(value){
     <p class="sub" id="speakSub"></p>
     <div class="rowTitle"><div class="circleNo" id="topicNo">1</div><div><div class="tiny" id="qType">TEMA · 2–3 REČENICE</div><div class="titleTopic" id="topicName"></div></div></div>
     <div class="examiner"><div class="role">ISPITIVAČ · PRÜFERIN / PRÜFER</div><div class="de" id="speakDe"></div><div class="sr" id="speakSr"></div><div class="state" id="speakState"></div></div>
-    <div class="answerbox"><div class="dm-answer-heading"><span class="fieldlabel">VAŠ ODGOVOR · MIKROFON ILI PISANJE</span><button type="button" class="dm-relisten" data-act="listen">🎙 Govori</button></div><textarea id="speakText" lang="de" placeholder="Ovde se prikazuje prepoznati govor; možete i pisati."></textarea></div><div id="speakReview" class="dm-review" hidden aria-live="polite"><div class="dm-review-label">REKLI STE · NEMAČKI</div><div class="dm-review-de" id="speakReviewDe"></div><div class="dm-review-label dm-review-translation-label">PREVOD · SRPSKI</div><div class="dm-review-sr" id="speakReviewSr"></div></div>
+    <div class="answerbox"><div class="dm-answer-heading"><span class="fieldlabel">PREPOZNATI GOVOR · NEMAČKI</span><button type="button" class="dm-relisten" data-act="listen">🎙 Govori</button></div><textarea id="speakText" lang="de" placeholder="Ovde će biti prikazano ono što mikrofon prepozna. Tekst možete ispraviti."></textarea></div><div id="speakReview" class="dm-review" hidden aria-live="polite"><div class="dm-review-label">REKLI STE · NEMAČKI</div><div class="dm-review-de" id="speakReviewDe"></div><div class="dm-review-label dm-review-translation-label">PREVOD · SRPSKI</div><div class="dm-review-sr" id="speakReviewSr"></div></div>
     <div class="status" id="speakStatus" aria-live="polite"></div>
     
     <div class="hint" id="speakHint" hidden></div>
    </div>
-   <div class="quick-controls"><button class="btn red" data-act="stop">■ Završi govor</button><button class="btn" data-act="repeat">🔊 Ponovi pitanje</button></div><div class="actions"><button class="btn red" id="speakBack">‹ Nazad</button><button class="btn green" id="speakNext">Dalje · pitanja ›</button></div>
+   <div class="quick-controls"><button class="btn green" data-act="stop">■ Završi razgovor</button><button class="btn" data-act="repeat">🔊 Ponovi pitanje</button></div><div class="actions"><button class="btn red" id="speakBack">‹ Nazad</button><button class="btn green" id="speakNext">Dalje · pitanja ›</button></div>
   </section>
   <section id="results" class="screen">
    <div class="scroll"><p class="eyebrow">SIMULACIJA ZAVRŠENA</p><h2>Bravo! Završili ste ÖSD A2 simulaciju</h2>
@@ -358,7 +358,7 @@ const app={screen:"intro",intro:0,offer:[],chosen:[],topic:0,question:-1,questio
 function shuffled(arr){const a=arr.slice();for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function clean(s){return String(s||"").trim()}
 function text(id,s){$(id).textContent=s}
-function stage(name,pill){app.screen=name;if(name!=="introExam"&&name!=="speaking"&&typeof dmReleaseStream==="function")dmReleaseStream();document.querySelectorAll(".screen").forEach(x=>x.classList.toggle("active",x.id===name));text("stagePill",pill);$("micLight").classList.remove("live");window.scrollTo(0,0);document.querySelectorAll(".scroll").forEach(x=>x.scrollTop=0)}
+function stage(name,pill){app.screen=name;document.getElementById("header").style.display=name==="intro"?"flex":"none";if(name!=="introExam"&&name!=="speaking"&&typeof dmReleaseStream==="function")dmReleaseStream();document.querySelectorAll(".screen").forEach(x=>x.classList.toggle("active",x.id===name));text("stagePill",pill);$("micLight").classList.remove("live");window.scrollTo(0,0);document.querySelectorAll(".scroll").forEach(x=>x.scrollTop=0)}
 function respondKey(){if(app.screen==="introExam")return "intro-"+app.intro;if(app.screen==="speaking")return "theme-"+app.chosen[app.topic]+"-q-"+app.question;return ""}
 function textarea(){return app.screen==="introExam"?$("introText"):$("speakText")}
 function statusSet(s){let id=app.screen==="introExam"?"introStatus":"speakStatus";if($(id))text(id,s)}
@@ -388,7 +388,7 @@ function startMic(){
  r.onresult=e=>{let interim="";for(let i=e.resultIndex;i<e.results.length;i++){const segment=e.results[i][0].transcript;if(e.results[i].isFinal)stable+=segment+" ";else interim+=segment}textarea().value=[base,stable,interim].filter(Boolean).join(" ").replace(/\s+/g," ").trim();};
  r.onerror=e=>{app.recording=false;$("micLight").classList.remove("live");if(e.error==="not-allowed"||e.error==="service-not-allowed")statusSet("Dozvolite pristup mikrofonu u podešavanjima pregledača ili pišite odgovor.");else if(e.error==="no-speech")statusSet("Nema prepoznatog govora. Dodirnite „Govori” da pokušate ponovo.");else statusSet("Mikrofon: "+e.error+". Možete pisati odgovor.")};
  r.onend=()=>{if(app.rec===r){app.rec=null;app.recording=false;$("micLight").classList.remove("live")}};
- try{r.start();app.recording=true;$("micLight").classList.add("live");statusSet("🔴 Slušam Vas... Govorite, zatim izaberite „Završi govor”.")}catch(e){app.rec=null;statusSet("Mikrofon nije mogao da se pokrene. Dodirnite „Govori” ili pišite.")}}
+ try{r.start();app.recording=true;$("micLight").classList.add("live");statusSet("🔴 Slušam Vas... Govorite, zatim izaberite „Završi razgovor”.")}catch(e){app.rec=null;statusSet("Mikrofon nije mogao da se pokrene. Dodirnite „Govori” ili pišite.")}}
 function handleButton(action){
  if(action==="listen"){stopAudio();startMic();return}
  if(action==="repeat"){speakPrompt(false);return}
@@ -407,7 +407,7 @@ function showHint(){
 function showIntro(){
  stage("introExam","1 / 4 · UVOD");
  text("introIndex","Pitanje "+(app.intro+1)+" / "+INTRO.length+" · Mikrofon se sam uključuje posle pitanja.");
- const p=INTRO[app.intro];text("introDe",p.q);text("introSr",p.qt);text("introState","● Ispitivač postavlja pitanje");
+ const p=INTRO[app.intro];text("introDe",p.q);text("introSr",p.qt);text("introState","");
  $("introBack").textContent=app.intro===0?"‹ Početna":"‹ Nazad";
  text("introStatus","Pitanje može da se čuje automatski.");fillAnswer();speakPrompt(true)
 }
@@ -1078,7 +1078,7 @@ function dmSpeechRecognize(){
   try{localStorage.setItem("demax_a2_simulacija_odgovori",JSON.stringify(app.responses))}catch(e){}
   if(DM_MIC.wantListening&&(!reason||reason==="no-speech")&&DM_MIC.autoRetries<2&&(dmTrackLive()||dmUseNativeSpeechFirst())){
    DM_MIC.autoRetries++;
-   dmMicStatus("🎙 Nastavljam automatsko slušanje. Govorite pa pritisnite Završi govor.");
+   dmMicStatus("🎙 Nastavljam automatsko slušanje. Govorite pa pritisnite Završi razgovor.");
    setTimeout(()=>{
     if(serial!==DM_MIC.serial||respondKey()!==key||!DM_MIC.wantListening||DM_MIC.recognition||DM_MIC.media)return;
     if((dmTrackLive()||dmUseNativeSpeechFirst())&&!dmSpeechRecognize())dmMicStatus("Dodirnite 🎙 Govori za nastavak.");
@@ -1161,7 +1161,7 @@ async function dmRecordFallback(auto){
  try{recorder.start(250)}
  catch(e){DM_MIC.media=null;DM_MIC.mediaResolve?.(false);dmMicStatus("Snimanje nije moglo da se pokrene.");return false}
  DM_MIC.wantListening=true;dmMarkLive(true);
- dmMicStatus("🔴 Snimam nemački. Govorite bez vremenskog ograničenja, zatim pritisnite ■ Završi govor.");
+ dmMicStatus("🔴 Snimam nemački. Govorite bez vremenskog ograničenja, zatim pritisnite ■ Završi razgovor.");
  return true
 }
 // Koristi isti Web Speech Recognition postupak kao radni A1 u Chrome/Edge.
@@ -1177,7 +1177,7 @@ async function startMic(fromTap=false){
  if(app.screen!=="introExam"&&app.screen!=="speaking")return;
  const key=respondKey(),serial=DM_MIC.serial;
  if(DM_MIC.recognition||DM_MIC.media){
-  dmMicStatus("🎙 Mikrofon je vec ukljucen. Kada zavrsite, pritisnite Zavrsi govor.");
+  dmMicStatus("🎙 Mikrofon je vec ukljucen. Kada zavrsite, pritisnite Završi razgovor.");
   return;
  }
  // Ovo je najbitnija razlika: A1 odmah aktivira Web Speech Recognition.
@@ -1235,7 +1235,7 @@ async function dmFinishAudio(){
 async function handleButton(action){
  if(action==="listen"){
   stopAudio();
-  if(DM_MIC.recognition||DM_MIC.media){dmMicStatus("Mikrofon već snima. Pritisnite „Završi govor” kad završite.");return}
+  if(DM_MIC.recognition||DM_MIC.media){dmMicStatus("Mikrofon već snima. Pritisnite „Završi razgovor” kad završite.");return}
   startMic(true);return
  }
  if(action==="repeat"){speakPrompt(true);return}
@@ -1243,7 +1243,7 @@ async function handleButton(action){
   await dmFinishAudio();
   saveAnswer();dmReleaseStream();
   if(app.screen==="introExam"){
-   dmMicStatus("✓ Govor je sačuvan. Pritisnite „Napred na teme” kada završite.");
+   dmMicStatus("✓ Govor je sačuvan. Pročitajte prepoznati tekst i prevod, pa pritisnite „Nastavi na teme”.");
   }else if(app.screen==="speaking"){
    dmMicStatus("✓ Govor je sačuvan. Ispod su Vaš odgovor i prevod; dalje prelazite ručno.");
    checkCurrent(false)
@@ -1282,7 +1282,7 @@ for(const id of ["speakNext"]){
  $(id).addEventListener("click",e=>{
   if(DM_MIC.media||DM_MIC.recognition){
    e.stopImmediatePropagation();e.preventDefault();
-   dmMicStatus("Prvo pritisnite ■ Završi govor, pa zatim „Dalje”.");
+   dmMicStatus("Prvo pritisnite ■ Završi razgovor, pa zatim „Dalje”.");
   }
  },true)
 }
@@ -1404,7 +1404,7 @@ document.addEventListener("visibilitychange",()=>{
   if(DM_MIC.recognition||DM_MIC.media){
    event.preventDefault();
    event.stopImmediatePropagation();
-   dmMicStatus("Prvo pritisnite ■ Završi govor, zatim Nastavi na teme.");
+   dmMicStatus("Prvo pritisnite ■ Završi razgovor, zatim Nastavi na teme.");
   }
  },true);
  const earlierFillAnswer=fillAnswer;
