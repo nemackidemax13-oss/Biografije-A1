@@ -1554,7 +1554,7 @@ body.tasking #taskScreen .taskPaper #situation.showSr{max-height:30%!important}
   <div class="bar">
    
    <div class="topRight">
-    <button type="button" id="homeBtn" class="homeNav" title="Izaberite mejl">MEJLOVI</button>
+    <button type="button" id="homeBtn" class="homeNav" title="Povratak na sve mejlove">SVI MEJLOVI</button>
    </div>
   </div>
   <div class="controls hidden" id="navBar">
@@ -1687,8 +1687,8 @@ function screen(name){
  document.body.classList.toggle("tasking",name==="taskScreen");
  document.body.classList.toggle("intro",name==="welcome");
  document.body.classList.toggle("listing",name==="mailList");
- $("homeBtn").textContent=name==="mailList"?"← NAZAD NA UPUTSTVO":name==="writerScreen"?"← POSTAVKA":"MEJLOVI";
- $("homeBtn").title=name==="mailList"?"Povratak na početno uputstvo":name==="writerScreen"?"Nazad na postavku istog mejla":"Izaberite mejl";
+ $("homeBtn").textContent=name==="mailList"?"← NAZAD NA UPUTSTVO":name==="writerScreen"?"← POSTAVKA":"SVI MEJLOVI";
+ $("homeBtn").title=name==="mailList"?"Povratak na početno uputstvo":name==="writerScreen"?"Nazad na postavku istog mejla":"Povratak na sve mejlove";
  document.body.classList.remove("keyboardOpen");
  $("navBar").classList.toggle("hidden",name!=="taskScreen"&&name!=="writerScreen");
  document.querySelectorAll(".taskNav").forEach(e=>e.classList.toggle("hidden",name!=="taskScreen"&&name!=="writerScreen"));
