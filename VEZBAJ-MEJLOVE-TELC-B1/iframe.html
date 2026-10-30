@@ -1340,6 +1340,133 @@ body.listing .tile.mailEnvelopeTile .mailEnvelopeMark{
  body.listing .tile.mailEnvelopeTile.selected strong{font-size:10px!important}
 }
 
+
+/* DE-MAX SELECT MAILS NO SCROLL 20261031 – 20 koverti, plavi centrirani naslov */
+html:has(body.listing),body.listing{
+ height:100%!important;
+ overflow:hidden!important;
+ overscroll-behavior:none!important;
+}
+body.listing .app{
+ height:var(--app-height,100dvh)!important;
+ max-height:var(--app-height,100dvh)!important;
+ min-height:0!important;
+ overflow:hidden!important;
+ display:flex!important;
+ flex-direction:column!important;
+}
+body.listing header{flex:0 0 auto!important}
+body.listing .main{
+ flex:1 1 auto!important;
+ display:flex!important;
+ flex-direction:column!important;
+ min-height:0!important;
+ overflow:hidden!important;
+}
+body.listing .mailList{
+ box-sizing:border-box!important;
+ flex:1 1 auto!important;
+ width:100%!important;
+ max-width:960px!important;
+ height:auto!important;
+ min-height:0!important;
+ margin:0 auto!important;
+ padding:6px 8px 8px!important;
+ display:flex!important;
+ flex-direction:column!important;
+ justify-content:flex-start!important;
+ gap:4px!important;
+ overflow:hidden!important;
+ overflow-x:hidden!important;
+ overflow-y:hidden!important;
+ overscroll-behavior:none!important;
+ touch-action:manipulation!important;
+}
+body.listing .mailList h2{
+ display:flex!important;
+ align-items:center!important;
+ justify-content:center!important;
+ flex:0 0 auto!important;
+ width:100%!important;
+ min-height:34px!important;
+ margin:0!important;
+ padding:6px 10px!important;
+ border:0!important;
+ border-radius:8px!important;
+ background:linear-gradient(105deg,#0b3c87,#1b6bd4)!important;
+ color:#fff!important;
+ text-align:center!important;
+ font-size:17px!important;
+ line-height:1.15!important;
+ font-weight:950!important;
+ letter-spacing:.2px!important;
+}
+body.listing .mailList .groupTitle{
+ flex:0 0 auto!important;
+ display:flex!important;
+ align-items:center!important;
+ justify-content:space-between!important;
+ margin:0 2px!important;
+ padding:0!important;
+ font-size:10px!important;
+ line-height:1.2!important;
+}
+body.listing .mailList .tiles{
+ display:grid!important;
+ flex:1 1 auto!important;
+ width:100%!important;
+ height:100%!important;
+ min-height:0!important;
+ margin:0!important;
+ padding:0!important;
+ grid-template-columns:repeat(4,minmax(0,1fr))!important;
+ grid-template-rows:repeat(5,minmax(0,1fr))!important;
+ grid-auto-rows:auto!important;
+ grid-auto-flow:row!important;
+ gap:5px!important;
+ overflow:hidden!important;
+ touch-action:manipulation!important;
+}
+body.listing .mailList .tile.mailEnvelopeTile{
+ box-sizing:border-box!important;
+ width:100%!important;
+ height:100%!important;
+ min-width:0!important;
+ min-height:0!important;
+ margin:0!important;
+ padding:2px!important;
+ overflow:hidden!important;
+ border-radius:8px!important;
+}
+body.listing footer{display:none!important}
+@media(max-width:700px){
+ body.listing .mailList{
+   padding:4px 6px 6px!important;
+   gap:3px!important;
+ }
+ body.listing .mailList h2{
+   min-height:29px!important;
+   padding:5px 7px!important;
+   font-size:14px!important;
+   border-radius:7px!important;
+ }
+ body.listing .mailList .tiles{gap:4px!important}
+ body.listing .mailList .tile.mailEnvelopeTile .mailEnvelopeIcon{
+  font-size:clamp(18px,5vw,26px)!important;
+ }
+}
+@media(max-height:580px){
+ body.listing .mailList{padding:3px 5px 4px!important;gap:2px!important}
+ body.listing .mailList h2{
+   min-height:25px!important;
+   padding:3px 6px!important;
+   font-size:12px!important;
+ }
+ body.listing .mailList .tiles{gap:3px!important}
+ body.listing .mailList .tile.mailEnvelopeTile .mailEnvelopeIcon{font-size:18px!important}
+ body.listing .mailList .tile.mailEnvelopeTile strong{font-size:10px!important}
+}
+
 </style>
 </head>
 <body class="intro">
@@ -1376,7 +1503,7 @@ body.listing .tile.mailEnvelopeTile .mailEnvelopeMark{
   <button type="button" id="openList" class="nextStep"><span>MEJLOVI</span><span class="arrow" aria-hidden="true">➜</span></button>
 </section>
 <section id="mailList" class="mailList hidden">
-  <h2>IZABERITE MEJL</h2>
+  <h2>IZABERI MEJL</h2>
   
   <div class="groupTitle"><span id="overview">0 / 20 provereno</span><button id="restartRound" type="button" class="restartRound hidden" title="Resetuje boje i AI oznake, ali čuva ranije napisane tekstove">↻ NOVI KRUG</button></div>
   <div id="tiles" class="tiles"></div>
