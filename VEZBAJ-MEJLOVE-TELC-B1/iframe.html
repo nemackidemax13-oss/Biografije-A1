@@ -1494,7 +1494,7 @@ body.listing footer{display:none!important}
 
 /* TELC B1 footer: pisanje levo, veličina u sredini, prevod desno. */
 body.tasking #taskScreen .taskFooter{
- display:grid!important;grid-template-columns:minmax(0,1fr) auto minmax(0,1.28fr)!important;
+ display:grid!important;grid-template-columns:minmax(0,1.28fr) auto minmax(0,1fr)!important;
  align-items:center!important;gap:6px!important;width:100%!important;max-width:850px!important;
  flex:none!important;position:static!important;margin:0 auto!important;padding:4px 0 6px!important;background:#fff!important;
 }
@@ -1528,7 +1528,7 @@ body.tasking #taskScreen .taskPaper #situation{
 }
 body.tasking #taskScreen .taskPaper #situation.showSr{max-height:30%!important}
 @media(max-width:700px){
- body.tasking #taskScreen .taskFooter{grid-template-columns:minmax(0,1fr) auto minmax(0,1.35fr)!important;gap:4px!important}
+ body.tasking #taskScreen .taskFooter{grid-template-columns:minmax(0,1.35fr) auto minmax(0,1fr)!important;gap:4px!important}
  body.tasking #taskScreen .taskFooter #startWriting,
  body.tasking #taskScreen .taskFooter #translationToggle{
   font-size:clamp(9px,2.6vw,11px)!important;min-height:37px!important;height:37px!important;
@@ -1544,6 +1544,19 @@ body.tasking #taskScreen .taskPaper #situation.showSr{max-height:30%!important}
  body.tasking #taskScreen .taskFooter .fontControl{padding:0 4px;font-size:11px}
  body.tasking #taskScreen .taskFooter #startWriting,
  body.tasking #taskScreen .taskFooter #translationToggle{font-size:9px!important}
+}
+
+
+/* Levo: žuti prevod srpski; sredina: A− / A+; desno: zeleno PIŠI MEJL. */
+body.tasking #taskScreen .taskFooter #translationToggle {
+  background:#ffd43b!important;
+  color:#332500!important;
+  border:1px solid #e5b521!important;
+  box-shadow:0 2px 5px #82651320!important;
+}
+body.tasking #taskScreen .taskFooter #translationToggle:focus-visible {
+  outline:3px solid #124e9c!important;
+  outline-offset:2px!important;
 }
 
 </style>
@@ -1602,12 +1615,12 @@ body.tasking #taskScreen .taskPaper #situation.showSr{max-height:30%!important}
     </div>
   </div>
   <div class="taskFooter" role="group" aria-label="Radnje postavke mejla">
-    <button id="startWriting" type="button" class="nextStep">PIŠI MEJL <span class="arrow" aria-hidden="true">➜</span></button>
+    <button type="button" class="translationToggle" id="translationToggle" aria-label="Prikaži prevod primljenog mejla na srpski">🇷🇸 PREVOD SRPSKI</button>
     <div class="fontControls" role="group" aria-label="Veličina teksta postavke">
       <button id="decreaseTaskFont" type="button" class="fontControl" aria-label="Smanji tekst postavke" title="Smanji tekst">A−<span class="fontLabel"> Smanji</span></button>
       <button id="increaseTaskFont" type="button" class="fontControl" aria-label="Uvećaj tekst postavke" title="Uvećaj tekst">A+<span class="fontLabel"> Uvećaj</span></button>
     </div>
-    <button type="button" class="translationToggle" id="translationToggle" aria-label="Prikaži prevod primljenog mejla na srpski">🇷🇸 PRIKAŽI PREVOD</button>
+    <button id="startWriting" type="button" class="nextStep">PIŠI MEJL <span class="arrow" aria-hidden="true">➜</span></button>
   </div>
 </section>
 <section id="writerScreen" class="writerPage hidden">
@@ -1752,7 +1765,7 @@ function updateReceivedLanguage(){
   container.append(pair);
  });
  $("letterTitle").textContent="Von: "+m.from+" · Betreff: "+m.subject;
- $("translationToggle").textContent=showSr?"🇷🇸 SAKRIJ PREVOD":"🇷🇸 PRIKAŽI PREVOD";
+ $("translationToggle").textContent=showSr?"🇷🇸 SAKRIJ PREVOD":"🇷🇸 PREVOD SRPSKI";
  $("translationToggle").setAttribute("aria-label",showSr?"Sakrij prevod postavke i mejla":"Prikaži srpski prevod postavke i mejla");
  requestAnimationFrame(fitTaskLetter);
 }
