@@ -1922,7 +1922,16 @@ function correctedTranslationFromWorker(result){
 }
 function appendCorrectedTranslation(result,root){
  const translationBox=node("div",undefined,"correctedTranslationBox");
- const german=node("div",result.corrected,"corrected");
+
+ const german=node("div",undefined,"corrected demax-mail-v4");
+ const segments=Array.isArray(result.correctedSegments)?result.correctedSegments:[];
+ if(segments.length&&segments.map(x=>String(x.text||"")).join("")===result.corrected){
+  for(const part of segments){
+   const span=node("span",String(part.text||""));
+   if(part.changed===true)span.className="demax-edit-v4";
+   german.append(span);
+  }
+ }else{german.textContent=result.corrected;}
  const button=node("button","🇷🇸 PRIKAŽI PREVOD ↓","correctedTranslationToggle");
  button.type="button";button.setAttribute("aria-expanded","false");
  const serbian=node("div",undefined,"correctedSerbian hidden");
@@ -1987,9 +1996,38 @@ function renderResult(d){
  r.append(ul);
  textSection(r,"Šta je dobro",d.strengths);
  textSection(r,"Šta treba ispraviti",d.improvements);
- textSection(r,"Gramatika i izrazi",d.errors);
+
+ if(!document.getElementById("demaxB1V4Styles")){
+  const style=document.createElement("style");
+  style.id="demaxB1V4Styles";
+  style.textContent=[
+   ".demax-issue-list-v4{display:grid;gap:10px;margin:8px 0 12px}",
+   ".demax-issue-v4{background:#fff;border:1px solid #d6dfec;border-radius:11px;padding:11px 12px;font-size:12px;line-height:1.65}",
+   ".demax-issue-title-v4{color:#173f78;font-weight:900;margin-bottom:8px}",
+   ".demax-wrong-v4{background:#fff0f0;color:#bc1424;border:1px solid #ffd0d4;border-radius:7px;padding:9px;white-space:pre-wrap;overflow-wrap:anywhere;margin-bottom:7px}",
+   ".demax-right-v4{background:#e8f9ee;color:#087943;border:1px solid #b9e8cd;border-radius:7px;padding:9px;white-space:pre-wrap;overflow-wrap:anywhere;margin-bottom:7px}",
+   ".demax-explain-v4{color:#293e54;padding:4px 1px;white-space:pre-wrap;overflow-wrap:anywhere}",
+   ".demax-edit-v4{background:#d6fbe3;color:#056c38;font-weight:900;border-radius:3px;padding:0 1px}",
+   ".demax-mail-v4{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.8}"
+  ].join("");
+  document.head.append(style);
+ }
+ r.append(node("h4","Greške i objašnjenja"));
+ const issues=Array.isArray(d.issues)?d.issues.filter(x=>x&&x.original&&x.correction&&x.original.trim()!==x.correction.trim()):[];
+ if(issues.length){
+  const list=node("div",undefined,"demax-issue-list-v4");
+  issues.forEach((item,i)=>{
+   const box=node("div",undefined,"demax-issue-v4");
+   box.append(node("div","Greška "+(i+1)+" – "+(item.category||"Gramatička greška"),"demax-issue-title-v4"));
+   box.append(node("div","Napisano: "+item.original,"demax-wrong-v4"));
+   box.append(node("div","Ispravljeno: "+item.correction,"demax-right-v4"));
+   box.append(node("div","Objašnjenje: "+(item.explanation||"Ispravljen je gramatički oblik."),"demax-explain-v4"));
+   list.append(box);
+  });
+  r.append(list);
+ }else{r.append(node("p",Array.isArray(d.issues)?"Nema pronađenih gramatičkih ili pravopisnih grešaka.":"Ponovo pritisni PROVERI MEJL nakon objavljivanja novog B1 Workera."));}
  if(d.corrected){appendCorrectedTranslation(d,r)}
- if(d.example){r.append(node("h4","Primer potpunog B1 odgovora"),node("div",d.example,"corrected"))}
+
  r.scrollTop=0;
 }
 
