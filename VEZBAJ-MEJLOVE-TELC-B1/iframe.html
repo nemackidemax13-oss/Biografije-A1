@@ -1282,6 +1282,64 @@ header .topRight #homeBtn{
  }
 }
 
+
+/* MAIL_ENVELOPE_STATUS_20261031: koverte 1-20 / neutralno, plavo, zeleno */
+body.listing .tile.mailEnvelopeTile{
+  position:relative!important;display:flex!important;flex-direction:column!important;
+  align-items:center!important;justify-content:center!important;gap:2px!important;
+  background:#fff!important;color:#28548e!important;border:1.5px solid #bdd0e8!important;
+  box-shadow:0 1px 3px #14346b13!important;min-width:0!important;
+}
+body.listing .tile.mailEnvelopeTile .mailEnvelopeIcon{
+  display:block!important;flex:none!important;color:inherit!important;
+  font-size:30px!important;line-height:1!important;
+}
+body.listing .tile.mailEnvelopeTile strong,
+body.listing .tile.mailEnvelopeTile.verified strong,
+body.listing .tile.mailEnvelopeTile.selected strong{
+  display:block!important;flex:none!important;width:100%!important;
+  max-height:none!important;overflow:visible!important;white-space:nowrap!important;
+  -webkit-line-clamp:unset!important;line-clamp:unset!important;
+  margin:0!important;font-size:14px!important;line-height:1.15!important;
+  font-weight:950!important;color:inherit!important;letter-spacing:.1px!important;
+}
+body.listing .tile.mailEnvelopeTile.selected:not(.verified){
+  background:#dbeaff!important;color:#1358ad!important;
+  border:2px solid #156ad4!important;box-shadow:0 0 0 1px #a9cbf5!important;
+}
+body.listing .tile.mailEnvelopeTile.verified,
+body.listing .tile.mailEnvelopeTile.selected.verified{
+  background:#d6f5e2!important;color:#136e3b!important;
+  border:2px solid #168443!important;box-shadow:0 0 0 1px #b5dfc5!important;
+}
+body.listing .tile.mailEnvelopeTile .mailEnvelopeMark{
+  position:absolute!important;top:3px;right:3px;display:block;
+  width:17px;height:17px;border-radius:50%;
+  background:#168443;color:#fff;text-align:center;
+  font-size:12px;font-weight:1000;line-height:17px;pointer-events:none;
+}
+.restartRound{
+  border:0;border-radius:7px;padding:7px 10px;
+  background:#14834b;color:#fff;font-size:11px;font-weight:900;white-space:nowrap;
+}
+@media(max-width:700px){
+ body.listing .tile.mailEnvelopeTile{gap:2px!important;padding:2px!important}
+ body.listing .tile.mailEnvelopeTile .mailEnvelopeIcon{font-size:clamp(19px,5.5vw,27px)!important}
+ body.listing .tile.mailEnvelopeTile strong,
+ body.listing .tile.mailEnvelopeTile.verified strong,
+ body.listing .tile.mailEnvelopeTile.selected strong{font-size:clamp(10px,2.7vw,13px)!important}
+ body.listing .tile.mailEnvelopeTile .mailEnvelopeMark{
+   top:2px;right:2px;width:13px;height:13px;line-height:13px;font-size:10px
+ }
+ .restartRound{font-size:9px;padding:5px 6px}
+}
+@media(max-width:700px) and (max-height:630px){
+ body.listing .tile.mailEnvelopeTile .mailEnvelopeIcon{font-size:19px!important}
+ body.listing .tile.mailEnvelopeTile strong,
+ body.listing .tile.mailEnvelopeTile.verified strong,
+ body.listing .tile.mailEnvelopeTile.selected strong{font-size:10px!important}
+}
+
 </style>
 </head>
 <body class="intro">
@@ -1320,7 +1378,7 @@ header .topRight #homeBtn{
 <section id="mailList" class="mailList hidden">
   <h2>IZABERITE MEJL</h2>
   
-  <div class="groupTitle"><span id="overview">0 / 20 provereno</span></div>
+  <div class="groupTitle"><span id="overview">0 / 20 provereno</span><button id="restartRound" type="button" class="restartRound hidden" title="Resetuje boje i AI oznake, ali čuva ranije napisane tekstove">↻ NOVI KRUG</button></div>
   <div id="tiles" class="tiles"></div>
 </section>
 <section id="taskScreen" class="taskPage hidden">
@@ -1391,18 +1449,20 @@ function validB1Result(i){
 function overview(){
  const checked=mails.filter((m,i)=>validB1Result(i)).length;
  $("overview").textContent=checked+" / "+mails.length+" AI provereno";
+ $("restartRound").classList.toggle("hidden",mails.length===0||checked!==mails.length);
  $("tiles").replaceChildren();
  mails.forEach((m,i)=>{
-  const selected=state.selected===i;
-  const practiced=countWords(state.drafts[i]||"")>0;
   const verified=validB1Result(i);
-  const b=node("button",undefined,"tile"+(practiced?" practiced":"")+(verified?" verified":"")+(selected?" selected":""));
+  const selected=state.selected===i&&!verified;
+  const practiced=countWords(state.drafts[i]||"")>0;
+  const b=node("button",undefined,"tile mailEnvelopeTile"+(verified?" verified":"")+(selected?" selected":""));
   b.type="button";
-  b.setAttribute("aria-pressed",String(selected));
-  const status=verified?"AI proveren mejl, "+Number(state.last[i].total)+" od 45 vežbačkih bodova":practiced?"vežba započeta":"još nije vežbano";
-  b.setAttribute("aria-label",(i+1)+". "+m.title+", "+status+(selected?", trenutno izabran":""));
-  b.title=(i+1)+". "+m.title+" · "+status;
-  b.append(node("strong",verified?"PROVEREN MEJL":(i+1)+". "+m.title));
+  b.setAttribute("aria-pressed",String(state.selected===i));
+  const status=verified?"AI proveren, "+Number(state.last[i].total)+" od 45 bodova":selected?"trenutno izabran":practiced?"ranije započet":"još nije vežbano";
+  b.setAttribute("aria-label","Mejl "+(i+1)+": "+m.title+" – "+status);
+  b.title="Mejl "+(i+1)+": "+m.title+" · "+status;
+  b.append(node("span","✉","mailEnvelopeIcon"),node("strong","MEJL "+(i+1)));
+  if(verified)b.append(node("span","✓","mailEnvelopeMark"));
   b.onclick=()=>openMail(i);
   $("tiles").append(b);
  });
@@ -1662,7 +1722,7 @@ async function grade(){
   let result={};try{result=await res.json()}catch{}
   if(!res.ok)throw Error(result.error||(res.status===404?"B1 Worker još nije objavljen.":"HTTP "+res.status));
   if(index!==current||$("draft").value.trim()!==answer)return;
-  state.last[index]=result;save();renderResult(result);
+  state.last[index]=result;save();renderResult(result);overview();
   $("status").textContent="AI provera završena. Rezultat je informativan i može odstupati od zvanične ocene.";
  }catch(e){
   if(index!==current)return;
@@ -1680,6 +1740,14 @@ function exportDraft(){
 
 $("homeBtn").onclick=()=>document.body.classList.contains("listing")?backFromMailList():showList();
 $("openList").onclick=showList;
+$("restartRound").onclick=()=>{
+ if(!mails.length||!mails.every((m,i)=>validB1Result(i)))return;
+ // Novi krug resetuje oznake, ali učenikove tekstove čuva za ponovno vežbanje.
+ state.last={};
+ state.selected=null;
+ save();
+ showList();
+};
 $("backAllMails").onclick=()=>{if(document.activeElement===$("draft"))$("draft").blur();showList();};
 $("startWriting").onclick=startWriting;
 $("backTask").onclick=backTask;
