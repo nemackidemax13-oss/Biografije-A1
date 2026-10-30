@@ -1551,7 +1551,7 @@ body.listing footer{display:none!important}
 </section>
 <section id="writerScreen" class="writerPage hidden">
   <span id="writerClock" class="writerClock" role="timer" aria-label="Preostalo vreme za pisanje mejla">⏱ 30:00</span>
-  <button id="backAllMails" class="backAllMails" type="button" aria-label="Nazad na svih 20 mejlova">← Nazad</button>
+  <button id="backAllMails" class="backAllMails" type="button" aria-label="Nazad na postavku trenutno izabranog mejla">← Nazad</button>
   <div class="writerTop">
     <button type="button" id="backTask" class="secondary">← POSTAVKA</button>
     <span id="writerName" class="name">TELC B1 · MEJL 1</span>
@@ -2070,7 +2070,7 @@ $("restartRound").onclick=()=>{
  save();
  showList();
 };
-$("backAllMails").onclick=()=>{if(document.activeElement===$("draft"))$("draft").blur();showList();};
+$("backAllMails").onclick=()=>{if(current>=0)backTask();else showList();};
 $("startWriting").onclick=startWriting;
 $("backTask").onclick=backTask;
 $("translationToggle").onclick=()=>{
