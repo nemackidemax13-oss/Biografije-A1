@@ -1626,8 +1626,8 @@ function screen(name){
  document.body.classList.toggle("tasking",name==="taskScreen");
  document.body.classList.toggle("intro",name==="welcome");
  document.body.classList.toggle("listing",name==="mailList");
- $("homeBtn").textContent=name==="mailList"?"← NAZAD NA UPUTSTVO":"MEJLOVI";
- $("homeBtn").title=name==="mailList"?"Povratak na početno uputstvo":"Izaberite mejl";
+ $("homeBtn").textContent=name==="mailList"?"← NAZAD NA UPUTSTVO":name==="writerScreen"?"← POSTAVKA":"MEJLOVI";
+ $("homeBtn").title=name==="mailList"?"Povratak na početno uputstvo":name==="writerScreen"?"Nazad na postavku istog mejla":"Izaberite mejl";
  document.body.classList.remove("keyboardOpen");
  $("navBar").classList.toggle("hidden",name!=="taskScreen"&&name!=="writerScreen");
  document.querySelectorAll(".taskNav").forEach(e=>e.classList.toggle("hidden",name!=="taskScreen"&&name!=="writerScreen"));
@@ -2060,7 +2060,7 @@ function exportDraft(){
  const a=document.createElement("a");a.href=url;a.download="DE-MAX_TELC_B1_Mejl_"+(current+1)+".txt";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),4000);
 }
 
-$("homeBtn").onclick=()=>document.body.classList.contains("listing")?backFromMailList():showList();
+$("homeBtn").onclick=()=>{if(document.body.classList.contains("writing")&&current>=0)backTask();else if(document.body.classList.contains("listing"))backFromMailList();else showList();};
 $("openList").onclick=showList;
 $("restartRound").onclick=()=>{
  if(!mails.length||!mails.every((m,i)=>validB1Result(i)))return;
