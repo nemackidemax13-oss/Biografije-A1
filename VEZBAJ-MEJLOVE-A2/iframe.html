@@ -3254,6 +3254,81 @@ html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .actions #grad
  body.writing:not(.reviewing) #writerScreen .editor .actions #gradeBtn{font-size:7px!important}
 }
 
+
+/* A2 FIX 2026-11-01: sat i povratak ostaju vidljivi u vrhu i uz otvorenu tastaturu */
+@media(max-width:700px){
+ html.b1-typing body.writing:not(.reviewing) #writerScreen .editor,
+ body.writing.keyboardOpen:not(.reviewing) #writerScreen .editor{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  justify-content:flex-start!important;
+  padding:3px 5px 2px!important;
+  gap:3px!important;
+  min-height:0!important;
+  overflow:hidden!important;
+ }
+ html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .editHead.a2-writing-whitebar,
+ body.writing.keyboardOpen:not(.reviewing) #writerScreen .editor .editHead.a2-writing-whitebar{
+  display:grid!important;
+  visibility:visible!important;
+  opacity:1!important;
+  order:-1!important;
+  flex:0 0 29px!important;
+  grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)!important;
+  grid-template-rows:26px!important;
+  align-items:center!important;
+  width:100%!important;
+  height:29px!important;
+  min-height:29px!important;
+  max-height:29px!important;
+  margin:0!important;
+  padding:1px 4px!important;
+  border:1px solid #d9e3f1!important;
+  border-radius:7px!important;
+  box-sizing:border-box!important;
+  background:#fff!important;
+  overflow:visible!important;
+  position:relative!important;
+  z-index:245!important;
+ }
+ html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .editHead #writerClock,
+ body.writing.keyboardOpen:not(.reviewing) #writerScreen .editor .editHead #writerClock{
+  display:inline-flex!important;
+  visibility:visible!important;
+  opacity:1!important;
+  grid-column:2!important;
+  grid-row:1!important;
+ }
+ html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .editHead #writerPostavkaBtn,
+ body.writing.keyboardOpen:not(.reviewing) #writerScreen .editor .editHead #writerPostavkaBtn{
+  display:inline-flex!important;
+  visibility:visible!important;
+  opacity:1!important;
+  grid-column:3!important;
+  grid-row:1!important;
+  justify-self:end!important;
+  pointer-events:auto!important;
+  touch-action:manipulation!important;
+ }
+ html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .writingPoints,
+ body.writing.keyboardOpen:not(.reviewing) #writerScreen .editor .writingPoints{
+  order:0!important;
+  flex:0 0 auto!important;
+  width:100%!important;
+  min-height:0!important;
+ }
+ html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .draftScrollFrame,
+ body.writing.keyboardOpen:not(.reviewing) #writerScreen .editor .draftScrollFrame{
+  order:2!important;
+  flex:1 1 0!important;
+  min-height:35px!important;
+ }
+ html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .actions,
+ body.writing.keyboardOpen:not(.reviewing) #writerScreen .editor .actions{
+  order:3!important;
+ }
+}
 </style>
 </head>
 <body class="intro">
@@ -3642,11 +3717,11 @@ function fitB1QuestionsToKeyboard(){
  if(!block||!editor||!area||!actions||editor.clientHeight<65)return;
  // Četiri nemačka pitanja i četiri sitnija prevoda moraju stati iznad polja.
  const typing=document.documentElement.classList.contains("b1-typing");
- const gap=typing?Math.min(46,Math.max(27,Math.floor(editor.clientHeight*.105))):0;
+ const gap=typing?3:0; // Bela traka sada zauzima svojih 29 px bez rezervnog prostora.
  editor.style.setProperty("--b1-overlay-gap",gap+"px");
  const editorStyle=getComputedStyle(editor);
  const editorPaddingBottom=parseFloat(editorStyle.paddingBottom)||0;
- const header=typing?0:(editor.querySelector(".editHead")?.offsetHeight||22);
+ const header=editor.querySelector(".editHead")?.offsetHeight||0; // Racunaj traku i uz tastaturu.
  // Najmanje 40px ostavi za unos, a do 26px za proveru mejla.
  const minimumInput=40;
  const available=Math.max(60,Math.floor(editor.clientHeight-gap-header-actions.offsetHeight-
