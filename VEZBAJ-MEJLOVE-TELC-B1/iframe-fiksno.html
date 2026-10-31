@@ -2999,33 +2999,36 @@ function splitForB1Translation(source){
 }
 async function translateB1Corrected(source,progress){
  const fragments=splitForB1Translation(source),total=fragments.filter(f=>f.text).length;
- if(!total)return "";
- const translated=[];let completed=0;
+ if(!total)throw Error("Nema teksta za prevod.");
+ const translated=[];let done=0;
  for(const frag of fragments){
   if(frag.newline){translated.push("\n");continue;}
-  progress(++completed,total);
-  const url="https://api.mymemory.translated.net/get?"+new URLSearchParams({
-   q:frag.text,langpair:"de|sr"
-  }).toString();
-  const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),15000);
+  const url="https://api.mymemory.translated.net/get?"+new URLSearchParams({q:frag.text,langpair:"de|sr"});
+  const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),12000);
   try{
    const response=await fetch(url,{method:"GET",signal:controller.signal,cache:"no-store"});
    const data=await response.json().catch(()=>null);
-   const text=data?.responseData?.translatedText;
-   if(!response.ok||Number(data?.responseStatus)!==200||typeof text!=="string"||!text.trim()){
-    throw Error("servis za prevod trenutno nije dostupan");
+   const value=data?.responseData?.translatedText;
+   if(!response.ok||Number(data?.responseStatus)!==200||typeof value!=="string"||!value.trim()){
+    const detail=String(data?.responseDetails||"");
+    if(/quota|limit|daily/i.test(detail)||response.status===429)throw Error("Dnevni limit prevoda je dostignut.");
+    throw Error("Servis za prevod trenutno ne može da prevede mejl.");
    }
-   // Bez korišćenja innerHTML za prikaz: prevod se prikazuje isključivo kao tekst.
-   const parsed=new DOMParser().parseFromString(text,"text/html").documentElement.textContent||text;
+   const parsed=new DOMParser().parseFromString(value,"text/html").documentElement.textContent||value;
+   const clean=latinSerbian(parsed.trim());
+   if(!clean||/^(?:MYMEMORY WARNING|INVALID LANGUAGE|PLEASE SELECT TWO DISTINCT)/i.test(clean))throw Error("Servis nije vratio ispravan prevod.");
    if(translated.length&&translated[translated.length-1]!=="\n")translated.push(" ");
-   translated.push(latinSerbian(parsed.trim()));
+   translated.push(clean);done++;
+   progress?.(done,total,translated.join("").trim());
   }catch(err){
-   if(err?.name==="AbortError")throw Error("zahtev za prevod je istekao");
+   if(err?.name==="AbortError")throw Error("Servis za prevod nije odgovorio na vreme.");
+   if(err instanceof TypeError)throw Error("Aplikacija ne može da pristupi servisu za prevod.");
    throw err;
   }finally{clearTimeout(timeout);}
  }
  return translated.join("").trim();
 }
+
 function correctedTranslationFromWorker(result){
  const variants=[
   result?.corrected_sr,result?.correctedSr,result?.correctedTranslation,
@@ -3047,42 +3050,53 @@ function appendCorrectedTranslation(result,root){
  }else{german.textContent=result.corrected;}
  const button=node("button","🇷🇸 PREVOD NA SRPSKOM","correctedTranslationToggle");
  button.type="button";button.setAttribute("aria-expanded","false");
- const serbian=node("div",undefined,"correctedSerbian hidden");
- serbian.id="corrected-serbian-result";button.setAttribute("aria-controls",serbian.id);
- const fromWorker=correctedTranslationFromWorker(result);
- if(fromWorker){serbian.textContent=latinSerbian(fromWorker);serbian.dataset.loaded="yes";}
- const notice=node("div",
-  "Ako prevod nije dostupan iz AI provere, klikom se ispravljeni mejl šalje servisu MyMemory radi prevoda. Nemojte unositi osetljive lične podatke.",
-  "translationDisclosure");
- if(fromWorker)notice.classList.add("hidden");
+ const sr=node("div",undefined,"correctedSerbian hidden");
+ sr.id="corrected-serbian-result";button.setAttribute("aria-controls",sr.id);
+ const fallback=node("a","Otvori prevod u Google prevodiocu ↗","hidden");
+ fallback.href="https://translate.google.com/?sl=de&tl=sr&text="+encodeURIComponent(result.corrected)+"&op=translate";
+ fallback.target="_blank";fallback.rel="noopener noreferrer";
+ fallback.style.cssText="align-self:flex-end;background:#fff1ad;color:#473600;border:1px solid #e5b521;border-radius:8px;padding:8px 10px;font-size:11px;font-weight:900;text-decoration:none";
+ const notice=node("div","Prevod se učitava na zahtev preko MyMemory. Ako servis nije dostupan, otvorite prevod preko rezervnog linka. Ne unosite osetljive podatke.","translationDisclosure");
+ const cacheKey="demax_b1_sr_corrected_"+current;
+ let prepared=correctedTranslationFromWorker(result);
+ if(!prepared){try{const v=JSON.parse(localStorage.getItem(cacheKey)||"null");if(v?.de===result.corrected)prepared=v.sr;}catch(e){}}
+ if(typeof prepared==="string"&&prepared.trim()){
+  sr.textContent=latinSerbian(prepared);sr.dataset.loaded="yes";notice.classList.add("hidden");
+ }
  button.onclick=async()=>{
-  if(!serbian.classList.contains("hidden")){
-   serbian.classList.add("hidden");button.setAttribute("aria-expanded","false");
+  if(sr.dataset.loaded==="yes"){
+   const show=sr.classList.contains("hidden");
+   sr.classList.toggle("hidden",!show);button.setAttribute("aria-expanded",String(show));
+   button.textContent=show?"🇷🇸 SAKRIJ PREVOD":"🇷🇸 PREVOD NA SRPSKOM";return;
+  }
+  if(!sr.classList.contains("hidden")&&button.dataset.failed!=="yes"&&!button.disabled){
+   sr.classList.add("hidden");button.setAttribute("aria-expanded","false");
    button.textContent="🇷🇸 PREVOD NA SRPSKOM";return;
   }
-  if(serbian.dataset.loaded==="yes"){
-   serbian.classList.remove("hidden");button.setAttribute("aria-expanded","true");
-   button.textContent="🇷🇸 SAKRIJ PREVOD";return;
-  }
+  button.dataset.failed="";
+  fallback.classList.add("hidden");sr.classList.remove("hidden");
+  sr.textContent="Učitavanje prevoda…";button.setAttribute("aria-expanded","true");
   button.disabled=true;button.textContent="🇷🇸 UČITAVAM PREVOD…";
+  let partial="";
   try{
-   const translated=await translateB1Corrected(result.corrected,(done,total)=>{
-    if(root.contains(button))button.textContent="🇷🇸 PREVOD "+done+" / "+total+"…";
+   const translated=await translateB1Corrected(result.corrected,(done,total,soFar)=>{
+    partial=soFar;
+    if(!root.contains(button))return;
+    sr.textContent=soFar;
+    button.textContent="🇷🇸 PREVOD "+done+" / "+total+"…";
    });
    if(!root.contains(button))return;
-   serbian.textContent=translated;serbian.dataset.loaded="yes";
-   serbian.classList.remove("hidden");button.setAttribute("aria-expanded","true");
-   button.textContent="🇷🇸 SAKRIJ PREVOD";
-  }catch(e){
+   sr.textContent=translated;sr.dataset.loaded="yes";
+   button.textContent="🇷🇸 SAKRIJ PREVOD";notice.classList.add("hidden");
+   try{localStorage.setItem(cacheKey,JSON.stringify({de:result.corrected,sr:translated}));}catch(e){}
+  }catch(err){
    if(!root.contains(button))return;
-   serbian.textContent="Prevod trenutno nije dostupan: "+(e?.message||"greška u povezivanju")+". Pokušajte ponovo.";
-   serbian.classList.remove("hidden");button.setAttribute("aria-expanded","false");
+   sr.textContent=(partial?partial+"\n\n":"")+"Prevod nije moguće dovršiti: "+(err?.message||"servis nije dostupan")+".";
+   fallback.classList.remove("hidden");button.dataset.failed="yes";
    button.textContent="🇷🇸 POKUŠAJ PONOVO";
-  }finally{
-   if(root.contains(button))button.disabled=false;
-  }
+  }finally{if(root.contains(button))button.disabled=false;}
  };
- translationBox.append(german,button,serbian,notice);
+ translationBox.append(german,button,sr,fallback,notice);
  root.append(node("h4","Ispravljena verzija odgovora"),translationBox);
 }
 
