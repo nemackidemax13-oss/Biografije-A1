@@ -535,6 +535,9 @@ html.a2-show-sr .question-sr{display:block!important}
 .prompt .a2-prompt-controls #a2PromptFull,
 .prompt .a2-prompt-controls #a2PromptCheck{display:none!important}
 @media(max-width:700px){
+ /* Postavka mora nestati kad se pređe na pisanje mejla. */
+ .workspace.writing .prompt{display:none!important}
+ .workspace:not(.writing) .prompt{display:flex!important}
  .prompt .a2-prompt-controls{
   grid-template-columns:minmax(0,1.75fr) max-content minmax(0,1.3fr)!important;
   padding:5px 6px max(6px,env(safe-area-inset-bottom))!important;
