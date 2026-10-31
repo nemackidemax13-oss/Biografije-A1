@@ -600,6 +600,45 @@ html.a2-show-sr .question-sr{display:block!important}
  .hero #cards .envelope-icon{font-size:22px!important}
 }
 
+
+/* A2 B1-STYLE TWO-STEP INTRO THEN ALL 13 ENVELOPES 20261031 */
+body:has(#welcome:not(.hide)) header{display:none!important}
+body:has(#welcome:not(.hide)) .welcome{
+ display:flex!important;flex:1 1 auto!important;
+ min-height:0!important;height:100%!important;
+ align-items:center!important;justify-content:center!important;
+}
+/* Ekran sa 13 koverti i jasnim povratkom na prvo uputstvo. */
+.hero:has(#cards) .hero-main{
+ display:grid!important;grid-template-columns:max-content minmax(0,1fr) max-content!important;
+ gap:8px!important;align-items:center!important;padding:8px!important;
+}
+.hero:has(#cards) .hero-main h1{
+ grid-column:2!important;font-size:clamp(16px,3vw,21px)!important;
+ margin:0!important;text-align:center!important;
+}
+.hero:has(#cards) .hero-main p{
+ grid-column:3!important;font-size:10px!important;
+ color:#dae9ff!important;white-space:nowrap!important;
+}
+.a2-back-intro{
+ grid-column:1!important;display:flex!important;align-items:center!important;justify-content:center!important;
+ min-height:28px!important;border:1px solid #90d9b1!important;border-radius:7px!important;
+ background:#0e8b51!important;color:#fff!important;
+ font-size:10px!important;font-weight:950!important;padding:4px 8px!important;
+ white-space:nowrap!important;
+}
+@media(max-width:700px){
+ .hero:has(#cards) .hero-main{
+  grid-template-columns:max-content minmax(0,1fr)!important;
+  padding:6px!important;gap:4px!important;
+ }
+ .hero:has(#cards) .hero-main h1{font-size:clamp(15px,4.3vw,20px)!important;grid-column:2!important}
+ .hero:has(#cards) .hero-main p{display:none!important}
+ .hero:has(#cards) .summary{margin:4px 2px!important}
+ .a2-back-intro{padding:4px 6px!important;font-size:9px!important;min-height:27px!important}
+}
+
 </style></head><body>
 <div class="app"><header><div class="top"><div class="brand">A2 mejl vežbe</div><div class="pill">13 mejlova · 15 bodova</div></div>
 <div class="nav"><button id="prev" aria-label="Prethodni mejl">‹</button><button id="navTitle" type="button" aria-label="Trenutni mejl; tokom pisanja vrati na postavku">Izaberi mejl</button><button id="next" aria-label="Sledeći mejl">›</button><button id="homeButton" type="button" aria-label="Povratak na sve mejlove" title="Povratak na sve mejlove">svi mejlovi</button><button id="a2RetryTop" type="button" class="hide" aria-label="Vežbaj mejl ponovo" title="Počni ovaj mejl iznova">↻ VEŽBAJ PONOVO</button></div></header>
@@ -614,10 +653,18 @@ html.a2-show-sr .question-sr{display:block!important}
   <div class="welcome-rule rule-alert"><span class="rule-symbol">!</span><span><b>Ukoliko napišete manje od 26 reči, mejl se ne boduje.</b></span></div>
   <div class="welcome-rule"><span class="rule-symbol">✓</span><span><b>Na kraju mejla dodajte pozdrav!</b></span></div>
  </div>
- <button id="chooseMailButton" class="welcome-go" type="button">Izaberi mejl <span aria-hidden="true">›</span></button>
+ <button id="chooseMailButton" class="welcome-go" type="button">IZABERI MEJL <span aria-hidden="true">➜</span></button>
  </div>
 </section>
-<section id="home" class="hero hide"><div class="hero-main"><h1>Izaberi mejl</h1><p>A2 · 13 zadataka za vežbanje pisanja</p></div><div class="summary"><span>⚪ Neodrađeno · 🔵 Radi se · 🟢 Provereno</span><span id="summary">0 / 13 provereno</span></div><div id="cards" class="cards"></div></section>
+<section id="home" class="hero hide" aria-label="Druga stranica, izaberi mejl">
+ <div class="hero-main">
+  <button type="button" id="a2BackToInstructions" class="a2-back-intro" aria-label="Nazad na uputstvo">← UPUTSTVO</button>
+  <h1>IZABERI MEJL</h1>
+  <p>Svih 13 mejlova</p>
+ </div>
+ <div class="summary"><span>⚪ Neodrađeno · 🔵 Radi se · 🟢 Provereno</span><span id="summary">0 / 13 provereno</span></div>
+ <div id="cards" class="cards" aria-label="Svih 13 koverata, od mejla 1 do mejla 13"></div>
+</section>
 <main id="workspace" class="workspace hide">
 <section class="panel prompt"><div class="ptitle"><strong id="number">1. mejl</strong><span id="a2PromptClock" class="a2Timer" role="timer">⏱ 30:00</span></div>
 
@@ -893,6 +940,7 @@ $('navTitle').onclick=()=>{if($('workspace').classList.contains('writing'))leave
 
 $('homeButton').onclick=showHome;
 $('chooseMailButton').onclick=showHome;
+$('a2BackToInstructions').onclick=showWelcome;
 $('startWriting').onclick=enterWriting;
 $('backToTask').onclick=leaveWriting;
 $('answer').addEventListener('input',()=>{
@@ -922,7 +970,9 @@ $('a2PromptCheck').onclick=()=>{
  enterWriting(false);grade();
 };
 
-const initial=location.hash.match(/^#mejl-(\d+)$/);if(initial)openMail(Number(initial[1])-1);else {renderCards();showWelcome()}
+// Uvek otvori prvu stranicu: UPUTSTVO. Sledeća stranica je izbor 13 koverata.
+renderCards();
+showWelcome();
 
 /* Keep the answer box and check bar visible above a mobile virtual keyboard. */
 let a2FullScreenHeight=0;
