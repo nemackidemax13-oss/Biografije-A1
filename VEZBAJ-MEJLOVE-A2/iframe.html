@@ -556,6 +556,10 @@ html.a2-show-sr .question-sr{display:block!important}
 
 
 /* A2 ENVELOPES 13 ALL VISIBLE WHITE BLUE GREEN 20261031 */
+/* Nemoj prikazivati listu koverata iznad postavke ili pisanja.
+   .hero:has(#cards) ima vecu specificnost od generickog .hide. */
+.hero.hide{display:none!important}
+
 .hero:has(#cards){display:flex!important;flex-direction:column!important;overflow:hidden!important;min-height:0!important}
 .hero:has(#cards) .hero-main{padding:8px!important;flex:none!important}
 .hero:has(#cards) .hero-main h1{font-size:18px!important;margin:0 0 3px!important}
