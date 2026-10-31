@@ -1784,10 +1784,183 @@ body.view-mail .prompt .panel-title .prompt-actions{order:2!important;margin-lef
   min-height:30px!important;
  }
 }
+
+/* DE-MAX: ÖSD A1 dobijena A2/B1 mobilna kontrolna traka i uvod. */
+body.view-intro .app{height:100dvh;max-height:100dvh;overflow:hidden}
+body.view-intro #mailHome,body.view-intro header,body.view-intro .workspace{display:none!important}
+body.view-intro #mailIntro{display:flex!important}
+body:not(.view-intro) #mailIntro{display:none!important}
+.a1-intro{display:flex;flex:1;justify-content:center;align-items:center;min-height:0;overflow:hidden;background:linear-gradient(155deg,#eaf2ff,#fff);padding:clamp(6px,1.5vh,16px)}
+.a1-intro-content{width:min(560px,100%);max-height:100%;display:flex;flex-direction:column;align-items:stretch;gap:clamp(4px,.9vh,9px)}
+.a1-brand-logo{display:block;width:clamp(58px,11vh,106px);height:clamp(58px,11vh,106px);object-fit:contain;border-radius:50%;margin:0 auto 1px;filter:drop-shadow(0 2px 5px #1d3f6f22)}
+.a1-intro-eyebrow{font-weight:900;color:#2058ad;text-align:center;font-size:clamp(11px,2vh,15px);letter-spacing:1px}
+.a1-intro h1{color:#123875;text-align:center;font-size:clamp(19px,3.1vh,26px);line-height:1.1;margin:0}
+.a1-intro-rules{display:grid;gap:clamp(4px,.85vh,8px)}
+.a1-intro-rule{display:flex;align-items:center;gap:9px;padding:clamp(6px,1.1vh,10px) 11px;border:1px solid #d6e4f6;background:#fff;border-radius:10px;color:#183d78;font-size:clamp(11px,1.8vh,15px);line-height:1.2}
+.a1-intro-rule span{flex:0 0 22px;text-align:center;color:#155cbd;font-size:17px;font-weight:900}
+.a1-intro-rule.warning{background:#fff6f7;border-color:#f2c8d0;color:#a32235}
+.a1-intro-rule.warning span{color:#d92f4b}
+.a1-intro-go{display:block;width:100%;border:0;background:linear-gradient(110deg,#0d9859,#0a7744);color:white;border-radius:10px;padding:clamp(10px,1.6vh,14px);font-size:clamp(14px,2.2vh,18px);font-weight:900}
+.a1-clock{display:inline-flex;align-items:center;justify-content:center;min-width:64px;min-height:25px;padding:2px 4px;background:#fff6f6;border:1px solid #f1b6c0;border-radius:7px;color:#cc2a40;font-size:10.5px;font-weight:950;font-variant-numeric:tabular-nums;white-space:nowrap}
+.a1-clock.timeLow{background:#ffe0e4;color:#ac142c}
+.a1-mail-nav{display:inline-flex;align-items:center;justify-content:center;gap:4px}
+.a1-mail-nav button{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:26px;border:1px solid #ff8592;border-radius:6px;background:#d82d45;color:white;font-size:20px;font-weight:900;padding:0}
+.a1-mail-nav button:disabled{opacity:.35}
+#a1MailCount{padding:3px;min-width:47px;text-align:center;color:#1854a7;font-size:11px;font-weight:900}
+.a1-prompt-clock-wrap{display:inline-flex;align-items:center;gap:2px}
+#a1ResetClock{height:25px;min-width:21px;background:#e98721;color:white;border:1px solid #ffc486;border-radius:5px;font-size:15px}
+.a1-prompt-tools{display:flex;align-items:center;gap:4px;width:100%}
+.a1-prompt-tools button{height:31px;min-height:31px;border-radius:6px;font-size:10px;font-weight:900;white-space:nowrap}
+#a1PromptTranslation{flex:1 1 auto;background:#ffda52;color:#3b330b;border:1px solid #d2a92c;padding:0 5px}
+#a1PromptTranslation.is-active,#a1WriterSr.is-active{background:#e2c2fa!important;border-color:#aa80d3!important}
+#a1PromptMinus,#a1PromptPlus{flex:0 0 26px;background:#eff5ff;color:#1656a6;border:1px solid #a9c5e9}
+.a1-prompt-tools #mobileStartBottom{flex:1 1 auto;min-width:82px;background:#148a50!important;color:white!important;border:0!important;padding:0 5px;font-size:10px!important}
+.a1-write-whitebar{display:flex;align-items:center;justify-content:space-between;gap:3px;padding:2px 5px;border:1px solid #d9e3f1;border-radius:7px;background:white;min-height:29px}
+.a1-write-whitebar .a1-write-title{font-size:10px;color:#164481;font-weight:900}
+#a1WriterBack{background:#e98721;color:white;border:1px solid #ffc486;border-radius:6px;min-height:24px;font-size:clamp(8px,2.1vw,10px);font-weight:900;padding:2px 5px;white-space:nowrap}
+#a1WriterSr,#a1FullScreen,.a1-writer-font button{border-radius:5px;white-space:nowrap;font-weight:900}
+#a1WriterSr{background:#ffda52;color:#3c300b;border:1px solid #d2aa30}
+.a1-writer-font{display:flex;gap:2px}
+.a1-writer-font button{background:#e7f2ff;color:#15549d;border:1px solid #a5c9ee}
+#a1FullScreen{background:#e7f3ff;color:#15539b;border:1px solid #73ade8}
+.a1-review-controls{display:none}
+.a1-review-controls button{border:0;border-radius:6px;background:#1859a3;color:#fff;font-weight:900;font-size:10px;padding:6px}
+.a1-review-controls #a1ReviewRetry{background:#0b874a}
+body.mobile-review .a1-review-controls{display:flex;flex:0 0 auto;align-items:center;justify-content:flex-end;gap:5px;background:#eaf3ff;padding:5px}
+body.mobile-review .a1-review-controls span{margin-right:auto;color:#154880;font-size:10px;font-weight:900}
+body.mobile-review #answerPanel .panel-title{display:none!important}
+body.mobile-review #result .review-inner .corrected{border:2px solid #2469bb;background:#f1f6ff;border-radius:8px}
+body.mobile-review #result .review-inner .translated{border:2px solid #219352;background:#f0fbf4;border-radius:8px}
+body.a1-translation-off .prompt .sentence-sr,body.a1-translation-off #answerPanel .task-paired .sentence-sr{display:none!important}
+@media(min-width:800px){.a1-write-whitebar{display:none}.a1-prompt-clock-wrap,.a1-mail-nav{margin:0 4px}}
+@media(max-width:799px){
+ body.view-mail:not(.mobile-writing):not(.mobile-review) .prompt .panel-title{
+  display:grid!important;grid-template-columns:auto 1fr auto!important;align-items:center!important;
+  min-height:34px!important;height:34px!important;padding:3px 5px!important;gap:2px!important
+ }
+ body.view-mail .prompt .panel-title #mailNumberText,
+ body.view-mail .prompt .panel-title #mobileStartTop,
+ body.view-mail .prompt .panel-title .prompt-actions{display:none!important}
+ body.view-mail:not(.mobile-writing):not(.mobile-review) .prompt .panel-title #backToGrid{
+  grid-column:3!important;grid-row:1!important;width:auto!important;
+  padding:5px 6px!important;font-size:9px!important;background:#e98721!important;
+  border-color:#ffc486!important;min-height:26px!important
+ }
+ body.view-mail:not(.mobile-writing):not(.mobile-review) .prompt .panel-title .a1-prompt-clock-wrap{
+  grid-column:1!important;grid-row:1!important;margin:0!important
+ }
+ body.view-mail:not(.mobile-writing):not(.mobile-review) .prompt .panel-title .a1-mail-nav{
+  grid-column:2!important;grid-row:1!important;margin:0!important;gap:2px!important;min-width:0!important
+ }
+ #a1MailCount{min-width:38px}
+ .a1-mail-nav button{min-width:25px;height:25px}
+ body.view-mail:not(.mobile-writing):not(.mobile-review) #promptScroll .start-writing-wrap{
+  padding:3px 4px 6px!important
+ }
+ body.view-mail:not(.mobile-writing):not(.mobile-review) #promptScroll .start-writing-wrap .a1-prompt-tools button{height:30px!important;min-height:30px!important}
+ body.view-mail:not(.mobile-writing):not(.mobile-review) #promptScroll .start-writing-wrap #mobileStartBottom{width:auto!important;min-width:82px!important}
+ body.view-mail:not(.mobile-writing):not(.mobile-review) #promptScroll .sentence-de{font-size:calc(13px + var(--a1-prompt-font-delta,0px))!important}
+ body.view-mail:not(.mobile-writing):not(.mobile-review) #promptScroll .sentence-sr{font-size:calc(12.5px + var(--a1-prompt-font-delta,0px))!important}
+ html body.view-mail.mobile-writing #answerPanel>.panel-title{display:none!important}
+ html body.view-mail.mobile-writing #answerPanel .editorarea .a1-write-whitebar{
+  order:-1!important;display:grid!important;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)!important;
+  grid-template-rows:26px!important;width:100%!important;min-height:29px!important;
+  height:29px!important;max-height:29px!important;flex:0 0 29px!important;
+  padding:1px 4px!important;margin:0!important;border:1px solid #d9e3f1!important;
+  border-radius:7px!important;background:white!important;overflow:visible!important
+ }
+ html body.view-mail.mobile-writing .a1-write-whitebar .a1-write-title{display:none!important}
+ html body.view-mail.mobile-writing .a1-write-whitebar #a1WriterClock{
+  grid-column:2!important;justify-self:center!important;height:24px!important;min-height:24px!important
+ }
+ html body.view-mail.mobile-writing .a1-write-whitebar #a1WriterBack{
+  grid-column:3!important;justify-self:end!important;height:24px!important;min-height:24px!important
+ }
+ html body.view-mail.mobile-writing #answerPanel .editorarea .task-paired{
+  order:0!important;flex:0 1 auto!important;max-height:44%!important;
+  padding:4px 6px!important;overflow:hidden!important;touch-action:none!important
+ }
+ html body.view-mail.mobile-writing #answerPanel .task-paired .sentence-de{
+  font-size:clamp(10.6px,3.2vw,12.2px)!important;line-height:1.17!important
+ }
+ html body.view-mail.mobile-writing #answerPanel .task-paired .sentence-sr{
+  font-size:10px!important;line-height:1.1!important
+ }
+ html body.view-mail.mobile-writing #answerPanel .task-paired #pairs-qs{gap:2px!important}
+ html body.view-mail.mobile-writing #answerPanel .editorarea textarea#answer{
+  order:1!important;flex:1 1 0%!important;min-height:37px!important;height:0!important;
+  width:100%!important;max-height:none!important;font-size:var(--a1-write-font,16px)!important;
+  padding:5px 8px!important;margin:0!important;overflow-y:auto!important;touch-action:pan-y!important
+ }
+ html body.view-mail.mobile-writing #answerPanel .editorarea .mini-progress{display:none!important}
+ html body.view-mail.mobile-writing #answerPanel .editorarea .foot{
+  display:grid!important;order:3!important;
+  grid-template-columns:minmax(0,1.55fr) 24px 24px minmax(0,.95fr) minmax(0,1.35fr)!important;
+  grid-template-rows:27px!important;align-items:center!important;gap:3px!important;
+  flex:0 0 31px!important;height:31px!important;min-height:31px!important;max-height:31px!important;
+  padding:2px 1px!important;margin:0!important;min-width:0!important
+ }
+ html body.view-mail.mobile-writing #answerPanel .editorarea .foot #count{display:none!important}
+ html body.view-mail.mobile-writing #answerPanel .editorarea .foot #a1WriterSr{
+  display:flex!important;grid-column:1!important;grid-row:1!important;align-items:center!important;
+  justify-content:center!important;min-width:0!important;width:100%!important;height:27px!important;
+  font-size:clamp(7px,2.2vw,9px)!important;line-height:1!important;padding:2px 1px!important
+ }
+ html body.view-mail.mobile-writing #answerPanel .editorarea .foot .a1-writer-font{display:contents!important}
+ html body.view-mail.mobile-writing #answerPanel .editorarea .foot .a1-writer-font button{
+  display:flex!important;grid-row:1!important;align-items:center!important;justify-content:center!important;
+  min-width:0!important;width:100%!important;height:27px!important;padding:0!important;font-size:11px!important
+ }
+ html body.view-mail.mobile-writing #a1WriterMinus{grid-column:2!important}
+ html body.view-mail.mobile-writing #a1WriterPlus{grid-column:3!important}
+ html body.view-mail.mobile-writing #a1FullScreen{
+  display:flex!important;grid-column:4!important;grid-row:1!important;
+  align-items:center!important;justify-content:center!important;
+  height:27px!important;width:100%!important;min-width:0!important;padding:1px!important;
+  font-size:clamp(7px,2.05vw,9px)!important
+ }
+ html body.view-mail.mobile-writing #check.checkbtn{
+  display:flex!important;grid-column:5!important;grid-row:1!important;
+  justify-content:center!important;align-items:center!important;
+  width:100%!important;min-width:0!important;max-width:100%!important;
+  height:27px!important;min-height:27px!important;max-height:27px!important;
+  padding:2px 1px!important;font-size:clamp(7px,2.2vw,9px)!important;
+  line-height:1!important;white-space:nowrap!important;
+  background:#18834b!important;color:#fff!important
+ }
+ html body.view-mail.mobile-writing #answerPanel .editorarea .mode{display:none!important}
+ body.mobile-writing:not(.mobile-review){overflow:hidden!important;overscroll-behavior:none!important}
+ body.mobile-writing:not(.mobile-review) .app,body.mobile-writing:not(.mobile-review) .workspace{overflow:hidden!important}
+}
+@media(max-width:355px){
+ html body.view-mail.mobile-writing #answerPanel .editorarea .foot{
+  grid-template-columns:minmax(0,1.55fr) 22px 22px minmax(0,.95fr) minmax(0,1.35fr)!important;
+  gap:2px!important
+ }
+ .a1-intro-rule{padding:5px 8px;font-size:11px}
+ #a1PromptTranslation{padding:0 1px;font-size:8px}
+ .a1-mail-nav button{min-width:23px}
+}
 </style>
 </head>
-<body class="view-home">
+<body class="view-intro a1-translation-off">
 <div class="app">
+<section id="mailIntro" class="a1-intro" aria-label="Uputstvo ÖSD A1">
+  <div class="a1-intro-content">
+    <img class="a1-brand-logo" alt="DE-MAX Tutin logo" width="112" height="112" decoding="async" src="data:image/webp;base64,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">
+    <div class="a1-intro-eyebrow">ÖSD A1 · VEŽBAJ MEJLOVE</div>
+    <h1>Uputstvo za pisanje mejla</h1>
+    <div class="a1-intro-rules">
+      <div class="a1-intro-rule"><span>⏱</span><b>Vreme za vežbu: 20 minuta.</b></div>
+      <div class="a1-intro-rule"><span>✓</span><b>Odgovorite na sve tri tačke, odnosno pitanja mejla.</b></div>
+      <div class="a1-intro-rule"><span>✎</span><b>Napišite oko 30 reči.</b></div>
+      <div class="a1-intro-rule warning"><span>!</span><b>Mejl sa manje od 15 reči se ne boduje.</b></div>
+      <div class="a1-intro-rule"><span>✉</span><b>Na kraju mejla napišite završni pozdrav.</b></div>
+      <div class="a1-intro-rule"><span>★</span><b>Maksimalan broj bodova: 10.</b></div>
+    </div>
+    <button id="goMailList" class="a1-intro-go" type="button">IZABERI MEJL <span>➜</span></button>
+  </div>
+</section>
 <section id="mailHome" aria-label="Izbor mejla">
  <div class="mail-home-hero"><div class="mail-home-eyebrow">DE-MAX TUTIN · ÖSD A1</div><div class="mail-home-logo" aria-label="De-Max Tutin"><b>DE-MAX</b><small>TUTIN</small></div><div class="mail-home-eyebrow">35 MEJLOVA · A1 VEŽBANJE</div><h1>Izaberi mejl</h1><p>Odaberi zadatak i napiši odgovor na nemačkom</p></div>
  <div class="mail-home-summary"><span>MEJLOVI ZA VEŽBANJE</span><span id="homeProgress">0 / 35 provereno</span></div>
@@ -1799,7 +1972,9 @@ body.view-mail .prompt .panel-title .prompt-actions{order:2!important;margin-lef
 </header>
 <main class="workspace">
   <section class="panel prompt" aria-label="Postavka zadatka">
-    <div class="panel-title"><strong id="mailNumberText">1. mejl</strong><button class="mobile-jump" id="mobileStartTop" type="button">✎ Piši mejl</button><div class="prompt-actions"><button class="smallbutton readbutton" id="readMode" aria-pressed="false">⤢ Cela postavka</button></div><button id="backToGrid" type="button">← Svi mejlovi</button></div>
+    <div class="panel-title"><strong id="mailNumberText">1. mejl</strong>
+      <div class="a1-prompt-clock-wrap"><span id="a1PromptClock" class="a1-clock" role="timer">⏱ 20:00</span><button id="a1ResetClock" type="button" aria-label="Resetuj vreme">↻</button></div>
+      <div class="a1-mail-nav"><button id="a1PrevMail" type="button" aria-label="Prethodni mejl">❮</button><span id="a1MailCount">1 / 35</span><button id="a1NextMail" type="button" aria-label="Sledeći mejl">❯</button></div><button class="mobile-jump" id="mobileStartTop" type="button">✎ Piši mejl</button><div class="prompt-actions"><button class="smallbutton readbutton" id="readMode" aria-pressed="false">⤢ Cela postavka</button></div><button id="backToGrid" type="button">← Svi mejlovi</button></div>
     <div class="taskscroll" id="promptScroll">
       <div class="bilingual" aria-label="Nemačka postavka sa prevodom ispod svake rečenice">
         <div class="paired-card">
@@ -1811,12 +1986,22 @@ body.view-mail .prompt .panel-title .prompt-actions{order:2!important;margin-lef
           <div id="pairs-email" class="paired-lines"></div>
         </div>
       </div>
-      <div class="start-writing-wrap"><button id="mobileStartBottom" type="button">✎ Piši mejl</button></div>
+      <div class="start-writing-wrap"><div class="a1-prompt-tools">
+ <button id="a1PromptTranslation" type="button" aria-pressed="false">🇷🇸 PREVOD SRPSKI</button>
+ <button id="a1PromptMinus" type="button" aria-label="Smanji slova postavke">A−</button>
+ <button id="a1PromptPlus" type="button" aria-label="Uvećaj slova postavke">A+</button>
+ <button id="mobileStartBottom" type="button">PIŠI MEJL ➜</button>
+</div></div>
     </div>
   </section>
   <section class="panel answer" id="answerPanel" aria-label="Pisanje odgovora">
     <div class="panel-title"><strong id="writeHeading">2. NAPIŠI SVOJ ODGOVOR</strong><button class="mobile-jump" id="mobileBackToMail" type="button">← Postavka</button><span class="limit-note">A1 • oko 30 reči • do 10 bodova</span></div>
-    <div class="editorarea"><div class="editor-top"><span class="save-flag">Čuva se automatski</span></div><textarea id="answer" spellcheck="true" lang="de" placeholder="Napiši odgovor na sva tri pitanja.&#10;&#10;Liebe Grüße&#10;…" aria-label="Ovde upiši mejl na nemačkom"></textarea>
+    <div class="editorarea"><div class="editor-top"><span class="save-flag">Čuva se automatski</span></div>
+<div class="a1-write-whitebar" role="group" aria-label="Preostalo vreme i povratak na postavku">
+ <span class="a1-write-title">✎ PIŠI MEJL</span>
+ <span id="a1WriterClock" class="a1-clock" role="timer">⏱ 20:00</span>
+ <button id="a1WriterBack" type="button">← POSTAVKA MEJLA</button>
+</div><textarea id="answer" spellcheck="true" lang="de" placeholder="Napiši odgovor na sva tri pitanja.&#10;&#10;Liebe Grüße&#10;…" aria-label="Ovde upiši mejl na nemačkom"></textarea>
       <div class="paired-card task-paired" aria-label="Pitanja i uputstvo za mejl">
         <div class="paired-heading"><span id="questionsHead">PITANJA • 1. MEJL</span><button id="mobileBackInline" type="button" aria-label="Vrati se na postavku mejla">← Postavka</button></div>
         <div id="pairs-instruction" class="paired-lines"></div>
@@ -1824,8 +2009,13 @@ body.view-mail .prompt .panel-title .prompt-actions{order:2!important;margin-lef
         <div id="pairs-qs" class="paired-lines question-lines"></div>
         <div id="pairs-signoff" class="paired-lines"></div>
       </div>
-      <div class="mini-progress" aria-hidden="true"><span id="progress"></span></div><div class="foot"><div class="counter" id="count">0 / 30 reči</div><button id="check" class="checkbtn" disabled>✓ Proveri mejl</button></div><p class="mode" id="checkmode">AI provera: ocena za vežbanje, nije zvanična ÖSD ocena.</p></div>
-    <div class="resultwrap" id="result" role="region" tabindex="-1" aria-live="polite" aria-label="Rezultat provere"></div>
+      <div class="mini-progress" aria-hidden="true"><span id="progress"></span></div><div class="foot"><div class="counter" id="count">0 / 30 reči</div>
+<button id="a1WriterSr" type="button" aria-pressed="false">🇷🇸 PREVOD SRPSKI</button>
+<div class="a1-writer-font" role="group" aria-label="Veličina teksta"><button id="a1WriterMinus" type="button">A−</button><button id="a1WriterPlus" type="button">A+</button></div>
+<button id="a1FullScreen" type="button">PUN EKRAN</button>
+<button id="check" class="checkbtn" disabled>✓ PROVERI MEJL</button></div><p class="mode" id="checkmode">AI provera: ocena za vežbanje, nije zvanična ÖSD ocena.</p></div>
+    <div class="a1-review-controls" id="a1ReviewControls"><span>REZULTAT MEJLA</span><button id="a1ReviewList" type="button">← MEJLOVI</button><button id="a1ReviewRetry" type="button">↻ UVEŽBAJ PONOVO</button></div>
+<div class="resultwrap" id="result" role="region" tabindex="-1" aria-live="polite" aria-label="Rezultat provere"></div>
   </section>
 </main>
 </div>
@@ -2028,7 +2218,7 @@ function updateCount(){
  $('count').title=c<15?'Mejl se NE ocenjuje ispod 15 reči. Nedostaje još '+(15-c)+' reči.':c>30?'Cilj je oko 30 reči.':'Minimum za ocenjivanje je 15 reči; cilj je oko 30.';
  $('count').classList.toggle('valid',c>=15&&c<=30);
  $('progress').style.width=Math.min(100,(c/30)*100)+'%';
- $('check').disabled=c===0;
+ $('check').disabled=c<15;
  $('check').title=c===0?'Prvo napiši svoj mejl':c<15?'Potrebno je još '+(15-c)+' reči za ocenjivanje.':'Proveri odgovor i vidi bodove i ispravljeni mejl';
  $('checkmode').textContent=c<15?'Mejl neće biti ocenjen dok ne napišeš najmanje 15 reči.':WORKER_READY?'Ocenu daje isključivo OpenAI, uz proveru baze od 35 zadataka.':'AI server nije podešen: ocenjivanje trenutno nije dostupno.';
 }
@@ -2059,6 +2249,7 @@ function render(){
  setSentencePairs('pairs-qs',d.q.map((q,i)=>[(i+1)+'. '+q,PRECISE_QUESTION_TRANSLATIONS[current][i]]));
  setSentencePairs('pairs-signoff',[['• Schreiben Sie am Ende einen Gruß.','• Na kraju napiši pozdrav.']]);
  $('answer').value=saved.drafts[current]||'';
+ a1UpdateMailNav();
  $('pick').value=String(current);
  $('pickMobile').textContent=`${current+1}. mejl — ${FULL_TRANSLATIONS[current].subject}`;
  $('mailNumberText').textContent=(current+1)+'. mejl';
@@ -2074,7 +2265,7 @@ function render(){
 }
 for(let i=0;i<MAILS.length;i++){const el=document.createElement('option');el.value=i;el.textContent=`${i+1}. mejl — ${FULL_TRANSLATIONS[i].subject}`;$('pick').appendChild(el)}
 $('total').textContent=MAILS.length;
-function jump(n){if(document.body.classList.contains('mobile-writing')||document.body.classList.contains('mobile-review'))closeMobileWriting(false);current=Math.max(0,Math.min(MAILS.length-1,n));render();window.scrollTo({top:0,behavior:'instant'}); }
+function jump(n){if(document.body.classList.contains('mobile-writing')||document.body.classList.contains('mobile-review'))closeMobileWriting(false);current=Math.max(0,Math.min(MAILS.length-1,n));render();a1ResetTimer();window.scrollTo({top:0,behavior:'instant'}); }
 $('prev').onclick=()=>jump(current-1);$('next').onclick=()=>jump(current+1);$('pick').onchange=e=>jump(Number(e.target.value));
 $('answer').addEventListener('input',()=>{saved.drafts[current]=$('answer').value;delete saved.results[current];delete saved.completed[current];$('answerPanel').classList.remove('has-result');$('result').innerHTML='';updateCount();persist()});
 /* OpenAI provera radi preko privatnog Cloudflare Workera; API kljuc ostaje na serveru. */
@@ -2165,9 +2356,11 @@ $('readMode').addEventListener('click',()=>toggleReading());
 $('answer').addEventListener('focus',()=>{
  if(document.body.classList.contains('reading-mode'))toggleReading(false);
  document.body.classList.add('is-typing');
+ a1ForceFull=false;
 });
 $('answer').addEventListener('blur',()=>{
  document.body.classList.remove('is-typing');
+ if(document.body.classList.contains('mobile-writing')){a1ForceFull=true;requestAnimationFrame(setMobileVisibleHeight);setTimeout(setMobileVisibleHeight,180);}
  mailFocusAt=0;
  mailParentVisibleHeight=0;
 });
@@ -2217,6 +2410,71 @@ function growMailEditor(){
 }
 $('answer').addEventListener('input',growMailEditor);
 
+
+/* A1: uputstvo, 20 minuta i mobilne komande po A2/B1 (1. novembar 2026). */
+const A1_DURATION_SECONDS=1200;
+let a1StartTime=0,a1Running=false,a1ClockInterval=null,a1ForceFull=false;
+let a1WriteFont=16,a1PromptFont=0;
+try{const v=Number(localStorage.getItem('demax_a1_write_font_20261101'));if(v>=12&&v<=25)a1WriteFont=v;}catch{}
+document.documentElement.style.setProperty('--a1-write-font',a1WriteFont+'px');
+function a1UpdateClock(){
+ const remain=a1Running?Math.max(0,1200-Math.floor((Date.now()-a1StartTime)/1000)):1200;
+ const str='⏱ '+String(Math.floor(remain/60)).padStart(2,'0')+':'+String(remain%60).padStart(2,'0');
+ for(const id of ['a1PromptClock','a1WriterClock']){
+  const el=$(id);if(el){el.textContent=str;el.classList.toggle('timeLow',remain<=120);}
+ }
+ if(remain===0){a1Running=false;clearInterval(a1ClockInterval);a1ClockInterval=null;}
+}
+function a1ResetTimer(){
+ a1StartTime=Date.now();a1Running=true;clearInterval(a1ClockInterval);
+ a1UpdateClock();a1ClockInterval=setInterval(a1UpdateClock,1000);
+}
+function a1UpdateMailNav(){
+ $('a1MailCount').textContent=(current+1)+' / '+MAILS.length;
+ $('a1PrevMail').disabled=current===0;
+ $('a1NextMail').disabled=current>=MAILS.length-1;
+}
+function a1SetTranslation(show){
+ document.body.classList.toggle('a1-translation-off',!show);
+ for(const id of ['a1PromptTranslation','a1WriterSr']){
+  const el=$(id);el.setAttribute('aria-pressed',String(show));el.classList.toggle('is-active',show);
+ }
+ if(document.body.classList.contains('view-mail'))requestAnimationFrame(fitMailPromptScreen);
+}
+$('goMailList').addEventListener('click',()=>{
+ document.body.classList.remove('view-intro','view-mail');
+ document.body.classList.add('view-home');renderMailGrid();window.scrollTo(0,0);
+});
+$('a1PrevMail').addEventListener('click',()=>jump(current-1));
+$('a1NextMail').addEventListener('click',()=>jump(current+1));
+$('a1ResetClock').addEventListener('click',a1ResetTimer);
+$('a1PromptTranslation').addEventListener('click',()=>a1SetTranslation(document.body.classList.contains('a1-translation-off')));
+$('a1WriterSr').addEventListener('click',()=>a1SetTranslation(document.body.classList.contains('a1-translation-off')));
+function a1AdjustPrompt(step){
+ a1PromptFont=Math.max(-2,Math.min(5,a1PromptFont+step));
+ document.documentElement.style.setProperty('--a1-prompt-font-delta',a1PromptFont+'px');
+ requestAnimationFrame(fitMailPromptScreen);
+}
+$('a1PromptMinus').onclick=()=>a1AdjustPrompt(-1);
+$('a1PromptPlus').onclick=()=>a1AdjustPrompt(1);
+function a1AdjustWriter(step){
+ a1WriteFont=Math.max(12,Math.min(25,a1WriteFont+step));
+ document.documentElement.style.setProperty('--a1-write-font',a1WriteFont+'px');
+ try{localStorage.setItem('demax_a1_write_font_20261101',String(a1WriteFont));}catch{}
+}
+$('a1WriterMinus').onclick=()=>a1AdjustWriter(-1);
+$('a1WriterPlus').onclick=()=>a1AdjustWriter(1);
+$('a1WriterBack').onclick=()=>closeMobileWriting(false);
+$('a1FullScreen').onclick=()=>{
+ a1ForceFull=true;$('answer').blur();
+ const full=Math.max(window.innerHeight,mailViewportBeforeKeyboard||0);
+ if(full>0)document.documentElement.style.setProperty('--mobile-visible-height',full+'px');
+ setMobileVisibleHeight();setTimeout(setMobileVisibleHeight,160);setTimeout(setMobileVisibleHeight,420);
+};
+$('a1ReviewList').onclick=()=>returnToMailGrid();
+$('a1ReviewRetry').onclick=()=>retryCurrentMail();
+document.addEventListener('visibilitychange',a1UpdateClock);
+
 /* Mobilni rezim: pisanje sa vidljivim pitanjima i iznad virtualne tastature. */
 /* Visina prostora iznad tastature. U iframe-u visualViewport cesto NE prijavi tastaturu.
    Zato uzimamo stvarnu velicinu ako postoji, a nakon fokusiranja koristimo
@@ -2241,11 +2499,12 @@ function setMobileVisibleHeight(){
  const keyboardNotReported=writingFocused && mailFocusAt>0 &&
    Date.now()-mailFocusAt>=420 && baseline-raw<80 &&
    apiKeyboardHeight<70 && !mailParentVisibleHeight;
- if(keyboardNotReported){
+ if(keyboardNotReported&&!a1ForceFull){
    // Pregledaci unutar iframe-a cesto ne menjaju visualViewport.
    // Rezervni prostor (57% visine) spusta traku blize tastaturi ako resize nije prijavljen.
    height=Math.min(height,Math.max(190,Math.floor(baseline*.57)));
  }
+ if(a1ForceFull&&!writingFocused)height=Math.max(height,mailViewportBeforeKeyboard||0);
  height=Math.max(165,Math.floor(height));
  document.documentElement.style.setProperty('--mobile-visible-height',height+'px');
  document.documentElement.style.setProperty('--mobile-visible-top',offset+'px');
@@ -2253,6 +2512,7 @@ function setMobileVisibleHeight(){
  document.body.classList.toggle('keyboard-micro',height<310);
 }
 function openMobileWriting(){
+ a1ForceFull=false;
  if(!window.matchMedia('(max-width:799px)').matches){document.getElementById('answerPanel').scrollIntoView({behavior:'smooth'});return}
  document.body.classList.remove('reading-mode','mobile-review');
  document.body.classList.add('mobile-writing','is-typing');
@@ -2373,7 +2633,7 @@ function renderMailGrid(){
   // Status „Proveren” se stiče samo eksplicitnom proverom završenog odgovora.
   const checked=Boolean(count>=15 && saved.completed[i]===draft && saved.results[i] &&
    saved.results[i].text===draft && saved.results[i].data?.mode==='ai' &&
-   saved.results[i].data?.verificationVersion==='a1-task-database-evidence-v2');
+   saved.results[i].data?.verificationVersion==='a1-database-verb-slots-v4');
   if(checked)finished++;
   const button=document.createElement('button');button.type='button';
   button.className='mail-card'+(checked?' is-done':'');
@@ -2388,15 +2648,15 @@ function renderMailGrid(){
 function openMailFromGrid(index,addHistory=true){
  const n=Math.max(0,Math.min(MAILS.length-1,Number(index)||0));
  if(document.body.classList.contains('mobile-writing')||document.body.classList.contains('mobile-review'))closeMobileWriting(false);
- document.body.classList.remove('view-home');document.body.classList.add('view-mail');
- current=n;render();
+ document.body.classList.remove('view-home','view-intro');document.body.classList.add('view-mail');
+ current=n;render();a1ResetTimer();
  requestAnimationFrame(()=>{fitMailPromptScreen();setTimeout(fitMailPromptScreen,160);});
  if(addHistory)history.pushState({demaxMail:n,demaxReturnDepth:(history.state?.demaxReturnDepth||0)+1},'','#mejl-'+(n+1));
  window.scrollTo({top:0,behavior:'instant'});
 }
 function returnToMailGrid(updateHistory=true){
  if(document.body.classList.contains('mobile-writing')||document.body.classList.contains('mobile-review'))closeMobileWriting(false);
- document.body.classList.remove('view-mail');document.body.classList.add('view-home');
+ document.body.classList.remove('view-mail','view-intro');document.body.classList.add('view-home');
  renderMailGrid();
  if(updateHistory)history.replaceState({demaxHome:true,demaxReturnDepth:history.state?.demaxReturnDepth||0},'',location.pathname+location.search);
  window.scrollTo({top:0,behavior:'instant'});
@@ -2411,7 +2671,7 @@ window.addEventListener('popstate',()=>{
 render();
 const initialMail=location.hash.match(/^#mejl-(\d+)$/);
 if(initialMail&&Number(initialMail[1])>=1&&Number(initialMail[1])<=MAILS.length)openMailFromGrid(Number(initialMail[1])-1,false);
-else renderMailGrid();
+else{document.body.classList.add('view-intro');renderMailGrid();a1UpdateClock();}
 
 
 </script>
