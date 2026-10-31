@@ -1582,6 +1582,17 @@ body.writing .writerPage .writerClock,html.b1-typing .writerPage .writerClock{le
 .writerPage .reviewActions strong{font-size:11px;color:#164c90}
 .writerPage .reviewActions button{padding:6px 8px;border-radius:7px;border:1px solid #b8c9e2;color:#15539b;background:#fff;font-size:10px;font-weight:900}
 .writerPage .reviewActions #newAttempt{background:#0c8347;color:white;border-color:#0c8347}
+/* Rezultat: Mejlovi odmah do Vezbaj ponovo, u plavoj boji, strelica nazad. */
+.writerPage .reviewActions strong{flex:1 1 auto;min-width:0}
+.writerPage .reviewActions .reviewNavButtons{display:flex;align-items:center;justify-content:flex-end;gap:6px;flex:0 0 auto}
+.writerPage .reviewActions #resultList{background:#1757a9;color:#fff;border-color:#1757a9;white-space:nowrap}
+.writerPage .reviewActions #newAttempt{white-space:nowrap}
+@media(max-width:390px){
+ .writerPage .reviewActions{padding:6px 5px;gap:3px}
+ .writerPage .reviewActions strong{font-size:10px;line-height:1.15}
+ .writerPage .reviewActions .reviewNavButtons{gap:4px}
+ .writerPage .reviewActions button{font-size:9px;padding:6px 5px}
+}
 body.writing.reviewing header{display:none!important}
 body.writing.reviewing .writerPage .writerClock,body.writing.reviewing .writerPage .writingFontControls,body.writing.reviewing .writerPage .backAllMails,body.writing.reviewing .writerPage .writerTop,body.writing.reviewing .writerPage .editor{display:none!important}
 body.writing.reviewing .writerPage .reviewActions{display:flex!important}
@@ -2498,7 +2509,7 @@ body.writing .writerPage .actions{touch-action:manipulation!important}
   </div>
 </section>
 <section id="writerScreen" class="writerPage hidden">
-  <div id="reviewActions" class="reviewActions hidden"><button id="resultList" type="button">← MEJLOVI</button><strong id="resultTitle">REZULTAT MEJLA</strong><button id="newAttempt" type="button">↻ VEŽBAJ PONOVO</button></div>
+  <div id="reviewActions" class="reviewActions hidden"><strong id="resultTitle">REZULTAT MEJLA</strong><div class="reviewNavButtons"><button id="newAttempt" type="button">↻ VEŽBAJ PONOVO</button><button id="resultList" type="button">← MEJLOVI</button></div></div>
   <span id="writerClock" class="writerClock" role="timer" aria-label="Preostalo vreme za pisanje mejla">⏱ 30:00</span>
   <button id="writerPostavkaBtn" class="writerPostavkaBtn" type="button" aria-label="Nazad na postavku mejla">← POSTAVKA MEJLA</button>
   <div class="writerTop">
