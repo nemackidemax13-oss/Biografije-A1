@@ -2476,6 +2476,35 @@ body.writing .writerPage .actions{touch-action:manipulation!important}
 #results .b1ModelDetails summary{color:#17683b!important;font-weight:950!important}
 #results .b1ModelDetails .b1ModelMail{background:#fff!important;border-color:#b9e7c7!important}
 
+
+/* TELC B1: centrirane strelice i broj mejla na postavci i u punom ekranu. */
+body.tasking #navBar,
+body.writing:not(.reviewing) #navBar{
+ justify-content:center!important;
+ align-items:center!important;
+ gap:7px!important;
+ width:100%!important;
+}
+body.tasking #navBar #navCounter,
+body.writing:not(.reviewing) #navBar #navCounter{
+ display:inline-flex!important;
+ align-items:center!important;
+ justify-content:center!important;
+ flex:0 0 auto!important;
+ width:auto!important;
+ min-width:84px!important;
+ max-width:130px!important;
+ text-align:center!important;
+}
+body.tasking #navBar .navArrow,
+body.writing:not(.reviewing) #navBar .navArrow{
+ flex:0 0 auto!important;
+}
+/* Broj mejla se prikazuje samo na traci izmedju strelica. */
+body.writing #writerScreen .writerTop{
+ display:none!important;
+}
+
 </style>
 </head>
 <body class="intro">
