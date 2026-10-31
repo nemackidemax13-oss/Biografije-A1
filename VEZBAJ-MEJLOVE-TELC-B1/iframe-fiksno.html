@@ -2175,6 +2175,78 @@ body.writing .writerPage .actions{touch-action:manipulation!important}
  }
 }
 
+
+/* B1_ALL_FOUR_QUESTIONS_FIXED_20261031 */
+@media(max-width:700px){
+ body.writing:not(.reviewing) .writerPage .editor,
+ html.b1-typing body.writing:not(.reviewing) .writerPage .editor{
+  display:flex!important;flex-direction:column!important;
+  align-items:stretch!important;justify-content:flex-start!important;
+  flex:1 1 0!important;height:auto!important;min-height:0!important;
+  max-height:100%!important;gap:3px!important;
+  padding:5px 5px 3px!important;overflow:hidden!important;
+ }
+ html.b1-typing body.writing:not(.reviewing) .writerPage .editor{
+  padding-top:34px!important;
+ }
+ body.writing:not(.reviewing) .writerPage .writingPoints,
+ html.b1-typing body.writing:not(.reviewing) .writerPage .writingPoints{
+  display:block!important;order:0!important;position:relative!important;
+  flex:0 0 auto!important;flex-shrink:0!important;
+  width:100%!important;height:auto!important;
+  min-height:0!important;max-height:none!important;
+  overflow:visible!important;visibility:visible!important;opacity:1!important;
+  padding:4px 6px!important;margin:0!important;touch-action:none!important;
+ }
+ body.writing:not(.reviewing) .writerPage .writingPoints ol{
+  display:grid!important;grid-template-columns:minmax(0,1fr)!important;
+  height:auto!important;gap:var(--b1-q-gap,2px)!important;overflow:visible!important;
+ }
+ body.writing:not(.reviewing) .writerPage .writingPoints li,
+ body.writing:not(.reviewing) .writerPage .writingPoints li .de{
+  visibility:visible!important;opacity:1!important;overflow:visible!important;
+ }
+ body.writing:not(.reviewing) .writerPage .writingPoints:not(.showSr) li .sr{
+  display:none!important;
+ }
+ body.writing:not(.reviewing) .writerPage .writingPoints.showSr li .sr{
+  display:block!important;
+ }
+ body.writing:not(.reviewing) .writerPage .editHead{
+  order:1!important;flex:none!important;
+ }
+ html.b1-typing body.writing:not(.reviewing) .writerPage .editHead{
+  display:none!important;
+ }
+ body.writing:not(.reviewing) .writerPage .draftScrollFrame,
+ html.b1-typing body.writing:not(.reviewing) .writerPage .draftScrollFrame{
+  order:2!important;display:flex!important;position:relative!important;
+  flex:1 1 0!important;min-height:35px!important;
+  height:auto!important;max-height:none!important;width:100%!important;
+  overflow:hidden!important;
+ }
+ body.writing:not(.reviewing) .writerPage .draftScrollFrame #draft{
+  flex:1 1 auto!important;min-height:0!important;height:100%!important;
+  max-height:100%!important;overflow-y:auto!important;touch-action:pan-y!important;
+ }
+ body.writing:not(.reviewing) .writerPage .actions,
+ html.b1-typing body.writing:not(.reviewing) .writerPage .actions{
+  order:3!important;flex:0 0 auto!important;align-self:stretch!important;
+  display:grid!important;
+  grid-template-columns:max-content max-content max-content minmax(0,1fr)!important;
+  min-height:32px!important;height:auto!important;width:100%!important;
+  margin:0!important;position:relative!important;
+  padding:2px 1px max(2px,env(safe-area-inset-bottom))!important;
+  z-index:260!important;
+ }
+ body.writing:not(.reviewing) .writerPage .notice{
+  order:4!important;flex:none!important;
+ }
+ html.b1-typing body.writing:not(.reviewing) .writerPage .notice{
+  display:none!important;
+ }
+}
+
 </style>
 </head>
 <body class="intro">
@@ -2524,8 +2596,9 @@ function fitB1QuestionsToKeyboard(){
  const minimumInput=40;
  const available=Math.max(60,Math.floor(editor.clientHeight-gap-header-actions.offsetHeight-
   editorPaddingBottom-minimumInput-9));
- block.style.setProperty("--b1-q-max",available+"px");
- block.style.overflowY="hidden";
+ // Vidi sva 4 pitanja; ne seci ceo gornji blok.
+ block.style.removeProperty("--b1-q-max");
+ block.style.removeProperty("overflow-y");
  const layouts=[
   [13.6,9.7,3,5,22],
   [13.3,9.5,2.5,4,21],
