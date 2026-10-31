@@ -2247,6 +2247,54 @@ body.writing .writerPage .actions{touch-action:manipulation!important}
  }
 }
 
+
+/* B1_ANDROID_RESTORE_FULL_HEIGHT_AFTER_KEYBOARD_HIDE_20261031
+   Kada se tastatura skloni, puna visina pitanja + celog editora.
+   Sa tastaturom otvorenom ostaje vec postojeci kompaktniji prikaz. */
+@media(max-width:700px){
+ html:not(.b1-typing) body.writing:not(.reviewing) .app,
+ html:not(.b1-typing) body.writing:not(.reviewing) .main{
+  min-height:0!important;
+  overflow:hidden!important;
+ }
+ html:not(.b1-typing) body.writing:not(.reviewing) .app{
+  height:var(--b1-vh,100dvh)!important;
+  max-height:var(--b1-vh,100dvh)!important;
+  top:0!important;
+ }
+ html:not(.b1-typing) body.writing:not(.reviewing) #writerScreen{
+  display:flex!important;
+  flex:1 1 0!important;
+  min-height:0!important;
+  height:100%!important;
+  max-height:100%!important;
+  overflow:hidden!important;
+ }
+ html:not(.b1-typing) body.writing:not(.reviewing) #writerScreen .editor{
+  display:flex!important;
+  flex:1 1 0!important;
+  flex-direction:column!important;
+  min-height:0!important;
+  height:auto!important;
+  overflow:hidden!important;
+ }
+ html:not(.b1-typing) body.writing:not(.reviewing) #writerScreen .draftScrollFrame{
+  display:flex!important;
+  flex:1 1 0!important;
+  min-height:0!important;
+  height:auto!important;
+  max-height:none!important;
+  overflow:hidden!important;
+ }
+ html:not(.b1-typing) body.writing:not(.reviewing) #writerScreen #draft{
+  min-height:0!important;
+  height:100%!important;
+  max-height:100%!important;
+  overflow-y:auto!important;
+  touch-action:pan-y!important;
+ }
+}
+
 </style>
 </head>
 <body class="intro">
@@ -2540,10 +2588,15 @@ function updateViewportHeight(){
  const writing=document.body.classList.contains("writing")&&!document.body.classList.contains("reviewing");
  const focused=writing&&document.activeElement===$("draft");
  const visible=Math.min(shown,layout);
- // Pamti punu visinu pre otvaranja tastature, nikad umanjenu tastaturom.
+ // Pamti visinu pre otvaranja tastature i ne zaboravljaj je pri blur.
+ // Android WebView zna da zadrzi smanjeni visualViewport i po zatvaranju tastature.
  if(!focused){
   b1FullScreenHeight=Math.max(b1FullScreenHeight,shown,layout);
-  b1BackRestored=false;
+  if(writing){
+   b1BackRestored=true;
+  }else{
+   b1BackRestored=false;
+  }
   b1WasKeyboardOpen=false;
  }
  const full=Math.max(b1FullScreenHeight,shown,layout);
@@ -2563,11 +2616,16 @@ function updateViewportHeight(){
  const focusedLongEnough=!!(b1FocusStarted&&performance.now()-b1FocusStarted>180);
  const fallback=focused&&!measurable&&!b1BackRestored&&focusedLongEnough;
  const keyboardVisible=focused&&(measurable||fallback);
- let usable=geometry?Math.min(visible,rect.top-top):
+ // Dok je tastatura otvorena: sva 4 pitanja, tekst i PROVERI MEJL iznad nje.
+ // Cim je tastatura sakrivena / polje izgubi fokus: vrati punu zapamcenu visinu,
+ // cak i ako WebView i dalje javlja staru (manju) visualViewport.height vrednost.
+ const displayFull=writing&&!keyboardVisible&&(b1BackRestored||!focused);
+ let usable=displayFull?full:
+  geometry?Math.min(visible,rect.top-top):
   fallback?Math.min(visible,Math.max(210,Math.floor(full*0.56))):visible;
  usable=Math.max(120,Math.floor(usable));
  root.style.setProperty("--b1-vh",usable+"px");
- root.style.setProperty("--b1-vtop",Math.floor(top)+"px");
+ root.style.setProperty("--b1-vtop",displayFull?"0px":Math.floor(top)+"px");
  root.style.setProperty("--app-height",usable+"px");
  root.classList.toggle("b1-typing",keyboardVisible);
  document.body.classList.toggle("keyboardOpen",keyboardVisible);
@@ -3004,8 +3062,9 @@ $("draft").addEventListener("blur",()=>{
  b1FocusStarted=0;
  document.documentElement.classList.remove("b1-typing");
  document.body.classList.remove("keyboardOpen");
+ // Android Back: vrati punu visinu odmah i nakon animacije tastature.
  updateViewportHeight();
- setTimeout(updateViewportHeight,160);
+ [90,180,350,650].forEach(ms=>setTimeout(updateViewportHeight,ms));
 });
 let b1KeyboardRestoreTimer=null;
 function b1HandleViewportResize(){
