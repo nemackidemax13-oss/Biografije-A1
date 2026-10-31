@@ -3113,9 +3113,9 @@ function appendCorrectedTranslation(result,root){
 const B1_MISSING_POINT_EXAMPLES=[["Ich muss jeden Tag lernen und meiner Familie im Haushalt helfen.","Ich stehe um sieben Uhr auf und frühstücke zu Hause.","Am Wochenende treffe ich mich mit meinen Freunden oder mache einen Ausflug.","Abends lese ich ein Buch und gehe gegen zehn Uhr schlafen."],["Ich habe im Jugendcamp zwei nette Jugendliche aus Berlin kennengelernt.","Wir haben zusammen Fußball gespielt und einen Ausflug gemacht.","Das Essen schmeckt mir gut, besonders die Nudeln.","Mir gefällt es hier sehr, weil die Leute freundlich sind."],["Ich möchte dort wandern und die Natur genießen.","Welche Kleidung soll ich für die Berge mitbringen?","Ich möchte gern mitfahren, weil ich dich und deine Freunde treffen möchte.","Gibt es im Ferienhaus eine Küche, und welche Ausflüge kann man in der Nähe machen?"],["Besonders gut hat mir gefallen, dass sie sehr freundlich und humorvoll ist.","Wir haben zusammen einen Spaziergang gemacht und viel geredet.","Ich habe sie im Skiurlaub auf der Piste kennengelernt.","Ich hoffe, dass wir auch in Zukunft in Kontakt bleiben."],["Bitte schickt mir die Sonnenbrille mit der Post.","Bei euch habe ich mich sehr wohlgefühlt, weil ihr so herzlich wart.","Ich brauche die Sonnenbrille, weil ich bald in den Urlaub fahre.","Seit meiner Rückkehr habe ich meine Familie besucht und viel gearbeitet."],["Durch einen Freund bin ich auf dieses Hobby gekommen.","Dieses Hobby gefällt mir, weil es mir Spaß macht und mich entspannt.","Mein Hobby ist das Fotografieren.","Ein Nachteil ist, dass ich dafür oft viel Zeit brauche."],["Ich brauche die Ferienwohnung vom 10. bis zum 17. August für sieben Nächte.","Ich schreibe Ihnen, weil ich Ihre Anzeige im Internet gefunden habe.","Könnten Sie mir bitte sagen, wie viel die Wohnung pro Nacht kostet?","Wichtig sind uns Wanderwege und Möglichkeiten zum Radfahren."],["Ich habe die Stelle durch eine Anzeige im Internet gefunden.","Ich möchte arbeiten, weil ich Geld für meine Ausbildung sparen will.","Ich werde sechs Wochen arbeiten und danach mit Freunden verreisen.","Es ist ein Ferienjob in einem Café, wo ich Gäste bediene."],["Meistens gehe ich mit meiner Schwester oder mit Freunden ins Kino.","Ich gehe gern ins Kino, weil ich dort gut entspannen kann.","Ich mag Komödien, aber Horrorfilme sehe ich nicht gern.","Nach dem Kinobesuch gehen wir oft noch etwas trinken."],["Wir haben in einem kleinen Hotel in der Innenstadt übernachtet.","Mir haben die Sehenswürdigkeiten gefallen, aber das Wetter war manchmal schlecht.","Wir haben Museen besucht und lange Spaziergänge gemacht.","Ich war mit meiner Familie eine Woche in Wien."],["Ich suche eine Wohnung im Zentrum, weil meine Universität dort liegt.","Wie hoch ist die Miete, und sind die Nebenkosten enthalten?","Ich würde die Wohnung gern am nächsten Samstag besichtigen.","Ihre Anzeige interessiert mich besonders, weil die Wohnung in der Nähe der Universität liegt."],["Unsere neuen Nachbarn sind abends oft sehr laut.","Ich habe schon freundlich mit ihnen gesprochen.","Vor zwei Wochen ist eine junge Familie mit zwei Kindern eingezogen.","Du hast viel Erfahrung mit Nachbarn, deshalb hoffe ich auf deinen Rat."],["Der Lehrer erklärt alles verständlich, und die Bücher sind sehr hilfreich.","München gefällt mir sehr gut; ich habe schon das Stadtzentrum besucht.","Ich besuche einen intensiven B1-Deutschkurs, der jeden Vormittag stattfindet.","Die anderen Teilnehmer kommen aus verschiedenen Ländern, und wir verstehen uns gut."],["Ich würde dir empfehlen, einen Verein zu besuchen und neue Leute kennenzulernen.","Heute wohne ich gern hier, weil es ruhig ist und ich viel Natur habe.","Meine Familie ist aufs Land gezogen, weil meine Eltern dort Arbeit gefunden haben.","Am Anfang war ich traurig, weil ich meine alten Freunde vermisst habe."],["Ich möchte am liebsten in einer kleinen Wohnung in Berlin wohnen.","Ich plane, ungefähr sechs Monate in Deutschland zu bleiben.","Ich möchte nach Deutschland fahren, um mein Deutsch zu verbessern.","Vielleicht kannst du mir bei der Suche nach einem Sprachkurs helfen."],["Wir könnten zusammen die Altstadt besichtigen und einen Ausflug in die Berge machen.","Der Frühling ist die beste Reisezeit, weil das Wetter angenehm ist.","Du solltest eine leichte Jacke und bequeme Schuhe mitbringen.","Informiere dich vorher über die Anreise und packe alle wichtigen Dokumente ein."],["Ich freue mich sehr auf deine Einweihungsparty und komme gern.","Dein Wörterbuch bringe ich dir am Samstag zurück.","Beim Umzug kann ich dir helfen, die Kartons zu tragen.","Entschuldige bitte, dass ich dir das Wörterbuch noch nicht zurückgegeben habe."],["Wir können zusammen die Stadt besichtigen und einen Ausflug in die Natur machen.","Am besten kommst du im Mai, denn dann ist das Wetter sehr angenehm.","Bring bitte bequeme Schuhe und eine Jacke für kühle Abende mit.","Du solltest vor der Reise deine Fahrkarten und Reisedokumente überprüfen."],["Ich möchte gern mit meinem Partner zu deiner Hochzeit kommen.","Wir reisen mit dem Zug an, weil das für uns am bequemsten ist.","Kennst du ein günstiges Hotel in der Nähe der Feier?","Ich helfe dir gern beim Schmücken des Saals oder bei den Vorbereitungen."],["Herzlichen Glückwunsch zu deiner Beziehung mit David und euren Heiratsplänen!","Mein Englisch ist noch nicht perfekt, aber ich übe jeden Tag.","Ich würde dich gern im nächsten Sommer in Sydney besuchen.","Welche Fächer gefallen dir in deinem Studium am besten?"]];
 
 function b1TokenizeWithSpaces(text){
- const result=[];const re=/(\\s*)(\\S+)/g;const source=String(text||"");let m;
- while((m=re.exec(source))!==null)result.push({space:m[1],word:m[2]});
- return {items:result,trailing:source.slice(re.lastIndex||0)};
+ const result=[];const re=/(\s*)(\S+)/g;const source=String(text||"");let m,lastEnd=0;
+ while((m=re.exec(source))!==null){result.push({space:m[1],word:m[2]});lastEnd=re.lastIndex;}
+ return {items:result,trailing:source.slice(lastEnd)};
 }
 function b1MarkDifferences(original,corrected,originalContainer,correctedContainer){
  const a=b1TokenizeWithSpaces(original),b=b1TokenizeWithSpaces(corrected);
@@ -3179,8 +3179,8 @@ function b1RenderModelOption(result,root){
 }
 
 function b1MarkSimilarity(original,corrected){
- const a=String(original).toLowerCase().match(/\\S+/g)||[];
- const b=String(corrected).toLowerCase().match(/\\S+/g)||[];
+ const a=String(original).toLowerCase().match(/\S+/g)||[];
+ const b=String(corrected).toLowerCase().match(/\S+/g)||[];
  if(!a.length||!b.length)return 0;
  const freq=new Map();for(const w of a)freq.set(w,(freq.get(w)||0)+1);
  let both=0;for(const w of b){const n=freq.get(w)||0;if(n>0){both++;freq.set(w,n-1);}}
@@ -3251,10 +3251,9 @@ function renderResult(d){
    list.append(box);
   });
   r.append(list);
- }else{r.append(node("p",Array.isArray(d.issues)?"Nema pronađenih gramatičkih ili pravopisnih grešaka.":"Ponovo pritisni PROVERI MEJL nakon objavljivanja novog B1 Workera."));}
- if(!issues.length&&Array.isArray(d.errors)&&d.errors.length){
+ }else if(Array.isArray(d.errors)&&d.errors.length){
   const errors=node("ul");d.errors.forEach(t=>errors.append(node("li",String(t))));r.append(errors);
- }
+ }else{r.append(node("p","Nema prijavljenih dodatnih grešaka."));}
 
  r.scrollTop=0;
 }
