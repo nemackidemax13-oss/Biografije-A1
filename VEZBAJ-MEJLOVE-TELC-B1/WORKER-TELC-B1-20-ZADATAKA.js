@@ -468,7 +468,7 @@ const RESPONSE_SCHEMA = {
   errors:{type:"array",items:{type:"string"}},
   corrected:{type:"string"},
   supplements:{type:"array",items:{type:"object",additionalProperties:false,
-   properties:{pointIndex:{type:"integer",minimum:1,maximum:4},sentence:{type:"string"},explanation:{type:"string"}},
+   properties:{pointIndex:{type:"integer",enum:[1,2,3,4]},sentence:{type:"string"},explanation:{type:"string"}},
    required:["pointIndex","sentence","explanation"]}},
   offTopic:{type:"boolean"},
   offTopicReason:{type:"string"},
