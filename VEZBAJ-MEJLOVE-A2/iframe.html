@@ -2670,6 +2670,30 @@ body.writing.reviewing .writerPage .reviewActions{
  #results .a2-user-mail-box .correctedTranslationBox .corrected.demax-mail-v4{font-size:12px!important;padding:9px!important}
 }
 
+
+/* A2 pedagogija: samo učenikov mejl kao glavni rezultat; dopune odvojeno. */
+#results .a2-topic-warning{
+ border:2px solid #bb2846!important;background:#fff1f3!important;
+ color:#8e1937!important;padding:11px!important;margin:10px 0 15px!important;
+ border-radius:10px!important;line-height:1.45!important;
+}
+#results .a2-topic-warning strong{font-size:14px!important}
+#results .a2-topic-warning p{margin:6px 0 0!important;font-size:12px!important}
+#results .a2-teaching-additions{
+ background:#effaf4!important;border:2px dashed #28975a!important;
+ padding:10px 12px!important;border-radius:11px!important;margin:10px 0 13px!important;
+ color:#184e32!important;
+}
+#results .a2-teaching-additions h4{
+ margin:0 0 6px!important;color:#17673b!important;font-weight:950!important;
+}
+#results .a2-teaching-additions p{font-size:11px!important;line-height:1.45!important;margin:0 0 8px!important}
+#results .a2-teaching-additions ol{margin:5px 0!important;padding-left:22px!important}
+#results .a2-teaching-additions li{margin:7px 0!important;line-height:1.5!important}
+#results .a2-suggestion-de{background:#def7e7!important;color:#0a6732!important;
+ font-weight:800!important;border-radius:6px!important;padding:6px 8px!important}
+#results .a2-suggestion-sr{font-size:11px!important;color:#315642!important;padding:5px 0!important}
+
 </style>
 </head>
 <body class="intro">
@@ -3459,6 +3483,11 @@ function convertA2Result(d,answer){
   corrected:String(d.correctedText||""),corrected_sr:String(d.translationSr||""),
   correctedSegments:a2MarkedSegments(answer,d.correctedText),
   modelEmail:String(d.modelEmail||""),modelTranslationSr:String(d.modelTranslationSr||""),
+  offTopic:d.offTopic===true,offTopicReason:String(d.offTopicReason||""),
+  suggestedAdditions:Array.isArray(d.suggestedAdditions)?d.suggestedAdditions.filter(a=>a&&
+   Number.isInteger(a.pointIndex)&&a.pointIndex>=1&&a.pointIndex<=4&&
+   Number(d.questionPoints?.[a.pointIndex-1])===0&&typeof a.sentence==="string"&&a.sentence.trim()
+  ).slice(0,4).map(a=>({pointIndex:a.pointIndex,sentence:String(a.sentence),explanation:String(a.explanation||"")})):[],
   wordCount:Number(d.wordCount)||countWords(answer)
  };
 }
@@ -3508,9 +3537,32 @@ function renderResult(d){
    list.append(box);
   });r.append(list);
  }else r.append(node("p","Nema pronađenih gramatičkih ili pravopisnih grešaka."));
- if(d.contextIssues?.length)textSection(r,"Odstupanja od postavke",d.contextIssues);
+ if(d.offTopic){
+  const warning=node("div",undefined,"a2-topic-warning");
+  warning.append(node("strong","⚠ Odgovor je na pogrešnu temu"),
+   node("p",d.offTopicReason||"Odgovor se ne odnosi na dati zadatak. Sadržaj može biti ocenjen sa nula bodova."));
+  r.append(warning);
+ }
+ if(d.contextIssues?.length)textSection(r,"Važna odstupanja od postavke (datum, vreme, mesto, tema)",d.contextIssues);
+ // Glavni ispravljeni mejl je isključivo učenikov tekst — bez novih odgovora.
  if(d.corrected)appendCorrectedTranslation(d,r);
- if(d.modelEmail)appendA2ModelTranslation(d,r);
+ if(d.suggestedAdditions?.length){
+  const block=node("section",undefined,"a2-teaching-additions");
+  block.append(node("h4","Predlog dopune — ne računa se u tvoju ocenu"),
+   node("p","Ovo su nove rečenice za vežbanje, a ne deo tvog originalnog mejla. Ocena ostaje zasnovana samo na onome što si napisao/la."));
+  const list=node("ol");
+  d.suggestedAdditions.forEach(a=>{
+   const item=node("li");
+   item.append(node("strong","Pitanje "+a.pointIndex+": "),
+     node("div",a.sentence,"a2-suggestion-de"));
+   if(a.explanation)item.append(node("div",a.explanation,"a2-suggestion-sr"));
+   list.append(item);
+  });
+  block.append(list);r.append(block);
+ }
+ // Ceo primer prikazuj SAMO kad nedostaje makar jedno važno pitanje ili je tema promašena.
+ const missingPoint=Array.isArray(d.points)&&d.points.some(p=>p.answered===false);
+ if(d.modelEmail&&(d.offTopic||missingPoint))appendA2ModelTranslation(d,r);
  r.scrollTop=0;
 }
 
@@ -3531,7 +3583,7 @@ async function grade(){
   let result={};try{result=await response.json()}catch(e){}
   if(!response.ok)throw Error(result.error||(response.status===404?
    "A2 Worker nema putanju POST /api/check-a2-email.":"HTTP "+response.status));
-  const accepted=["a2-de-max-50-words-rubric-v2","a2-de-max-26-min-50-target-v3"];
+  const accepted=["a2-de-max-50-words-rubric-v2","a2-de-max-26-min-50-target-v3","a2-de-max-original-first-v4"];
   if(!accepted.includes(result.verificationVersion)||
      !Number.isInteger(Number(result.score))||Number(result.score)<0||Number(result.score)>15||
      !result.rubric||!Array.isArray(result.questionPoints)||result.questionPoints.length!==4||
