@@ -1776,6 +1776,35 @@ body.writing .writerPage .actions #gradeBtn,html.b1-typing .writerPage .actions 
  body.writing .writerPage .actions #gradeBtn{font-size:8px!important;padding:3px 1px!important}
 }
 
+
+/* B1_SWIPE_UP_DOWN_ENABLED_20261031 */
+/* Ekran i donje kontrole ostaju na mestu, sadržaj pitanja i mejla može se listati prstom. */
+@media(max-width:700px){
+ body.writing:not(.reviewing) .writerPage .writingPoints,
+ html.b1-typing .writerPage .writingPoints{
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  touch-action:pan-y!important;
+  overscroll-behavior:contain!important;
+  -webkit-overflow-scrolling:touch!important;
+ }
+ body.writing:not(.reviewing) .writerPage .draftScrollFrame #draft,
+ html.b1-typing .writerPage .draftScrollFrame #draft{
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  touch-action:pan-y!important;
+  overscroll-behavior:contain!important;
+  -webkit-overflow-scrolling:touch!important;
+ }
+ body.writing.reviewing .writerPage .results:not(.hidden){
+  overflow-y:auto!important;
+  touch-action:pan-y!important;
+  -webkit-overflow-scrolling:touch!important;
+ }
+}
+/* Kontrole mogu da se dodirnu bez neželjenog pomeranja stranice. */
+body.writing .writerPage .actions{touch-action:manipulation!important}
+
 </style>
 </head>
 <body class="intro">
@@ -2525,19 +2554,8 @@ if(typeof ResizeObserver!=="undefined"){
  b1ResizeObserver.observe(document.querySelector(".writerPage .editor"));
 }
 
-/* Gesture lock in writing mode: A1-style fixed editor, no page up/down swipe. */
-function b1WriterSwipeLocked(event){
- if(!b1Mobile()||!document.body.classList.contains("writing"))return false;
- if(event.target.closest("#draft, #scrollRail"))return false;
- if(!$("results").classList.contains("hidden")&&event.target.closest("#results"))return false;
- return true;
-}
-document.addEventListener("touchmove",event=>{
- if(b1WriterSwipeLocked(event)&&event.cancelable)event.preventDefault();
-},{passive:false,capture:true});
-document.addEventListener("wheel",event=>{
- if(b1WriterSwipeLocked(event)&&event.cancelable)event.preventDefault();
-},{passive:false,capture:true});
+/* Pisanje: ne blokiraj vertikalne pokrete prstom i točkićem miša.
+   Skrolovanje ostaje ograničeno na polja za pitanja, tekst i AI rezultate. */
 
 updateViewportHeight();
 screen("welcome");
