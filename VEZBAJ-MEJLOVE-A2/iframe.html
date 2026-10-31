@@ -589,6 +589,9 @@ html.a2-show-sr .question-sr{display:block!important}
 <script>
 'use strict';
 const MAILS=JSON.parse(document.getElementById('mailData').textContent);
+// A2 Cloudflare Worker: ovo je API za proveru mejla, ne javna pocetna strana Worker-a.
+const A2_WORKER_BASE='https://a2mejlovi.nemackidemax13.workers.dev';
+const A2_CHECK_ENDPOINT=A2_WORKER_BASE+'/api/check-a2-email';
 const $=id=>document.getElementById(id);
 const STORE='demax_a2_email_v2026_01';
 let state={drafts:{},visited:{},current:0};
@@ -750,8 +753,12 @@ async function grade(){
   const timeout=setTimeout(()=>ctl.abort(),57000);
   let resp;
   try{
-   resp=await fetch('https://a2mejlovi.nemackidemax13.workers.dev/api/check-a2-email',{
-    method:'POST',headers:{'Content-Type':'application/json'},signal:ctl.signal,
+   resp=await fetch(A2_CHECK_ENDPOINT,{
+    method:'POST',
+    mode:'cors',
+    credentials:'omit',
+    headers:{'Content-Type':'application/json','Accept':'application/json'},
+    signal:ctl.signal,
     body:JSON.stringify({mailIndex:originalIndex,answer:txt})
    });
   }finally{clearTimeout(timeout)}
@@ -760,7 +767,15 @@ async function grade(){
   if(originalIndex!==current||$('answer').value!==txt)return; // ignore late results
   showAiResult(d);
  }catch(err){
-  if(originalIndex===current&&$('answer').value===txt)localReview(err.name==='AbortError'?'Provera je predugo trajala. Pokušaj ponovo.':err.message||'Nepoznata greška.');
+  if(originalIndex===current&&$('answer').value===txt){
+    const networkFailure=err instanceof TypeError||/Failed to fetch|NetworkError|Load failed/i.test(err.message||'');
+    const details=err.name==='AbortError'
+      ?'Cloudflare provera je predugo trajala. Pokušaj ponovo.'
+      :networkFailure
+        ?'Cloudflare A2 Worker nije dostupan iz aplikacije. Proveri da li je objavljena ruta '+A2_CHECK_ENDPOINT+' i da li Worker dozvoljava CORS zahtev sa GitHub Pages.'
+        :(err.message||'Nepoznata greška.');
+    localReview(details);
+   }
  }finally{
   btn.textContent='✓ Proveri mejl';
   updateCount();
