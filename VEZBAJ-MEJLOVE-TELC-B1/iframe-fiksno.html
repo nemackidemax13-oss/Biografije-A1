@@ -2388,6 +2388,50 @@ body.writing .writerPage .actions{touch-action:manipulation!important}
  }
 }
 
+
+/* B1_A2_STYLE_KEYBOARD_FIXED_NO_VERTICAL_SWIPE_20261031
+   A2 V13/V14: telo i editor ne mogu da klizaju pri otvorenoj tastaturi.
+   Bez menjanja zadataka, AI provere i rasporeda donjih dugmadi. */
+@media(max-width:700px){
+ html.b1-typing,html.b1-typing body,
+ body.writing.keyboardOpen{
+  overflow:hidden!important;
+  overscroll-behavior:none!important;
+  touch-action:none!important;
+ }
+ html.b1-typing body.writing .app,
+ html.b1-typing body.writing .main,
+ html.b1-typing body.writing .writerPage,
+ html.b1-typing body.writing .writerPage .editor,
+ html.b1-typing body.writing .writerPage .writingPoints,
+ html.b1-typing body.writing .writerPage .draftScrollFrame{
+  overflow:hidden!important;
+  overscroll-behavior:none!important;
+  touch-action:none!important;
+ }
+ html.b1-typing body.writing:not(.reviewing) .writerPage .draftScrollFrame #draft,
+ body.writing.keyboardOpen:not(.reviewing) .writerPage .draftScrollFrame #draft{
+  overflow-x:hidden!important;
+  overflow-y:hidden!important;
+  overscroll-behavior:none!important;
+  touch-action:none!important;
+  -webkit-overflow-scrolling:auto!important;
+  scrollbar-width:none!important;
+ }
+ html.b1-typing body.writing .writerPage .draftScrollFrame #draft::-webkit-scrollbar,
+ body.writing.keyboardOpen .writerPage .draftScrollFrame #draft::-webkit-scrollbar{
+  width:0!important;
+  display:none!important;
+ }
+ /* Po zatvaranju tastature vrati unutrasnji pregled napisanog mejla. */
+ html:not(.b1-typing) body.writing:not(.keyboardOpen):not(.reviewing)
+ .writerPage .draftScrollFrame #draft{
+  overflow-y:auto!important;
+  touch-action:pan-y!important;
+  overscroll-behavior:contain!important;
+ }
+}
+
 </style>
 </head>
 <body class="intro">
@@ -3267,12 +3311,19 @@ if(typeof ResizeObserver!=="undefined"){
  b1ResizeObserver.observe(document.querySelector(".writerPage .editor"));
 }
 
-/* Mobilni ekran pisanja se ne pomera – dozvoljen je samo unutrašnji
-   skrol napisanog mejla ili prikaza rezultata AI provere. */
+/* A2 model: dok je mobilna tastatura otvorena, zabrani svakakvo
+   vertikalno prevlacenje pozadine i tekst-polja. Kursor i navigacija
+   dugmadima ▲ ▼ i dalje mogu da pregledaju tekst. Po zatvaranju
+   tastature unutrasnji scroll mejla se vraca. AI rezultati se listaju. */
 function b1OutsideScrollBlocked(event){
  if(!b1Mobile()||!document.body.classList.contains("writing"))return false;
+ if(document.body.classList.contains("reviewing")){
+  return !event.target?.closest?.("#results");
+ }
+ const keyboardOpen=document.documentElement.classList.contains("b1-typing")||
+  document.body.classList.contains("keyboardOpen");
+ if(keyboardOpen)return true;
  if(event.target?.closest?.("#draft, #scrollRail"))return false;
- if(document.body.classList.contains("reviewing")&&event.target?.closest?.("#results"))return false;
  return true;
 }
 document.addEventListener("touchmove",event=>{
