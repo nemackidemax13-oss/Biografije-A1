@@ -682,6 +682,18 @@ html.a2-show-sr .prompt .email-body .mail-body-sr{display:block!important}
  .workspace.writing .editor .foot{grid-row:3!important;flex:none!important}
 }
 
+
+/* A2 / TELC B1: povezani pasusi nemački + crveni srpski, unutrašnji skrol. */
+.prompt .a2-letter-pair{display:block!important;margin:0 0 12px!important}
+.prompt .a2-letter-pair .mail-body-de{display:block!important;white-space:pre-wrap!important}
+.prompt .a2-letter-pair .mail-body-sr{
+ display:none!important;white-space:pre-wrap!important;color:#b72846!important;
+ border-top:1px dashed #edbac6!important;margin:5px 0 0!important;
+ padding:5px 0 0!important;font-size:clamp(10px,2.4vw,12px)!important;
+ line-height:1.32!important;
+}
+html.a2-show-sr .prompt .a2-letter-pair .mail-body-sr{display:block!important}
+
 </style></head><body>
 <div class="app"><header><div class="top"><div class="brand">A2 mejl vežbe</div><div class="pill">13 mejlova · 15 bodova</div></div>
 <div class="nav"><button id="prev" aria-label="Prethodni mejl">‹</button><button id="navTitle" type="button" aria-label="Trenutni mejl; tokom pisanja vrati na postavku">Izaberi mejl</button><button id="next" aria-label="Sledeći mejl">›</button><button id="homeButton" type="button" aria-label="Povratak na sve mejlove" title="Povratak na sve mejlove">svi mejlovi</button><button id="a2RetryTop" type="button" class="hide" aria-label="Vežbaj mejl ponovo" title="Počni ovaj mejl iznova">↻ VEŽBAJ PONOVO</button></div></header>
@@ -851,7 +863,18 @@ function renderCards(){
  $('summary').textContent=checked+' / '+MAILS.length+' provereno';
  updateNav();
 }
-function renderMail(){let m=MAILS[current];$('a2B1MailLabel').textContent='MEJL '+(current+1)+' / '+MAILS.length;$('number').textContent=(current+1)+'. mejl · '+m.title;updateNav();$('situation').innerHTML='<div>'+esc(m.situation)+'</div><div class="sr-situation">'+esc(m.srSituation||'')+'</div>';$('senderEmail').textContent=m.email;$('subject').textContent=m.subject;$('original').innerHTML='<div class="mail-body-de">'+esc(m.body)+'</div><div class="mail-body-sr">'+esc(m.srBody||'')+'</div>';$('questions').innerHTML=questionHtml(m);refreshA2Clock();$('backFromWriting').onclick=leaveWriting;$('answer').value=state.drafts[current]||'';$('result').classList.remove('on');$('result').innerHTML='';$('promptScroll').scrollTop=0;updateCount();requestAnimationFrame(()=>{fitFullEmailWithoutScroll();a2UpdateB1Rail()});}
+/* Isti redosled kao B1: nemački pasus i odgovarajući srpski prevod ispod.
+   Prevod se pojavljuje isključivo kada učenik pritisne PREVOD SRPSKI. */
+function a2B1ReceivedPairs(m){
+ const original=String(m.body||'').split(/\n\s*\n/);
+ const translated=String(m.srBody||'').split(/\n\s*\n/);
+ return original.map((german,i)=>{
+  return '<div class="a2-letter-pair"><div class="mail-body-de">'+esc(german)+'</div>'
+    +(translated[i]?'<div class="mail-body-sr">'+esc(translated[i])+'</div>':'')
+    +'</div>';
+ }).join('');
+}
+function renderMail(){let m=MAILS[current];$('a2B1MailLabel').textContent='MEJL '+(current+1)+' / '+MAILS.length;$('number').textContent=(current+1)+'. mejl · '+m.title;updateNav();$('situation').innerHTML='<div>'+esc(m.situation)+'</div><div class="sr-situation">'+esc(m.srSituation||'')+'</div>';$('senderEmail').textContent=m.email;$('subject').textContent=m.subject;$('original').innerHTML=a2B1ReceivedPairs(m);$('questions').innerHTML=questionHtml(m);refreshA2Clock();$('backFromWriting').onclick=leaveWriting;$('answer').value=state.drafts[current]||'';$('result').classList.remove('on');$('result').innerHTML='';$('promptScroll').scrollTop=0;updateCount();requestAnimationFrame(()=>{fitFullEmailWithoutScroll();a2UpdateB1Rail()});}
 function openMail(i){a2ToggleRetry(false);a2ForceFull=false;const next=Math.max(0,Math.min(MAILS.length-1,Number(i)||0));if(next!==a2TimerMail)a2ResetClock(next);current=next;a2ShowSerbian=false;document.documentElement.classList.remove("a2-show-sr");for(const id of ["a2PromptSr","a2WriteSr"]){$(id).textContent="🇷🇸 PREVOD SRPSKI";$(id).setAttribute("aria-pressed","false")}state.current=current;state.visited[current]=true;$('answer').blur();save();$('welcome').classList.add('hide');$('home').classList.add('hide');$('workspace').classList.remove('hide');$('workspace').classList.remove('writing');renderMail();location.hash='mejl-'+(current+1);}
 function updateCount(){
  const n=countWords($('answer').value);
