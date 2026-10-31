@@ -2020,6 +2020,38 @@ body.writing .writerPage .actions{touch-action:manipulation!important}
  }
 }
 
+
+/* B1_ANDROID_BACK_FULL_VIEWPORT_20261031 – dodatno ucvrsti ekran, bez skrolovanja spoljne stranice. */
+@media(max-width:700px){
+ body.writing,body.writing .app,body.writing .main,
+ body.writing .writerPage,body.writing:not(.reviewing) .writerPage .editor{
+  overflow:hidden!important;
+  overscroll-behavior:none!important;
+ }
+ body.writing:not(.reviewing) .writerPage .draftScrollFrame{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  overflow:hidden!important;
+ }
+ body.writing:not(.reviewing) .writerPage #draft{
+  height:100%!important;
+  min-height:0!important;
+  overflow-y:auto!important;
+  touch-action:pan-y!important;
+  overscroll-behavior:contain!important;
+ }
+ html:not(.b1-typing) body.writing:not(.reviewing) .writerPage .editor{
+  display:flex!important;
+  flex-direction:column!important;
+  flex:1 1 auto!important;
+  min-height:0!important;
+  height:auto!important;
+ }
+ body.writing.reviewing .writerPage #results:not(.hidden){
+  overflow-y:auto!important;
+ }
+}
+
 </style>
 </head>
 <body class="intro">
@@ -2290,6 +2322,9 @@ $("writerSrToggle").onclick=()=>{
  setWriterSrTranslation(!panel.classList.contains("showSr"));
 };
 
+/* DE-MAX B1 FIKSNO – prikaz prati stvarnu visinu tastature, ne samo fokus.
+   Android Nazad zatvara tastaturu bez obaveznog blur događaja.
+   Zato kada se viewport proširi vraćamo pun ekran i uklanjamo b1-typing. */
 let b1FullScreenHeight=0,b1FocusStarted=0;
 function b1Mobile(){return window.matchMedia("(max-width:700px)").matches}
 function updateViewportHeight(){
@@ -2305,23 +2340,30 @@ function updateViewportHeight(){
  const shown=vv&&vv.height>0?vv.height:window.innerHeight;
  const layout=window.innerHeight>0?window.innerHeight:shown;
  const top=vv&&Number.isFinite(vv.offsetTop)?Math.max(0,vv.offsetTop):0;
- const typing=document.body.classList.contains("writing")&&!document.body.classList.contains("reviewing")&&document.activeElement===$("draft");
- if(!typing)b1FullScreenHeight=Math.max(b1FullScreenHeight,shown,layout);
+ const writing=document.body.classList.contains("writing")&&!document.body.classList.contains("reviewing");
+ const focused=writing&&document.activeElement===$("draft");
+ // Pre otvaranja tastature pamti maksimalnu dostupnu visinu.
+ // Ne umanjuj je kad Samsung/Android smanji viewport.
+ if(!focused)b1FullScreenHeight=Math.max(b1FullScreenHeight,shown,layout);
  const vk=navigator.virtualKeyboard;
  const rect=vk&&vk.boundingRect;
- const geometry=!!(rect&&rect.height>90&&rect.top>0);
- let usable=Math.min(shown,layout,geometry?rect.top-top:Infinity);
- const full=b1FullScreenHeight||Math.max(shown,layout);
- if(typing&&full-usable<=100&&!geometry&&b1FocusStarted&&performance.now()-b1FocusStarted>220){
-   // A2 fallback za aplikacije unutar iframe-a, kada browser ne prijavi tastaturu.
-   usable=Math.min(usable,Math.max(200,Math.floor(full*.55)+19));
- }
+ const geometry=!!(focused&&rect&&rect.height>90&&rect.top>0);
+ const visible=Math.min(shown,layout);
+ const full=Math.max(b1FullScreenHeight,shown,layout);
+ const keyboardVisible=focused&&(geometry||full-visible>110);
+ // Za aplikaciju u iframe-u ne forsiraj pola ekrana samo zbog fokusa.
+ // Kada Android sakrije tastaturu, polje moze ostati fokusirano.
+ let usable=geometry?Math.min(visible,rect.top-top):visible;
  usable=Math.max(120,Math.floor(usable));
  root.style.setProperty("--b1-vh",usable+"px");
  root.style.setProperty("--b1-vtop",Math.floor(top)+"px");
  root.style.setProperty("--app-height",usable+"px");
- root.classList.toggle("b1-typing",typing);
- if(document.body.classList.contains("writing"))scheduleB1QuestionFit();
+ root.classList.toggle("b1-typing",keyboardVisible);
+ document.body.classList.toggle("keyboardOpen",keyboardVisible);
+ if(writing){
+  scheduleB1QuestionFit();
+  requestAnimationFrame(updateRail);
+ }
 }
 
 let b1QuestionsFitPending=false;
@@ -2735,29 +2777,37 @@ $("resetClock").onclick=startTimer;
 $("gradeBtn").onclick=grade;
 
 $("draft").addEventListener("focus",()=>{
- if(b1Mobile())document.body.classList.add("keyboardOpen");
  b1FocusStarted=performance.now();
  updateViewportHeight();
- [100,250,400,650].forEach(ms=>setTimeout(updateViewportHeight,ms));
+ // Provera nakon Android animacije tastature, bez prinudnog skracivanja ekrana.
+ [80,180,320,600].forEach(ms=>setTimeout(updateViewportHeight,ms));
 });
 $("draft").addEventListener("blur",()=>{
  b1FocusStarted=0;
  document.documentElement.classList.remove("b1-typing");
- // Ne pomeraj dugme dok traje dodir kojim se pokreće AI provera.
- setTimeout(()=>{
-  if(document.activeElement!==$("draft"))document.body.classList.remove("keyboardOpen");
-  updateViewportHeight();
- },180);
-});
-window.addEventListener("resize",()=>{
+ document.body.classList.remove("keyboardOpen");
  updateViewportHeight();
+ setTimeout(updateViewportHeight,160);
+});
+let b1KeyboardRestoreTimer=null;
+function b1HandleViewportResize(){
+ updateViewportHeight();
+ clearTimeout(b1KeyboardRestoreTimer);
+ // Android tastatura nestaje kroz animaciju; ponovo uskladi puni ekran na kraju.
+ b1KeyboardRestoreTimer=setTimeout(()=>{
+  updateViewportHeight();
+  requestAnimationFrame(updateRail);
+ },180);
+}
+window.addEventListener("resize",()=>{
+ b1HandleViewportResize();
  requestAnimationFrame(fitTaskLetter);
  requestAnimationFrame(fitIntro);
  scheduleB1QuestionFit();
 });
 if(window.visualViewport){
- window.visualViewport.addEventListener("resize",()=>{updateViewportHeight();scheduleB1QuestionFit()});
- window.visualViewport.addEventListener("scroll",updateViewportHeight);
+ window.visualViewport.addEventListener("resize",b1HandleViewportResize);
+ window.visualViewport.addEventListener("scroll",b1HandleViewportResize);
 }
 navigator.virtualKeyboard?.addEventListener?.("geometrychange",updateViewportHeight);
 window.addEventListener("orientationchange",()=>{
