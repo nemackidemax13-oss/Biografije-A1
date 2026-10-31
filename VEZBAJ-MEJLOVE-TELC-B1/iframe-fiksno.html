@@ -2052,6 +2052,129 @@ body.writing .writerPage .actions{touch-action:manipulation!important}
  }
 }
 
+
+/* B1_KEYBOARD_FOOTER_ABOVE_20261031
+   Pisanje: PROVERI MEJL uvek odmah iznad Android tastature.
+   Zatvaranje tastature: editor opet puni celu vidljivu visinu. */
+@media(max-width:700px){
+ html.b1-typing body.writing .writerPage{
+  position:fixed!important;
+  inset:auto 0 auto 0!important;
+  left:0!important;
+  right:0!important;
+  top:var(--b1-vtop,0px)!important;
+  bottom:auto!important;
+  height:var(--b1-vh,100dvh)!important;
+  max-height:var(--b1-vh,100dvh)!important;
+  min-height:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  overflow:hidden!important;
+ }
+ html.b1-typing body.writing .writerPage .editor{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  grid-template-rows:max-content minmax(0,1fr) max-content!important;
+  flex:1 1 0!important;
+  height:100%!important;
+  min-height:0!important;
+  max-height:100%!important;
+  overflow:hidden!important;
+  align-content:stretch!important;
+  box-sizing:border-box!important;
+  padding:6px 5px 2px!important;
+  gap:3px!important;
+ }
+ html.b1-typing body.writing .writerPage .writingPoints{
+  grid-column:1!important;
+  grid-row:1!important;
+  min-height:0!important;
+  max-height:min(43%,170px)!important;
+  overflow:hidden!important;
+  flex:none!important;
+  touch-action:none!important;
+ }
+ html.b1-typing body.writing .writerPage .draftScrollFrame{
+  grid-column:1!important;
+  grid-row:2!important;
+  min-height:0!important;
+  height:100%!important;
+  max-height:100%!important;
+  overflow:hidden!important;
+ }
+ html.b1-typing body.writing .writerPage .actions{
+  grid-column:1!important;
+  grid-row:3!important;
+  align-self:end!important;
+  position:relative!important;
+  bottom:auto!important;
+  display:grid!important;
+  grid-template-columns:max-content max-content max-content minmax(0,1fr)!important;
+  margin:0!important;
+  padding:2px 1px max(2px,env(safe-area-inset-bottom))!important;
+  min-height:34px!important;
+  height:auto!important;
+  flex:none!important;
+  width:100%!important;
+  visibility:visible!important;
+  opacity:1!important;
+  z-index:240!important;
+  background:#fff!important;
+ }
+ html.b1-typing body.writing .writerPage .actions #gradeBtn{
+  display:flex!important;
+  visibility:visible!important;
+  opacity:1!important;
+  align-items:center!important;
+  justify-content:center!important;
+  grid-column:4!important;
+  min-height:28px!important;
+  height:28px!important;
+  width:100%!important;
+ }
+ html:not(.b1-typing) body.writing:not(.reviewing) .writerPage{
+  display:flex!important;
+  flex-direction:column!important;
+  flex:1 1 0!important;
+  min-height:0!important;
+  height:auto!important;
+  max-height:100%!important;
+  overflow:hidden!important;
+ }
+ html:not(.b1-typing) body.writing:not(.reviewing) .writerPage .editor{
+  display:flex!important;
+  flex-direction:column!important;
+  flex:1 1 0!important;
+  min-height:0!important;
+  height:auto!important;
+  max-height:100%!important;
+  overflow:hidden!important;
+ }
+ html:not(.b1-typing) body.writing:not(.reviewing) .writerPage .draftScrollFrame{
+  display:flex!important;
+  flex:1 1 auto!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:100%!important;
+  overflow:hidden!important;
+ }
+ html:not(.b1-typing) body.writing:not(.reviewing) .writerPage .actions{
+  display:grid!important;
+  flex:none!important;
+  grid-template-columns:max-content max-content max-content minmax(0,1fr)!important;
+  width:100%!important;
+  align-self:stretch!important;
+  margin:0!important;
+ }
+ html:not(.b1-typing) body.writing:not(.reviewing) .writerPage .draftScrollFrame #draft{
+  height:100%!important;
+  flex:1 1 auto!important;
+  min-height:0!important;
+  overflow-y:auto!important;
+  touch-action:pan-y!important;
+ }
+}
+
 </style>
 </head>
 <body class="intro">
