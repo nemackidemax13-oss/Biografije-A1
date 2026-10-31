@@ -2485,6 +2485,23 @@ body.intro #welcome .welcome-rule.rule-alert .rule-symbol{color:#d92f4b!importan
  body.intro #welcome .welcome-rule .rule-symbol{width:20px!important;font-size:16px!important}
 }
 
+
+/* DE-MAX A2: legenda statusa odmah ispod IZABERI MEJL. */
+#mailList .a2-envelope-legend{
+ width:100%;
+ margin:2px 0 4px;
+ padding:3px 5px;
+ text-align:center;
+ color:#29466d;
+ font-size:clamp(9px,2.45vw,12px);
+ line-height:1.18;
+ font-weight:800;
+ white-space:nowrap;
+}
+@media(max-width:360px){
+ #mailList .a2-envelope-legend{font-size:9px;letter-spacing:-.2px;padding:2px}
+}
+
 </style>
 </head>
 <body class="intro">
@@ -2520,6 +2537,7 @@ body.intro #welcome .welcome-rule.rule-alert .rule-symbol{color:#d92f4b!importan
 </section>
 <section id="mailList" class="mailList hidden">
   <h2>IZABERI MEJL</h2>
+  <div class="a2-envelope-legend" aria-label="Značenje boja koverata">⚪ Neodrađeno · 🔵 Radi se · 🟢 Provereno</div>
   
   <div class="groupTitle"><span id="overview">0 / 13 provereno</span><button id="restartRound" type="button" class="restartRound hidden" title="Resetuje boje i AI oznake, ali čuva ranije napisane tekstove">↻ NOVI KRUG</button></div>
   <div id="tiles" class="tiles"></div>
