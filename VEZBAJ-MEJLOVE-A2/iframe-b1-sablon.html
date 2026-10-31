@@ -3239,27 +3239,41 @@ function renderResult(d){
 
 async function grade(){
  if(current<0||gradePending||validB1Result(current))return;
- const field=$("draft"),answer=field.value.trim();
- if(!answer){$("status").textContent="Prvo napiši odgovor.";return}
- const index=current,b=$("gradeBtn");gradePending=true;field.readOnly=true;b.disabled=true;b.textContent="AI proverava…";
- $("status").textContent="Analiza četiri tačke, strukture i gramatike…";
- const ctl=new AbortController(),timeout=setTimeout(()=>ctl.abort(),45000);
+ const field=$("draft"),answer=field.value.trim(),words=countWords(answer);
+ if(words<26){$("status").textContent="A2: manje od 26 reči ne može se bodovati. Napiši još "+(26-words)+" reči.";return;}
+ const index=current,b=$("gradeBtn");
+ gradePending=true;field.readOnly=true;b.disabled=true;b.textContent="AI proverava…";
+ $("status").textContent="A2 provera četiri pitanja, gramatike i ispravki (0–15)…";
+ const ctl=new AbortController(),timeout=setTimeout(()=>ctl.abort(),57000);
  try{
-  const res=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},signal:ctl.signal,body:JSON.stringify({mailIndex:index,answer})});
-  let result={};try{result=await res.json()}catch{}
-  if(!res.ok)throw Error(result.error||(res.status===404?"B1 Worker još nije objavljen.":"HTTP "+res.status));
-  if(result.total==null||!Number.isFinite(Number(result.total)))throw Error("AI nije vratio ispravan rezultat.");
+  const response=await fetch(API,{
+   method:"POST",mode:"cors",credentials:"omit",
+   headers:{"Content-Type":"application/json","Accept":"application/json"},
+   signal:ctl.signal,body:JSON.stringify({mailIndex:index,answer})
+  });
+  let result={};try{result=await response.json()}catch(e){}
+  if(!response.ok)throw Error(result.error||(response.status===404?
+   "A2 Worker nema putanju POST /api/check-a2-email.":"HTTP "+response.status));
+  const accepted=["a2-de-max-50-words-rubric-v2","a2-de-max-26-min-50-target-v3"];
+  if(!accepted.includes(result.verificationVersion)||
+     !Number.isInteger(Number(result.score))||Number(result.score)<0||Number(result.score)>15||
+     !result.rubric||!Array.isArray(result.questionPoints)||result.questionPoints.length!==4||
+     !Array.isArray(result.questionFeedback)||result.questionFeedback.length!==4||
+     !result.correctedText||!result.translationSr)
+   throw Error("A2 Worker nije vratio kompletnu novu A2 proveru (0–15). Objavi ispravan A2 Worker.");
   if(index!==current||field.value.trim()!==answer)return;
-  state.last[index]=result;save();overview();enterReview(result);
+  const mapped=convertA2Result(result,answer);
+  state.last[index]=mapped;state.checked[index]=true;save();overview();enterReview(mapped);
  }catch(e){
   if(index!==current)return;
   $("results").classList.remove("hidden");
-  $("results").replaceChildren(node("div","AI provera nije dostupna: "+(e.name==="AbortError"?"server nije odgovorio na vreme":e.message)+". Tekst je sačuvan; pokušajte ponovo.","err"));
-  $("status").textContent="Provera nije uspela. Tekst je sačuvan i možete ponoviti proveru.";
+  $("results").replaceChildren(node("div","AI provera nije dostupna: "+(e.name==="AbortError"?
+   "server nije odgovorio na vreme":e.message)+". Mejl je sačuvan za kasnije.","err"));
+  $("status").textContent="A2 provera nije uspela. Sačuvan mejl možeš ponovo proveriti.";
  }finally{
   clearTimeout(timeout);gradePending=false;b.textContent="✓ PROVERI MEJL";
   field.readOnly=index===current&&validB1Result(index);
-  b.disabled=validB1Result(index)||countWords(field.value)===0;
+  b.disabled=(index===current&&validB1Result(index))||countWords(field.value)<26;
   requestAnimationFrame(updateRail);
  }
 }
