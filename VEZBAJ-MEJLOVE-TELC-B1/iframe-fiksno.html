@@ -3045,7 +3045,44 @@ function appendCorrectedTranslation(result,root){
    german.append(span);
   }
  }else{german.textContent=result.corrected;}
- translationBox.append(german);
+ const button=node("button","🇷🇸 PREVOD NA SRPSKOM","correctedTranslationToggle");
+ button.type="button";button.setAttribute("aria-expanded","false");
+ const serbian=node("div",undefined,"correctedSerbian hidden");
+ serbian.id="corrected-serbian-result";button.setAttribute("aria-controls",serbian.id);
+ const fromWorker=correctedTranslationFromWorker(result);
+ if(fromWorker){serbian.textContent=latinSerbian(fromWorker);serbian.dataset.loaded="yes";}
+ const notice=node("div",
+  "Ako prevod nije dostupan iz AI provere, klikom se ispravljeni mejl šalje servisu MyMemory radi prevoda. Nemojte unositi osetljive lične podatke.",
+  "translationDisclosure");
+ if(fromWorker)notice.classList.add("hidden");
+ button.onclick=async()=>{
+  if(!serbian.classList.contains("hidden")){
+   serbian.classList.add("hidden");button.setAttribute("aria-expanded","false");
+   button.textContent="🇷🇸 PREVOD NA SRPSKOM";return;
+  }
+  if(serbian.dataset.loaded==="yes"){
+   serbian.classList.remove("hidden");button.setAttribute("aria-expanded","true");
+   button.textContent="🇷🇸 SAKRIJ PREVOD";return;
+  }
+  button.disabled=true;button.textContent="🇷🇸 UČITAVAM PREVOD…";
+  try{
+   const translated=await translateB1Corrected(result.corrected,(done,total)=>{
+    if(root.contains(button))button.textContent="🇷🇸 PREVOD "+done+" / "+total+"…";
+   });
+   if(!root.contains(button))return;
+   serbian.textContent=translated;serbian.dataset.loaded="yes";
+   serbian.classList.remove("hidden");button.setAttribute("aria-expanded","true");
+   button.textContent="🇷🇸 SAKRIJ PREVOD";
+  }catch(e){
+   if(!root.contains(button))return;
+   serbian.textContent="Prevod trenutno nije dostupan: "+(e?.message||"greška u povezivanju")+". Pokušajte ponovo.";
+   serbian.classList.remove("hidden");button.setAttribute("aria-expanded","false");
+   button.textContent="🇷🇸 POKUŠAJ PONOVO";
+  }finally{
+   if(root.contains(button))button.disabled=false;
+  }
+ };
+ translationBox.append(german,button,serbian,notice);
  root.append(node("h4","Ispravljena verzija odgovora"),translationBox);
 }
 
