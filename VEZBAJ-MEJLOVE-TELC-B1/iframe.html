@@ -1587,6 +1587,58 @@ body.writing.reviewing .writerPage .reviewActions{display:flex!important}
 body.writing.reviewing .writerPage .results:not(.hidden){display:block!important;flex:1 1 auto!important;max-height:none!important;height:auto!important;min-height:0!important;overflow-y:auto!important;touch-action:pan-y!important;overscroll-behavior:contain!important;padding:11px 12px 20px!important}
 body.writing.reviewing .writerPage{height:100%!important;min-height:0!important}
 
+
+/* DEMAX_B1_FONT_FOOTER_CENTER_TIMER_20261031 */
+body.writing .writerPage .writerClock,html.b1-typing .writerPage .writerClock{
+ position:absolute!important;top:5px!important;left:50%!important;
+ transform:translateX(-50%)!important;z-index:205!important;
+ min-width:72px!important;width:max-content!important;height:26px!important;
+ padding:3px 6px!important;font-size:11px!important;
+}
+body.writing .writerPage .actions,
+html.b1-typing .writerPage .actions,
+body.writing.keyboardOpen .writerPage .actions{
+ display:grid!important;
+ grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)!important;
+ align-items:center!important;gap:3px!important;width:100%!important;
+ min-width:0!important;min-height:33px!important;
+ padding:2px 1px max(2px,env(safe-area-inset-bottom))!important;
+}
+body.writing .writerPage .actions #liveCounter{
+ grid-column:1!important;justify-self:start!important;
+ min-width:0!important;font-size:clamp(9px,2.5vw,11px)!important;
+ white-space:nowrap!important;
+}
+body.writing .writerPage .actions .writingFontControls,
+html.b1-typing .writerPage .actions .writingFontControls{
+ position:static!important;top:auto!important;left:auto!important;right:auto!important;
+ transform:none!important;z-index:auto!important;grid-column:2!important;
+ display:flex!important;align-items:center!important;justify-self:center!important;
+ justify-content:center!important;gap:3px!important;
+ width:auto!important;height:30px!important;margin:0!important;
+ padding:2px 3px!important;background:#eaf3ff!important;
+ border:1px solid #bad0ed!important;border-radius:7px!important;
+}
+body.writing .writerPage .actions .writingFontControls button{
+ flex:none!important;width:31px!important;min-width:31px!important;
+ height:25px!important;min-height:25px!important;
+ padding:0 3px!important;font-size:11px!important;line-height:1!important;
+}
+body.writing .writerPage .actions #gradeBtn,
+html.b1-typing .writerPage .actions #gradeBtn{
+ grid-column:3!important;justify-self:end!important;width:auto!important;
+ max-width:100%!important;min-width:0!important;flex:none!important;
+ margin:0!important;white-space:nowrap!important;
+ padding:6px 8px!important;min-height:28px!important;
+ font-size:clamp(9px,2.5vw,11px)!important;
+}
+@media(max-width:355px){
+ body.writing .writerPage .actions,html.b1-typing .writerPage .actions{gap:2px!important}
+ body.writing .writerPage .actions .writingFontControls{gap:2px!important;padding:1px 2px!important}
+ body.writing .writerPage .actions .writingFontControls button{width:27px!important;min-width:27px!important;font-size:10px!important}
+ body.writing .writerPage .actions #gradeBtn{padding:5px 5px!important;font-size:9px!important}
+}
+
 </style>
 </head>
 <body class="intro">
@@ -1652,7 +1704,6 @@ body.writing.reviewing .writerPage{height:100%!important;min-height:0!important}
   </div>
 </section>
 <section id="writerScreen" class="writerPage hidden">
-  <div class="writingFontControls" aria-label="Veličina slova" role="group"><button id="writerMinus" type="button">A−</button><button id="writerPlus" type="button">A+</button></div>
   <div id="reviewActions" class="reviewActions hidden"><button id="resultList" type="button">← MEJLOVI</button><strong id="resultTitle">REZULTAT MEJLA</strong><button id="newAttempt" type="button">↻ VEŽBAJ PONOVO</button></div>
   <span id="writerClock" class="writerClock" role="timer" aria-label="Preostalo vreme za pisanje mejla">⏱ 30:00</span>
   <button id="backAllMails" class="backAllMails" type="button" aria-label="Nazad na postavku trenutno izabranog mejla">← Nazad</button>
@@ -1675,7 +1726,14 @@ vielen Dank für deine Nachricht.
 <button id="railUp" type="button" aria-label="Tekst gore">▲</button>
 <div id="railTrack" class="railTrack" role="scrollbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-orientation="vertical"><div id="railThumb" class="railThumb"></div></div>
 <button id="railDown" type="button" aria-label="Tekst dole">▼</button></div></div>
-    <div class="actions"><span id="liveCounter" class="count">0 reči</span><button id="gradeBtn" class="grade" type="button">✓ PROVERI MEJL</button></div>
+    <div class="actions">
+      <span id="liveCounter" class="count">0 reči</span>
+      <div class="writingFontControls" aria-label="Veličina slova pri pisanju" role="group">
+        <button id="writerMinus" type="button" aria-label="Smanji slova u mejlu">A−</button>
+        <button id="writerPlus" type="button" aria-label="Uvećaj slova u mejlu">A+</button>
+      </div>
+      <button id="gradeBtn" class="grade" type="button">✓ PROVERI MEJL</button>
+    </div>
     <div id="status" class="notice">Obradi sve četiri tačke, napiši uvod i pozdrav. Odgovor se čuva lokalno.</div>
   </div>
   <div id="results" class="results hidden" aria-live="polite"></div>
