@@ -2874,6 +2874,146 @@ body.writing:not(.reviewing) header #navBar #writerPostavkaBtn{
  }
 }
 
+
+/* DE-MAX A2 · 2026-11-01: tajmer i povratak u beloj traci iznad pisanog mejla.
+   Bela traka je unutar editora: ponovo se vidi kada se tastatura zatvori
+   i kada mobilni browser sakrije spoljasnji header. */
+body.writing:not(.reviewing) header{
+ display:none!important;
+}
+body.writing:not(.reviewing) #writerScreen .editor .editHead.a2-writing-whitebar{
+ display:grid!important;
+ grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)!important;
+ grid-template-rows:30px!important;
+ align-items:center!important;
+ justify-items:stretch!important;
+ flex:0 0 32px!important;
+ order:1!important;
+ height:32px!important;
+ min-height:32px!important;
+ max-height:32px!important;
+ width:100%!important;
+ box-sizing:border-box!important;
+ position:relative!important;
+ padding:2px 5px!important;
+ gap:3px!important;
+ margin:0!important;
+ background:#fff!important;
+ border:1px solid #d9e3f1!important;
+ border-radius:7px!important;
+ box-shadow:0 1px 3px #243b5810!important;
+ overflow:visible!important;
+}
+body.writing:not(.reviewing) #writerScreen .editor .editHead .a2-edit-title{
+ display:block!important;
+ min-width:0!important;
+ justify-self:start!important;
+ color:#164481!important;
+ font-size:clamp(9px,2.3vw,11px)!important;
+ font-weight:900!important;
+ line-height:1!important;
+ white-space:nowrap!important;
+}
+body.writing:not(.reviewing) #writerScreen .editor .editHead #counter{
+ display:none!important;
+}
+body.writing:not(.reviewing) #writerScreen .editor .editHead #writerClock{
+ display:inline-flex!important;
+ position:static!important;
+ inset:auto!important;
+ transform:none!important;
+ grid-column:2!important;
+ justify-self:center!important;
+ align-items:center!important;
+ justify-content:center!important;
+ width:auto!important;
+ min-width:73px!important;
+ height:26px!important;
+ min-height:26px!important;
+ max-height:26px!important;
+ padding:3px 7px!important;
+ margin:0!important;
+ box-sizing:border-box!important;
+ background:#fff6f6!important;
+ border:1px solid #f1b6c0!important;
+ border-radius:7px!important;
+ color:#cc2a40!important;
+ font-size:11px!important;
+ font-weight:950!important;
+ font-variant-numeric:tabular-nums!important;
+ line-height:1!important;
+ letter-spacing:0!important;
+ white-space:nowrap!important;
+ pointer-events:none!important;
+ z-index:auto!important;
+}
+body.writing:not(.reviewing) #writerScreen .editor .editHead #writerClock.timeLow{
+ background:#ffe0e4!important;
+ color:#ac142c!important;
+}
+body.writing:not(.reviewing) #writerScreen .editor .editHead #writerPostavkaBtn{
+ display:inline-flex!important;
+ position:static!important;
+ inset:auto!important;
+ left:auto!important;
+ right:auto!important;
+ top:auto!important;
+ transform:none!important;
+ grid-column:3!important;
+ justify-self:end!important;
+ align-items:center!important;
+ justify-content:center!important;
+ flex:0 0 auto!important;
+ min-width:0!important;
+ width:auto!important;
+ max-width:100%!important;
+ height:26px!important;
+ min-height:26px!important;
+ max-height:26px!important;
+ box-sizing:border-box!important;
+ margin:0!important;
+ padding:3px 7px!important;
+ background:#e98721!important;
+ color:#fff!important;
+ border:1px solid #ffc486!important;
+ border-radius:7px!important;
+ box-shadow:0 1px 3px #7e461f25!important;
+ font-size:clamp(8px,2.15vw,10px)!important;
+ font-weight:900!important;
+ line-height:1!important;
+ text-align:center!important;
+ white-space:nowrap!important;
+ touch-action:manipulation!important;
+ z-index:auto!important;
+}
+@media(max-width:365px){
+ body.writing:not(.reviewing) #writerScreen .editor .editHead #writerPostavkaBtn{
+  padding:3px 5px!important;
+  font-size:8px!important;
+ }
+ body.writing:not(.reviewing) #writerScreen .editor .editHead #writerClock{
+  min-width:67px!important;
+  padding:3px 4px!important;
+  font-size:10px!important;
+ }
+}
+/* Zadrzi cetiri pitanja i prostor za unos dok je Android/iOS tastatura otvorena. */
+html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .editHead.a2-writing-whitebar,
+body.writing.keyboardOpen:not(.reviewing) #writerScreen .editor .editHead.a2-writing-whitebar{
+ display:none!important;
+ flex:0 0 0!important;
+ height:0!important;
+ min-height:0!important;
+ padding:0!important;
+ border:0!important;
+}
+/* Bela traka automatski se vraca kada je tastatura zatvorena. */
+html:not(.b1-typing) body.writing:not(.keyboardOpen):not(.reviewing) #writerScreen .editor .editHead.a2-writing-whitebar{
+ display:grid!important;
+ visibility:visible!important;
+ opacity:1!important;
+}
+
 </style>
 </head>
 <body class="intro">
@@ -2889,8 +3029,7 @@ body.writing:not(.reviewing) header #navBar #writerPostavkaBtn{
    <button type="button" id="prevBtn" class="navArrow taskNav hidden" aria-label="Prethodni mejl" title="Prethodni mejl">❮</button>
    <span id="navCounter" class="navCounter taskNav hidden" aria-live="polite">1 / 13</span>
    <button type="button" id="nextBtn" class="navArrow taskNav hidden" aria-label="Sledeći mejl" title="Sledeći mejl">❯</button>
-   <span id="writerClock" class="writerClock writerNav hidden" role="timer" aria-label="Preostalo vreme za pisanje mejla">⏱ 30:00</span>
-   <button id="writerPostavkaBtn" class="writerPostavkaBtn writerNav hidden" type="button" aria-label="Nazad na postavku mejla">← POSTAVKA MEJLA</button>
+
   </div>
 </header>
 <main class="main">
@@ -2957,7 +3096,12 @@ body.writing:not(.reviewing) header #navBar #writerPostavkaBtn{
       <h3>ČETIRI PITANJA <span id="writerSrHint" class="hidden">· prevod crveno</span></h3>
       <ol id="writerPoints"></ol>
     </div>
-    <div class="editHead"><span>✎ PIŠI MEJL</span><span id="counter" class="count">0 reči</span><span class="demaxWriterMark" aria-label="De-Max">De-Max</span></div>
+    <div class="editHead a2-writing-whitebar" role="group" aria-label="Pisanje mejla, preostalo vreme i povratak na postavku">
+     <span class="a2-edit-title">✎ PIŠI MEJL</span>
+     <span id="counter" class="count" aria-live="off">0 reči</span>
+     <span id="writerClock" class="writerClock" role="timer" aria-label="Preostalo vreme za pisanje mejla">⏱ 30:00</span>
+     <button id="writerPostavkaBtn" class="writerPostavkaBtn" type="button" aria-label="Nazad na postavku mejla">← POSTAVKA MEJLA</button>
+    </div>
     <div class="draftScrollFrame" id="draftScrollFrame"><textarea id="draft" spellcheck="true" aria-label="Ovde napiši svoj A2 mejl" placeholder="Liebe ...,
 
 vielen Dank für deine Nachricht.
@@ -3054,7 +3198,7 @@ function screen(name){
  document.body.classList.remove("keyboardOpen");
  $("navBar").classList.toggle("hidden",name!=="taskScreen"&&name!=="writerScreen");
  document.querySelectorAll(".taskNav").forEach(e=>e.classList.toggle("hidden",name!=="taskScreen"));
- document.querySelectorAll(".writerNav").forEach(e=>e.classList.toggle("hidden",name!=="writerScreen"));
+
  window.scrollTo(0,0);
  if(name==="taskScreen")requestAnimationFrame(fitTaskLetter);
  updateViewportHeight();
