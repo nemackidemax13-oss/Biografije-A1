@@ -2573,6 +2573,24 @@ body.writing.reviewing .writerPage .reviewActions{
  }
 }
 
+
+/* A2: ispod ISPRAVLJENA VERZIJA ODGOVORA, srpski prevod samo na izbor učenika. */
+#results .correctedTranslationBox{
+ display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:7px!important;
+}
+#results .correctedTranslationBox .correctedTranslationToggle{
+ display:flex!important;align-self:stretch!important;justify-content:center!important;
+ width:100%!important;max-width:100%!important;
+ margin:5px 0 0!important;min-height:36px!important;
+ background:#ffdb58!important;color:#4b3610!important;border:1px solid #d8a81b!important;
+ border-radius:8px!important;font-size:clamp(10px,2.8vw,13px)!important;
+ font-weight:950!important;
+}
+#results .correctedTranslationBox .correctedSerbian:not(.hidden){
+ display:block!important;order:3!important;
+}
+#results .correctedTranslationBox .translationDisclosure{order:4!important}
+
 </style>
 </head>
 <body class="intro">
@@ -3199,8 +3217,8 @@ function appendCorrectedTranslation(result,root){
    german.append(span);
   }
  }else{german.textContent=result.corrected;}
- const button=node("button","🇷🇸 PRIKAŽI PREVOD ↓","correctedTranslationToggle");
- button.type="button";button.setAttribute("aria-expanded","false");
+ const button=node("button","🇷🇸 PREVOD NA SRPSKI ↓","correctedTranslationToggle");
+ button.type="button";button.setAttribute("aria-label","Prikaži prevod ispravljene verzije odgovora na srpski");button.setAttribute("aria-expanded","false");
  const serbian=node("div",undefined,"correctedSerbian hidden");
  serbian.id="corrected-serbian-result";button.setAttribute("aria-controls",serbian.id);
  const fromWorker=correctedTranslationFromWorker(result);
@@ -3212,7 +3230,7 @@ function appendCorrectedTranslation(result,root){
  button.onclick=async()=>{
   if(!serbian.classList.contains("hidden")){
    serbian.classList.add("hidden");button.setAttribute("aria-expanded","false");
-   button.textContent="🇷🇸 PRIKAŽI PREVOD ↓";return;
+   button.textContent="🇷🇸 PREVOD NA SRPSKI ↓";return;
   }
   if(serbian.dataset.loaded==="yes"){
    serbian.classList.remove("hidden");button.setAttribute("aria-expanded","true");
