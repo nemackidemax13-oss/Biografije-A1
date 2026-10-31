@@ -3014,6 +3014,97 @@ html:not(.b1-typing) body.writing:not(.keyboardOpen):not(.reviewing) #writerScre
  opacity:1!important;
 }
 
+
+/* A2 2026-11-01: mala bela traka na VRHU, pre četiri pitanja.
+   Dok je tastatura sklonjena, dugme PROVERI u beloj traci;
+   dok je otvorena, originalno PROVERI ostaje dostupno ispod editora. */
+body.writing:not(.reviewing) #writerScreen .editor .editHead.a2-writing-whitebar{
+ order:-1!important;
+ flex:0 0 30px!important;
+ grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)!important;
+ grid-template-rows:28px!important;
+ height:30px!important;
+ min-height:30px!important;
+ max-height:30px!important;
+ padding:1px 4px!important;
+ gap:3px!important;
+}
+body.writing:not(.reviewing) #writerScreen .editor .writingPoints{
+ order:0!important;
+}
+body.writing:not(.reviewing) #writerScreen .editor .editHead.a2-writing-whitebar .a2-edit-title,
+body.writing:not(.reviewing) #writerScreen .editor .editHead.a2-writing-whitebar #counter{
+ display:none!important;
+}
+body.writing:not(.reviewing) #writerScreen .editor .editHead.a2-writing-whitebar #topGradeBtn{
+ display:inline-flex!important;
+ position:static!important;
+ grid-column:1!important;
+ justify-self:start!important;
+ align-items:center!important;
+ justify-content:center!important;
+ width:auto!important;
+ max-width:100%!important;
+ min-width:0!important;
+ height:24px!important;
+ min-height:24px!important;
+ max-height:24px!important;
+ padding:2px 5px!important;
+ margin:0!important;
+ border:1px solid #66b48d!important;
+ border-radius:6px!important;
+ background:#11854c!important;
+ color:#fff!important;
+ font-size:clamp(7.5px,2.2vw,10px)!important;
+ font-weight:900!important;
+ line-height:1!important;
+ white-space:nowrap!important;
+ box-sizing:border-box!important;
+ box-shadow:none!important;
+}
+body.writing:not(.reviewing) #writerScreen .editor .editHead.a2-writing-whitebar #topGradeBtn:disabled{
+ opacity:.55!important;cursor:default!important;
+}
+body.writing:not(.reviewing) #writerScreen .editor .editHead.a2-writing-whitebar #writerClock{
+ min-width:66px!important;
+ height:24px!important;
+ min-height:24px!important;
+ max-height:24px!important;
+ padding:2px 5px!important;
+ font-size:10px!important;
+}
+body.writing:not(.reviewing) #writerScreen .editor .editHead.a2-writing-whitebar #writerPostavkaBtn{
+ height:24px!important;
+ min-height:24px!important;
+ max-height:24px!important;
+ padding:2px 5px!important;
+ font-size:clamp(7.5px,2.2vw,10px)!important;
+}
+html:not(.b1-typing) body.writing:not(.keyboardOpen):not(.reviewing) #writerScreen .editor .actions #gradeBtn{
+ display:none!important;
+}
+@media(max-width:700px){
+ html:not(.b1-typing) body.writing:not(.keyboardOpen):not(.reviewing) #writerScreen .editor .actions{
+  grid-template-columns:max-content max-content max-content minmax(0,1fr)!important;
+ }
+ html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .actions #gradeBtn,
+ body.writing.keyboardOpen:not(.reviewing) #writerScreen .editor .actions #gradeBtn{
+  display:flex!important;
+ }
+}
+@media(max-width:350px){
+ body.writing:not(.reviewing) #writerScreen .editor .editHead.a2-writing-whitebar #topGradeBtn,
+ body.writing:not(.reviewing) #writerScreen .editor .editHead.a2-writing-whitebar #writerPostavkaBtn{
+  font-size:7.5px!important;
+  padding:2px 3px!important;
+ }
+ body.writing:not(.reviewing) #writerScreen .editor .editHead.a2-writing-whitebar #writerClock{
+  min-width:62px!important;
+  font-size:9px!important;
+  padding:2px 3px!important;
+ }
+}
+
 </style>
 </head>
 <body class="intro">
@@ -3096,9 +3187,10 @@ html:not(.b1-typing) body.writing:not(.keyboardOpen):not(.reviewing) #writerScre
       <h3>ČETIRI PITANJA <span id="writerSrHint" class="hidden">· prevod crveno</span></h3>
       <ol id="writerPoints"></ol>
     </div>
-    <div class="editHead a2-writing-whitebar" role="group" aria-label="Pisanje mejla, preostalo vreme i povratak na postavku">
+    <div class="editHead a2-writing-whitebar" role="group" aria-label="Preostalo vreme, provera mejla i povratak na postavku">
      <span class="a2-edit-title">✎ PIŠI MEJL</span>
      <span id="counter" class="count" aria-live="off">0 reči</span>
+     <button id="topGradeBtn" class="grade a2-top-grade" type="button" disabled aria-label="Proveri napisani mejl">✓ PROVERI MEJL</button>
      <span id="writerClock" class="writerClock" role="timer" aria-label="Preostalo vreme za pisanje mejla">⏱ 30:00</span>
      <button id="writerPostavkaBtn" class="writerPostavkaBtn" type="button" aria-label="Nazad na postavku mejla">← POSTAVKA MEJLA</button>
     </div>
@@ -3552,6 +3644,7 @@ function updateCount(){
  $("counter").textContent=n+" reči"+(n>=50?" ✓":"");
  $("liveCounter").textContent=n+" reči"+(n>=50?" ✓":"");
  $("gradeBtn").disabled=n<26;
+ $("topGradeBtn").disabled=n<26;
  $("status").textContent=n<26?"A2: za proveru je potrebno najmanje 26 reči. Cilj je 50.":"A2 · 4 pitanja · 15 bodova · završni pozdrav.";
 }
 function textSection(root,heading,items){
@@ -3899,6 +3992,7 @@ async function grade(){
  if(words<26){$("status").textContent="A2: manje od 26 reči ne može se bodovati. Napiši još "+(26-words)+" reči.";return;}
  const index=current,b=$("gradeBtn");
  gradePending=true;field.readOnly=true;b.disabled=true;b.textContent="AI proverava…";
+ $("topGradeBtn").disabled=true;$("topGradeBtn").textContent="AI PROVERAVA…";
  $("status").textContent="A2 provera četiri pitanja, gramatike i ispravki (0–15)…";
  const ctl=new AbortController(),timeout=setTimeout(()=>ctl.abort(),57000);
  try{
@@ -3930,6 +4024,8 @@ async function grade(){
   clearTimeout(timeout);gradePending=false;b.textContent="✓ PROVERI MEJL";
   field.readOnly=index===current&&validB1Result(index);
   b.disabled=(index===current&&validB1Result(index))||countWords(field.value)<26;
+  $("topGradeBtn").disabled=b.disabled;
+  $("topGradeBtn").textContent="✓ PROVERI MEJL";
   requestAnimationFrame(updateRail);
  }
 }
@@ -3964,6 +4060,7 @@ $("draft").addEventListener("input",()=>{
 });
 $("resetClock").onclick=startTimer;
 $("gradeBtn").onclick=grade;
+$("topGradeBtn").onclick=()=>{if(!$("gradeBtn").disabled)$("gradeBtn").click()};
 
 /* Automatska i rezervna rucna obnova dele potpuno isti postupak. */
 function b1RestoreAfterKeyboardClosed(){
