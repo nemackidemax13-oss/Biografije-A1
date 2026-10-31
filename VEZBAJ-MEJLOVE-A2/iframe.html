@@ -3292,7 +3292,7 @@ function appendCorrectedTranslation(result,root){
   }finally{if(root.contains(button))button.disabled=false;}
  };
  translationBox.append(german,button,sr,fallback,notice);
- root.append(node("h4","Ispravljena verzija odgovora"),translationBox);
+ root.append(node("h4","Ispravljena verzija odgovora tvog mejla"),translationBox);
 }
 
 function a2MarkedSegments(original,corrected){
@@ -3378,7 +3378,7 @@ function renderResult(d){
  if(d.contextIssues?.length)textSection(r,"Odstupanja od postavke",d.contextIssues);
  if(d.corrected)appendCorrectedTranslation(d,r);
  if(d.modelEmail){
-  r.append(node("h4","Primer pravilnog A2 odgovora"),node("div",d.modelEmail,"corrected demax-mail-v4"));
+  r.append(node("h4","Primer pravilnog pisanja ovog mejla"),node("div",d.modelEmail,"corrected demax-mail-v4"));
  }
  r.scrollTop=0;
 }
