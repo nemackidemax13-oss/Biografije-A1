@@ -1854,6 +1854,62 @@ body.writing .writerPage .actions{touch-action:manipulation!important}
  }
 }
 
+
+/* DEMAX_B1_HIDE_NATIVE_OUTER_BLUE_SCROLLBAR_20261031
+   Sakrij iskljucivo nativne spoljne Android/WebView scroll indikatore.
+   Unutrasnji klizac #scrollRail (strelice i dugacak tekst) ostaje. */
+@media(max-width:700px){
+ html:has(body.writing),
+ html:has(body.writing) body,
+ body.writing,
+ body.writing .app,
+ body.writing .main,
+ body.writing .writerPage,
+ body.writing .writerPage .editor,
+ body.writing .writerPage .writingPoints,
+ body.writing .writerPage .draftScrollFrame{
+   overflow-x:hidden!important;
+   scrollbar-width:none!important;
+   -ms-overflow-style:none!important;
+   overscroll-behavior-x:none!important;
+ }
+ html:has(body.writing),
+ html:has(body.writing) body,
+ body.writing .app,
+ body.writing .main,
+ body.writing .writerPage,
+ body.writing .writerPage .editor,
+ body.writing:not(.reviewing) .writerPage .writingPoints,
+ body.writing:not(.reviewing) .writerPage .draftScrollFrame{
+   overflow-y:hidden!important;
+   overscroll-behavior-y:none!important;
+ }
+ html:has(body.writing)::-webkit-scrollbar,
+ html:has(body.writing) body::-webkit-scrollbar,
+ body.writing::-webkit-scrollbar,
+ body.writing .app::-webkit-scrollbar,
+ body.writing .main::-webkit-scrollbar,
+ body.writing .writerPage::-webkit-scrollbar,
+ body.writing .writerPage .editor::-webkit-scrollbar,
+ body.writing .writerPage .writingPoints::-webkit-scrollbar,
+ body.writing .writerPage .draftScrollFrame::-webkit-scrollbar{
+   display:none!important;
+   width:0!important;
+   height:0!important;
+   background:transparent!important;
+ }
+ body.writing:not(.reviewing) .writerPage #draft{
+   overflow-y:auto!important;
+   touch-action:pan-y!important;
+   overscroll-behavior:contain!important;
+   -webkit-overflow-scrolling:touch!important;
+ }
+ body.writing.reviewing .writerPage #results:not(.hidden){
+   overflow-y:auto!important;
+   touch-action:pan-y!important;
+ }
+}
+
 </style>
 </head>
 <body class="intro">
