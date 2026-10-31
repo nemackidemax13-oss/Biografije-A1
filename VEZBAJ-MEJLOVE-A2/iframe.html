@@ -3112,6 +3112,148 @@ body.writing:not(.reviewing) #writerScreen .editor .actions #gradeBtn{
  }
 }
 
+
+/* A2 mobile final one-row footer 2026-11-01:
+   PREVOD SRPSKI | A− | A+ | PUN EKRAN | PROVERI MEJL.
+   Brojac reci prelazi u status ispod i ne zauzima dugme. */
+body.writing:not(.reviewing) #writerScreen .editor .actions,
+html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .actions,
+html:not(.b1-typing) body.writing:not(.reviewing) #writerScreen .editor .actions,
+body.writing.keyboardOpen:not(.reviewing) #writerScreen .editor .actions {
+ display:grid!important;
+ grid-template-columns:minmax(0,1.55fr) minmax(22px,24px) minmax(22px,24px) minmax(0,.95fr) minmax(0,1.35fr)!important;
+ grid-template-rows:minmax(27px,auto)!important;
+ column-gap:3px!important;
+ row-gap:0!important;
+ align-items:center!important;
+ justify-content:stretch!important;
+ flex:0 0 auto!important;
+ width:100%!important;
+ max-width:100%!important;
+ min-width:0!important;
+ min-height:31px!important;
+ height:auto!important;
+ margin:0!important;
+ padding:2px 2px max(2px,env(safe-area-inset-bottom))!important;
+ overflow:visible!important;
+ box-sizing:border-box!important;
+}
+body.writing:not(.reviewing) #writerScreen .editor .actions #liveCounter,
+html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .actions #liveCounter{
+ display:none!important;
+}
+body.writing:not(.reviewing) #writerScreen .editor .actions #writerSrToggle,
+html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .actions #writerSrToggle{
+ display:flex!important;
+ grid-column:1!important;
+ grid-row:1!important;
+ align-items:center!important;
+ justify-content:center!important;
+ justify-self:stretch!important;
+ width:100%!important;
+ max-width:100%!important;
+ min-width:0!important;
+ height:27px!important;
+ min-height:27px!important;
+ padding:2px 2px!important;
+ margin:0!important;
+ white-space:nowrap!important;
+ font-size:clamp(7px,2.15vw,9px)!important;
+ letter-spacing:-.12px!important;
+ line-height:1!important;
+}
+body.writing:not(.reviewing) #writerScreen .editor .actions .writingFontControls,
+html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .actions .writingFontControls{
+ display:contents!important;
+}
+body.writing:not(.reviewing) #writerScreen .editor .actions #writerMinus,
+body.writing:not(.reviewing) #writerScreen .editor .actions #writerPlus,
+html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .actions #writerMinus,
+html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .actions #writerPlus{
+ display:inline-flex!important;
+ position:static!important;
+ align-items:center!important;
+ justify-content:center!important;
+ grid-row:1!important;
+ justify-self:stretch!important;
+ width:100%!important;
+ min-width:0!important;
+ max-width:100%!important;
+ height:27px!important;
+ min-height:27px!important;
+ margin:0!important;
+ padding:0!important;
+ font-size:11px!important;
+ line-height:1!important;
+}
+body.writing:not(.reviewing) #writerScreen .editor .actions #writerMinus,
+html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .actions #writerMinus{
+ grid-column:2!important;
+}
+body.writing:not(.reviewing) #writerScreen .editor .actions #writerPlus,
+html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .actions #writerPlus{
+ grid-column:3!important;
+}
+body.writing:not(.reviewing) #writerScreen .editor .actions #b1RestoreScreen,
+html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .actions #b1RestoreScreen,
+html.b1-keyboard-unmeasured body.writing:not(.reviewing) #writerScreen .editor .actions #b1RestoreScreen{
+ display:flex!important;
+ position:relative!important;
+ top:auto!important;left:auto!important;right:auto!important;bottom:auto!important;
+ grid-column:4!important;
+ grid-row:1!important;
+ align-items:center!important;
+ justify-content:center!important;
+ justify-self:stretch!important;
+ width:100%!important;
+ min-width:0!important;
+ max-width:100%!important;
+ height:27px!important;
+ min-height:27px!important;
+ max-height:27px!important;
+ padding:2px 1px!important;
+ margin:0!important;
+ font-size:clamp(7px,2.05vw,9px)!important;
+ white-space:nowrap!important;
+ line-height:1!important;
+ border-width:1px!important;
+}
+body.writing:not(.reviewing) #writerScreen .editor .actions #gradeBtn,
+html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .actions #gradeBtn{
+ display:flex!important;
+ grid-column:5!important;
+ grid-row:1!important;
+ align-items:center!important;
+ justify-content:center!important;
+ justify-self:stretch!important;
+ width:100%!important;
+ min-width:0!important;
+ max-width:100%!important;
+ height:27px!important;
+ min-height:27px!important;
+ max-height:27px!important;
+ padding:2px 1px!important;
+ margin:0!important;
+ font-size:clamp(7px,2.1vw,9px)!important;
+ font-weight:950!important;
+ line-height:1!important;
+ white-space:nowrap!important;
+ overflow:hidden!important;
+}
+/* Uski telefoni i iPhone/WebView, bez drugog reda. */
+@media(max-width:350px){
+ body.writing:not(.reviewing) #writerScreen .editor .actions,
+ html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .actions{
+  grid-template-columns:minmax(0,1.55fr) 22px 22px minmax(0,.95fr) minmax(0,1.35fr)!important;
+  column-gap:2px!important;
+  padding-left:1px!important;
+  padding-right:1px!important;
+ }
+ body.writing:not(.reviewing) #writerScreen .editor .actions #writerSrToggle{font-size:7px!important}
+ body.writing:not(.reviewing) #writerScreen .editor .actions #b1RestoreScreen{font-size:7px!important}
+ body.writing:not(.reviewing) #writerScreen .editor .actions #gradeBtn{font-size:7px!important}
+}
+
 </style>
 </head>
 <body class="intro">
@@ -3650,7 +3792,7 @@ function updateCount(){
  $("counter").textContent=n+" reči"+(n>=50?" ✓":"");
  $("liveCounter").textContent=n+" reči"+(n>=50?" ✓":"");
  $("gradeBtn").disabled=n<26;
- $("status").textContent=n<26?"A2: za proveru je potrebno najmanje 26 reči. Cilj je 50.":"A2 · 4 pitanja · 15 bodova · završni pozdrav.";
+ $("status").textContent=n+" reči · "+(n<26?"Za proveru je potrebno najmanje 26 reči. Cilj je 50.":"A2 · 4 pitanja · 15 bodova · završni pozdrav.");
 }
 function textSection(root,heading,items){
  root.append(node("h4",heading));const ul=node("ul");for(const t of items||[]){ul.append(node("li",typeof t==="string"?t:JSON.stringify(t)))}root.append(ul);
