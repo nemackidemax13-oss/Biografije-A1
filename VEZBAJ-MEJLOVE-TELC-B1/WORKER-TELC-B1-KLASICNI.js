@@ -468,10 +468,15 @@ const RESPONSE_SCHEMA = {
   improvements:{type:"array",items:{type:"string"}},
   errors:{type:"array",items:{type:"string"}},
   corrected:{type:"string"},
+  supplements:{type:"array",items:{type:"object",additionalProperties:false,
+   properties:{pointIndex:{type:"integer",minimum:1,maximum:4},sentence:{type:"string"},explanation:{type:"string"}},
+   required:["pointIndex","sentence","explanation"]}},
+  offTopic:{type:"boolean"},
+  offTopicReason:{type:"string"},
   example:{type:"string"}
  },
  required:["points","kommunikativ","formal","bonusVocabulary","bonusContent",
-   "summary","strengths","improvements","errors","corrected","example"]
+   "summary","strengths","improvements","errors","corrected","supplements","offTopic","offTopicReason","example"]
 };
 const SYSTEM_INSTRUCTIONS = [
  "Du bist eine sorgfältige TELC-Deutsch-B1-Prüfungstrainerin für DE-MAX Tutin.",
@@ -502,7 +507,12 @@ const SYSTEM_INSTRUCTIONS = [
  "bei kürzerem Text in improvements auf 80-Wörter-Übungsziel hinweisen.",
  "bonusVocabulary=true nur für überdurchschnittliche sprachliche Vielfalt; bonusContent=true nur für",
  "überdurchschnittlich guten inhaltlichen Umfang. Einfache 80 Wörter allein geben keinen Bonus.",
- "In corrected nur die Schüleraussagen sprachlich korrigieren, KEINE neuen fiktiven Antworten hinzufügen.",
+ "WICHTIG: ZUERST ausschließlich ORIGINALANTWORT des Schülers bewerten, Punkte und Feedback abschließen; Korrekturen, Ergänzungen und Mustertexte dürfen die Bewertung NIE verbessern.",
+ "In corrected denselben Schülerbrief (Person, Stil, Satzstruktur, Reihenfolge, Tatsachen und eigene Ideen) bewahren; nur sprachliche, grammatikalische und orthografische Fehler ändern. NICHT den Brief als neuen Mustertext umschreiben.",
+ "Im Feld supplements nur wenn eine oder mehrere der vier geforderten Leitpunkte fehlen: höchstens ein kurzer sinnvoller deutscher B1-Beispielsatz pro FEHLENDEM Punkt. pointIndex 1-4 und explanation auf Serbisch. Der Satz ist als neue Ergänzung gekennzeichnet, NICHT Bestandteil von corrected, und zählt NICHT für die Bewertung. Er darf keine Tatsachen aus der Aufgabenstellung widersprechen.",
+ "Wenn die Schülerantwort das Thema vollständig verfehlt oder eine andere Aufgabe bearbeitet: offTopic=true, offTopicReason auf Serbisch klar mit falschem Ort/Tag/Uhrzeit/Empfänger/Thema; keine inhaltliche Neuschreibung in corrected. Nur echte im Original vorhandene Sprachfehler korrigieren, fehlende Punkte in supplements vorschlagen und separaten Musterbrief in example.",
+ "Für normal passende Schülerantworten offTopic=false und offTopicReason als leeren String ausgeben. offTopic nicht schon wegen eines fehlenden Leitpunktes oder einzelner Fehler setzen.",
+ "Originalformulierungen im korrigierten Brief möglichst wiedererkennbar halten; Ergänzungen strikt vom korrigierten Original trennen.",
  "In example einen vollständigen, natürlichen B1-Musterbrief mit ca. 90-125 deutschen Wörtern schreiben;",
  "passende Anrede, Einleitung, Antworten auf alle VIER Leitpunkte, Grußformel.",
  "Beachte den Register-Hinweis aus der Aufgabe. Keine Situation oder falsche Tatsachen erfinden.",
@@ -576,7 +586,14 @@ function normalizeModel(r,task,answer) {
   points,summary:summaryParts.join(" "),
   strengths:safeList(r.strengths,7,440),improvements,
   errors:safeList(r.errors,12,500),
-  corrected:safeText(r.corrected,8000),
+  corrected:safeText(r.corrected,8000)||answer,
+  supplements:(Array.isArray(r.supplements)?r.supplements:[])
+   .filter(x=>x&&Number.isInteger(x.pointIndex)&&x.pointIndex>=1&&x.pointIndex<=4
+     &&points[x.pointIndex-1]?.answered===false&&typeof x.sentence==="string"&&x.sentence.trim())
+   .slice(0,4).map(x=>({pointIndex:x.pointIndex,
+     sentence:safeText(x.sentence,450),explanation:safeText(x.explanation,500)})),
+  offTopic:r.offTopic===true&&answeredCount===0,
+  offTopicReason:r.offTopic===true&&answeredCount===0?safeText(r.offTopicReason,650):"",
   example:safeText(r.example,8000),
   official:false,
   evaluation:"AI vežbačka procena na osnovu telc B1 kriterijuma, ne zvaničan rezultat"
@@ -594,9 +611,9 @@ async function openaiGrade(env,task,answer,wordCount) {
    body:JSON.stringify({
     model:env.OPENAI_MODEL||DEFAULT_MODEL,
     temperature:0.1,
-    max_completion_tokens:3800,
+    max_completion_tokens:4500,
     response_format:{type:"json_schema",json_schema:{
-      name:"demax_telc_b1_grade_v1",strict:true,schema:RESPONSE_SCHEMA
+      name:"demax_telc_b1_grade_v2",strict:true,schema:RESPONSE_SCHEMA
     }},
     messages:[
      {role:"system",content:SYSTEM_INSTRUCTIONS},
