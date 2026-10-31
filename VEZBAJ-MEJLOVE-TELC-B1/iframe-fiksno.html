@@ -2296,28 +2296,95 @@ body.writing .writerPage .actions{touch-action:manipulation!important}
 }
 
 
-/* B1_ANDROID_WEBVIEW_RESTORE_FULL_SCREEN_CONTROL_20261031
-   Malo dugme se prikazuje samo ako Android iframe ne javlja promenu
-   tastature. Pritiskom uklanja fokus i odmah vraca punu visinu. */
-.b1RestoreScreen{display:none}
+
+/* B1_FOOTER_FULL_SCREEN_NEXT_TO_APLUS_20261031
+   Jedan donji red: reci | PREVOD SRPSKI | A-/A+ | PUN EKRAN | PROVERI MEJL
+   Bez gornjeg ⤢ dugmeta. Funkcija i automatsko vracanje ostaju neizmenjeni. */
+.b1RestoreScreen{
+ display:inline-flex;
+ align-items:center;justify-content:center;
+ border:1.5px solid #74ade9;border-radius:6px;
+ background:#e7f3ff;color:#14539c;font-weight:950;
+ font-size:10px;line-height:1;cursor:pointer;
+}
 @media(max-width:700px){
- html.b1-keyboard-unmeasured body.writing:not(.reviewing) #b1RestoreScreen{
-  display:flex!important;
-  position:absolute!important;
-  top:5px!important;
-  left:calc(50% - 66px)!important;
-  width:27px!important;height:27px!important;
-  justify-content:center!important;align-items:center!important;
-  border:1.5px solid #aac5ea!important;border-radius:7px!important;
-  background:#ecf4ff!important;color:#1755a0!important;
-  font-size:19px!important;font-weight:900!important;
-  padding:0!important;line-height:1!important;z-index:300!important;
-  touch-action:manipulation!important;
+ body.writing:not(.reviewing) .writerPage .actions,
+ html.b1-typing body.writing:not(.reviewing) .writerPage .actions,
+ html:not(.b1-typing) body.writing:not(.reviewing) .writerPage .actions,
+ body.writing.keyboardOpen .writerPage .actions{
+  display:grid!important;
+  grid-template-columns:max-content max-content max-content max-content minmax(0,1fr)!important;
+  column-gap:2px!important;row-gap:0!important;
+  align-items:center!important;justify-content:stretch!important;
+  min-width:0!important;width:100%!important;
+  min-height:34px!important;height:auto!important;
+  padding:2px 1px max(2px,env(safe-area-inset-bottom))!important;
+ }
+ body.writing:not(.reviewing) .writerPage .actions #liveCounter{
+  grid-column:1!important;grid-row:1!important;
+  min-width:0!important;white-space:nowrap!important;
+  font-size:clamp(8px,2vw,9px)!important;
+ }
+ body.writing:not(.reviewing) .writerPage .actions #writerSrToggle{
+  grid-column:2!important;grid-row:1!important;
+  width:auto!important;min-width:0!important;
+  padding:3px 3px!important;font-size:clamp(7px,2.1vw,9px)!important;
+  white-space:nowrap!important;
+ }
+ body.writing:not(.reviewing) .writerPage .actions .writingFontControls{
+  grid-column:3!important;grid-row:1!important;
+  min-width:0!important;width:auto!important;
+  padding:1px!important;gap:1px!important;
+ }
+ body.writing:not(.reviewing) .writerPage .actions .writingFontControls button{
+  min-width:25px!important;width:25px!important;
+  height:25px!important;min-height:25px!important;
+  font-size:10px!important;padding:0 1px!important;
+ }
+ body.writing:not(.reviewing) .writerPage .actions #b1RestoreScreen,
+ html.b1-keyboard-unmeasured body.writing:not(.reviewing) .writerPage .actions #b1RestoreScreen{
+  display:flex!important;grid-column:4!important;grid-row:1!important;
+  position:relative!important;top:auto!important;left:auto!important;right:auto!important;bottom:auto!important;
+  align-items:center!important;justify-content:center!important;
+  flex:none!important;width:auto!important;min-width:0!important;
+  height:28px!important;min-height:28px!important;
+  padding:2px 4px!important;margin:0!important;
+  border:1.5px solid #73ade8!important;
+  border-radius:6px!important;
+  background:#e7f3ff!important;color:#15539b!important;
+  font-size:clamp(8px,2.15vw,10px)!important;font-weight:950!important;
+  line-height:1!important;white-space:nowrap!important;
+  z-index:2!important;touch-action:manipulation!important;
+ }
+ body.writing:not(.reviewing) .writerPage .actions #gradeBtn,
+ html.b1-typing body.writing:not(.reviewing) .writerPage .actions #gradeBtn{
+  grid-column:5!important;grid-row:1!important;
+  display:flex!important;justify-self:stretch!important;align-items:center!important;justify-content:center!important;
+  min-width:0!important;max-width:100%!important;width:100%!important;
+  height:28px!important;min-height:28px!important;
+  padding:2px 2px!important;margin:0!important;
+  font-size:clamp(8px,2.1vw,10px)!important;
+  line-height:1!important;white-space:nowrap!important;
  }
  html:not(.b1-typing) body.writing:not(.reviewing) .app{
   height:var(--b1-vh,100dvh)!important;
   max-height:var(--b1-vh,100dvh)!important;
   overflow:hidden!important;
+ }
+}
+@media(max-width:355px){
+ body.writing:not(.reviewing) .writerPage .actions{column-gap:1px!important}
+ body.writing:not(.reviewing) .writerPage .actions #writerSrToggle{
+  font-size:7.2px!important;padding:2px!important
+ }
+ body.writing:not(.reviewing) .writerPage .actions .writingFontControls button{
+  min-width:23px!important;width:23px!important;
+ }
+ body.writing:not(.reviewing) .writerPage .actions #b1RestoreScreen{
+  font-size:7.8px!important;padding:2px!important;
+ }
+ body.writing:not(.reviewing) .writerPage .actions #gradeBtn{
+  font-size:8px!important;padding:2px 1px!important;
  }
 }
 
@@ -2388,7 +2455,6 @@ body.writing .writerPage .actions{touch-action:manipulation!important}
 <section id="writerScreen" class="writerPage hidden">
   <div id="reviewActions" class="reviewActions hidden"><button id="resultList" type="button">← MEJLOVI</button><strong id="resultTitle">REZULTAT MEJLA</strong><button id="newAttempt" type="button">↻ VEŽBAJ PONOVO</button></div>
   <span id="writerClock" class="writerClock" role="timer" aria-label="Preostalo vreme za pisanje mejla">⏱ 30:00</span>
-  <button type="button" id="b1RestoreScreen" class="b1RestoreScreen" title="Vrati pun ekran kada zatvoriš tastaturu" aria-label="Vrati pun ekran mejla">⤢</button>
   <button id="writerPostavkaBtn" class="writerPostavkaBtn" type="button" aria-label="Nazad na postavku mejla">← POSTAVKA MEJLA</button>
   <div class="writerTop">
     <span id="writerName" class="name">MEJL 1 / 20</span>
@@ -2415,6 +2481,7 @@ vielen Dank für deine Nachricht.
         <button id="writerMinus" type="button" aria-label="Smanji slova u mejlu">A−</button>
         <button id="writerPlus" type="button" aria-label="Uvećaj slova u mejlu">A+</button>
       </div>
+      <button type="button" id="b1RestoreScreen" class="b1RestoreScreen" title="Prikaži ceo mejl nakon zatvaranja tastature" aria-label="Puni ekran mejla">PUN EKRAN</button>
       <button id="gradeBtn" class="grade" type="button">✓ PROVERI MEJL</button>
     </div>
     <div id="status" class="notice">Obradi sve četiri tačke, napiši uvod i pozdrav. Odgovor se čuva lokalno.</div>
