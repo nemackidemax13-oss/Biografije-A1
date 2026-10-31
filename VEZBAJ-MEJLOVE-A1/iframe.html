@@ -2050,6 +2050,18 @@ html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.promp
   font-size:20px!important;
  }
 }
+
+/* A1: uklonjeno crveno dugme „← Postavka” iz zaglavlja pitanja
+   dok ucenik pise mejl; narandzasta komanda u beloj traci ostaje. */
+html body.view-mail.mobile-writing #answerPanel .task-paired .paired-heading #mobileBackInline{
+ display:none!important;
+ visibility:hidden!important;
+ width:0!important;
+ min-width:0!important;
+ height:0!important;
+ padding:0!important;
+ margin:0!important;
+}
 </style>
 </head>
 <body class="view-intro a1-translation-off">
