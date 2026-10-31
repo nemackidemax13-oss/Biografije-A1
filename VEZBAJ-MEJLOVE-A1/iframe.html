@@ -2062,6 +2062,113 @@ html body.view-mail.mobile-writing #answerPanel .task-paired .paired-heading #mo
  padding:0!important;
  margin:0!important;
 }
+
+/* DE-MAX A1: centralni broj mejla i strelice, povratak u desnom cosku. */
+html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.prompt .panel-title{
+ display:grid!important;
+ grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)!important;
+ grid-template-rows:32px!important;
+ column-gap:3px!important;
+ justify-content:stretch!important;
+ align-items:center!important;
+ width:100%!important;
+ min-height:40px!important;
+ height:40px!important;
+ max-height:40px!important;
+ padding:4px 6px!important;
+ overflow:hidden!important;
+}
+html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.prompt .panel-title .a1-mail-nav{
+ display:inline-flex!important;
+ grid-column:2!important;
+ grid-row:1!important;
+ justify-self:center!important;
+ align-self:center!important;
+ align-items:center!important;
+ justify-content:center!important;
+ flex-wrap:nowrap!important;
+ gap:4px!important;
+ width:max-content!important;
+ min-width:0!important;
+ margin:0!important;
+}
+html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.prompt .panel-title #a1MailCount{
+ display:inline-flex!important;
+ align-items:center!important;
+ justify-content:center!important;
+ min-width:39px!important;
+ height:29px!important;
+ padding:2px 4px!important;
+ margin:0!important;
+ color:#174e9f!important;
+ font-size:12px!important;
+ line-height:1!important;
+ font-weight:950!important;
+ white-space:nowrap!important;
+}
+html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.prompt .panel-title #a1PrevMail,
+html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.prompt .panel-title #a1NextMail{
+ display:inline-flex!important;
+ position:static!important;
+ grid-column:auto!important;
+ grid-row:auto!important;
+ align-items:center!important;
+ justify-content:center!important;
+ justify-self:auto!important;
+ width:28px!important;
+ min-width:28px!important;
+ max-width:28px!important;
+ height:29px!important;
+ min-height:29px!important;
+ max-height:29px!important;
+ margin:0!important;
+ padding:0!important;
+ font-size:19px!important;
+}
+html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.prompt .panel-title #backToGrid{
+ display:inline-flex!important;
+ grid-column:3!important;
+ grid-row:1!important;
+ justify-self:end!important;
+ align-self:center!important;
+ align-items:center!important;
+ justify-content:center!important;
+ width:auto!important;
+ min-width:0!important;
+ max-width:100%!important;
+ min-height:29px!important;
+ height:29px!important;
+ max-height:29px!important;
+ margin:0!important;
+ padding:3px 7px!important;
+ font-size:10px!important;
+ line-height:1!important;
+ white-space:nowrap!important;
+ background:#e98721!important;
+ color:#fff!important;
+ border:1px solid #ffc486!important;
+ border-radius:7px!important;
+ font-weight:900!important;
+}
+@media(max-width:360px){
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.prompt .panel-title{
+  padding:4px 3px!important;
+  column-gap:2px!important;
+ }
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.prompt .panel-title .a1-mail-nav{
+  gap:2px!important;
+ }
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.prompt .panel-title #a1PrevMail,
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.prompt .panel-title #a1NextMail{
+  width:25px!important;min-width:25px!important;max-width:25px!important;
+ }
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.prompt .panel-title #a1MailCount{
+  min-width:35px!important;font-size:11px!important;padding-inline:2px!important;
+ }
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.prompt .panel-title #backToGrid{
+  padding:3px 4px!important;font-size:9px!important;
+ }
+}
 </style>
 </head>
 <body class="view-intro a1-translation-off">
@@ -2096,7 +2203,7 @@ html body.view-mail.mobile-writing #answerPanel .task-paired .paired-heading #mo
   <section class="panel prompt" aria-label="Postavka zadatka">
     <div class="panel-title"><strong id="mailNumberText">1. mejl</strong>
       <div class="a1-prompt-clock-wrap"><span id="a1PromptClock" class="a1-clock" role="timer">⏱ 20:00</span><button id="a1ResetClock" type="button" aria-label="Resetuj vreme">↻</button></div>
-      <div class="a1-mail-nav"><button id="a1PrevMail" type="button" aria-label="Prethodni mejl">❮</button><span id="a1MailCount">1 / 35</span><button id="a1NextMail" type="button" aria-label="Sledeći mejl">❯</button></div><button class="mobile-jump" id="mobileStartTop" type="button">✎ Piši mejl</button><div class="prompt-actions"><button class="smallbutton readbutton" id="readMode" aria-pressed="false">⤢ Cela postavka</button></div><button id="backToGrid" type="button">SVI MEJLOVI</button></div>
+      <div class="a1-mail-nav"><button id="a1PrevMail" type="button" aria-label="Prethodni mejl">❮</button><span id="a1MailCount">1/35</span><button id="a1NextMail" type="button" aria-label="Sledeći mejl">❯</button></div><button class="mobile-jump" id="mobileStartTop" type="button">✎ Piši mejl</button><div class="prompt-actions"><button class="smallbutton readbutton" id="readMode" aria-pressed="false">⤢ Cela postavka</button></div><button id="backToGrid" type="button">← SVI MEJLOVI</button></div>
     <div class="taskscroll" id="promptScroll">
       <div class="bilingual" aria-label="Nemačka postavka sa prevodom ispod svake rečenice">
         <div class="paired-card">
@@ -2554,7 +2661,7 @@ function a1ResetTimer(){
  a1UpdateClock();a1ClockInterval=setInterval(a1UpdateClock,1000);
 }
 function a1UpdateMailNav(){
- $('a1MailCount').textContent=(current+1)+' / '+MAILS.length;
+ $('a1MailCount').textContent=(current+1)+'/'+MAILS.length;
  $('a1PrevMail').disabled=current===0;
  $('a1NextMail').disabled=current>=MAILS.length-1;
 }
