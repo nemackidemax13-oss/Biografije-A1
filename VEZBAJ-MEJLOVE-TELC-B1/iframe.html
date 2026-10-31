@@ -1719,7 +1719,6 @@ body.writing .writerPage .writerTop .name{display:block!important;text-align:lef
 <section id="writerScreen" class="writerPage hidden">
   <div id="reviewActions" class="reviewActions hidden"><button id="resultList" type="button">← MEJLOVI</button><strong id="resultTitle">REZULTAT MEJLA</strong><button id="newAttempt" type="button">↻ VEŽBAJ PONOVO</button></div>
   <span id="writerClock" class="writerClock" role="timer" aria-label="Preostalo vreme za pisanje mejla">⏱ 30:00</span>
-  <button id="backAllMails" class="backAllMails" type="button" aria-label="Nazad na postavku trenutno izabranog mejla">← Nazad</button>
   <div class="writerTop">
     <span id="writerName" class="name">MEJL 1 / 20</span>
   </div>
@@ -1805,7 +1804,7 @@ function screen(name){
  document.body.classList.toggle("tasking",name==="taskScreen");
  document.body.classList.toggle("intro",name==="welcome");
  document.body.classList.toggle("listing",name==="mailList");
- $("homeBtn").textContent=name==="mailList"?"← NAZAD NA UPUTSTVO":name==="writerScreen"?"← POSTAVKA":"SVI MEJLOVI";
+ $("homeBtn").textContent=name==="mailList"?"← NAZAD NA UPUTSTVO":name==="writerScreen"?"← POSTAVKA MEJLA":"SVI MEJLOVI";
  $("homeBtn").title=name==="mailList"?"Povratak na početno uputstvo":name==="writerScreen"?"Nazad na postavku istog mejla":"Povratak na sve mejlove";
  document.body.classList.remove("keyboardOpen");
  $("navBar").classList.toggle("hidden",name!=="taskScreen"&&name!=="writerScreen");
@@ -2323,7 +2322,6 @@ $("restartRound").onclick=()=>{
  save();
  showList();
 };
-$("backAllMails").onclick=()=>{if(current>=0)backTask();else showList();};
 $("startWriting").onclick=startWriting;
 $("decreaseTaskFont").onclick=()=>changeTaskFont(-1);
 $("increaseTaskFont").onclick=()=>changeTaskFont(1);
