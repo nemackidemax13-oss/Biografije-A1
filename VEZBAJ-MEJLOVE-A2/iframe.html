@@ -2695,27 +2695,32 @@ body.writing.reviewing .writerPage .reviewActions{
 #results .a2-suggestion-sr{font-size:11px!important;color:#315642!important;padding:5px 0!important}
 
 
-/* A2: oznaka MEJL 1/13 vidi se na postavci, ne u editoru/punom ekranu. */
-body.writing #navCounter,
+/* A2: nema duplog naziva mejla u editoru; broj je u centralnoj navigaciji. */
 body.writing #writerScreen .writerTop{
  display:none!important;
 }
 
-/* A2: strelice i broj trenutno otvorenog mejla centrirani na postavci. */
-body.tasking #navBar{
+/* A2: iste centrirane strelice i broj mejla na postavci i u punom ekranu. */
+body.tasking #navBar,
+body.writing:not(.reviewing) #navBar{
  justify-content:center!important;
  align-items:center!important;
  gap:7px!important;
  width:100%!important;
 }
-body.tasking #navBar #navCounter{
+body.tasking #navBar #navCounter,
+body.writing:not(.reviewing) #navBar #navCounter{
+ display:inline-flex!important;
+ align-items:center!important;
+ justify-content:center!important;
  flex:0 0 auto!important;
  width:auto!important;
  min-width:84px!important;
  max-width:130px!important;
  text-align:center!important;
 }
-body.tasking #navBar .navArrow{
+body.tasking #navBar .navArrow,
+body.writing:not(.reviewing) #navBar .navArrow{
  flex:0 0 auto!important;
 }
 </style>
