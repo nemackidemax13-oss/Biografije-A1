@@ -1805,6 +1805,55 @@ body.writing .writerPage .actions #gradeBtn,html.b1-typing .writerPage .actions 
 /* Kontrole mogu da se dodirnu bez neželjenog pomeranja stranice. */
 body.writing .writerPage .actions{touch-action:manipulation!important}
 
+
+/* B1_MOBILE_OUTER_SCROLL_LOCK_20261031
+   Nema klizanja stranice i pozadinske trake; skroluje se samo napisani mejl. */
+@media(max-width:700px){
+ html:has(body.writing),
+ body.writing{
+  height:100%!important;max-height:100%!important;
+  overflow:hidden!important;overflow-y:hidden!important;
+  overscroll-behavior:none!important;touch-action:none!important;
+  scrollbar-width:none!important;
+ }
+ body.writing .app,body.writing .main,
+ body.writing .writerPage,
+ body.writing:not(.reviewing) .writerPage .editor,
+ body.writing:not(.reviewing) .writerPage .writingPoints,
+ body.writing:not(.reviewing) .writerPage .draftScrollFrame{
+  overflow:hidden!important;overflow-y:hidden!important;
+  overscroll-behavior:none!important;
+  scrollbar-width:none!important;
+ }
+ body.writing:not(.reviewing) .writerPage .writingPoints{
+  touch-action:none!important;
+  -webkit-overflow-scrolling:auto!important;
+ }
+ body.writing:not(.reviewing) .writerPage .draftScrollFrame #draft,
+ html.b1-typing .writerPage .draftScrollFrame #draft{
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  overscroll-behavior:contain!important;
+  touch-action:pan-y!important;
+  -webkit-overflow-scrolling:touch!important;
+ }
+ body.writing.reviewing .writerPage .results:not(.hidden){
+  overflow-y:auto!important;
+  touch-action:pan-y!important;
+  overscroll-behavior:contain!important;
+  -webkit-overflow-scrolling:touch!important;
+ }
+ html:has(body.writing)::-webkit-scrollbar,
+ body.writing::-webkit-scrollbar,
+ body.writing .app::-webkit-scrollbar,
+ body.writing .main::-webkit-scrollbar,
+ body.writing .writerPage::-webkit-scrollbar,
+ body.writing .writerPage .editor::-webkit-scrollbar,
+ body.writing .writerPage .writingPoints::-webkit-scrollbar{
+  display:none!important;width:0!important;height:0!important;
+ }
+}
+
 </style>
 </head>
 <body class="intro">
@@ -2554,8 +2603,20 @@ if(typeof ResizeObserver!=="undefined"){
  b1ResizeObserver.observe(document.querySelector(".writerPage .editor"));
 }
 
-/* Pisanje: ne blokiraj vertikalne pokrete prstom i točkićem miša.
-   Skrolovanje ostaje ograničeno na polja za pitanja, tekst i AI rezultate. */
+/* Mobilni ekran pisanja se ne pomera – dozvoljen je samo unutrašnji
+   skrol napisanog mejla ili prikaza rezultata AI provere. */
+function b1OutsideScrollBlocked(event){
+ if(!b1Mobile()||!document.body.classList.contains("writing"))return false;
+ if(event.target?.closest?.("#draft, #scrollRail"))return false;
+ if(document.body.classList.contains("reviewing")&&event.target?.closest?.("#results"))return false;
+ return true;
+}
+document.addEventListener("touchmove",event=>{
+ if(event.cancelable&&b1OutsideScrollBlocked(event))event.preventDefault();
+},{passive:false,capture:true});
+document.addEventListener("wheel",event=>{
+ if(event.cancelable&&b1OutsideScrollBlocked(event))event.preventDefault();
+},{passive:false,capture:true});
 
 updateViewportHeight();
 screen("welcome");
