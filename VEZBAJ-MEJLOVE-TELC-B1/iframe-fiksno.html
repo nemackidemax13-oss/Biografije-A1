@@ -2459,6 +2459,23 @@ body.writing .writerPage .actions{touch-action:manipulation!important}
 .b1ModelDetails{border:1px solid #a7bfda;border-radius:9px;padding:8px 11px;margin:12px 0}
 .b1ModelDetails summary{cursor:pointer;font-size:12px;font-weight:900;color:#1556a0;padding:4px 0}
 .b1ModelMail{margin-top:9px;background:#f8fbff}
+
+/* B1 glavni pregled: ispravljena verzija prva; potpuno model pismo samo kada ima propusta. */
+#results .b1-main-corrected-box{border:2px solid #2469bb!important;background:#f1f6ff!important;
+ padding:11px!important;border-radius:12px!important;margin:12px 0!important}
+#results .b1-main-corrected-box h4{margin:0 0 8px!important;color:#174f91!important}
+#results .b1-main-corrected-box .correctedTranslationBox{margin:0!important}
+#results .b1-main-corrected-box .corrected.demax-mail-v4{background:#fff!important;border:1px solid #b9cee8!important;
+ border-radius:9px!important;padding:10px!important;white-space:pre-wrap!important}
+#results .b1OriginalDetails{border:1px solid #b7cbe5!important;border-radius:9px!important;
+ margin:9px 0!important;padding:9px!important;background:#f7faff!important}
+#results .b1OriginalDetails summary{cursor:pointer!important;color:#16549a!important;font-size:12px!important;font-weight:900!important}
+#results .b1OriginalDetails .b1OriginalMail{margin-top:8px!important}
+#results .b1ModelDetails{border:2px solid #219352!important;background:#f0fbf4!important;
+ border-radius:11px!important;padding:11px!important;margin:12px 0!important}
+#results .b1ModelDetails summary{color:#17683b!important;font-weight:950!important}
+#results .b1ModelDetails .b1ModelMail{background:#fff!important;border-color:#b9e7c7!important}
+
 </style>
 </head>
 <body class="intro">
@@ -3107,7 +3124,9 @@ function appendCorrectedTranslation(result,root){
   }finally{if(root.contains(button))button.disabled=false;}
  };
  translationBox.append(german,button,sr,fallback,notice);
- root.append(node("h4","Ispravljena verzija odgovora"),translationBox);
+ const userBox=node("section",undefined,"b1-main-corrected-box");
+ userBox.append(node("h4","Ispravljena verzija odgovora tvog mejla"),translationBox);
+ root.append(userBox);
 }
 
 const B1_MISSING_POINT_EXAMPLES=[["Ich muss jeden Tag lernen und meiner Familie im Haushalt helfen.","Ich stehe um sieben Uhr auf und frühstücke zu Hause.","Am Wochenende treffe ich mich mit meinen Freunden oder mache einen Ausflug.","Abends lese ich ein Buch und gehe gegen zehn Uhr schlafen."],["Ich habe im Jugendcamp zwei nette Jugendliche aus Berlin kennengelernt.","Wir haben zusammen Fußball gespielt und einen Ausflug gemacht.","Das Essen schmeckt mir gut, besonders die Nudeln.","Mir gefällt es hier sehr, weil die Leute freundlich sind."],["Ich möchte dort wandern und die Natur genießen.","Welche Kleidung soll ich für die Berge mitbringen?","Ich möchte gern mitfahren, weil ich dich und deine Freunde treffen möchte.","Gibt es im Ferienhaus eine Küche, und welche Ausflüge kann man in der Nähe machen?"],["Besonders gut hat mir gefallen, dass sie sehr freundlich und humorvoll ist.","Wir haben zusammen einen Spaziergang gemacht und viel geredet.","Ich habe sie im Skiurlaub auf der Piste kennengelernt.","Ich hoffe, dass wir auch in Zukunft in Kontakt bleiben."],["Bitte schickt mir die Sonnenbrille mit der Post.","Bei euch habe ich mich sehr wohlgefühlt, weil ihr so herzlich wart.","Ich brauche die Sonnenbrille, weil ich bald in den Urlaub fahre.","Seit meiner Rückkehr habe ich meine Familie besucht und viel gearbeitet."],["Durch einen Freund bin ich auf dieses Hobby gekommen.","Dieses Hobby gefällt mir, weil es mir Spaß macht und mich entspannt.","Mein Hobby ist das Fotografieren.","Ein Nachteil ist, dass ich dafür oft viel Zeit brauche."],["Ich brauche die Ferienwohnung vom 10. bis zum 17. August für sieben Nächte.","Ich schreibe Ihnen, weil ich Ihre Anzeige im Internet gefunden habe.","Könnten Sie mir bitte sagen, wie viel die Wohnung pro Nacht kostet?","Wichtig sind uns Wanderwege und Möglichkeiten zum Radfahren."],["Ich habe die Stelle durch eine Anzeige im Internet gefunden.","Ich möchte arbeiten, weil ich Geld für meine Ausbildung sparen will.","Ich werde sechs Wochen arbeiten und danach mit Freunden verreisen.","Es ist ein Ferienjob in einem Café, wo ich Gäste bediene."],["Meistens gehe ich mit meiner Schwester oder mit Freunden ins Kino.","Ich gehe gern ins Kino, weil ich dort gut entspannen kann.","Ich mag Komödien, aber Horrorfilme sehe ich nicht gern.","Nach dem Kinobesuch gehen wir oft noch etwas trinken."],["Wir haben in einem kleinen Hotel in der Innenstadt übernachtet.","Mir haben die Sehenswürdigkeiten gefallen, aber das Wetter war manchmal schlecht.","Wir haben Museen besucht und lange Spaziergänge gemacht.","Ich war mit meiner Familie eine Woche in Wien."],["Ich suche eine Wohnung im Zentrum, weil meine Universität dort liegt.","Wie hoch ist die Miete, und sind die Nebenkosten enthalten?","Ich würde die Wohnung gern am nächsten Samstag besichtigen.","Ihre Anzeige interessiert mich besonders, weil die Wohnung in der Nähe der Universität liegt."],["Unsere neuen Nachbarn sind abends oft sehr laut.","Ich habe schon freundlich mit ihnen gesprochen.","Vor zwei Wochen ist eine junge Familie mit zwei Kindern eingezogen.","Du hast viel Erfahrung mit Nachbarn, deshalb hoffe ich auf deinen Rat."],["Der Lehrer erklärt alles verständlich, und die Bücher sind sehr hilfreich.","München gefällt mir sehr gut; ich habe schon das Stadtzentrum besucht.","Ich besuche einen intensiven B1-Deutschkurs, der jeden Vormittag stattfindet.","Die anderen Teilnehmer kommen aus verschiedenen Ländern, und wir verstehen uns gut."],["Ich würde dir empfehlen, einen Verein zu besuchen und neue Leute kennenzulernen.","Heute wohne ich gern hier, weil es ruhig ist und ich viel Natur habe.","Meine Familie ist aufs Land gezogen, weil meine Eltern dort Arbeit gefunden haben.","Am Anfang war ich traurig, weil ich meine alten Freunde vermisst habe."],["Ich möchte am liebsten in einer kleinen Wohnung in Berlin wohnen.","Ich plane, ungefähr sechs Monate in Deutschland zu bleiben.","Ich möchte nach Deutschland fahren, um mein Deutsch zu verbessern.","Vielleicht kannst du mir bei der Suche nach einem Sprachkurs helfen."],["Wir könnten zusammen die Altstadt besichtigen und einen Ausflug in die Berge machen.","Der Frühling ist die beste Reisezeit, weil das Wetter angenehm ist.","Du solltest eine leichte Jacke und bequeme Schuhe mitbringen.","Informiere dich vorher über die Anreise und packe alle wichtigen Dokumente ein."],["Ich freue mich sehr auf deine Einweihungsparty und komme gern.","Dein Wörterbuch bringe ich dir am Samstag zurück.","Beim Umzug kann ich dir helfen, die Kartons zu tragen.","Entschuldige bitte, dass ich dir das Wörterbuch noch nicht zurückgegeben habe."],["Wir können zusammen die Stadt besichtigen und einen Ausflug in die Natur machen.","Am besten kommst du im Mai, denn dann ist das Wetter sehr angenehm.","Bring bitte bequeme Schuhe und eine Jacke für kühle Abende mit.","Du solltest vor der Reise deine Fahrkarten und Reisedokumente überprüfen."],["Ich möchte gern mit meinem Partner zu deiner Hochzeit kommen.","Wir reisen mit dem Zug an, weil das für uns am bequemsten ist.","Kennst du ein günstiges Hotel in der Nähe der Feier?","Ich helfe dir gern beim Schmücken des Saals oder bei den Vorbereitungen."],["Herzlichen Glückwunsch zu deiner Beziehung mit David und euren Heiratsplänen!","Mein Englisch ist noch nicht perfekt, aber ich übe jeden Tag.","Ich würde dich gern im nächsten Sommer in Sydney besuchen.","Welche Fächer gefallen dir in deinem Studium am besten?"]];
@@ -3154,7 +3173,7 @@ function b1RenderMissingPoints(result,root){
  const missing=Array.isArray(result.points)?result.points.map((p,i)=>p?.answered===false?i:-1).filter(i=>i>=0):[];
  if(!missing.length)return;
  const sec=node("section",undefined,"b1MissingSection");
- sec.append(node("h4","Predlozi za propuštene tačke"));
+ sec.append(node("h4","Predlog dopune — ne računa se u ocenu"));
  sec.append(node("p","Zelene rečenice su primeri dopune. NISU deo učenikovog odgovora i ne donose dodatne bodove.","b1SmallHelp"));
  for(const i of missing){
   const row=node("div",undefined,"b1MissingItem");
@@ -3170,9 +3189,11 @@ function b1RenderMissingPoints(result,root){
  root.append(sec);
 }
 function b1RenderModelOption(result,root){
+ const missing=Array.isArray(result.points)&&result.points.some(p=>p?.answered===false);
+ if(!missing&&result.offTopic!==true)return;
  if(typeof result.example!=="string"||!result.example.trim())return;
  const details=document.createElement("details");details.className="b1ModelDetails";
- const summary=document.createElement("summary");summary.textContent="Prikaži primer pravilno napisanog B1 mejla";
+ const summary=document.createElement("summary");summary.textContent="Primer pravilnog pisanja ovog B1 mejla";
  details.append(summary,node("div",result.example,"b1ModelMail"));
  if(result.offTopic===true)details.open=true;
  root.append(details);
@@ -3223,18 +3244,19 @@ function renderResult(d){
  }else if(Array.isArray(d.points)&&d.points.every(p=>p?.answered===false)){
   r.append(node("div","Nijedna od četiri tačke nije potvrđena kao obrađena. Proveri da li si odgovorio/la na pravu postavku.","b1OffTopicWarning"));
  }
- if(studentOriginal){
-  r.append(node("h4","Učenikov originalni mejl"));
-  const originalBox=node("div",undefined,"b1OriginalMail");
-  b1MarkDifferences(studentOriginal,String(d.corrected||studentOriginal),originalBox,null);
-  r.append(originalBox);
- }
  if(d.corrected){
   appendCorrectedTranslation(d,r);
   if(studentOriginal&&b1TokenizeWithSpaces(studentOriginal).items.length>20){
    const match=b1MarkSimilarity(studentOriginal,d.corrected);
    if(match<0.28)r.append(node("p","Napomena: AI je napravio velike izmene u tekstu. Proveri da li je sačuvano originalno značenje učenika; za najbolje ispravke potrebno je ažurirati B1 Worker.","b1MismatchWarning"));
   }
+ }
+ if(studentOriginal){
+  const details=document.createElement("details");details.className="b1OriginalDetails";
+  const summary=document.createElement("summary");summary.textContent="Prikaži originalni učenikov mejl i crveno označene greške";
+  const originalBox=node("div",undefined,"b1OriginalMail");
+  b1MarkDifferences(studentOriginal,String(d.corrected||studentOriginal),originalBox,null);
+  details.append(summary,originalBox);r.append(details);
  }
  b1RenderMissingPoints(d,r);
  b1RenderModelOption(d,r);
