@@ -1724,6 +1724,58 @@ body.writing.reviewing .writerPage .writerPostavkaBtn{display:none!important}
  }
 }
 
+
+/* WRITER_SR_ON_DEMAND_B1_20261031 */
+body.writing .writerPage .writingPoints:not(.showSr) #writerPoints li .sr,
+html.b1-typing .writerPage .writingPoints:not(.showSr) #writerPoints li .sr{display:none!important}
+body.writing .writerPage .writingPoints.showSr #writerPoints li .sr,
+html.b1-typing .writerPage .writingPoints.showSr #writerPoints li .sr{display:block!important;color:#c6223d!important}
+body.writing .writerPage .writingPoints #writerSrHint.hidden{display:none!important}
+body.writing .writerPage .actions,html.b1-typing .writerPage .actions,body.writing.keyboardOpen .writerPage .actions{
+ display:grid!important;grid-template-columns:max-content max-content max-content minmax(0,1fr)!important;
+ align-items:center!important;gap:3px!important;min-width:0!important;width:100%!important;min-height:34px!important;
+ padding:2px 1px max(2px,env(safe-area-inset-bottom))!important;
+}
+body.writing .writerPage .actions #liveCounter{
+ grid-column:1!important;grid-row:1!important;justify-self:start!important;
+ font-size:clamp(8px,2.1vw,10px)!important;white-space:nowrap!important
+}
+body.writing .writerPage .actions #writerSrToggle,html.b1-typing .writerPage .actions #writerSrToggle{
+ grid-column:2!important;grid-row:1!important;display:flex!important;
+ justify-content:center!important;align-items:center!important;
+ background:#ffd43b!important;border:1px solid #e5b521!important;color:#332500!important;
+ border-radius:6px!important;box-shadow:0 1px 3px #82651320!important;
+ font-size:clamp(8px,2.1vw,10px)!important;font-weight:950!important;
+ white-space:nowrap!important;line-height:1!important;
+ height:28px!important;min-height:28px!important;width:auto!important;min-width:0!important;
+ padding:3px 4px!important;touch-action:manipulation!important;
+}
+body.writing .writerPage .actions #writerSrToggle[aria-pressed="true"]{
+ background:#ffca28!important;border-color:#d3a51c!important
+}
+body.writing .writerPage .actions .writingFontControls{
+ grid-column:3!important;grid-row:1!important;height:29px!important;min-width:0!important;
+ gap:2px!important;padding:1px 2px!important
+}
+body.writing .writerPage .actions .writingFontControls button{
+ width:29px!important;min-width:29px!important;height:25px!important;min-height:25px!important;
+ padding:0 2px!important;font-size:10.5px!important
+}
+body.writing .writerPage .actions #gradeBtn,html.b1-typing .writerPage .actions #gradeBtn{
+ grid-column:4!important;grid-row:1!important;justify-self:stretch!important;
+ display:flex!important;justify-content:center!important;align-items:center!important;
+ width:100%!important;min-width:0!important;min-height:28px!important;height:28px!important;
+ padding:3px 3px!important;font-size:clamp(8px,2.1vw,10px)!important;
+ white-space:nowrap!important;line-height:1!important
+}
+@media(max-width:360px){
+ body.writing .writerPage .actions{gap:2px!important}
+ body.writing .writerPage .actions #writerSrToggle{font-size:8px!important;padding:3px 2px!important}
+ body.writing .writerPage .actions .writingFontControls{padding:1px!important;gap:1px!important}
+ body.writing .writerPage .actions .writingFontControls button{min-width:25px!important;width:25px!important;font-size:10px!important}
+ body.writing .writerPage .actions #gradeBtn{font-size:8px!important;padding:3px 1px!important}
+}
+
 </style>
 </head>
 <body class="intro">
@@ -1797,7 +1849,7 @@ body.writing.reviewing .writerPage .writerPostavkaBtn{display:none!important}
   </div>
   <div class="editor">
     <div class="writingPoints" aria-label="Četiri pitanja i prevodi">
-      <h3>ČETIRI PITANJA <span>· crveno: prevod</span></h3>
+      <h3>ČETIRI PITANJA <span id="writerSrHint" class="hidden">· prevod crveno</span></h3>
       <ol id="writerPoints"></ol>
     </div>
     <div class="editHead"><span>✎ PIŠI MEJL</span><span id="counter" class="count">0 reči</span><span class="demaxWriterMark" aria-label="De-Max">De-Max</span></div>
@@ -1812,6 +1864,7 @@ vielen Dank für deine Nachricht.
 <button id="railDown" type="button" aria-label="Tekst dole">▼</button></div></div>
     <div class="actions">
       <span id="liveCounter" class="count">0 reči</span>
+      <button id="writerSrToggle" class="writerSrToggle" type="button" aria-label="Prikaži prevod pitanja na srpskom" aria-pressed="false">🇷🇸 PREVOD SRPSKI</button>
       <div class="writingFontControls" aria-label="Veličina slova pri pisanju" role="group">
         <button id="writerMinus" type="button" aria-label="Smanji slova u mejlu">A−</button>
         <button id="writerPlus" type="button" aria-label="Uvećaj slova u mejlu">A+</button>
@@ -1910,6 +1963,7 @@ function openMail(i){
  $("letterTitle").textContent="Von: "+m.from+" · Betreff: "+m.subject;
  $("translationToggle").dataset.lang="de";
  updateReceivedLanguage();
+ setWriterSrTranslation(false);
  $("writerPoints").replaceChildren();
  m.questions.forEach((q,j)=>{
   const b=node("li");b.append(node("span",q,"de"),node("span",m.srQuestions[j],"sr"));$("writerPoints").append(b);
@@ -1972,6 +2026,25 @@ function changeTaskFont(amount){
  try{localStorage.setItem(TASK_FONT_STORAGE,String(taskFontDelta))}catch(e){}
  requestAnimationFrame(fitTaskLetter);
 }
+
+
+/* Nemački je podrazumevan; srpski prevod pitanja se prikazuje samo na dugme. */
+function setWriterSrTranslation(show){
+ const panel=document.querySelector("#writerScreen .writingPoints");
+ if(!panel)return;
+ panel.classList.toggle("showSr",!!show);
+ const b=$("writerSrToggle");
+ b.textContent=show?"🇷🇸 SAKRIJ PREVOD":"🇷🇸 PREVOD SRPSKI";
+ b.setAttribute("aria-label",show?"Sakrij srpski prevod pitanja":"Prikaži srpski prevod pitanja");
+ b.setAttribute("aria-pressed",String(!!show));
+ $("writerSrHint").classList.toggle("hidden",!show);
+ if(document.body.classList.contains("writing"))scheduleB1QuestionFit();
+}
+$("writerSrToggle").addEventListener("pointerdown",e=>e.preventDefault());
+$("writerSrToggle").onclick=()=>{
+ const panel=document.querySelector("#writerScreen .writingPoints");
+ setWriterSrTranslation(!panel.classList.contains("showSr"));
+};
 
 let b1FullScreenHeight=0,b1FocusStarted=0;
 function b1Mobile(){return window.matchMedia("(max-width:700px)").matches}
@@ -2139,6 +2212,7 @@ $("resultList").onclick=showList;
 $("newAttempt").onclick=()=>{
  if(current<0)return;
  delete state.last[current];state.drafts[current]="";state.selected=current;save();
+ setWriterSrTranslation(false);
  $("draft").value="";$("results").replaceChildren();$("results").classList.add("hidden");
  exitReview();overview();updateCount();startWriting();
 };
