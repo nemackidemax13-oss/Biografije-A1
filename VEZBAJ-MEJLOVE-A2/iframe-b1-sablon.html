@@ -2470,6 +2470,21 @@ body.intro #welcome #openList{display:block!important;width:100%!important;min-h
 body.listing .mailList .tiles{grid-template-columns:repeat(4,minmax(0,1fr))!important;grid-template-rows:repeat(4,minmax(0,1fr))!important;overflow:hidden!important}
 @media(max-width:700px){body.listing .mailList .tiles{grid-template-columns:repeat(3,minmax(0,1fr))!important;grid-template-rows:repeat(5,minmax(0,1fr))!important}}
 
+
+/* A2 preuzeti B1 prikaz: pravilno mesto za 13 koverata. */
+body.listing #mailList{display:flex!important;flex-direction:column!important;min-height:0!important}
+body.listing #mailList #tiles{display:grid!important;flex:1 1 auto!important;min-height:0!important}
+body.listing .mailList .mailEnvelopeTile{min-height:0!important}
+body.intro #welcome .welcome-rule{background:#fff!important;border-color:#d6e4f6!important;color:#183d78!important;border-radius:12px!important}
+body.intro #welcome .welcome-rule.rule-alert{background:#fff6f7!important;color:#a32235!important;border-color:#f2c8d0!important}
+body.intro #welcome .welcome-go{background:linear-gradient(110deg,#0d9859,#0a7744)!important;color:white!important;border:0!important;border-radius:12px!important;font-weight:900!important;box-shadow:0 4px 15px #0a79462a!important}
+body.intro #welcome .welcome-rule .rule-symbol{flex:none!important;width:23px!important;font-size:18px!important;font-weight:900!important;color:#155cbd!important}
+body.intro #welcome .welcome-rule.rule-alert .rule-symbol{color:#d92f4b!important}
+@media(max-width:700px){
+ body.listing .mailList #tiles{grid-template-columns:repeat(3,minmax(0,1fr))!important;grid-template-rows:repeat(5,minmax(0,1fr))!important}
+ body.intro #welcome .welcome-rule .rule-symbol{width:20px!important;font-size:16px!important}
+}
+
 </style>
 </head>
 <body class="intro">
@@ -3283,8 +3298,8 @@ $("writerPostavkaBtn").onclick=backTask;
 $("openList").onclick=showList;
 $("restartRound").onclick=()=>{
  if(!mails.length||!mails.every((m,i)=>isA2Verified(i)))return;
- // Novi krug resetuje oznake, ali učenikove tekstove čuva za ponovno vežbanje.
- state.last={};
+ // Novi krug A2: sve koverte postaju bele, prethodni odgovori se brišu.
+ state.last={};state.checked={};state.drafts={};
  state.selected=null;
  save();
  showList();
