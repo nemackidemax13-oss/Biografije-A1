@@ -2723,6 +2723,71 @@ body.tasking #navBar .navArrow,
 body.writing:not(.reviewing) #navBar .navArrow{
  flex:0 0 auto!important;
 }
+
+/* DE-MAX A2 logo i kompaktna narandžasta navigacija · 2026-11-01 */
+body.intro #welcome .a2-brand-logo {
+ display:block!important; flex:0 0 auto!important;
+ width:clamp(58px,10.5vh,100px)!important;
+ height:clamp(58px,10.5vh,100px)!important;
+ border-radius:50%!important; object-fit:contain!important;
+ margin:0 auto 2px!important;
+ filter:drop-shadow(0 2px 5px #1d3f6f22);
+}
+body .app header .bar .topRight #homeBtn {
+ display:inline-flex!important; align-items:center!important;
+ justify-content:center!important;
+ min-height:29px!important; height:29px!important; width:auto!important;
+ padding:3px 10px!important;
+ border:1px solid #ffd09b!important; border-radius:7px!important;
+ background:#e98721!important; color:#fff!important;
+ box-shadow:0 1px 4px #a74e1930!important;
+ font-size:10px!important; line-height:1.1!important;
+ font-weight:900!important; white-space:nowrap!important;
+}
+body.writing .app header .bar .topRight #homeBtn {display:none!important}
+body.writing:not(.reviewing) .writerPage .a2-writer-nav,
+html.b1-typing body.writing .writerPage .a2-writer-nav {
+ position:absolute!important; top:5px!important; left:50%!important;
+ transform:translateX(-50%)!important; z-index:220!important;
+ display:flex!important; justify-content:center!important; align-items:center!important;
+ gap:6px!important; width:max-content!important; max-width:calc(100% - 12px)!important;
+ height:28px!important; white-space:nowrap!important;
+}
+body.writing.reviewing .writerPage .a2-writer-nav{display:none!important}
+body.writing .writerPage .a2-writer-nav #writerPostavkaBtn,
+html.b1-typing body.writing .writerPage .a2-writer-nav #writerPostavkaBtn {
+ position:static!important; inset:auto!important; left:auto!important;right:auto!important;
+ transform:none!important; flex:0 0 auto!important;
+ display:inline-flex!important; align-items:center!important;justify-content:center!important;
+ width:auto!important;max-width:none!important;min-width:0!important;
+ height:27px!important;min-height:27px!important;
+ padding:3px 8px!important; margin:0!important;
+ border:1px solid #ffcd90!important; border-radius:7px!important;
+ background:#e98721!important; color:#fff!important;
+ font-size:10px!important;line-height:1!important;font-weight:900!important;
+ white-space:nowrap!important; box-shadow:0 1px 4px #a74e1930!important;
+}
+body.writing .writerPage .a2-writer-nav #writerClock,
+html.b1-typing body.writing .writerPage .a2-writer-nav #writerClock{
+ position:static!important; inset:auto!important;top:auto!important;left:auto!important;right:auto!important;
+ transform:none!important;flex:0 0 auto!important;
+ display:inline-flex!important;align-items:center!important;justify-content:center!important;
+ width:auto!important;min-width:71px!important;height:27px!important;
+ padding:3px 6px!important;margin:0!important;
+ font-size:11px!important;white-space:nowrap!important;
+ z-index:auto!important;
+}
+@media(max-width:350px) {
+ body.writing .writerPage .a2-writer-nav #writerPostavkaBtn,
+ html.b1-typing body.writing .writerPage .a2-writer-nav #writerPostavkaBtn{
+  font-size:9px!important;padding-inline:5px!important
+ }
+}
+@media(max-height:580px){
+ body.intro #welcome .a2-brand-logo{width:55px!important;height:55px!important}
+ body.intro #welcome .welcome-content{gap:4px!important}
+}
+
 </style>
 </head>
 <body class="intro">
@@ -2744,6 +2809,7 @@ body.writing:not(.reviewing) #navBar .navArrow{
 
 <section id="welcome" class="welcome" aria-label="Početna strana A2 mejl vežbe">
  <div class="welcome-content">
+ <img class="a2-brand-logo" alt="DE-MAX Tutin logo" width="112" height="112" src="data:image/jpeg;base64,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">
  <div class="welcome-eyebrow">A2 MEJL VEŽBE</div>
  <h1>Uputstvo za pisanje mejla</h1>
  <div class="welcome-rules">
@@ -2794,8 +2860,10 @@ body.writing:not(.reviewing) #navBar .navArrow{
     <button id="newAttempt" type="button" aria-label="Uvežbaj ovaj mejl ponovo">↻ UVEŽBAJ PONOVO</button>
   </div>
 </div>
-  <span id="writerClock" class="writerClock" role="timer" aria-label="Preostalo vreme za pisanje mejla">⏱ 30:00</span>
-  <button id="writerPostavkaBtn" class="writerPostavkaBtn" type="button" aria-label="Nazad na postavku mejla">← POSTAVKA MEJLA</button>
+  <div class="a2-writer-nav" role="group" aria-label="Povratak na postavku i preostalo vreme">
+   <button id="writerPostavkaBtn" class="writerPostavkaBtn" type="button" aria-label="Nazad na postavku mejla">← POSTAVKA MEJLA</button>
+   <span id="writerClock" class="writerClock" role="timer" aria-label="Preostalo vreme za pisanje mejla">⏱ 30:00</span>
+  </div>
   <div class="writerTop">
     <span id="writerName" class="name">MEJL 1 / 13</span>
   </div>
