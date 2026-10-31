@@ -2295,6 +2295,32 @@ body.writing .writerPage .actions{touch-action:manipulation!important}
  }
 }
 
+
+/* B1_ANDROID_WEBVIEW_RESTORE_FULL_SCREEN_CONTROL_20261031
+   Malo dugme se prikazuje samo ako Android iframe ne javlja promenu
+   tastature. Pritiskom uklanja fokus i odmah vraca punu visinu. */
+.b1RestoreScreen{display:none}
+@media(max-width:700px){
+ html.b1-keyboard-unmeasured body.writing:not(.reviewing) #b1RestoreScreen{
+  display:flex!important;
+  position:absolute!important;
+  top:5px!important;
+  left:calc(50% - 66px)!important;
+  width:27px!important;height:27px!important;
+  justify-content:center!important;align-items:center!important;
+  border:1.5px solid #aac5ea!important;border-radius:7px!important;
+  background:#ecf4ff!important;color:#1755a0!important;
+  font-size:19px!important;font-weight:900!important;
+  padding:0!important;line-height:1!important;z-index:300!important;
+  touch-action:manipulation!important;
+ }
+ html:not(.b1-typing) body.writing:not(.reviewing) .app{
+  height:var(--b1-vh,100dvh)!important;
+  max-height:var(--b1-vh,100dvh)!important;
+  overflow:hidden!important;
+ }
+}
+
 </style>
 </head>
 <body class="intro">
@@ -2362,6 +2388,7 @@ body.writing .writerPage .actions{touch-action:manipulation!important}
 <section id="writerScreen" class="writerPage hidden">
   <div id="reviewActions" class="reviewActions hidden"><button id="resultList" type="button">← MEJLOVI</button><strong id="resultTitle">REZULTAT MEJLA</strong><button id="newAttempt" type="button">↻ VEŽBAJ PONOVO</button></div>
   <span id="writerClock" class="writerClock" role="timer" aria-label="Preostalo vreme za pisanje mejla">⏱ 30:00</span>
+  <button type="button" id="b1RestoreScreen" class="b1RestoreScreen" title="Vrati pun ekran kada zatvoriš tastaturu" aria-label="Vrati pun ekran mejla">⤢</button>
   <button id="writerPostavkaBtn" class="writerPostavkaBtn" type="button" aria-label="Nazad na postavku mejla">← POSTAVKA MEJLA</button>
   <div class="writerTop">
     <span id="writerName" class="name">MEJL 1 / 20</span>
@@ -2615,6 +2642,9 @@ function updateViewportHeight(){
  // Po zatvaranju (resize ili blur) rezervna procena se iskljucuje.
  const focusedLongEnough=!!(b1FocusStarted&&performance.now()-b1FocusStarted>180);
  const fallback=focused&&!measurable&&!b1BackRestored&&focusedLongEnough;
+ // Samsung Android: fallback ostaje dok WebView ne javi da je tastatura zatvorena.
+ // U tom slucaju u gornjoj traci dostupno je rucno prosirenje ekrana.
+ root.classList.toggle("b1-keyboard-unmeasured",fallback);
  const keyboardVisible=focused&&(measurable||fallback);
  // Dok je tastatura otvorena: sva 4 pitanja, tekst i PROVERI MEJL iznad nje.
  // Cim je tastatura sakrivena / polje izgubi fokus: vrati punu zapamcenu visinu,
@@ -3047,6 +3077,17 @@ $("draft").addEventListener("input",()=>{
 $("resetClock").onclick=startTimer;
 $("gradeBtn").onclick=grade;
 
+$("b1RestoreScreen").onclick=()=>{
+ b1BackRestored=true;
+ b1WasKeyboardOpen=false;
+ b1FocusStarted=0;
+ const draft=$("draft");
+ if(document.activeElement===draft)draft.blur();
+ document.documentElement.classList.remove("b1-typing","b1-keyboard-unmeasured");
+ document.body.classList.remove("keyboardOpen");
+ updateViewportHeight();
+ [90,240,480].forEach(ms=>setTimeout(updateViewportHeight,ms));
+};
 $("draft").addEventListener("focus",()=>{
  b1BackRestored=false;
  b1LastVisibleHeight=0;
@@ -3076,6 +3117,24 @@ function b1HandleViewportResize(){
   requestAnimationFrame(updateRail);
  },180);
 }
+// U Android iframe-u promene dimenzija ponekad ne emituju resize.
+let b1ViewportProbe="";
+setInterval(()=>{
+ if(!b1Mobile()||!document.body.classList.contains("writing"))return;
+ const vv=window.visualViewport;
+ const vk=navigator.virtualKeyboard?.boundingRect;
+ const signature=[
+   window.innerHeight,
+   Math.round(vv?.height||0),
+   Math.round(vv?.offsetTop||0),
+   Math.round(vk?.height||0),
+   document.activeElement===$("draft")?1:0
+ ].join(":");
+ if(signature!==b1ViewportProbe){
+  b1ViewportProbe=signature;
+  updateViewportHeight();
+ }
+},300);
 window.addEventListener("resize",()=>{
  b1HandleViewportResize();
  requestAnimationFrame(fitTaskLetter);
