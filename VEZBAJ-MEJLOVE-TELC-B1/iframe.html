@@ -1652,6 +1652,78 @@ body.writing .writerPage .writerTop .name{display:block!important;text-align:lef
 @media(max-width:700px){
  .writerPage .editHead .demaxWriterMark{font-size:11px;padding:3px 7px}
 }
+
+/* B1_POSTAVKA_DESNO_OD_SATA_FIXED_WRITING_20261031
+   Zeleno dugme odmah desno od centralnog sata; bez pomeranja stranice. */
+body.writing header #homeBtn{
+ display:none!important;
+}
+body.writing .writerPage .writerPostavkaBtn,
+html.b1-typing .writerPage .writerPostavkaBtn{
+ position:absolute!important;
+ top:5px!important;
+ left:calc(50% + 44px)!important;
+ right:6px!important;
+ z-index:210!important;
+ display:flex!important;
+ justify-content:center!important;
+ align-items:center!important;
+ box-sizing:border-box!important;
+ width:auto!important;
+ max-width:calc(50% - 50px)!important;
+ min-height:27px!important;
+ height:27px!important;
+ padding:3px 5px!important;
+ margin:0!important;
+ border:2px solid #5bc68b!important;
+ border-radius:7px!important;
+ background:#0a854a!important;
+ color:#fff!important;
+ box-shadow:0 2px 5px #12643a25!important;
+ font-size:clamp(8px,2.5vw,11px)!important;
+ font-weight:950!important;
+ line-height:1!important;
+ text-align:center!important;
+ white-space:nowrap!important;
+ touch-action:manipulation!important;
+}
+body.writing.reviewing .writerPage .writerPostavkaBtn{display:none!important}
+@media(max-width:700px){
+ html:has(body.writing),body.writing{
+  overflow:hidden!important;
+  overscroll-behavior:none!important;
+  overscroll-behavior-y:none!important;
+ }
+ body.writing .app,
+ body.writing .main,
+ body.writing .writerPage,
+ body.writing:not(.reviewing) .writerPage .editor,
+ body.writing:not(.reviewing) .writerPage .draftScrollFrame{
+  overflow:hidden!important;
+  overscroll-behavior:none!important;
+ }
+ body.writing:not(.reviewing) .writerPage .writingPoints{
+  overflow-y:hidden!important;
+  overscroll-behavior:none!important;
+  touch-action:none!important;
+ }
+ /* Tekst ostaje pregledan unutar polja: radi samo njegov klizač. */
+ body.writing:not(.reviewing) .writerPage .draftScrollFrame textarea{
+  overflow-y:auto!important;
+  overscroll-behavior:contain!important;
+  touch-action:pan-y!important;
+ }
+}
+@media(max-width:340px){
+ body.writing .writerPage .writerPostavkaBtn{
+  left:calc(50% + 41px)!important;
+  right:4px!important;
+  max-width:calc(50% - 45px)!important;
+  padding-inline:2px!important;
+  font-size:8px!important;
+ }
+}
+
 </style>
 </head>
 <body class="intro">
@@ -1719,6 +1791,7 @@ body.writing .writerPage .writerTop .name{display:block!important;text-align:lef
 <section id="writerScreen" class="writerPage hidden">
   <div id="reviewActions" class="reviewActions hidden"><button id="resultList" type="button">← MEJLOVI</button><strong id="resultTitle">REZULTAT MEJLA</strong><button id="newAttempt" type="button">↻ VEŽBAJ PONOVO</button></div>
   <span id="writerClock" class="writerClock" role="timer" aria-label="Preostalo vreme za pisanje mejla">⏱ 30:00</span>
+  <button id="writerPostavkaBtn" class="writerPostavkaBtn" type="button" aria-label="Nazad na postavku mejla">← POSTAVKA MEJLA</button>
   <div class="writerTop">
     <span id="writerName" class="name">MEJL 1 / 20</span>
   </div>
@@ -2313,6 +2386,7 @@ async function grade(){
 }
 
 $("homeBtn").onclick=()=>{if(document.body.classList.contains("writing")&&current>=0)backTask();else if(document.body.classList.contains("listing"))backFromMailList();else showList();};
+$("writerPostavkaBtn").onclick=backTask;
 $("openList").onclick=showList;
 $("restartRound").onclick=()=>{
  if(!mails.length||!mails.every((m,i)=>validB1Result(i)))return;
