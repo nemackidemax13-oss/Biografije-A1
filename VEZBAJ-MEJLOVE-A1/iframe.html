@@ -2169,6 +2169,36 @@ html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.promp
   padding:3px 4px!important;font-size:9px!important;
  }
 }
+
+/* ÖSD A1: narandzasto „← UPUTSTVO” u gornjem desnom uglu izbora mejla. */
+#mailHome .mail-home-hero{position:relative}
+#homeBackInstructions{
+ position:absolute;
+ top:10px;
+ right:10px;
+ z-index:3;
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ min-height:30px;
+ padding:6px 10px;
+ border:1px solid #ffc486;
+ border-radius:8px;
+ background:#e98721;
+ color:#fff;
+ box-shadow:0 2px 8px #09285140;
+ font-size:11px;
+ font-weight:900;
+ line-height:1;
+ white-space:nowrap;
+ cursor:pointer;
+ touch-action:manipulation;
+}
+#homeBackInstructions:hover,#homeBackInstructions:focus-visible{background:#d87812}
+@media(max-width:799px){
+ #mailHome .mail-home-hero{padding-top:42px}
+ #homeBackInstructions{top:8px;right:8px;min-height:28px;padding:5px 9px;font-size:10px}
+}
 </style>
 </head>
 <body class="view-intro a1-translation-off">
@@ -2190,7 +2220,7 @@ html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.promp
   </div>
 </section>
 <section id="mailHome" aria-label="Izbor mejla">
- <div class="mail-home-hero"><div class="mail-home-eyebrow">DE-MAX TUTIN · ÖSD A1</div><div class="mail-home-logo" aria-label="De-Max Tutin"><b>DE-MAX</b><small>TUTIN</small></div><div class="mail-home-eyebrow">35 MEJLOVA · A1 VEŽBANJE</div><h1>Izaberi mejl</h1><p>Odaberi zadatak i napiši odgovor na nemačkom</p></div>
+ <div class="mail-home-hero"><button id="homeBackInstructions" type="button" aria-label="Vrati se na uputstvo">← UPUTSTVO</button><div class="mail-home-eyebrow">DE-MAX TUTIN · ÖSD A1</div><div class="mail-home-logo" aria-label="De-Max Tutin"><b>DE-MAX</b><small>TUTIN</small></div><div class="mail-home-eyebrow">35 MEJLOVA · A1 VEŽBANJE</div><h1>Izaberi mejl</h1><p>Odaberi zadatak i napiši odgovor na nemačkom</p></div>
  <div class="a1-envelope-legend">⚪ Neodrađeno · 🔵 Radi se · 🟢 Provereno</div>
  <div class="mail-home-summary"><span>MEJLOVI ZA VEŽBANJE</span><span id="homeProgress">0 / 35 provereno</span></div>
  <div id="mailHomeGrid" class="mail-home-grid" aria-label="35 mejlova"></div>
@@ -2675,6 +2705,11 @@ function a1SetTranslation(show){
 $('goMailList').addEventListener('click',()=>{
  document.body.classList.remove('view-intro','view-mail');
  document.body.classList.add('view-home');renderMailGrid();window.scrollTo(0,0);
+});
+$('homeBackInstructions').addEventListener('click',()=>{
+ document.body.classList.remove('view-home','view-mail','mobile-writing','mobile-review');
+ document.body.classList.add('view-intro');
+ window.scrollTo({top:0,behavior:'instant'});
 });
 $('a1PrevMail').addEventListener('click',()=>jump(current-1));
 $('a1NextMail').addEventListener('click',()=>jump(current+1));
