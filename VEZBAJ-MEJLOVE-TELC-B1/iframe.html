@@ -1641,6 +1641,17 @@ html.b1-typing .writerPage .actions #gradeBtn{
 
 /* TELC B1 – broj mejla na levoj strani umesto duplog dugmeta POSTAVKA */
 body.writing .writerPage .writerTop .name{display:block!important;text-align:left!important;flex:1!important;font-weight:950!important;color:#153d7e!important}
+
+/* De-Max natpis sa crvenim okvirom umesto dugmeta za TXT */
+.writerPage .editHead .demaxWriterMark{
+ display:inline-flex;align-items:center;justify-content:center;
+ flex:none;padding:4px 9px;border:2px solid #cf253a;border-radius:7px;
+ background:#fff;color:#c21c30;font-size:12px;font-weight:950;
+ letter-spacing:.2px;line-height:1.15;white-space:nowrap;
+}
+@media(max-width:700px){
+ .writerPage .editHead .demaxWriterMark{font-size:11px;padding:3px 7px}
+}
 </style>
 </head>
 <body class="intro">
@@ -1717,7 +1728,7 @@ body.writing .writerPage .writerTop .name{display:block!important;text-align:lef
       <h3>ČETIRI PITANJA <span>· crveno: prevod</span></h3>
       <ol id="writerPoints"></ol>
     </div>
-    <div class="editHead"><span>✎ PIŠI MEJL</span><span id="counter" class="count">0 reči</span><button id="exportBtn" type="button">Sačuvaj TXT</button></div>
+    <div class="editHead"><span>✎ PIŠI MEJL</span><span id="counter" class="count">0 reči</span><span class="demaxWriterMark" aria-label="De-Max">De-Max</span></div>
     <div class="draftScrollFrame" id="draftScrollFrame"><textarea id="draft" spellcheck="true" aria-label="Ovde napiši svoj B1 mejl" placeholder="Liebe ...,
 
 vielen Dank für deine Nachricht.
@@ -2302,13 +2313,6 @@ async function grade(){
  }
 }
 
-function exportDraft(){
- if(current<0)return;
- const m=mails[current],text="DE-MAX TELC B1 – "+m.title+"\n\n"+m.questions.map((x,i)=>(i+1)+". "+x).join("\n")+"\n\nODGOVOR:\n"+$("draft").value;
- const url=URL.createObjectURL(new Blob([text],{type:"text/plain;charset=utf-8"}));
- const a=document.createElement("a");a.href=url;a.download="DE-MAX_TELC_B1_Mejl_"+(current+1)+".txt";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),4000);
-}
-
 $("homeBtn").onclick=()=>{if(document.body.classList.contains("writing")&&current>=0)backTask();else if(document.body.classList.contains("listing"))backFromMailList();else showList();};
 $("openList").onclick=showList;
 $("restartRound").onclick=()=>{
@@ -2339,7 +2343,7 @@ $("draft").addEventListener("input",()=>{
 });
 $("resetClock").onclick=startTimer;
 $("gradeBtn").onclick=grade;
-$("exportBtn").onclick=exportDraft;
+
 $("draft").addEventListener("focus",()=>{
  if(b1Mobile())document.body.classList.add("keyboardOpen");
  b1FocusStarted=performance.now();
