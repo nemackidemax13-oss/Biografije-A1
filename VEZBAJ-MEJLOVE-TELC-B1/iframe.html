@@ -1820,7 +1820,7 @@ function openMail(i){
  if(!mails[i])return;
  current=i;state.selected=i;save();const m=mails[i];
  $("taskName").textContent=(i+1)+". MEJL · "+m.title;
- $("writerName").textContent="MEJL "+(i+1)+" / "+mails.length+" · "+m.title;
+ $("writerName").textContent="MEJL "+(i+1)+" / "+mails.length;
  $("navCounter").textContent="MEJL "+(i+1)+" / "+mails.length;
  $("prevBtn").disabled=i===0;$("nextBtn").disabled=i===mails.length-1;
  $("letterTitle").textContent="Von: "+m.from+" · Betreff: "+m.subject;
