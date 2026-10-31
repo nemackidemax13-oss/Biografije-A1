@@ -483,6 +483,15 @@ html.a2-show-sr .question-sr{display:block!important}
  .workspace.writing .foot #check{font-size:7px!important;padding:1px!important}
 }
 
+/* Full-screen control retains pre-keyboard height when Android WebView keeps its
+   last small visualViewport despite keyboard being dismissed. */
+@media(max-width:700px){
+ html.a2-full-view .app{
+  max-height:var(--a2-vh,100dvh)!important;
+  height:var(--a2-vh,100dvh)!important;
+  top:0!important;
+ }
+}
 </style></head><body>
 <div class="app"><header><div class="top"><div class="brand">A2 mejl vežbe</div><div class="pill">13 mejlova · 15 bodova</div></div>
 <div class="nav"><button id="prev" aria-label="Prethodni mejl">‹</button><button id="navTitle" type="button" aria-label="Trenutni mejl; tokom pisanja vrati na postavku">Izaberi mejl</button><button id="next" aria-label="Sledeći mejl">›</button><button id="homeButton" type="button" aria-label="Povratak na sve mejlove" title="Povratak na sve mejlove">svi mejlovi</button></div></header>
@@ -524,7 +533,7 @@ try{const s=JSON.parse(localStorage.getItem(STORE)||'null');if(s&&typeof s==='ob
 if(!state.drafts||typeof state.drafts!=='object')state.drafts={};
 if(!state.visited||typeof state.visited!=='object')state.visited={};
 let current=0;
-let a2ShowSerbian=false,a2PromptFont=12.5,a2WriterFont=14;
+let a2ShowSerbian=false,a2PromptFont=12.5,a2WriterFont=14,a2ForceFull=false;
 let a2TimerMail=-1,a2TimerStart=0,a2TimerSeconds=1800;
 function a2TimerFormat(){
  return "⏱ "+String(Math.floor(a2TimerSeconds/60)).padStart(2,"0")+":"+String(a2TimerSeconds%60).padStart(2,"0");
@@ -564,6 +573,7 @@ function expandA2Mail(){
  const t=$("answer");
  if($("workspace").classList.contains("writing")&&document.activeElement===t)t.blur();
  a2FocusStarted=0;
+ a2ForceFull=true;
  document.documentElement.classList.remove("a2-typing");
  a2FullScreenHeight=Math.max(a2FullScreenHeight,window.innerHeight,window.visualViewport?.height||0);
  document.documentElement.style.setProperty("--a2-vh",Math.floor(a2FullScreenHeight)+"px");
@@ -613,12 +623,13 @@ function renderCards(){
  updateNav();
 }
 function renderMail(){let m=MAILS[current];$('number').textContent=(current+1)+'. mejl · '+m.title;updateNav();$('situation').innerHTML='<div>'+esc(m.situation)+'</div><div class="sr-situation">'+esc(m.srSituation||'')+'</div>';$('senderEmail').textContent=m.email;$('subject').textContent=m.subject;$('original').innerHTML='<div class="mail-body-de">'+esc(m.body)+'</div><div class="mail-body-sr">'+esc(m.srBody||'')+'</div>';$('questions').innerHTML=questionHtml(m);refreshA2Clock();$('backFromWriting').onclick=leaveWriting;$('answer').value=state.drafts[current]||'';$('result').classList.remove('on');$('result').innerHTML='';$('promptScroll').scrollTop=0;updateCount();requestAnimationFrame(fitFullEmailWithoutScroll);}
-function openMail(i){const next=Math.max(0,Math.min(MAILS.length-1,Number(i)||0));if(next!==a2TimerMail)a2ResetClock(next);current=next;a2ShowSerbian=false;document.documentElement.classList.remove("a2-show-sr");for(const id of ["a2PromptSr","a2WriteSr"]){$(id).textContent="🇷🇸 PREVOD SRPSKI";$(id).setAttribute("aria-pressed","false")}state.current=current;state.visited[current]=true;$('answer').blur();save();$('welcome').classList.add('hide');$('home').classList.add('hide');$('workspace').classList.remove('hide');$('workspace').classList.remove('writing');renderMail();location.hash='mejl-'+(current+1);}
+function openMail(i){a2ForceFull=false;const next=Math.max(0,Math.min(MAILS.length-1,Number(i)||0));if(next!==a2TimerMail)a2ResetClock(next);current=next;a2ShowSerbian=false;document.documentElement.classList.remove("a2-show-sr");for(const id of ["a2PromptSr","a2WriteSr"]){$(id).textContent="🇷🇸 PREVOD SRPSKI";$(id).setAttribute("aria-pressed","false")}state.current=current;state.visited[current]=true;$('answer').blur();save();$('welcome').classList.add('hide');$('home').classList.add('hide');$('workspace').classList.remove('hide');$('workspace').classList.remove('writing');renderMail();location.hash='mejl-'+(current+1);}
 function updateCount(){
  const n=countWords($('answer').value);
  const toTarget=Math.max(0,50-n);
  const toMinimum=Math.max(0,26-n);
- $('count').textContent=n<26?n+' reči · još '+toMinimum+' do provere':n<50?n+' / 50 reči':'Napisano: '+n+' reči ✓';
+ $('count').textContent=window.matchMedia('(max-width:700px)').matches
+  ?n+' reči':n<26?n+' reči · još '+toMinimum+' do provere':n<50?n+' / 50 reči':'Napisano: '+n+' reči ✓';
  $('count').classList.toggle('good',n>=26);
  $('check').disabled=n<26;
  $('check').title=n<26?'Mejl se ne boduje ako ima manje od 26 reči.':n<50?'Mejl može da se oceni. Cilj je 50 reči.':'Proveri A2 mejl (15 bodova; prolaz 3)';
@@ -727,6 +738,7 @@ function enterWriting(focusInput=true){
 }
 function leaveWriting(){
  $('answer').blur();
+ a2ForceFull=false;
  $('workspace').classList.remove('writing');
  document.documentElement.classList.remove('a2-typing','a2-questions-open');
  updateNav();
@@ -788,6 +800,7 @@ function fitA2Viewport(){
  let usable=Math.min(visible,layoutH,keyboardLimit);
  const original=a2FullScreenHeight||Math.max(visible,layoutH);
  const shrunk=original-usable>100;
+ const fullView=a2ForceFull&&!typing&&$('workspace').classList.contains('writing');
  // In an iframe / overlay-keyboard browser, visualViewport may NEVER shrink.
  // Reserve phone keyboard space after focus when there is no usable geometry.
  if(typing&&!shrunk&&!hasKeyboardGeometry&&a2FocusStarted&&
@@ -797,9 +810,11 @@ function fitA2Viewport(){
   // Only adjust this fallback; real keyboard geometry remains authoritative.
   usable=Math.min(usable,Math.max(200,Math.floor(original*0.55)+19));
  }
+ if(fullView)usable=Math.max(usable,a2FullScreenHeight,layoutH);
  usable=Math.max(120,Math.floor(usable));
  root.style.setProperty('--a2-vh',usable+'px');
- root.style.setProperty('--a2-vtop',Math.floor(top)+'px');
+ root.style.setProperty('--a2-vtop',fullView?'0px':Math.floor(top)+'px');
+ root.classList.toggle('a2-full-view',fullView);
  root.classList.toggle('a2-typing',typing);
  requestAnimationFrame(()=>{
   fitA2QuestionsToKeyboard();
@@ -829,6 +844,7 @@ document.addEventListener('wheel',event=>{
  if(a2LockWritingSwipes()&&event.cancelable)event.preventDefault();
 },{passive:false,capture:true});
 $('answer').addEventListener('focus',()=>{
+ a2ForceFull=false;
  a2FocusStarted=performance.now();
  fitA2Viewport();
  [100,250,400,650].forEach(ms=>setTimeout(fitA2Viewport,ms));
