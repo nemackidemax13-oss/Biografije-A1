@@ -1639,6 +1639,8 @@ html.b1-typing .writerPage .actions #gradeBtn{
  body.writing .writerPage .actions #gradeBtn{padding:5px 5px!important;font-size:9px!important}
 }
 
+/* TELC B1 – broj mejla na levoj strani umesto duplog dugmeta POSTAVKA */
+body.writing .writerPage .writerTop .name{display:block!important;text-align:left!important;flex:1!important;font-weight:950!important;color:#153d7e!important}
 </style>
 </head>
 <body class="intro">
@@ -1708,8 +1710,7 @@ html.b1-typing .writerPage .actions #gradeBtn{
   <span id="writerClock" class="writerClock" role="timer" aria-label="Preostalo vreme za pisanje mejla">⏱ 30:00</span>
   <button id="backAllMails" class="backAllMails" type="button" aria-label="Nazad na postavku trenutno izabranog mejla">← Nazad</button>
   <div class="writerTop">
-    <button type="button" id="backTask" class="secondary">← POSTAVKA</button>
-    <span id="writerName" class="name">TELC B1 · MEJL 1</span>
+    <span id="writerName" class="name">MEJL 1 / 20</span>
   </div>
   <div class="editor">
     <div class="writingPoints" aria-label="Četiri pitanja i prevodi">
@@ -2322,7 +2323,6 @@ $("backAllMails").onclick=()=>{if(current>=0)backTask();else showList();};
 $("startWriting").onclick=startWriting;
 $("decreaseTaskFont").onclick=()=>changeTaskFont(-1);
 $("increaseTaskFont").onclick=()=>changeTaskFont(1);
-$("backTask").onclick=backTask;
 $("translationToggle").onclick=()=>{
  $("translationToggle").dataset.lang=$("translationToggle").dataset.lang==="sr"?"de":"sr";
  updateReceivedLanguage();
