@@ -2505,6 +2505,742 @@ body.writing #writerScreen .writerTop{
  display:none!important;
 }
 
+
+/* TELC B1 – UI podešavanja preuzeta iz aktuelne A2 verzije (01.11.2026).
+   Zadržani su originalna TELC B1 baza, čuvanje, Worker i sistem ocenjivanja. */
+/* Welcome screen — instruction page before choosing an email. */
+.welcome{flex:1;min-height:0;overflow:hidden;display:flex;align-items:center;justify-content:center;background:linear-gradient(155deg,#eaf2ff 0%,#ffffff 80%);padding:clamp(8px,2vh,18px)}
+.welcome-content{width:min(560px,100%);max-height:100%;display:flex;flex-direction:column;align-items:stretch;gap:clamp(6px,1.3vh,13px)}
+.welcome-eyebrow{font-weight:900;color:#2058ad;text-align:center;font-size:clamp(12px,2.2vh,15px);letter-spacing:1.3px}
+.welcome h1{margin:0;text-align:center;font-size:clamp(19px,3.4vh,28px);color:#123875;line-height:1.14}
+.welcome-rules{display:grid;gap:clamp(5px,1.1vh,10px)}
+.welcome-rule{display:flex;align-items:center;gap:11px;min-height:0;padding:clamp(7px,1.45vh,13px) 12px;border:1px solid #d6e4f6;background:#fff;border-radius:12px;box-shadow:0 3px 10px #1740780a;font-size:clamp(12px,2vh,15px);line-height:1.3;color:#183d78}
+.welcome-rule .rule-symbol{font-size:18px;flex:none;color:#155cbd;font-weight:900;width:23px;text-align:center}
+.welcome-rule.rule-alert{border-color:#f2c8d0;background:#fff6f7;color:#a32235}
+.welcome-rule.rule-alert .rule-symbol{color:#d92f4b}
+.welcome-go{border:0;background:linear-gradient(110deg,#0d9859,#0a7744);color:#fff;font-size:clamp(15px,2.5vh,19px);font-weight:900;border-radius:12px;padding:clamp(10px,2vh,15px) 15px;box-shadow:0 4px 15px #0a79462a}
+.welcome-go span{margin-left:8px}
+@media(max-width:700px){
+ .welcome{padding:8px}
+ .welcome-content{gap:clamp(5px,1vh,10px)}
+ .welcome h1{font-size:clamp(18px,3vh,23px)}
+ .welcome-rule{padding:clamp(6px,1.25vh,10px) 9px;font-size:clamp(11.5px,1.7vh,14px);gap:7px}
+ .welcome-rule .rule-symbol{font-size:16px;width:20px}
+ .welcome-go{padding:clamp(9px,1.6vh,13px) 10px}
+}
+@media(max-width:700px) and (max-height:550px){
+ .welcome-eyebrow{display:none}
+ .welcome-content{gap:4px}
+ .welcome-rule{padding:5px 8px;font-size:11.5px}
+ .welcome-go{padding:8px}
+ .welcome h1{font-size:18px}
+}
+
+
+
+
+/* A2 originalno uputstvo na B1 fiksiranoj platformi. */
+body.intro #welcome{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;min-height:0!important;overflow:hidden!important;padding:clamp(8px,2vh,18px)!important;background:linear-gradient(155deg,#eaf2ff 0%,#fff 80%)!important}
+body.intro #welcome .welcome-content{width:min(560px,100%)!important;max-height:100%!important;display:flex!important;flex-direction:column!important;gap:clamp(6px,1.3vh,13px)!important}
+body.intro #welcome .welcome-rules{display:grid!important;gap:clamp(5px,1.1vh,10px)!important}
+body.intro #welcome #openList{display:block!important;width:100%!important;min-height:42px!important}
+
+/* DE-MAX A2: legenda statusa odmah ispod IZABERI MEJL. */
+#mailList .a2-envelope-legend{
+ width:100%;
+ margin:2px 0 4px;
+ padding:3px 5px;
+ text-align:center;
+ color:#29466d;
+ font-size:clamp(9px,2.45vw,12px);
+ line-height:1.18;
+ font-weight:800;
+ white-space:nowrap;
+}
+@media(max-width:360px){
+ #mailList .a2-envelope-legend{font-size:9px;letter-spacing:-.2px;padding:2px}
+}
+
+
+
+/* A2: rezultat — u plavoj traci MEJLOVI odmah do UVEŽBAJ PONOVO. */
+body.writing.reviewing .writerPage .reviewActions{
+ display:flex!important;
+ align-items:center!important;
+ justify-content:space-between!important;
+ gap:6px!important;
+ background:#eaf3ff!important;
+ border-bottom:1px solid #bcd1ef!important;
+ padding:6px 8px!important;
+ flex-wrap:nowrap!important;
+}
+.writerPage .reviewActions #resultTitle{
+ min-width:0!important;
+ flex:1 1 auto!important;
+ font-size:11px!important;
+ color:#154880!important;
+}
+.writerPage .reviewActions .a2-review-nav{
+ display:flex!important;
+ align-items:center!important;
+ justify-content:flex-end!important;
+ flex:0 0 auto!important;
+ min-width:0!important;
+ gap:5px!important;
+}
+.writerPage .reviewActions .a2-review-nav button{
+ width:auto!important;
+ min-width:0!important;
+ min-height:30px!important;
+ white-space:nowrap!important;
+ font-size:10px!important;
+ font-weight:950!important;
+ padding:5px 7px!important;
+}
+.writerPage .reviewActions #resultList{
+ background:#1859a3!important;
+ border-color:#1859a3!important;
+ color:#fff!important;
+}
+.writerPage .reviewActions #newAttempt{
+ background:#0b874a!important;
+ border-color:#0b874a!important;
+ color:#fff!important;
+}
+@media(max-width:700px){
+ body.writing.reviewing .writerPage .reviewActions{
+  display:grid!important;
+  grid-template-columns: minmax(0,1fr)!important;
+  grid-template-rows:auto auto!important;
+  row-gap:5px!important;
+  padding:5px 7px!important;
+ }
+ .writerPage .reviewActions #resultTitle{
+  grid-row:1!important;
+  font-size:11px!important;
+  line-height:1.1!important;
+ }
+ .writerPage .reviewActions .a2-review-nav{
+  grid-row:2!important;
+  width:100%!important;
+  justify-content:flex-end!important;
+  gap:5px!important;
+ }
+ .writerPage .reviewActions .a2-review-nav button{
+  padding:5px 8px!important;
+  font-size:clamp(9px,2.7vw,11px)!important;
+  min-height:31px!important;
+ }
+}
+
+
+
+/* DE-MAX A2 logo i kompaktna narandžasta navigacija · 2026-11-01 */
+body.intro #welcome .a2-brand-logo {
+ display:block!important; flex:0 0 auto!important;
+ width:clamp(58px,10.5vh,100px)!important;
+ height:clamp(58px,10.5vh,100px)!important;
+ border-radius:50%!important; object-fit:contain!important;
+ margin:0 auto 2px!important;
+ filter:drop-shadow(0 2px 5px #1d3f6f22);
+}
+body .app header .bar .topRight #homeBtn {
+ display:inline-flex!important; align-items:center!important;
+ justify-content:center!important;
+ min-height:29px!important; height:29px!important; width:auto!important;
+ padding:3px 10px!important;
+ border:1px solid #ffd09b!important; border-radius:7px!important;
+ background:#e98721!important; color:#fff!important;
+ box-shadow:0 1px 4px #a74e1930!important;
+ font-size:10px!important; line-height:1.1!important;
+ font-weight:900!important; white-space:nowrap!important;
+}
+body.writing .app header .bar .topRight #homeBtn {display:none!important}
+body.writing:not(.reviewing) .writerPage .a2-writer-nav,
+html.b1-typing body.writing .writerPage .a2-writer-nav {
+ position:absolute!important; top:5px!important; left:50%!important;
+ transform:translateX(-50%)!important; z-index:220!important;
+ display:flex!important; justify-content:center!important; align-items:center!important;
+ gap:6px!important; width:max-content!important; max-width:calc(100% - 12px)!important;
+ height:28px!important; white-space:nowrap!important;
+}
+body.writing.reviewing .writerPage .a2-writer-nav{display:none!important}
+body.writing .writerPage .a2-writer-nav #writerPostavkaBtn,
+html.b1-typing body.writing .writerPage .a2-writer-nav #writerPostavkaBtn {
+ position:static!important; inset:auto!important; left:auto!important;right:auto!important;
+ transform:none!important; flex:0 0 auto!important;
+ display:inline-flex!important; align-items:center!important;justify-content:center!important;
+ width:auto!important;max-width:none!important;min-width:0!important;
+ height:27px!important;min-height:27px!important;
+ padding:3px 8px!important; margin:0!important;
+ border:1px solid #ffcd90!important; border-radius:7px!important;
+ background:#e98721!important; color:#fff!important;
+ font-size:10px!important;line-height:1!important;font-weight:900!important;
+ white-space:nowrap!important; box-shadow:0 1px 4px #a74e1930!important;
+}
+body.writing .writerPage .a2-writer-nav #writerClock,
+html.b1-typing body.writing .writerPage .a2-writer-nav #writerClock{
+ position:static!important; inset:auto!important;top:auto!important;left:auto!important;right:auto!important;
+ transform:none!important;flex:0 0 auto!important;
+ display:inline-flex!important;align-items:center!important;justify-content:center!important;
+ width:auto!important;min-width:71px!important;height:27px!important;
+ padding:3px 6px!important;margin:0!important;
+ font-size:11px!important;white-space:nowrap!important;
+ z-index:auto!important;
+}
+@media(max-width:350px) {
+ body.writing .writerPage .a2-writer-nav #writerPostavkaBtn,
+ html.b1-typing body.writing .writerPage .a2-writer-nav #writerPostavkaBtn{
+  font-size:9px!important;padding-inline:5px!important
+ }
+}
+@media(max-height:580px){
+ body.intro #welcome .a2-brand-logo{width:55px!important;height:55px!important}
+ body.intro #welcome .welcome-content{gap:4px!important}
+}
+
+
+/* A2 2026-11-01: čist korisnički logo i centriran sat u plavoj traci tokom pisanja. */
+body.intro #welcome .a2-brand-logo{
+ width:clamp(64px,12vh,112px)!important;
+ height:clamp(64px,12vh,112px)!important;
+ object-fit:contain!important;
+ image-rendering:auto!important;
+}
+body.writing:not(.reviewing) header .bar{display:none!important}
+body.writing:not(.reviewing) header{
+ padding:5px 9px!important;
+}
+body.writing:not(.reviewing) header #navBar{
+ display:flex!important;
+ position:relative!important;
+ align-items:center!important;
+ justify-content:center!important;
+ width:100%!important;
+ height:32px!important;
+ min-height:32px!important;
+ margin:0!important;
+ padding:0!important;
+ gap:0!important;
+}
+body.writing:not(.reviewing) header #navBar :is(#prevBtn,#navCounter,#nextBtn){
+ display:none!important;
+}
+body.writing:not(.reviewing) header #navBar .writerNav:not(.hidden){
+ display:inline-flex!important;
+ align-items:center!important;
+ justify-content:center!important;
+}
+body.writing:not(.reviewing) header #navBar #writerClock{
+ position:absolute!important;
+ left:50%!important;
+ top:3px!important;
+ transform:translateX(-50%)!important;
+ height:26px!important;
+ min-height:26px!important;
+ min-width:78px!important;
+ padding:3px 8px!important;
+ background:#fff8f8!important;
+ border:1px solid #ffb8c2!important;
+ border-radius:7px!important;
+ color:#cf253a!important;
+ font-size:11px!important;
+ line-height:1!important;
+ font-weight:950!important;
+ font-variant-numeric:tabular-nums!important;
+ pointer-events:none!important;
+ white-space:nowrap!important;
+}
+body.writing:not(.reviewing) header #navBar #writerClock.timeLow{
+ background:#ffe3e6!important;
+ color:#a4122c!important;
+}
+body.writing:not(.reviewing) header #navBar #writerPostavkaBtn{
+ position:absolute!important;
+ top:3px!important;
+ right:0!important;
+ left:auto!important;
+ transform:none!important;
+ min-width:0!important;
+ width:auto!important;
+ max-width:calc(50% - 42px)!important;
+ height:26px!important;
+ min-height:26px!important;
+ margin:0!important;
+ padding:3px 7px!important;
+ background:#e98721!important;
+ border:1px solid #ffd09b!important;
+ border-radius:6px!important;
+ color:#fff!important;
+ font-size:clamp(8px,2.1vw,10px)!important;
+ line-height:1!important;
+ font-weight:900!important;
+ white-space:nowrap!important;
+ overflow:hidden!important;
+ box-shadow:0 1px 3px #7e461f35!important;
+}
+@media(max-width:365px){
+ body.writing:not(.reviewing) header #navBar #writerPostavkaBtn{
+  font-size:8px!important;padding:3px 5px!important;
+ }
+}
+
+
+/* DE-MAX A2 · 2026-11-01: tajmer i povratak u beloj traci iznad pisanog mejla.
+   Bela traka je unutar editora: ponovo se vidi kada se tastatura zatvori
+   i kada mobilni browser sakrije spoljasnji header. */
+body.writing:not(.reviewing) header{
+ display:none!important;
+}
+body.writing:not(.reviewing) #writerScreen .editor .editHead.a2-writing-whitebar{
+ display:grid!important;
+ grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)!important;
+ grid-template-rows:30px!important;
+ align-items:center!important;
+ justify-items:stretch!important;
+ flex:0 0 32px!important;
+ order:1!important;
+ height:32px!important;
+ min-height:32px!important;
+ max-height:32px!important;
+ width:100%!important;
+ box-sizing:border-box!important;
+ position:relative!important;
+ padding:2px 5px!important;
+ gap:3px!important;
+ margin:0!important;
+ background:#fff!important;
+ border:1px solid #d9e3f1!important;
+ border-radius:7px!important;
+ box-shadow:0 1px 3px #243b5810!important;
+ overflow:visible!important;
+}
+body.writing:not(.reviewing) #writerScreen .editor .editHead .a2-edit-title{
+ display:block!important;
+ min-width:0!important;
+ justify-self:start!important;
+ color:#164481!important;
+ font-size:clamp(9px,2.3vw,11px)!important;
+ font-weight:900!important;
+ line-height:1!important;
+ white-space:nowrap!important;
+}
+body.writing:not(.reviewing) #writerScreen .editor .editHead #counter{
+ display:none!important;
+}
+body.writing:not(.reviewing) #writerScreen .editor .editHead #writerClock{
+ display:inline-flex!important;
+ position:static!important;
+ inset:auto!important;
+ transform:none!important;
+ grid-column:2!important;
+ justify-self:center!important;
+ align-items:center!important;
+ justify-content:center!important;
+ width:auto!important;
+ min-width:73px!important;
+ height:26px!important;
+ min-height:26px!important;
+ max-height:26px!important;
+ padding:3px 7px!important;
+ margin:0!important;
+ box-sizing:border-box!important;
+ background:#fff6f6!important;
+ border:1px solid #f1b6c0!important;
+ border-radius:7px!important;
+ color:#cc2a40!important;
+ font-size:11px!important;
+ font-weight:950!important;
+ font-variant-numeric:tabular-nums!important;
+ line-height:1!important;
+ letter-spacing:0!important;
+ white-space:nowrap!important;
+ pointer-events:none!important;
+ z-index:auto!important;
+}
+body.writing:not(.reviewing) #writerScreen .editor .editHead #writerClock.timeLow{
+ background:#ffe0e4!important;
+ color:#ac142c!important;
+}
+body.writing:not(.reviewing) #writerScreen .editor .editHead #writerPostavkaBtn{
+ display:inline-flex!important;
+ position:static!important;
+ inset:auto!important;
+ left:auto!important;
+ right:auto!important;
+ top:auto!important;
+ transform:none!important;
+ grid-column:3!important;
+ justify-self:end!important;
+ align-items:center!important;
+ justify-content:center!important;
+ flex:0 0 auto!important;
+ min-width:0!important;
+ width:auto!important;
+ max-width:100%!important;
+ height:26px!important;
+ min-height:26px!important;
+ max-height:26px!important;
+ box-sizing:border-box!important;
+ margin:0!important;
+ padding:3px 7px!important;
+ background:#e98721!important;
+ color:#fff!important;
+ border:1px solid #ffc486!important;
+ border-radius:7px!important;
+ box-shadow:0 1px 3px #7e461f25!important;
+ font-size:clamp(8px,2.15vw,10px)!important;
+ font-weight:900!important;
+ line-height:1!important;
+ text-align:center!important;
+ white-space:nowrap!important;
+ touch-action:manipulation!important;
+ z-index:auto!important;
+}
+@media(max-width:365px){
+ body.writing:not(.reviewing) #writerScreen .editor .editHead #writerPostavkaBtn{
+  padding:3px 5px!important;
+  font-size:8px!important;
+ }
+ body.writing:not(.reviewing) #writerScreen .editor .editHead #writerClock{
+  min-width:67px!important;
+  padding:3px 4px!important;
+  font-size:10px!important;
+ }
+}
+/* Zadrzi cetiri pitanja i prostor za unos dok je Android/iOS tastatura otvorena. */
+html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .editHead.a2-writing-whitebar,
+body.writing.keyboardOpen:not(.reviewing) #writerScreen .editor .editHead.a2-writing-whitebar{
+ display:none!important;
+ flex:0 0 0!important;
+ height:0!important;
+ min-height:0!important;
+ padding:0!important;
+ border:0!important;
+}
+/* Bela traka automatski se vraca kada je tastatura zatvorena. */
+html:not(.b1-typing) body.writing:not(.keyboardOpen):not(.reviewing) #writerScreen .editor .editHead.a2-writing-whitebar{
+ display:grid!important;
+ visibility:visible!important;
+ opacity:1!important;
+}
+
+
+/* A2 2026-11-01: gornja bela traka sadrži SAMO tajmer u sredini
+   i Postavka mejla desno. Zelena AI provera je iskljucivo u donjoj traci,
+   odmah desno od manjeg dugmeta PUN EKRAN. */
+body.writing:not(.reviewing) #writerScreen .editor .editHead.a2-writing-whitebar{
+ order:-1!important;
+ grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)!important;
+ grid-template-rows:26px!important;
+ flex:0 0 29px!important;
+ height:29px!important;
+ min-height:29px!important;
+ max-height:29px!important;
+ padding:1px 4px!important;
+ gap:3px!important;
+}
+body.writing:not(.reviewing) #writerScreen .editor .writingPoints{
+ order:0!important;
+}
+body.writing:not(.reviewing) #writerScreen .editor .editHead.a2-writing-whitebar .a2-edit-title,
+body.writing:not(.reviewing) #writerScreen .editor .editHead.a2-writing-whitebar #counter{
+ display:none!important;
+}
+body.writing:not(.reviewing) #writerScreen .editor .editHead.a2-writing-whitebar #writerClock{
+ min-width:66px!important;
+ height:24px!important;
+ min-height:24px!important;
+ max-height:24px!important;
+ padding:2px 5px!important;
+ font-size:10px!important;
+}
+body.writing:not(.reviewing) #writerScreen .editor .editHead.a2-writing-whitebar #writerPostavkaBtn{
+ height:24px!important;
+ min-height:24px!important;
+ max-height:24px!important;
+ padding:2px 5px!important;
+ font-size:clamp(7.5px,2.2vw,10px)!important;
+}
+/* Jedini taster PROVERI MEJL u donjoj traci, uz PUN EKRAN.
+   Vazno: vidi se i kada tastatura nije otvorena. */
+body.writing:not(.reviewing) #writerScreen .editor .actions #gradeBtn{
+ display:flex!important;
+ align-items:center!important;
+ justify-content:center!important;
+ min-width:0!important;
+ max-width:100%!important;
+ overflow:hidden!important;
+ text-overflow:clip!important;
+ white-space:nowrap!important;
+}
+@media(max-width:700px){
+ body.writing:not(.reviewing) #writerScreen .editor .actions,
+ html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .actions,
+ html:not(.b1-typing) body.writing:not(.reviewing) #writerScreen .editor .actions,
+ body.writing.keyboardOpen:not(.reviewing) #writerScreen .editor .actions{
+  display:grid!important;
+  grid-template-columns:max-content max-content max-content max-content minmax(0,1fr)!important;
+  column-gap:2px!important;
+  align-items:center!important;
+ }
+ body.writing:not(.reviewing) #writerScreen .editor .actions #b1RestoreScreen{
+  grid-column:4!important;
+  grid-row:1!important;
+  height:25px!important;
+  min-height:25px!important;
+  max-height:25px!important;
+  padding:1px 3px!important;
+  font-size:clamp(7.5px,2vw,9px)!important;
+  border-width:1px!important;
+ }
+ body.writing:not(.reviewing) #writerScreen .editor .actions #gradeBtn{
+  grid-column:5!important;
+  grid-row:1!important;
+  display:flex!important;
+  height:26px!important;
+  min-height:26px!important;
+  max-height:26px!important;
+  padding:2px 3px!important;
+  font-size:clamp(8px,2vw,10px)!important;
+ }
+}
+@media(max-width:355px){
+ body.writing:not(.reviewing) #writerScreen .editor .actions{
+  column-gap:1px!important;
+ }
+ body.writing:not(.reviewing) #writerScreen .editor .actions #b1RestoreScreen{
+  font-size:7.5px!important;
+  padding:1px 2px!important;
+ }
+ body.writing:not(.reviewing) #writerScreen .editor .actions #gradeBtn{
+  font-size:8px!important;
+  padding:1px 2px!important;
+ }
+ body.writing:not(.reviewing) #writerScreen .editor .editHead.a2-writing-whitebar #writerPostavkaBtn{
+  font-size:7.5px!important;
+  padding:2px 3px!important;
+ }
+}
+
+
+/* A2 mobile final one-row footer 2026-11-01:
+   PREVOD SRPSKI | A− | A+ | PUN EKRAN | PROVERI MEJL.
+   Brojac reci prelazi u status ispod i ne zauzima dugme. */
+body.writing:not(.reviewing) #writerScreen .editor .actions,
+html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .actions,
+html:not(.b1-typing) body.writing:not(.reviewing) #writerScreen .editor .actions,
+body.writing.keyboardOpen:not(.reviewing) #writerScreen .editor .actions {
+ display:grid!important;
+ grid-template-columns:minmax(0,1.55fr) minmax(22px,24px) minmax(22px,24px) minmax(0,.95fr) minmax(0,1.35fr)!important;
+ grid-template-rows:minmax(27px,auto)!important;
+ column-gap:3px!important;
+ row-gap:0!important;
+ align-items:center!important;
+ justify-content:stretch!important;
+ flex:0 0 auto!important;
+ width:100%!important;
+ max-width:100%!important;
+ min-width:0!important;
+ min-height:31px!important;
+ height:auto!important;
+ margin:0!important;
+ padding:2px 2px max(2px,env(safe-area-inset-bottom))!important;
+ overflow:visible!important;
+ box-sizing:border-box!important;
+}
+body.writing:not(.reviewing) #writerScreen .editor .actions #liveCounter,
+html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .actions #liveCounter{
+ display:none!important;
+}
+body.writing:not(.reviewing) #writerScreen .editor .actions #writerSrToggle,
+html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .actions #writerSrToggle{
+ display:flex!important;
+ grid-column:1!important;
+ grid-row:1!important;
+ align-items:center!important;
+ justify-content:center!important;
+ justify-self:stretch!important;
+ width:100%!important;
+ max-width:100%!important;
+ min-width:0!important;
+ height:27px!important;
+ min-height:27px!important;
+ padding:2px 2px!important;
+ margin:0!important;
+ white-space:nowrap!important;
+ font-size:clamp(7px,2.15vw,9px)!important;
+ letter-spacing:-.12px!important;
+ line-height:1!important;
+}
+body.writing:not(.reviewing) #writerScreen .editor .actions .writingFontControls,
+html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .actions .writingFontControls{
+ display:contents!important;
+}
+body.writing:not(.reviewing) #writerScreen .editor .actions #writerMinus,
+body.writing:not(.reviewing) #writerScreen .editor .actions #writerPlus,
+html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .actions #writerMinus,
+html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .actions #writerPlus{
+ display:inline-flex!important;
+ position:static!important;
+ align-items:center!important;
+ justify-content:center!important;
+ grid-row:1!important;
+ justify-self:stretch!important;
+ width:100%!important;
+ min-width:0!important;
+ max-width:100%!important;
+ height:27px!important;
+ min-height:27px!important;
+ margin:0!important;
+ padding:0!important;
+ font-size:11px!important;
+ line-height:1!important;
+}
+body.writing:not(.reviewing) #writerScreen .editor .actions #writerMinus,
+html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .actions #writerMinus{
+ grid-column:2!important;
+}
+body.writing:not(.reviewing) #writerScreen .editor .actions #writerPlus,
+html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .actions #writerPlus{
+ grid-column:3!important;
+}
+body.writing:not(.reviewing) #writerScreen .editor .actions #b1RestoreScreen,
+html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .actions #b1RestoreScreen,
+html.b1-keyboard-unmeasured body.writing:not(.reviewing) #writerScreen .editor .actions #b1RestoreScreen{
+ display:flex!important;
+ position:relative!important;
+ top:auto!important;left:auto!important;right:auto!important;bottom:auto!important;
+ grid-column:4!important;
+ grid-row:1!important;
+ align-items:center!important;
+ justify-content:center!important;
+ justify-self:stretch!important;
+ width:100%!important;
+ min-width:0!important;
+ max-width:100%!important;
+ height:27px!important;
+ min-height:27px!important;
+ max-height:27px!important;
+ padding:2px 1px!important;
+ margin:0!important;
+ font-size:clamp(7px,2.05vw,9px)!important;
+ white-space:nowrap!important;
+ line-height:1!important;
+ border-width:1px!important;
+}
+body.writing:not(.reviewing) #writerScreen .editor .actions #gradeBtn,
+html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .actions #gradeBtn{
+ display:flex!important;
+ grid-column:5!important;
+ grid-row:1!important;
+ align-items:center!important;
+ justify-content:center!important;
+ justify-self:stretch!important;
+ width:100%!important;
+ min-width:0!important;
+ max-width:100%!important;
+ height:27px!important;
+ min-height:27px!important;
+ max-height:27px!important;
+ padding:2px 1px!important;
+ margin:0!important;
+ font-size:clamp(7px,2.1vw,9px)!important;
+ font-weight:950!important;
+ line-height:1!important;
+ white-space:nowrap!important;
+ overflow:hidden!important;
+}
+/* Uski telefoni i iPhone/WebView, bez drugog reda. */
+@media(max-width:350px){
+ body.writing:not(.reviewing) #writerScreen .editor .actions,
+ html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .actions{
+  grid-template-columns:minmax(0,1.55fr) 22px 22px minmax(0,.95fr) minmax(0,1.35fr)!important;
+  column-gap:2px!important;
+  padding-left:1px!important;
+  padding-right:1px!important;
+ }
+ body.writing:not(.reviewing) #writerScreen .editor .actions #writerSrToggle{font-size:7px!important}
+ body.writing:not(.reviewing) #writerScreen .editor .actions #b1RestoreScreen{font-size:7px!important}
+ body.writing:not(.reviewing) #writerScreen .editor .actions #gradeBtn{font-size:7px!important}
+}
+
+
+/* A2 FIX 2026-11-01: sat i povratak ostaju vidljivi u vrhu i uz otvorenu tastaturu */
+@media(max-width:700px){
+ html.b1-typing body.writing:not(.reviewing) #writerScreen .editor,
+ body.writing.keyboardOpen:not(.reviewing) #writerScreen .editor{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  justify-content:flex-start!important;
+  padding:3px 5px 2px!important;
+  gap:3px!important;
+  min-height:0!important;
+  overflow:hidden!important;
+ }
+ html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .editHead.a2-writing-whitebar,
+ body.writing.keyboardOpen:not(.reviewing) #writerScreen .editor .editHead.a2-writing-whitebar{
+  display:grid!important;
+  visibility:visible!important;
+  opacity:1!important;
+  order:-1!important;
+  flex:0 0 29px!important;
+  grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)!important;
+  grid-template-rows:26px!important;
+  align-items:center!important;
+  width:100%!important;
+  height:29px!important;
+  min-height:29px!important;
+  max-height:29px!important;
+  margin:0!important;
+  padding:1px 4px!important;
+  border:1px solid #d9e3f1!important;
+  border-radius:7px!important;
+  box-sizing:border-box!important;
+  background:#fff!important;
+  overflow:visible!important;
+  position:relative!important;
+  z-index:245!important;
+ }
+ html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .editHead #writerClock,
+ body.writing.keyboardOpen:not(.reviewing) #writerScreen .editor .editHead #writerClock{
+  display:inline-flex!important;
+  visibility:visible!important;
+  opacity:1!important;
+  grid-column:2!important;
+  grid-row:1!important;
+ }
+ html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .editHead #writerPostavkaBtn,
+ body.writing.keyboardOpen:not(.reviewing) #writerScreen .editor .editHead #writerPostavkaBtn{
+  display:inline-flex!important;
+  visibility:visible!important;
+  opacity:1!important;
+  grid-column:3!important;
+  grid-row:1!important;
+  justify-self:end!important;
+  pointer-events:auto!important;
+  touch-action:manipulation!important;
+ }
+ html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .writingPoints,
+ body.writing.keyboardOpen:not(.reviewing) #writerScreen .editor .writingPoints{
+  order:0!important;
+  flex:0 0 auto!important;
+  width:100%!important;
+  min-height:0!important;
+ }
+ html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .draftScrollFrame,
+ body.writing.keyboardOpen:not(.reviewing) #writerScreen .editor .draftScrollFrame{
+  order:2!important;
+  flex:1 1 0!important;
+  min-height:35px!important;
+ }
+ html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .actions,
+ body.writing.keyboardOpen:not(.reviewing) #writerScreen .editor .actions{
+  order:3!important;
+ }
+}
+
 </style>
 </head>
 <body class="intro">
@@ -2524,25 +3260,25 @@ body.writing #writerScreen .writerTop{
 </header>
 <main class="main">
 
-<section id="welcome" class="welcome">
-  <div class="introLevel">Telc B1</div>
-  <div class="introTitle">
-    <h1>Uputstvo pisanja mejla</h1>
-  </div>
-  <div class="tip">
-   <p><b>1.</b> Pročitaj primljeni mejl ili oglas i utvrdi kome odgovaraš.</p>
-   <p><b>2.</b> Odgovori na <b>sve četiri tačke</b> iz zadatka, jasno i povezano.</p>
-   <p><b>3.</b> Napiši obraćanje (<b>Anrede</b>), uvod, odgovore i završni pozdrav (<b>Grußformel</b>).</p>
-   <p><b>4.</b> Prijatelju piši <b>du/dein</b>, a u formalnoj poruci <b>Sie/Ihr</b>. Poštuj činjenice iz mejla.</p>
-   <p><b>5.</b> Vežbaj oko <b>30 minuta</b>; približno 80–120 reči je koristan cilj, ne obavezan minimum.</p>
-   <p><b>6.</b> Pritisni <b>PROVERI MEJL</b> za AI analizu odgovora, jezika i ispravke.</p>
-   <p class="tipNote">Do 45 vežbačkih bodova (nije zvanična ocena). Odgovor se čuva lokalno, a AI proveri šalje se tek kada pritisneš dugme.</p>
-  </div>
-  <button type="button" id="openList" class="nextStep"><span>MEJLOVI</span><span class="arrow" aria-hidden="true">➜</span></button>
+<section id="welcome" class="welcome" aria-label="Početna strana TELC B1 mejl vežbe">
+ <div class="welcome-content">
+ <img class="a2-brand-logo" alt="DE-MAX Tutin logo" width="112" height="112" decoding="async" src="data:image/webp;base64,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">
+ <div class="welcome-eyebrow">TELC B1 MEJL VEŽBE</div>
+ <h1>Uputstvo za pisanje mejla</h1>
+ <div class="welcome-rules">
+  <div class="welcome-rule"><span class="rule-symbol">⏱</span><span><b>Vreme za vežbu: 30 minuta.</b></span></div>
+  <div class="welcome-rule"><span class="rule-symbol">✓</span><span><b>Odgovorite na sve četiri tačke i poštujte temu i činjenice iz zadatka.</b></span></div>
+  <div class="welcome-rule"><span class="rule-symbol">✎</span><span><b>Napišite obraćanje, uvod i završni pozdrav.</b></span></div>
+  <div class="welcome-rule"><span class="rule-symbol">✉</span><span><b>Prijatelju pišite du/dein, a formalno Sie/Ihr.</b></span></div>
+  <div class="welcome-rule"><span class="rule-symbol">★</span><span><b>Cilj je oko 80–120 reči, bez obaveznog minimuma.</b></span></div>
+  <div class="welcome-rule"><span class="rule-symbol">★</span><span><b>AI analiza: do 45 vežbačkih bodova (nezvanična ocena).</b></span></div>
+ </div>
+ <button id="openList" class="welcome-go" type="button">IZABERI MEJL <span aria-hidden="true">➜</span></button>
+ </div>
 </section>
 <section id="mailList" class="mailList hidden">
   <h2>IZABERI MEJL</h2>
-  <div class="statusLegend" style="flex:none;text-align:center;font-size:11px;line-height:1.25;color:#2f4b70;font-weight:700;margin:1px 0 2px">⚪ Neodrađeno · 🔵 Radi se · 🟢 Provereno</div>
+  <div class="a2-envelope-legend">⚪ Neodrađeno · 🔵 Radi se · 🟢 Provereno</div>
   
   <div class="groupTitle"><span id="overview">0 / 20 provereno</span><button id="restartRound" type="button" class="restartRound hidden" title="Resetuje boje i AI oznake, ali čuva ranije napisane tekstove">↻ NOVI KRUG</button></div>
   <div id="tiles" class="tiles"></div>
@@ -2571,9 +3307,13 @@ body.writing #writerScreen .writerTop{
   </div>
 </section>
 <section id="writerScreen" class="writerPage hidden">
-  <div id="reviewActions" class="reviewActions hidden"><strong id="resultTitle">REZULTAT MEJLA</strong><div class="reviewNavButtons"><button id="newAttempt" type="button">↻ VEŽBAJ PONOVO</button><button id="resultList" type="button">← MEJLOVI</button></div></div>
-  <span id="writerClock" class="writerClock" role="timer" aria-label="Preostalo vreme za pisanje mejla">⏱ 30:00</span>
-  <button id="writerPostavkaBtn" class="writerPostavkaBtn" type="button" aria-label="Nazad na postavku mejla">← POSTAVKA MEJLA</button>
+  <div id="reviewActions" class="reviewActions hidden">
+  <strong id="resultTitle">REZULTAT MEJLA</strong>
+  <div class="a2-review-nav" role="group" aria-label="Mejlovi i ponovno vežbanje">
+    <button id="resultList" type="button" aria-label="Nazad na sve mejlove">← MEJLOVI</button>
+    <button id="newAttempt" type="button" aria-label="Uvežbaj ovaj mejl ponovo">↻ UVEŽBAJ PONOVO</button>
+  </div>
+</div>
   <div class="writerTop">
     <span id="writerName" class="name">MEJL 1 / 20</span>
   </div>
@@ -2582,7 +3322,12 @@ body.writing #writerScreen .writerTop{
       <h3>ČETIRI PITANJA <span id="writerSrHint" class="hidden">· prevod crveno</span></h3>
       <ol id="writerPoints"></ol>
     </div>
-    <div class="editHead"><span>✎ PIŠI MEJL</span><span id="counter" class="count">0 reči</span><span class="demaxWriterMark" aria-label="De-Max">De-Max</span></div>
+    <div class="editHead a2-writing-whitebar" role="group" aria-label="Preostalo vreme i povratak na postavku">
+      <span class="a2-edit-title">✎ PIŠI MEJL</span>
+      <span id="counter" class="count" aria-live="off">0 reči</span>
+      <span id="writerClock" class="writerClock" role="timer" aria-label="Preostalo vreme za pisanje mejla">⏱ 30:00</span>
+      <button id="writerPostavkaBtn" class="writerPostavkaBtn" type="button" aria-label="Nazad na postavku mejla">← POSTAVKA MEJLA</button>
+    </div>
     <div class="draftScrollFrame" id="draftScrollFrame"><textarea id="draft" spellcheck="true" aria-label="Ovde napiši svoj B1 mejl" placeholder="Liebe ...,
 
 vielen Dank für deine Nachricht.
@@ -2863,11 +3608,11 @@ function fitB1QuestionsToKeyboard(){
  if(!block||!editor||!area||!actions||editor.clientHeight<65)return;
  // Četiri nemačka pitanja i četiri sitnija prevoda moraju stati iznad polja.
  const typing=document.documentElement.classList.contains("b1-typing");
- const gap=typing?Math.min(46,Math.max(27,Math.floor(editor.clientHeight*.105))):0;
+ const gap=typing?3:0; // Bela traka zauzima svojih 29 px bez dodatnog prostora.
  editor.style.setProperty("--b1-overlay-gap",gap+"px");
  const editorStyle=getComputedStyle(editor);
  const editorPaddingBottom=parseFloat(editorStyle.paddingBottom)||0;
- const header=typing?0:(editor.querySelector(".editHead")?.offsetHeight||22);
+ const header=editor.querySelector(".editHead")?.offsetHeight||0; // Racunaj belu traku i kada je tastatura otvorena.
  // Najmanje 40px ostavi za unos, a do 26px za proveru mejla.
  const minimumInput=40;
  const available=Math.max(60,Math.floor(editor.clientHeight-gap-header-actions.offsetHeight-
@@ -3013,7 +3758,7 @@ function updateCount(){
  $("counter").textContent=n+" reči"+(n>=80?" ✓":"");
  $("liveCounter").textContent=n+" reči"+(n>=80?" ✓":"");
  $("gradeBtn").disabled=n===0;
- $("status").textContent="Sačuvano lokalno · 4 tačke · Uvod · Pozdrav · AI ocena je informativna.";
+ $("status").textContent=n+" reči · Sačuvano lokalno · 4 tačke · Uvod · Pozdrav · AI ocena je informativna.";
 }
 function textSection(root,heading,items){
  root.append(node("h4",heading));const ul=node("ul");for(const t of items||[]){ul.append(node("li",typeof t==="string"?t:JSON.stringify(t)))}root.append(ul);
