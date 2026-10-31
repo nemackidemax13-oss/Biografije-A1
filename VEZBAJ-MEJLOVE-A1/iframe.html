@@ -1941,6 +1941,17 @@ body.a1-translation-off .prompt .sentence-sr,body.a1-translation-off #answerPane
  #a1PromptTranslation{padding:0 1px;font-size:8px}
  .a1-mail-nav button{min-width:23px}
 }
+
+/* A1: vidljiv broj reči sa minimumom 15, dok je tastatura otvorena. */
+.a1-word-badge{font-size:clamp(8px,2.2vw,10px);font-weight:950;line-height:1;color:#bc283a;white-space:nowrap}
+.a1-word-badge.ready{color:#12733d}
+html body.view-mail.mobile-writing .a1-write-whitebar .a1-word-badge{
+ display:inline-flex!important;grid-column:1!important;grid-row:1!important;
+ align-self:center!important;justify-self:start!important
+}
+.a1-envelope-legend{text-align:center;padding:6px 9px 1px;color:#29466d;font-size:clamp(10px,2.5vw,12px);font-weight:800}
+.mail-card.is-started{border-color:#84bbff;background:#f5faff}
+.mail-card.is-started .mail-card-icon,.mail-card.is-started .mail-card-progress{background:#deedff;color:#165bb6}
 </style>
 </head>
 <body class="view-intro a1-translation-off">
@@ -1963,6 +1974,7 @@ body.a1-translation-off .prompt .sentence-sr,body.a1-translation-off #answerPane
 </section>
 <section id="mailHome" aria-label="Izbor mejla">
  <div class="mail-home-hero"><div class="mail-home-eyebrow">DE-MAX TUTIN · ÖSD A1</div><div class="mail-home-logo" aria-label="De-Max Tutin"><b>DE-MAX</b><small>TUTIN</small></div><div class="mail-home-eyebrow">35 MEJLOVA · A1 VEŽBANJE</div><h1>Izaberi mejl</h1><p>Odaberi zadatak i napiši odgovor na nemačkom</p></div>
+ <div class="a1-envelope-legend">⚪ Neodrađeno · 🔵 Radi se · 🟢 Provereno</div>
  <div class="mail-home-summary"><span>MEJLOVI ZA VEŽBANJE</span><span id="homeProgress">0 / 35 provereno</span></div>
  <div id="mailHomeGrid" class="mail-home-grid" aria-label="35 mejlova"></div>
 </section>
@@ -1998,7 +2010,7 @@ body.a1-translation-off .prompt .sentence-sr,body.a1-translation-off #answerPane
     <div class="panel-title"><strong id="writeHeading">2. NAPIŠI SVOJ ODGOVOR</strong><button class="mobile-jump" id="mobileBackToMail" type="button">← Postavka</button><span class="limit-note">A1 • oko 30 reči • do 10 bodova</span></div>
     <div class="editorarea"><div class="editor-top"><span class="save-flag">Čuva se automatski</span></div>
 <div class="a1-write-whitebar" role="group" aria-label="Preostalo vreme i povratak na postavku">
- <span class="a1-write-title">✎ PIŠI MEJL</span>
+ <span id="a1WordBadge" class="a1-word-badge" aria-live="off">0 / 15 reči</span>
  <span id="a1WriterClock" class="a1-clock" role="timer">⏱ 20:00</span>
  <button id="a1WriterBack" type="button">← POSTAVKA MEJLA</button>
 </div><textarea id="answer" spellcheck="true" lang="de" placeholder="Napiši odgovor na sva tri pitanja.&#10;&#10;Liebe Grüße&#10;…" aria-label="Ovde upiši mejl na nemačkom"></textarea>
@@ -2217,6 +2229,8 @@ function updateCount(){
  $('count').textContent=c<15?(c+' reči · min. 15'):(c+' / 30 reči');
  $('count').title=c<15?'Mejl se NE ocenjuje ispod 15 reči. Nedostaje još '+(15-c)+' reči.':c>30?'Cilj je oko 30 reči.':'Minimum za ocenjivanje je 15 reči; cilj je oko 30.';
  $('count').classList.toggle('valid',c>=15&&c<=30);
+ $('a1WordBadge').textContent=c+' / 15 reči';
+ $('a1WordBadge').classList.toggle('ready',c>=15);
  $('progress').style.width=Math.min(100,(c/30)*100)+'%';
  $('check').disabled=c<15;
  $('check').title=c===0?'Prvo napiši svoj mejl':c<15?'Potrebno je još '+(15-c)+' reči za ocenjivanje.':'Proveri odgovor i vidi bodove i ispravljeni mejl';
@@ -2635,12 +2649,13 @@ function renderMailGrid(){
    saved.results[i].text===draft && saved.results[i].data?.mode==='ai' &&
    saved.results[i].data?.verificationVersion==='a1-database-verb-slots-v4');
   if(checked)finished++;
+  const started=!checked&&count>0;
   const button=document.createElement('button');button.type='button';
-  button.className='mail-card'+(checked?' is-done':'');
+  button.className='mail-card'+(checked?' is-done':started?' is-started':'');
   button.setAttribute('aria-label','Otvori i vežbaj ponovo '+(i+1)+'. mejl');
-  const ico=document.createElement('span');ico.className='mail-card-icon';ico.textContent=checked?'✅':'✉️';ico.setAttribute('aria-hidden','true');
+  const ico=document.createElement('span');ico.className='mail-card-icon';ico.textContent=checked?'✅':started?'🔵':'✉️';ico.setAttribute('aria-hidden','true');
   const title=document.createElement('span');title.className='mail-card-title';title.textContent=(i+1)+'. mejl';
-  const progress=document.createElement('span');progress.className='mail-card-progress';progress.textContent=checked?'Proveren · ponovi':count+' / 30 reči';
+  const progress=document.createElement('span');progress.className='mail-card-progress';progress.textContent=checked?'Proveren · ponovi':started?'Radi se · '+count+' reči':'Neodrađeno';
   button.append(ico,title,progress);button.addEventListener('click',()=>openMailFromGrid(i));grid.appendChild(button);
  }
  $('homeProgress').textContent=finished+' / '+MAILS.length+' provereno';
