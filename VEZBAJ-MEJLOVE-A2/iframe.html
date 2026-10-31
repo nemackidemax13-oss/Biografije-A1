@@ -3336,13 +3336,6 @@ function renderResult(d){
  if(d.corrected)appendCorrectedTranslation(d,r);
  if(d.modelEmail){
   r.append(node("h4","Primer pravilnog A2 odgovora"),node("div",d.modelEmail,"corrected demax-mail-v4"));
-  if(d.modelTranslationSr){
-   const t=node("button","🇷🇸 PRIKAŽI PREVOD MODELA ↓","correctedTranslationToggle");
-   const sr=node("div",d.modelTranslationSr,"correctedSerbian hidden");
-   t.onclick=()=>{sr.classList.toggle("hidden");t.textContent=sr.classList.contains("hidden")?
-    "🇷🇸 PRIKAŽI PREVOD MODELA ↓":"🇷🇸 SAKRIJ PREVOD MODELA ↑"};
-   r.append(t,sr);
-  }
  }
  r.scrollTop=0;
 }
