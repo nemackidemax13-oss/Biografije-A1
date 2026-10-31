@@ -554,9 +554,51 @@ html.a2-show-sr .question-sr{display:block!important}
  .prompt .a2-prompt-controls #a2PromptSr{font-size:8.5px!important;padding:2px!important}
 }
 
+
+/* A2 ENVELOPES 13 ALL VISIBLE WHITE BLUE GREEN 20261031 */
+.hero:has(#cards){display:flex!important;flex-direction:column!important;overflow:hidden!important;min-height:0!important}
+.hero:has(#cards) .hero-main{padding:8px!important;flex:none!important}
+.hero:has(#cards) .hero-main h1{font-size:18px!important;margin:0 0 3px!important}
+.hero:has(#cards) .hero-main p{font-size:10px!important}
+.hero:has(#cards) .summary{display:flex!important;flex:none!important;align-items:center!important;gap:3px!important;white-space:nowrap!important;font-size:clamp(8px,1.9vw,10px)!important;margin:6px 2px!important}
+.hero:has(#cards) .summary span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.hero #cards{
+ display:grid!important;flex:1 1 0!important;min-width:0!important;min-height:0!important;overflow:hidden!important;
+ grid-template-columns:repeat(4,minmax(0,1fr))!important;
+ grid-template-rows:repeat(4,minmax(0,1fr))!important;
+ gap:clamp(3px,1vh,10px)!important
+}
+.hero #cards .mail-card{
+ display:flex!important;flex-direction:column!important;justify-content:center!important;align-items:center!important;
+ gap:2px!important;min-height:0!important;min-width:0!important;overflow:hidden!important;
+ padding:3px!important;border:2px solid!important;border-radius:11px!important
+}
+.hero #cards .mail-card strong{font-size:clamp(10px,2.3vw,14px)!important;font-weight:950!important;line-height:1.1!important;white-space:nowrap!important;overflow:visible!important;-webkit-line-clamp:unset!important}
+.hero #cards .envelope-icon{display:block!important;flex:none!important;font-size:clamp(27px,5.5vw,44px)!important;line-height:1!important;margin:0!important}
+.hero #cards .envelope-new{background:#fff!important;border-color:#d1d9e6!important}
+.hero #cards .envelope-new .envelope-icon{color:#fff!important;-webkit-text-stroke:1.5px #72829d;text-shadow:0 0 1px #72829d}
+.hero #cards .envelope-new strong{color:#304665!important}
+.hero #cards .envelope-working{background:#e6f0ff!important;border-color:#5b9ce8!important}
+.hero #cards .envelope-working .envelope-icon,.hero #cards .envelope-working strong{color:#1b65d7!important}
+.hero #cards .envelope-checked{background:#e2faed!important;border-color:#42b886!important}
+.hero #cards .envelope-checked .envelope-icon,.hero #cards .envelope-checked strong{color:#088e54!important}
+.nav #a2RetryTop{background:#0b9855!important;color:#fff!important;border:1px solid #6bd09d!important;border-radius:8px!important;min-width:0!important;max-width:100%!important;white-space:normal!important;font-size:9px!important;font-weight:950!important;line-height:1.1!important;padding:2px 3px!important;height:34px!important}
+@media(max-width:700px){
+ .hero:has(#cards){padding:6px!important}
+ .hero #cards{grid-template-columns:repeat(3,minmax(0,1fr))!important;grid-template-rows:repeat(5,minmax(0,1fr))!important;gap:clamp(3px,.7vh,7px)!important}
+ .hero #cards .envelope-icon{font-size:clamp(25px,7vw,39px)!important}
+ .hero #cards .mail-card strong{font-size:clamp(10px,2.7vw,13px)!important}
+ .nav:has(#a2RetryTop:not(.hide)){grid-template-columns:38px minmax(0,1fr) 38px 112px!important;gap:4px!important}
+}
+@media(max-width:700px) and (max-height:510px){
+ .hero:has(#cards) .hero-main{padding:5px!important}
+ .hero:has(#cards) .hero-main p{display:none!important}
+ .hero #cards .envelope-icon{font-size:22px!important}
+}
+
 </style></head><body>
 <div class="app"><header><div class="top"><div class="brand">A2 mejl vežbe</div><div class="pill">13 mejlova · 15 bodova</div></div>
-<div class="nav"><button id="prev" aria-label="Prethodni mejl">‹</button><button id="navTitle" type="button" aria-label="Trenutni mejl; tokom pisanja vrati na postavku">Izaberi mejl</button><button id="next" aria-label="Sledeći mejl">›</button><button id="homeButton" type="button" aria-label="Povratak na sve mejlove" title="Povratak na sve mejlove">svi mejlovi</button></div></header>
+<div class="nav"><button id="prev" aria-label="Prethodni mejl">‹</button><button id="navTitle" type="button" aria-label="Trenutni mejl; tokom pisanja vrati na postavku">Izaberi mejl</button><button id="next" aria-label="Sledeći mejl">›</button><button id="homeButton" type="button" aria-label="Povratak na sve mejlove" title="Povratak na sve mejlove">svi mejlovi</button><button id="a2RetryTop" type="button" class="hide" aria-label="Vežbaj mejl ponovo" title="Počni ovaj mejl iznova">↻ VEŽBAJ PONOVO</button></div></header>
 <section id="welcome" class="welcome" aria-label="Početna strana A2 mejl vežbe">
  <div class="welcome-content">
  <div class="welcome-eyebrow">A2 MEJL VEŽBE</div>
@@ -571,7 +613,7 @@ html.a2-show-sr .question-sr{display:block!important}
  <button id="chooseMailButton" class="welcome-go" type="button">Izaberi mejl <span aria-hidden="true">›</span></button>
  </div>
 </section>
-<section id="home" class="hero hide"><div class="hero-main"><h1>Izaberi mejl</h1><p>A2 · 13 zadataka za vežbanje pisanja</p></div><div class="summary"><span>MEJLOVI ZA VEŽBANJE</span><span id="summary">0 / 13 napisano</span></div><div id="cards" class="cards"></div></section>
+<section id="home" class="hero hide"><div class="hero-main"><h1>Izaberi mejl</h1><p>A2 · 13 zadataka za vežbanje pisanja</p></div><div class="summary"><span>⚪ Neodrađeno · 🔵 Radi se · 🟢 Provereno</span><span id="summary">0 / 13 provereno</span></div><div id="cards" class="cards"></div></section>
 <main id="workspace" class="workspace hide">
 <section class="panel prompt"><div class="ptitle"><strong id="number">1. mejl</strong><span id="a2PromptClock" class="a2Timer" role="timer">⏱ 30:00</span></div>
 
@@ -598,6 +640,8 @@ let state={drafts:{},visited:{},current:0};
 try{const s=JSON.parse(localStorage.getItem(STORE)||'null');if(s&&typeof s==='object')state=Object.assign(state,s);}catch(e){}
 if(!state.drafts||typeof state.drafts!=='object')state.drafts={};
 if(!state.visited||typeof state.visited!=='object')state.visited={};
+if(!state.checked||typeof state.checked!=='object')state.checked={};
+if(!state.working||typeof state.working!=='object')state.working={};
 let current=0;
 let a2ShowSerbian=false,a2PromptFont=12.5,a2WriterFont=14,a2ForceFull=false;
 let a2TimerMail=-1,a2TimerStart=0,a2TimerSeconds=1800;
@@ -651,6 +695,7 @@ function countWords(s){return (String(s).match(/[\p{L}\p{N}]+(?:['’\-][\p{L}\p
 function esc(s){return String(s??'').replace(/[&<>"']/g,function(ch){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]})}
 function questionHtml(m){return '<div class="question-topline"><b>PITANJA</b><span id="a2WriterClock" class="a2Timer" role="timer">⏱ 30:00</span><button type="button" id="backFromWriting" class="back-writing" aria-label="Nazad na postavku">← Nazad</button></div><ol>'+m.questions.map((q,i)=>'<li><span class="question-de">'+esc(q)+'</span><span class="question-sr">'+esc(m.srQuestions?.[i]||'')+'</span></li>').join('')+'</ol>'}
 function showWelcome(){
+ a2ToggleRetry(false);
  state.current=current;save();$('answer').blur();
  $('workspace').classList.remove('writing');
  $('workspace').classList.add('hide');
@@ -659,37 +704,49 @@ function showWelcome(){
  updateNav();
  history.replaceState(null,'',location.pathname+location.search);
 }
+function a2Status(i){
+ if(state.checked[i])return 'checked';
+ if(state.working[i]||countWords(state.drafts[i]||'')>0)return 'working';
+ return 'new';
+}
+function a2FinishedAll(){return MAILS.length===13&&MAILS.every((_,i)=>!!state.checked[i]);}
+function a2ResetAll(){
+ state.drafts={};state.visited={};state.checked={};state.working={};
+ current=0;state.current=0;a2ResetClock(0);save();
+}
+function a2ToggleRetry(on){
+ $('a2RetryTop').classList.toggle('hide',!on);
+ $('homeButton').classList.toggle('hide',!!on);
+}
 function showHome(){
- state.current=current;save();$('answer').blur();
+ $('answer').blur();
+ if(a2FinishedAll())a2ResetAll();
+ state.current=current;save();
  $('workspace').classList.remove('writing');
  $('workspace').classList.add('hide');
  $('welcome').classList.add('hide');
  $('home').classList.remove('hide');
- homePage=Math.floor(current/MAILS_PER_PAGE);
+ a2ToggleRetry(false);
  renderCards();updateNav();
  history.replaceState(null,'',location.pathname+location.search);
 }
-const MAILS_PER_PAGE=8;
-let homePage=0;
 function renderCards(){
- const totalPages=Math.max(1,Math.ceil(MAILS.length/MAILS_PER_PAGE));
- homePage=Math.max(0,Math.min(homePage,totalPages-1));
- const finished=MAILS.filter((m,i)=>countWords(state.drafts[i]||'')>=50).length;
- const start=homePage*MAILS_PER_PAGE;
- $('cards').replaceChildren();
- MAILS.slice(start,start+MAILS_PER_PAGE).forEach((m,offset)=>{
-  const i=start+offset,wc=countWords(state.drafts[i]||'');
+ const checked=MAILS.filter((_,i)=>!!state.checked[i]).length;
+ const grid=$('cards');grid.replaceChildren();
+ MAILS.forEach((mail,i)=>{
+  const status=a2Status(i);
   const b=document.createElement('button');
-  b.className='mail-card'+(wc>=50?' complete':'');
-  b.innerHTML='<span>'+(wc>=50?'✅':'✉️')+'</span><strong>'+(i+1)+'. mejl · '+esc(m.title)+'</strong><small>'+(wc>=50?'Napisan · vežbaj ponovo':wc+' / 50 reči')+'</small>';
+  b.type='button';b.className='mail-card envelope-'+status;
+  b.setAttribute('aria-label','Mejl '+(i+1)+' · '+(status==='checked'?'Proveren':status==='working'?'Radi se':'Neodrađen'));
+  b.innerHTML='<span class="envelope-icon" aria-hidden="true">✉</span><strong>MEJL '+(i+1)+'</strong>';
   b.onclick=()=>openMail(i);
-  $('cards').append(b);
+  grid.append(b);
  });
- $('summary').textContent=finished+' / '+MAILS.length+' napisano · strana '+(homePage+1)+'/'+totalPages;
+ $('summary').textContent=checked+' / '+MAILS.length+' provereno';
  updateNav();
 }
 function renderMail(){let m=MAILS[current];$('number').textContent=(current+1)+'. mejl · '+m.title;updateNav();$('situation').innerHTML='<div>'+esc(m.situation)+'</div><div class="sr-situation">'+esc(m.srSituation||'')+'</div>';$('senderEmail').textContent=m.email;$('subject').textContent=m.subject;$('original').innerHTML='<div class="mail-body-de">'+esc(m.body)+'</div><div class="mail-body-sr">'+esc(m.srBody||'')+'</div>';$('questions').innerHTML=questionHtml(m);refreshA2Clock();$('backFromWriting').onclick=leaveWriting;$('answer').value=state.drafts[current]||'';$('result').classList.remove('on');$('result').innerHTML='';$('promptScroll').scrollTop=0;updateCount();requestAnimationFrame(fitFullEmailWithoutScroll);}
-function openMail(i){a2ForceFull=false;const next=Math.max(0,Math.min(MAILS.length-1,Number(i)||0));if(next!==a2TimerMail)a2ResetClock(next);current=next;a2ShowSerbian=false;document.documentElement.classList.remove("a2-show-sr");for(const id of ["a2PromptSr","a2WriteSr"]){$(id).textContent="🇷🇸 PREVOD SRPSKI";$(id).setAttribute("aria-pressed","false")}state.current=current;state.visited[current]=true;$('answer').blur();save();$('welcome').classList.add('hide');$('home').classList.add('hide');$('workspace').classList.remove('hide');$('workspace').classList.remove('writing');renderMail();location.hash='mejl-'+(current+1);}
+function openMail(i){a2ToggleRetry(false);a2ForceFull=false;const next=Math.max(0,Math.min(MAILS.length-1,Number(i)||0));if(next!==a2TimerMail)a2ResetClock(next);current=next;a2ShowSerbian=false;document.documentElement.classList.remove("a2-show-sr");for(const id of ["a2PromptSr","a2WriteSr"]){$(id).textContent="🇷🇸 PREVOD SRPSKI";$(id).setAttribute("aria-pressed","false")}state.current=current;state.visited[current]=true;$('answer').blur();save();$('welcome').classList.add('hide');$('home').classList.add('hide');$('workspace').classList.remove('hide');$('workspace').classList.remove('writing');renderMail();location.hash='mejl-'+(current+1);}
 function updateCount(){
  const n=countWords($('answer').value);
  const toTarget=Math.max(0,50-n);
@@ -713,6 +770,7 @@ function localReview(reason){
    +'<p>Proveri četiri pitanja, ich / wir / du i vremena Präsens / Perfekt.</p>'
    +'<p><b>Važno:</b> Bez povezane AI provere nema bodova, ispravljenog mejla niti prevoda. Tvoj tekst je sačuvan.</p>';
  box.classList.add('on');box.scrollTop=0;
+ a2ToggleRetry(true);
 }
 function resultSection(name,text,isGerman){
  return '<h3>'+esc(name)+'</h3><div style="white-space:pre-wrap;line-height:1.5;background:'+(isGerman?'#ebfaf2':'#fff')+';padding:10px;border:1px solid #d5e3f4;border-left:3px solid '+(isGerman?'#1c9862':'#3865bc')+';border-radius:7px;margin-bottom:9px">'+esc(text||'Nema sadržaja')+'</div>';
@@ -740,6 +798,8 @@ function showAiResult(d){
  $('result').innerHTML=html;
  $('result').classList.add('on');
  $('result').scrollTop=0;
+ state.checked[current]=true;delete state.working[current];save();
+ a2ToggleRetry(true);
 }
 async function grade(){
  const txt=$('answer').value,n=countWords(txt);
@@ -782,12 +842,12 @@ async function grade(){
  }
 }
 $('prev').onclick=()=>{
- if(!$('home').classList.contains('hide')){if(homePage>0){homePage--;renderCards();}return;}
+ if(!$('home').classList.contains('hide'))return;
  if(!$('welcome').classList.contains('hide'))return;
  if(current>0)openMail(current-1);
 };
 $('next').onclick=()=>{
- if(!$('home').classList.contains('hide')){if(homePage<Math.ceil(MAILS.length/MAILS_PER_PAGE)-1){homePage++;renderCards();}return;}
+ if(!$('home').classList.contains('hide'))return;
  if(!$('welcome').classList.contains('hide'))return;
  if(current<MAILS.length-1)openMail(current+1);
 };
@@ -796,13 +856,14 @@ function updateNav(){
  const isHome=!$('home').classList.contains('hide');
  const isWriting=$('workspace').classList.contains('writing');
  const title=$('navTitle');
- title.textContent=isWelcome?'Uputstvo':isHome?'Izaberi mejl · '+(homePage+1)+'/'+Math.ceil(MAILS.length/MAILS_PER_PAGE):(isWriting?'← Postavka · '+(current+1)+'/'+MAILS.length:(current+1)+' / '+MAILS.length+' · '+MAILS[current].title);
+ title.textContent=isWelcome?'Uputstvo':isHome?'Svi mejlovi · 13/13':(isWriting?'← Postavka · '+(current+1)+'/'+MAILS.length:(current+1)+' / '+MAILS.length+' · '+MAILS[current].title);
  title.classList.toggle('can-return',!isWelcome&&!isHome&&isWriting);
- $('prev').disabled=isWelcome||(isHome?homePage===0:current===0);
- $('next').disabled=isWelcome||(isHome?homePage>=Math.ceil(MAILS.length/MAILS_PER_PAGE)-1:current===MAILS.length-1);
+ $('prev').disabled=isWelcome||isHome||current===0;
+ $('next').disabled=isWelcome||isHome||current===MAILS.length-1;
 }
 function enterWriting(focusInput=true){
  $('workspace').classList.add('writing');
+ state.working[current]=true;save();
  document.documentElement.classList.remove('a2-questions-open');
  updateNav();
  const input=$('answer');
@@ -815,6 +876,7 @@ function enterWriting(focusInput=true){
  requestAnimationFrame(()=>{fitA2QuestionsToKeyboard();if(input.value)input.scrollTop=input.scrollHeight;});
 }
 function leaveWriting(){
+ a2ToggleRetry(false);
  $('answer').blur();
  a2ForceFull=false;
  $('workspace').classList.remove('writing');
@@ -831,10 +893,17 @@ $('startWriting').onclick=enterWriting;
 $('backToTask').onclick=leaveWriting;
 $('answer').addEventListener('input',()=>{
  const area=$('answer');
- state.drafts[current]=area.value;save();updateCount();$('result').classList.remove('on');
+ state.drafts[current]=area.value;
+ delete state.checked[current];
+ if(area.value.trim())state.working[current]=true;else delete state.working[current];
+ save();updateCount();$('result').classList.remove('on');a2ToggleRetry(false);
  requestAnimationFrame(fitA2DraftToSpace);
 });
 $('check').onclick=grade;
+$('a2RetryTop').onclick=()=>{
+ delete state.drafts[current];delete state.checked[current];delete state.working[current];
+ a2ResetClock(current);save();openMail(current);
+};
 $('a2PromptSr').onclick=$('a2WriteSr').onclick=toggleA2Serbian;
 for(const id of ["a2PromptMinus","a2PromptPlus","a2WriteMinus","a2WritePlus"]){
  $(id).addEventListener("pointerdown",e=>e.preventDefault());
