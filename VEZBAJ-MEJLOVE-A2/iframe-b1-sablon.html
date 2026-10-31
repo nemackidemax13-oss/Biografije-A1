@@ -3141,50 +3141,99 @@ function appendCorrectedTranslation(result,root){
  root.append(node("h4","Ispravljena verzija odgovora"),translationBox);
 }
 
+
+function a2MarkedSegments(original,corrected){
+ const a=String(original||"").match(/\s+|[^\s]+/gu)||[],b=String(corrected||"").match(/\s+|[^\s]+/gu)||[];
+ if(a.length*b.length>85000)return [{text:String(corrected),changed:true}];
+ const d=Array.from({length:a.length+1},()=>new Uint16Array(b.length+1));
+ for(let i=a.length-1;i>=0;i--)for(let j=b.length-1;j>=0;j--)
+  d[i][j]=a[i]===b[j]?1+d[i+1][j+1]:Math.max(d[i+1][j],d[i][j+1]);
+ let i=0,j=0;const parts=[];
+ function append(t,changed){if(!t)return;const last=parts[parts.length-1];if(last&&last.changed===changed)last.text+=t;else parts.push({text:t,changed})}
+ while(j<b.length){
+  if(i<a.length&&a[i]===b[j]){append(b[j],false);i++;j++}
+  else if(i<a.length&&d[i+1][j]>=d[i][j+1])i++;
+  else{append(b[j],!/^\s+$/u.test(b[j]));j++}
+ }
+ return parts;
+}
+function convertA2Result(d,answer){
+ const issues=(Array.isArray(d.grammarCorrections)?d.grammarCorrections:[])
+  .filter(x=>x?.original&&x?.corrected&&String(x.original).trim()!==String(x.corrected).trim())
+  .map(x=>({original:String(x.original),correction:String(x.corrected),
+   category:"Gramatika i pravopis",explanation:String(x.explanation||"Gramatička ispravka.")}));
+ const contextIssues=Array.isArray(d.contextIssues)?d.contextIssues.map(String):[];
+ return {
+  total:Number(d.score),verificationVersion:d.verificationVersion,rubric:d.rubric,
+  points:Array.from({length:4},(_,i)=>({answered:Number(d.questionPoints?.[i]||0)>0,
+   comment:String(d.questionFeedback?.[i]||"Nema komentara.")})),
+  strengths:[d.perspectiveFeedback].filter(v=>typeof v==="string"&&v.trim()),
+  improvements:[d.tenseFeedback,...contextIssues].filter(v=>typeof v==="string"&&v.trim()),
+  contextIssues,issues,summary:String(d.feedback||""),
+  corrected:String(d.correctedText||""),corrected_sr:String(d.translationSr||""),
+  correctedSegments:a2MarkedSegments(answer,d.correctedText),
+  modelEmail:String(d.modelEmail||""),modelTranslationSr:String(d.modelTranslationSr||""),
+  wordCount:Number(d.wordCount)||countWords(answer)
+ };
+}
 function renderResult(d){
  const r=$("results");r.replaceChildren();r.classList.remove("hidden");
- r.append(node("h3","Rezultat AI provere"));
+ r.append(node("h3","Rezultat AI provere · A2"));
  const scores=node("div",undefined,"scorebox");
- [["Sadržaj",d.leitpunkte],["Struktura",d.kommunikativ],["Gramatika",d.formal]].forEach(([label,v])=>{const box=node("div");box.append(node("b",(v??0)+" / 5"),node("span",label));scores.append(box)});
- r.append(scores,node("div",(d.total??0)+" / 45 bodova","scoreTotal"),node("p",d.summary||""));
- r.append(node("h4","Odgovori na sve 4 tačke"));
+ [["Četiri pitanja",d.rubric?.questions,8],["Gramatika",d.rubric?.grammar,4],
+  ["Obraćanje",d.rubric?.opening,1],["Završni pozdrav",d.rubric?.closing,1],
+  ["Povezanost",d.rubric?.coherence,1]].forEach(([label,v,max])=>{
+  const box=node("div");box.append(node("b",(v??0)+" / "+max),node("span",label));scores.append(box);
+ });
+ r.append(scores,node("div",(d.total??0)+" / 15 bodova","scoreTotal"),
+  node("p","Napisano: "+(d.wordCount||0)+" reči · Prolaz 3/15 · Cilj 50 reči."),
+  node("p",d.summary||""));
+ r.append(node("h4","Odgovori na sva četiri pitanja"));
  const ul=node("ul");
- (d.points||[]).forEach((p,i)=>{ul.append(node("li",(p.answered?"✓ ":"✗ ")+(i+1)+". "+(p.comment||mails[current].questions[i]||"")))});
+ (d.points||[]).forEach((p,i)=>{
+  ul.append(node("li",(p.answered?"✓ ":"✗ ")+(i+1)+". "+(mails[current]?.questions?.[i]||"")+" — "+(p.comment||"Nema komentara.")));
+ });
  r.append(ul);
- textSection(r,"Šta je dobro",d.strengths);
- textSection(r,"Šta treba ispraviti",d.improvements);
-
- if(!document.getElementById("demaxB1V4Styles")){
-  const style=document.createElement("style");
-  style.id="demaxB1V4Styles";
+ if(d.strengths?.length)textSection(r,"Šta je dobro",d.strengths);
+ if(d.improvements?.length)textSection(r,"Šta treba ispraviti",d.improvements);
+ if(!document.getElementById("demaxA2B1CorrectionStyles")){
+  const style=document.createElement("style");style.id="demaxA2B1CorrectionStyles";
   style.textContent=[
-   ".demax-issue-list-v4{display:grid;gap:10px;margin:8px 0 12px}",
-   ".demax-issue-v4{background:#fff;border:1px solid #d6dfec;border-radius:11px;padding:11px 12px;font-size:12px;line-height:1.65}",
-   ".demax-issue-title-v4{color:#173f78;font-weight:900;margin-bottom:8px}",
-   ".demax-wrong-v4{background:#fff0f0;color:#bc1424;border:1px solid #ffd0d4;border-radius:7px;padding:9px;white-space:pre-wrap;overflow-wrap:anywhere;margin-bottom:7px}",
-   ".demax-right-v4{background:#e8f9ee;color:#087943;border:1px solid #b9e8cd;border-radius:7px;padding:9px;white-space:pre-wrap;overflow-wrap:anywhere;margin-bottom:7px}",
+   ".demax-issue-list-v4{display:grid;gap:9px;margin:8px 0 12px}",
+   ".demax-issue-v4{background:#fff;border:1px solid #d6dfec;border-radius:11px;padding:10px 11px;font-size:12px;line-height:1.6}",
+   ".demax-issue-title-v4{color:#173f78;font-weight:900;margin-bottom:6px}",
+   ".demax-wrong-v4{background:#fff0f0;color:#bc1424;border:1px solid #ffd0d4;border-radius:7px;padding:8px;white-space:pre-wrap;overflow-wrap:anywhere;margin-bottom:7px}",
+   ".demax-right-v4{background:#e8f9ee;color:#087943;border:1px solid #b9e8cd;border-radius:7px;padding:8px;white-space:pre-wrap;overflow-wrap:anywhere;margin-bottom:7px}",
    ".demax-explain-v4{color:#293e54;padding:4px 1px;white-space:pre-wrap;overflow-wrap:anywhere}",
    ".demax-edit-v4{background:#d6fbe3;color:#056c38;font-weight:900;border-radius:3px;padding:0 1px}",
    ".demax-mail-v4{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.8}"
-  ].join("");
-  document.head.append(style);
+  ].join("");document.head.append(style);
  }
  r.append(node("h4","Greške i objašnjenja"));
- const issues=Array.isArray(d.issues)?d.issues.filter(x=>x&&x.original&&x.correction&&x.original.trim()!==x.correction.trim()):[];
+ const issues=Array.isArray(d.issues)?d.issues:[];
  if(issues.length){
   const list=node("div",undefined,"demax-issue-list-v4");
-  issues.forEach((item,i)=>{
+  issues.forEach((it,i)=>{
    const box=node("div",undefined,"demax-issue-v4");
-   box.append(node("div","Greška "+(i+1)+" – "+(item.category||"Gramatička greška"),"demax-issue-title-v4"));
-   box.append(node("div","Napisano: "+item.original,"demax-wrong-v4"));
-   box.append(node("div","Ispravljeno: "+item.correction,"demax-right-v4"));
-   box.append(node("div","Objašnjenje: "+(item.explanation||"Ispravljen je gramatički oblik."),"demax-explain-v4"));
+   box.append(node("div","Greška "+(i+1)+" — "+(it.category||"Gramatika"),"demax-issue-title-v4"));
+   box.append(node("div","Napisano: "+it.original,"demax-wrong-v4"));
+   box.append(node("div","Ispravljeno: "+it.correction,"demax-right-v4"));
+   box.append(node("div","Objašnjenje: "+it.explanation,"demax-explain-v4"));
    list.append(box);
-  });
-  r.append(list);
- }else{r.append(node("p",Array.isArray(d.issues)?"Nema pronađenih gramatičkih ili pravopisnih grešaka.":"Ponovo pritisni PROVERI MEJL nakon objavljivanja novog B1 Workera."));}
- if(d.corrected){appendCorrectedTranslation(d,r)}
-
+  });r.append(list);
+ }else r.append(node("p","Nema pronađenih gramatičkih ili pravopisnih grešaka."));
+ if(d.contextIssues?.length)textSection(r,"Odstupanja od postavke",d.contextIssues);
+ if(d.corrected)appendCorrectedTranslation(d,r);
+ if(d.modelEmail){
+  r.append(node("h4","Primer pravilnog A2 odgovora"),node("div",d.modelEmail,"corrected demax-mail-v4"));
+  if(d.modelTranslationSr){
+   const t=node("button","🇷🇸 PRIKAŽI PREVOD MODELA ↓","correctedTranslationToggle");
+   const sr=node("div",d.modelTranslationSr,"correctedSerbian hidden");
+   t.onclick=()=>{sr.classList.toggle("hidden");t.textContent=sr.classList.contains("hidden")?
+    "🇷🇸 PRIKAŽI PREVOD MODELA ↓":"🇷🇸 SAKRIJ PREVOD MODELA ↑"};
+   r.append(t,sr);
+  }
+ }
  r.scrollTop=0;
 }
 
