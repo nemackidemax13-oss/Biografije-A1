@@ -2849,6 +2849,28 @@ function a1CompleteDayAndHour(mailIndex,studentText,modelText){
   ' u '+dayNames[day]+' u '+hour+' časova.'};
 }
 
+
+function a1PreventAutoSalutation(answer, correctedText, translationSr) {
+ const deIntro=/^[ \t]*(?:Hallo|Hi|Liebe(?:r|s)?|Guten[ \t]+(?:Tag|Morgen|Abend)|Sehr[ \t]+geehrte[rs]?)(?:[ \t]*,[ \t]*|[ \t]+)?(?:[\p{L}][\p{L}'’.-]{0,40})?[ \t]*[,!]?[ \t]*(?:\r?\n|$)(?:[ \t]*\r?\n)*/iu;
+ const srIntro=/^[ \t]*(?:Zdravo|Ćao|Cao|Draga|Dragi|Poštovana|Poštovani|Dobar[ \t]+dan|Dobro[ \t]+jutro|Dobro[ \t]+veče)(?:[ \t]*,[ \t]*|[ \t]+)?(?:[\p{L}][\p{L}'’.-]{0,40})?[ \t]*[,!]?[ \t]*(?:\r?\n|$)(?:[ \t]*\r?\n)*/iu;
+ const userIntro=String(answer||"").trimStart().match(deIntro),aiIntro=String(correctedText||"").trimStart().match(deIntro);
+ let de=String(correctedText||"").trim(),sr=String(translationSr||"").trim();
+ if(!aiIntro)return {correctedText:de,translationSr:sr};
+ if(!userIntro){de=de.replace(deIntro,"").trimStart();if(srIntro.test(sr))sr=sr.replace(srIntro,"").trimStart()}
+ else{
+  const originalLine=userIntro[0].trim().split(/\r?\n/)[0].trim(),aiLine=aiIntro[0].trim().split(/\r?\n/)[0].trim();
+  const plain=v=>v.toLocaleLowerCase("de").replace(/[!,.\s]+$/g,"").replace(/,\s*/g," ").trim();
+  if(plain(originalLine)!==plain(aiLine)){
+   de=de.replace(deIntro,originalLine.replace(/[!,.\s]+$/g,"")+",\n\n").trim();
+   const type=originalLine.match(/^(Hallo|Hi|Liebe|Lieber|Liebes|Guten\s+Tag|Guten\s+Morgen|Guten\s+Abend)/iu);
+   const name=type?originalLine.slice(type[0].length).replace(/^[,\s]+|[!,.\s]+$/g,""):"";
+   const greetingSr=/^Lieber/iu.test(originalLine)?"Dragi":/^(Liebe|Liebes)/iu.test(originalLine)?"Draga":/^Guten/iu.test(originalLine)?"Dobar dan":"Zdravo";
+   if(srIntro.test(sr))sr=sr.replace(srIntro,greetingSr+(name?(greetingSr==="Zdravo"?", ":" ")+name:"")+",\n\n").trim();
+  }
+ }
+ return {correctedText:de,translationSr:sr};
+}
+
 function renderResult(r){
  if(words($('answer').value)<15)return;
  const original=$('answer').value;
@@ -2856,6 +2878,8 @@ function renderResult(r){
  let corrected=correctA1Umlauts(correctSportExpression(r.correctedText||original)).trim();
  const dayHourFix=a1CompleteDayAndHour(current,original,corrected);
  corrected=dayHourFix.text;
+ const safeIntro=a1PreventAutoSalutation(original,corrected,String(r.translationSr||''));
+ corrected=safeIntro.correctedText;
  if(missingClosing&&!hasA1Closing(corrected))corrected+='\n\nViele Grüße';
  const comparison=a1ComparisonTokens(original,corrected);
  const holder=$('result');holder.replaceChildren();
@@ -2902,7 +2926,7 @@ function renderResult(r){
  translationButton.id='a1ResultSrToggle';translationButton.type='button';
  translationButton.setAttribute('aria-expanded','false');
  translationButton.setAttribute('aria-controls','a1ResultSrText');
- const sr=a1ReviewNode('div',(String(r.translationSr||'').trim()||
+ const sr=a1ReviewNode('div',(safeIntro.translationSr.trim()||
   'Prevod nije dostupan. Potrebno je ažurirati A1 Cloudflare Worker.')+
   (dayHourFix.added?'\n\n'+dayHourFix.sr:''),'a1-result-translation');
  sr.id='a1ResultSrText';sr.lang='sr-Latn';sr.hidden=true;
