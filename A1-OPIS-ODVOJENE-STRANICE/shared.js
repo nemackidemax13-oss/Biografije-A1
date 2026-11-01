@@ -793,7 +793,7 @@ function showWizard(position){
  $("#wizardCounter").textContent=(wizardPosition+1)+" / 7";
  $("#wizardFooterCount").textContent=summary?"Završni opis":"Korak "+(wizardPosition+1)+" od 7";
  $("#wizardBack").disabled=false;
- const previousLabel=wizardPosition===0?"Nazad: Uputstvo":"Nazad: "+wizardPosition+". "+WIZARD_NAMES[wizardPosition-1];
+ const previousLabel=wizardPosition===0?"Uputstvo":wizardPosition+". "+WIZARD_NAMES[wizardPosition-1];
  $("#wizardBack").innerHTML='<span class="back-arrow" aria-hidden="true">❮</span><span class="back-label">'+escapeHTML(previousLabel)+'</span>';
  $("#wizardBack").title=previousLabel;
  $("#wizardBack").setAttribute("aria-label",previousLabel);
