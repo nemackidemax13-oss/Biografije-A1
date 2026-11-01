@@ -566,16 +566,28 @@ function sceneMatches(scene){
  return BANK.map((row,i)=>words.has(row.de)?i:-1).filter(i=>i>=0);
 }
 function source(){
- if(step===0){
-  if(sceneFilter==="all"){
-   const combined=new Set(personDescriptionIds());
-   SCENE_DATA.forEach(scene=>sceneMatches(scene).forEach(i=>combined.add(i)));
-   return [...combined];
+ // U 1. koraku prikazuj samo opise osoba, bez izbora situacija.
+ if(step===0)return personDescriptionIds();
+ const ids=BANK.map((_,i)=>i).filter(i=>BANK[i].cat===category);
+ // Filter situacije postoji samo na stranama 2, 3 i 8.
+ const scenePage=Number(document.body.dataset.stepPage);
+ const useScene=scenePage===1||scenePage===2||scenePage===7;
+ if(useScene&&sceneFilter!=="all"){
+  const scene=SCENE_DATA.find(x=>x.id===sceneFilter);
+  if(scene){
+   const found=sceneMatches(scene);
+   if(scenePage===1)return found.filter(i=>/\bsprechen\b/i.test(BANK[i].de));
+   if(scenePage===2)return found.filter(i=>BANK[i].cat==="places");
+   if(scenePage===7)return found.filter(i=>BANK[i].cat==="extra");
   }
-  const scene=SCENE_DATA.find(s=>s.id===sceneFilter);
-  return scene?sceneMatches(scene):personDescriptionIds();
  }
- const ids=BANK.map((_,i)=>i).filter(i=>BANK[i].cat===category);if(category==="extra"){const closing=ids.filter(i=>BANK[i].de==="Das war meine Bildbeschreibung.");return ids.filter(i=>BANK[i].de!=="Das war meine Bildbeschreibung.").concat(closing)}if(category==="start"&&step===0){const moveToEnd=["Im Vordergrund sehe ich einen Mann.","Im Hintergrund sehe ich eine Frau.","Im Hintergrund sehe ich viele Personen."];const original=ids.slice(0,6).concat(ids.filter(i=>BANK[i].personExample&&!moveToEnd.includes(BANK[i].de)));const last=moveToEnd.map(de=>ids.find(i=>BANK[i].de===de)).filter(i=>i!==undefined);return original.concat(last)}if(category==="start"&&step===1)return ids.slice(6).filter(i=>!BANK[i].personExample);return ids}
+ if(category==="extra"){
+  const closing=ids.filter(i=>BANK[i].de==="Das war meine Bildbeschreibung.");
+  return ids.filter(i=>BANK[i].de!=="Das war meine Bildbeschreibung.").concat(closing);
+ }
+ if(category==="start"&&step===1)return ids.slice(6).filter(i=>!BANK[i].personExample);
+ return ids;
+}
 
 /* Pretraga statičkih rečenica po nemačkom i srpskom; ostaje lokalna i radi i u iframe-u. */
 const SEARCHABLE_CATEGORIES=new Set(["start","extra","places","mann","frau","kind"]);
