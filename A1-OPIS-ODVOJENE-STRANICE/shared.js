@@ -765,6 +765,9 @@ function restoreDraft(){
  for(const entry of saved.entries){
   if(!entry||typeof entry.de!=="string"||typeof entry.sr!=="string"||typeof entry.cat!=="string")continue;
   let i=BANK.findIndex(a=>a.de===entry.de&&a.sr===entry.sr&&a.cat===entry.cat&&a.role===entry.role);
+  // Prati ranije izabranu rečenicu i kad je premeštena iz Detalja u Opis osoba.
+  if(i<0&&entry.de==="Im Hintergrund sehe ich noch viele Personen.")
+   i=BANK.findIndex(a=>a.de===entry.de&&a.sr===entry.sr);
   if(i<0&&["custom-clothing","custom-hair","age"].includes(entry.cat)){
    i=BANK.length;BANK.push({...entry});
   }
