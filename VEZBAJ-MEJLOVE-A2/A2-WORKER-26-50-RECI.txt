@@ -18,13 +18,13 @@ const CORS_ALLOWED_ORIGINS = new Set([
   "https://a2mejlovi.nemackidemax13.workers.dev"
 ]);
 function responseHeaders(origin){
- const headers = {
-  "Content-Type": "application/json; charset=utf-8",
-  "Cache-Control": "no-store",
-  "Vary": "Origin",
-  "X-Content-Type-Options": "nosniff"
- };
- if(CORS_ALLOWED_ORIGINS.has(origin))headers["Access-Control-Allow-Origin"]=origin;
+ const headers=new Headers({
+  "Content-Type":"application/json; charset=utf-8",
+  "Cache-Control":"no-store",
+  "Vary":"Origin",
+  "X-Content-Type-Options":"nosniff"
+ });
+ if(CORS_ALLOWED_ORIGINS.has(origin))headers.set("Access-Control-Allow-Origin",origin);
  return headers;
 }
 function jsonResponse(data,status,origin){
@@ -266,9 +266,20 @@ function a2OpeningPresent(text) {
   const first = String(text || "").trim().split(/\n/).slice(0, 2).join(" ").slice(0, 90);
   return /^(hallo|liebe(?:r|s|n)?|guten\s+(?:tag|morgen|abend)|hi)\b/i.test(first);
 }
-function a2ClosingPresent(text) {
-  const end = String(text || "").trim().split(/\n/).slice(-4).join(" ");
-  return /(?:liebe|viele|herzliche|beste|freundliche)\s+gr(?:ü|ue|u)(?:ß|ss)e|bis\s+bald|mit\s+freundlichen\s+gr(?:ü|ue|u)(?:ß|ss)en|^lg\b/im.test(end);
+function a2FarewellPresent(text) {
+ const ending=String(text||"").trim().split(/\n/).slice(-4).join(" ");
+ return /(?:liebe|viele|herzliche|beste|freundliche)\s+gr(?:ü|ue|u)(?:ß|ss)e|bis\s+bald|mit\s+freundlichen\s+gr(?:ü|ue|u)(?:ß|ss)en/iu.test(ending);
+}
+function a2SignaturePresent(text) {
+ const ending=String(text||"").trim().split(/\n/).slice(-4).join("\n");
+ const matches=[...ending.matchAll(/(?:liebe|viele|herzliche|beste|freundliche)\s+gr(?:ü|ue|u)(?:ß|ss)e|bis\s+bald|mit\s+freundlichen\s+gr(?:ü|ue|u)(?:ß|ss)en/giu)];
+ if(!matches.length)return false;
+ const match=matches[matches.length-1];
+ const after=ending.slice(match.index+match[0].length).replace(/^[\s,.:!;—–-]+/u,"").trim();
+ return /^[\p{L}][\p{L}'’-]*(?:\s+[\p{L}][\p{L}'’-]*){0,2}[.!]?$/u.test(after);
+}
+function a2ClosingPresent(text){
+ return a2FarewellPresent(text)&&a2SignaturePresent(text);
 }
 async function gradeA2(body, env) {
   const index = body && body.mailIndex, answer = body && body.answer;
@@ -349,8 +360,15 @@ async function gradeA2(body, env) {
       questionFeedback[i] = "Nije prona\u0111en pouzdan dokaz u tvom tekstu da je ovaj odgovor dat. " + questionFeedback[i];
     }
   }
-  const openingPoints = a2OpeningPresent(answer) ? data.openingPoints : 0;
-  const closingPoints = a2ClosingPresent(answer) ? data.closingPoints : 0;
+  const openingPresent=a2OpeningPresent(answer);
+  const farewellPresent=a2FarewellPresent(answer);
+  const signaturePresent=a2SignaturePresent(answer);
+  const openingPoints = openingPresent?data.openingPoints:0;
+  const closingPoints = farewellPresent&&signaturePresent?data.closingPoints:0;
+  const formalitiesNotes = [];
+  if(!openingPresent)formalitiesNotes.push("Nedostaje oslovljavanje primaoca.");
+  if(!farewellPresent)formalitiesNotes.push("Nedostaje završni pozdrav.");
+  if(!signaturePresent)formalitiesNotes.push("Nedostaje potpis sa tvojim imenom.");
   const pointsFromQuestions = questionPoints.reduce((a, b) => a + b, 0);
   const rubric = {
     questions: pointsFromQuestions,
@@ -368,6 +386,7 @@ async function gradeA2(body, env) {
     wordCount: count,
     minWords: 26,
     maxWords: 50,
+    formalitiesNotes,
     verificationVersion: "a2-de-max-50-words-rubric-v2",
     rubric,
     questionPoints,
