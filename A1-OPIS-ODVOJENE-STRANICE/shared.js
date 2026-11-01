@@ -792,10 +792,10 @@ function showWizard(position){
  $("#wizardTitle").textContent=(wizardPosition+1)+". "+WIZARD_NAMES[wizardPosition];
  $("#wizardCounter").textContent=(wizardPosition+1)+" / 7";
  $("#wizardFooterCount").textContent=summary?"Završni opis":"Korak "+(wizardPosition+1)+" od 7";
- $("#wizardBack").disabled=wizardPosition===0;
- const previousLabel=wizardPosition===0?"Nazad":"Nazad: "+wizardPosition+". "+WIZARD_NAMES[wizardPosition-1];
+ $("#wizardBack").disabled=false;
+ const previousLabel=wizardPosition===0?"Nazad: Uputstvo":"Nazad: "+wizardPosition+". "+WIZARD_NAMES[wizardPosition-1];
  $("#wizardBack").innerHTML='<span class="back-arrow" aria-hidden="true">❮</span><span class="back-label">'+escapeHTML(previousLabel)+'</span>';
- $("#wizardBack").title=wizardPosition===0?"Prvi korak":previousLabel;
+ $("#wizardBack").title=previousLabel;
  $("#wizardBack").setAttribute("aria-label",previousLabel);
  const nextLabel=summary?"Od početka":"Dalje: "+(wizardPosition+2)+". "+WIZARD_NAMES[wizardPosition+1];
  $("#wizardForward").innerHTML='<span class="next-label">'+escapeHTML(nextLabel)+'</span><span class="next-arrow" aria-hidden="true">❯</span>';
@@ -811,8 +811,8 @@ function showWizard(position){
   else renderList();
  });
 }
-$("#wizardBack").addEventListener("click",()=>goToPage(PAGE_INDEX-1));
-$("#wizardForward").addEventListener("click",()=>goToPage(PAGE_INDEX===6?0:PAGE_INDEX+1));
+$("#wizardBack").addEventListener("click",()=>{if(PAGE_INDEX===0){persistDraft();window.location.assign("index.html")}else goToPage(PAGE_INDEX-1)});
+$("#wizardForward").addEventListener("click",()=>{if(PAGE_INDEX===6){persistDraft();window.location.assign("index.html")}else goToPage(PAGE_INDEX+1)});
 window.addEventListener("pagehide",persistDraft);
 restoreDraft();
 showWizard(PAGE_INDEX);
