@@ -854,3 +854,98 @@ body[data-step-page="0"] #categoryCount{
  body[data-step-page="0"] .scene-filters{gap:2px!important}
  body[data-step-page="0"] .scene-filters button{padding:2px 4px!important;font-size:9px!important;height:24px!important}
 }
+
+
+/* 31 situacija: male strelice u sredini; "Sve situacije" krajnje desno. */
+body[data-step-page="0"] .panel:not(.compose) .paneltitle{
+ display:flex!important;
+ flex-wrap:nowrap!important;
+ align-items:center!important;
+ justify-content:space-between!important;
+ gap:4px!important;
+ height:34px!important;
+ min-height:34px!important;
+ padding:3px 5px!important;
+}
+body[data-step-page="0"] .paneltitle #selectorTitle{
+ display:block!important;
+ flex:0 0 auto!important;
+ max-width:80px!important;
+ margin:0!important;
+ font-size:clamp(10px,2.7vw,12px)!important;
+ white-space:nowrap!important;
+}
+body[data-step-page="0"] #sceneFilters{
+ display:flex!important;
+ flex:1 1 0!important;
+ justify-content:center!important;
+ align-items:center!important;
+ min-width:0!important;
+ gap:2px!important;
+}
+body[data-step-page="0"] #sceneFilters .scene-arrow{
+ display:grid!important;
+ flex:0 0 25px!important;
+ place-items:center!important;
+ width:25px!important;
+ height:26px!important;
+ padding:0!important;
+ border:1px solid #aac4e3!important;
+ border-radius:6px!important;
+ background:#ecf5ff!important;
+ color:#195aa0!important;
+ font-size:17px!important;
+ line-height:1!important;
+ font-weight:950!important;
+}
+body[data-step-page="0"] #sceneFilters .scene-arrow:active{
+ background:#cee2fc!important;
+}
+body[data-step-page="0"] #sceneFilters .scene-name{
+ display:block!important;
+ flex:1 1 0!important;
+ min-width:0!important;
+ margin:0!important;
+ color:#164e90!important;
+ font-size:clamp(10px,2.8vw,12px)!important;
+ font-weight:900!important;
+ line-height:1.05!important;
+ text-align:center!important;
+ white-space:nowrap!important;
+ overflow:hidden!important;
+ text-overflow:ellipsis!important;
+}
+body[data-step-page="0"] #sceneAll{
+ display:block!important;
+ flex:0 0 auto!important;
+ width:auto!important;
+ max-width:96px!important;
+ padding:4px 6px!important;
+ height:26px!important;
+ border-radius:6px!important;
+ border:1px solid #9fbadc!important;
+ background:#f4f8ff!important;
+ color:#1b599b!important;
+ font-size:clamp(9px,2.45vw,11px)!important;
+ font-weight:900!important;
+ white-space:nowrap!important;
+ line-height:1!important;
+}
+body[data-step-page="0"] #sceneAll.active{
+ background:#2268b7!important;
+ border-color:#17539c!important;
+ color:#fff!important;
+}
+body[data-step-page="0"] #sceneAll:focus-visible,
+body[data-step-page="0"] #sceneFilters .scene-arrow:focus-visible{
+ outline:2px solid #d51d3b!important;
+ outline-offset:1px!important;
+}
+@media(max-width:370px){
+ body[data-step-page="0"] .panel:not(.compose) .paneltitle{gap:2px!important;padding:2px 3px!important}
+ body[data-step-page="0"] .paneltitle #selectorTitle{font-size:10px!important}
+ body[data-step-page="0"] #sceneFilters{gap:1px!important}
+ body[data-step-page="0"] #sceneFilters .scene-arrow{flex-basis:22px!important;width:22px!important;font-size:15px!important;height:24px!important}
+ body[data-step-page="0"] #sceneFilters .scene-name{font-size:10px!important}
+ body[data-step-page="0"] #sceneAll{font-size:9px!important;padding:3px 4px!important;height:24px!important}
+}
