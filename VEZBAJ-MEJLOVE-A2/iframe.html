@@ -4209,6 +4209,9 @@ function a2MarkedSegments(original,corrected){
 function a2BriefExplanation(value,maxSentences=2,maxChars=260){
  const clean=String(value||'').replace(/\s+/gu,' ').trim();
  if(!clean)return '';
+ // Sakrij AI tekst koji prepisuje kriterijume i generički komentar na nemačkom.
+ // Bodovanje, rubrike i numerički rezultati ostaju nepromenjeni.
+ if(/(?:zvaničn[aa]?\s+)?ö sd\s+a2\s+ocena/iu.test(clean.replace(/ö\s*sd/giu,'ö sd')) || /\bK\s*:\s*-?\d+\s*\/\s*\d+\s*;\s*T\s*:/iu.test(clean) || /\bInsgesamt\s+sind\s+die\s+Antworten\b/iu.test(clean))return '';
  const sentences=clean.match(/[^.!?]+(?:[.!?]+(?=\s|$)|$)/gu)||[clean];
  const short=sentences.map(part=>part.trim()).filter(Boolean).slice(0,maxSentences).join(' ');
  if(short.length<=maxChars)return short;
@@ -4300,7 +4303,7 @@ function renderResult(d){
  r.append(node("h4","Odgovori na sva četiri pitanja"));
  const ul=node("ul");
  (d.points||[]).forEach((p,i)=>{
-  ul.append(node("li",(p.answered?"✓ ":"✗ ")+(i+1)+". "+(mails[current]?.questions?.[i]||"")+" — "+a2BriefExplanation(p.comment||"Nema komentara.",2,280)));
+  ul.append(node("li",(p.answered?"✓ ":"✗ ")+(i+1)+". "+(mails[current]?.questions?.[i]||"")+(a2BriefExplanation(p.comment||"Nema komentara.",2,280)?" — "+a2BriefExplanation(p.comment||"Nema komentara.",2,280):"")));
  });
  r.append(ul);
  if(!document.getElementById("demaxA2B1CorrectionStyles")){
@@ -4325,14 +4328,15 @@ function renderResult(d){
    box.append(node("div","Greška "+(i+1)+" — "+(it.category||"Gramatika"),"demax-issue-title-v4"));
    box.append(node("div","Napisano: "+it.original,"demax-wrong-v4"));
    box.append(node("div","Ispravljeno: "+it.correction,"demax-right-v4"));
-   box.append(node("div","Objašnjenje: "+a2BriefExplanation(it.explanation,2,260),"demax-explain-v4"));
+   const explanation=a2BriefExplanation(it.explanation,2,260);
+   if(explanation)box.append(node("div","Objašnjenje: "+explanation,"demax-explain-v4"));
    list.append(box);
   });r.append(list);
  }else r.append(node("p","Nema pronađenih gramatičkih ili pravopisnih grešaka."));
  if(d.offTopic){
   const warning=node("div",undefined,"a2-topic-warning");
   warning.append(node("strong","⚠ Odgovor je na pogrešnu temu"),
-   node("p",a2BriefExplanation(d.offTopicReason||"Odgovor se ne odnosi na dati zadatak. Sadržaj može biti ocenjen sa nula bodova.",2,320)));
+   node("p",a2BriefExplanation(d.offTopicReason||"Odgovor se ne odnosi na dati zadatak. Sadržaj može biti ocenjen sa nula bodova.",2,320)||"Odgovor se ne odnosi na zadatu temu."));
   r.append(warning);
  }
  const shortNotes=a2PracticeNotes(d);
