@@ -2639,37 +2639,35 @@ function fingerprintOpenMail(index){
 const A1_REQUIRED_WORKER_VERSION='a1-osd-schreiben-v6-20261101';
 const WORKER_ORIGINS = SAME_SERVER ? [location.origin] :
  SERVER_PARAMETER ? (VALID_SERVER ? [VALID_SERVER] : []) :
- [...new Set([VALID_SERVER,'https://biografije-a1.pages.dev'])].filter(Boolean);
+ (VALID_SERVER ? [VALID_SERVER] : []);
 let WORKER_API_URL = WORKER_ORIGINS[0] ? WORKER_ORIGINS[0]+'/api/check-email' : '';
 const WORKER_READY=WORKER_ORIGINS.length>0;
 let a1VerifiedWorkerOrigin='';
 async function selectA1Worker(){
  if(a1VerifiedWorkerOrigin)return a1VerifiedWorkerOrigin+'/api/check-email';
- const reports=[];
- for(const origin of WORKER_ORIGINS){
-  const abort=new AbortController();
-  const timeout=setTimeout(()=>abort.abort(),5000);
-  try{
-   const reply=await fetch(origin+'/health',{method:'GET',cache:'no-store',signal:abort.signal});
-   if(!reply.ok){reports.push(new URL(origin).hostname+': HTTP '+reply.status);continue;}
-   const status=await reply.json().catch(()=>({}));
-   if(status.verificationVersion!==A1_REQUIRED_WORKER_VERSION){
-    reports.push(new URL(origin).hostname+': stara/nepoznata verzija '+String(status.verificationVersion||'bez oznake').slice(0,70));
-    continue;
-   }
-   if(status.openaiConfigured===false){
-    reports.push(new URL(origin).hostname+': OPENAI_API_KEY nije podešen');
-    continue;
-   }
-   a1VerifiedWorkerOrigin=origin;
-   WORKER_API_URL=origin+'/api/check-email';
-   return WORKER_API_URL;
-  }catch(error){
-   reports.push(new URL(origin).hostname+': '+(error?.name==='AbortError'?'ne odgovara':'nije dostupan / CORS'));
-  }finally{clearTimeout(timeout);}
- }
- throw Error('AI server iz projekta Biografije-A1 nije dostupan sa novim ÖSD A1 bodovanjem. '+
-  reports.join('; ')+'. U Cloudflare-u objavi biografije-a1 Worker iz GitHub fajla src/email-worker.js, pa ponovi proveru.');
+ const origin=WORKER_ORIGINS[0];
+ if(!origin)throw Error('AI server nije podešen.');
+ const hostname=new URL(origin).hostname;
+ const controller=new AbortController();
+ const timeout=setTimeout(()=>controller.abort(),8000);
+ try{
+  const response=await fetch(origin+'/health',{method:'GET',cache:'no-store',signal:controller.signal});
+  if(!response.ok)throw Error('Server '+hostname+' ne odgovara na proveru statusa (HTTP '+response.status+'). Proveri Cloudflare objavljivanje projekta Biografije-A1.');
+  const status=await response.json().catch(()=>({}));
+  if(status.verificationVersion!==A1_REQUIRED_WORKER_VERSION){
+   throw Error('Server '+hostname+' još nema novi ÖSD A1 Worker. Objavi najnoviji GitHub src/email-worker.js u projektu Biografije-A1.');
+  }
+  if(status.openaiConfigured!==true){
+   throw Error('U Cloudflare Workeru „biografije-a1“ nedostaje OPENAI_API_KEY. Otvori Cloudflare → Workers & Pages → biografije-a1 → Settings → Variables and Secrets → Add → Secret, unesi naziv OPENAI_API_KEY i svoj API ključ, zatim sačuvaj i objavi izmene. Tvoj napisani mejl ostaje sačuvan.');
+  }
+  a1VerifiedWorkerOrigin=origin;
+  WORKER_API_URL=origin+'/api/check-email';
+  return WORKER_API_URL;
+ }catch(error){
+  if(error?.name==='AbortError')throw Error('AI server '+hostname+' nije odgovorio na vreme. Proveri vezu i Cloudflare status.');
+  if(error instanceof TypeError)throw Error('Ne mogu da pristupim serveru '+hostname+'. Proveri Cloudflare Worker i CORS podešavanja.');
+  throw error;
+ }finally{clearTimeout(timeout);}
 }
 const STORAGE='demax_a1_mail_practice_v3';
 let saved={drafts:{},endpoint:'',results:{},completed:{},current:0};
@@ -3102,7 +3100,7 @@ $('check').onclick=async()=>{
    let problem=typeof payload.error==='string'?payload.error:'';
    if(response.status===404)problem=problem||'Cloudflare nema objavljenu /api/check-email rutu. Objavi Worker iz GitHuba.';
    if(response.status===403)problem=problem||'Cloudflare nije odobrio adresu aplikacije (CORS).';
-   if(response.status===503)problem=problem||'OpenAI nije aktiviran. Dodaj Secret OPENAI_API_KEY u Cloudflare Worker.';
+   if(response.status===503)problem=problem||'Na serveru biografije-a1 nedostaje OPENAI_API_KEY. Dodaj ga kao Secret u Cloudflare → Workers & Pages → biografije-a1 → Settings → Variables and Secrets.';
    if(response.status===429)problem=problem||'OpenAI je dostigao limit. Proveri stanje API kredita.';
    throw Error(problem||'Cloudflare/OpenAI greska (HTTP '+response.status+').');
   }
