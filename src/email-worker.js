@@ -7,12 +7,8 @@ const MODEL_DEFAULT = "gpt-4.1-mini";
 const TIMEOUT_MS = 38000;
 const MAX_BODY_BYTES = 6000;
 const MAX_ANSWER_CHARS = 2200;
-const PER_IP_PER_HOUR = 12;
-const LOCAL_DAILY_LIMIT = 250; // Meko ogranicenje po instanci, NE globalno.
 let tasksCache = null;
 let cacheExpiry = 0;
-let daily = { key: "", count: 0 };
-const ipHits = new Map();
 
 function cors(origin) {
   const h = {"Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store",
@@ -26,16 +22,6 @@ function json(data, status, origin) {
 function clamp(v,max) {
   const n = Number(v);
   return Number.isFinite(n) ? Math.max(0,Math.min(max,Math.round(n))) : 0;
-}
-function limited(ip) {
-  const now=Date.now(), day=new Date(now).toISOString().slice(0,10);
-  if (daily.key!==day) daily={key:day,count:0};
-  if (ipHits.size>3000) ipHits.clear();
-  let hit=ipHits.get(ip);
-  if (!hit || now-hit.at>3600000) hit={at:now,count:0};
-  if (hit.count>=PER_IP_PER_HOUR || daily.count>=LOCAL_DAILY_LIMIT) return true;
-  hit.count+=1; daily.count+=1; ipHits.set(ip,hit);
-  return false;
 }
 async function tasks() {
   if (tasksCache && Date.now()<cacheExpiry) return tasksCache;
@@ -862,8 +848,6 @@ export default {
       return json({error:"Dodaj OPENAI_API_KEY u Cloudflare Worker Secrets."},503,origin);
     const len=Number(request.headers.get("content-length")||0);
     if(len>MAX_BODY_BYTES) return json({error:"Mejl je predugacak."},413,origin);
-    const ip=request.headers.get("CF-Connecting-IP")||"unknown";
-    if(limited(ip))return json({error:"Previse AI provera. Pokusaj kasnije."},429,origin);
     try {
       const text=await request.text();
       if(text.length>MAX_BODY_BYTES)return json({error:"Mejl je predugacak."},413,origin);
