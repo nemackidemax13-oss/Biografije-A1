@@ -2457,6 +2457,49 @@ html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.promp
   flex-shrink:0!important;
  }
 }
+
+/* A1 prikaz AI provere kao A2: original, ispravljeno, greske i tri pitanja. */
+.a1-a2-ai-review{display:flex!important;flex-direction:column;gap:9px;max-width:100%!important}
+.a1-a2-ai-review .a1-ai-result-heading{display:block!important;background:#eaf2ff;border:1px solid #cadcf6;border-radius:10px;color:#153d79;padding:10px 12px;margin:0;height:auto;min-height:0}
+.a1-ai-result-heading h3{font-size:14px;margin:0 0 7px;color:#154384}
+.a1-score-line{display:flex;align-items:center;justify-content:space-between;gap:9px;flex-wrap:wrap}
+.a1-score-line strong{font-size:20px;color:#12559b}
+.a1-score-line span{font-size:11px;font-weight:800;color:#315577}
+.a1-comparison-guide{font-size:11.5px;background:#fffbee;color:#715612;border:1px solid #f3e2b3;border-radius:7px;padding:7px 9px;margin:0}
+.a1-a2-ai-review .a1-email-sample,.a1-a2-ai-review .a1-issue-list,.a1-a2-ai-review .a1-questions-review,.a1-a2-ai-review .a1-feedback-tips{background:#fff;border:1px solid #d4e0ec;border-radius:10px;padding:10px 11px;margin:0;min-height:0;height:auto;overflow:visible}
+.a1-a2-ai-review .a1-student-email{border:2px solid #3276c7;background:#f3f8ff}
+.a1-a2-ai-review .a1-corrected-email{border:2px solid #218e53;background:#f1fcf5}
+.a1-a2-ai-review h4{font-size:12px;line-height:1.3;margin:0 0 7px;color:#16477c;font-weight:950}
+.a1-a2-ai-review .a1-corrected-email h4{color:#086f3d}
+.a1-a2-ai-review .a1-email-text{display:block;white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;line-height:1.55;padding:7px 9px;color:#1a334b;background:#fff;border-radius:7px}
+.a1-a2-ai-review .a1-error-word{background:#ffe0e3;color:#a61427;font-weight:900;border-radius:3px;padding:0 1px}
+.a1-a2-ai-review .a1-fixed-word{background:#d4f9de;color:#08743d;font-weight:900;border-radius:3px;padding:0 1px}
+.a1-a2-ai-review .a1-issue-list,.a1-a2-ai-review .a1-questions-review{display:grid;gap:7px}
+.a1-a2-ai-review .a1-issue-card{display:block;border:1px solid #d4e0ec;background:#fff;border-radius:9px;padding:8px 9px;margin:0}
+.a1-a2-ai-review .a1-issue-card h5{margin:0 0 5px;color:#16477c;font-size:11px}
+.a1-a2-ai-review .a1-issue-wrong,.a1-a2-ai-review .a1-issue-right{display:block;white-space:pre-wrap;overflow-wrap:anywhere;padding:7px;border-radius:6px;margin:5px 0;font-size:12px;line-height:1.4}
+.a1-a2-ai-review .a1-issue-wrong{background:#fff0f0;color:#a9182f;border:1px solid #ffcbd2}
+.a1-a2-ai-review .a1-issue-right{background:#eaf9ee;color:#096e3f;border:1px solid #bce7cb}
+.a1-a2-ai-review .a1-issue-card p{font-size:11.5px;line-height:1.4;margin:5px 1px;color:#273e57}
+.a1-a2-ai-review .a1-no-issues{color:#46627c;font-size:11.5px;margin:0}
+.a1-a2-ai-review .a1-result-translate{display:inline-flex;align-items:center;justify-content:center;background:#f7d75b;color:#4c3c0e;border:1px solid #dfb62c;border-radius:7px;padding:7px 9px;margin:8px 0 0;font-size:11px;line-height:1.1;font-weight:950;cursor:pointer}
+.a1-a2-ai-review .a1-result-translation{white-space:pre-wrap;overflow-wrap:anywhere;background:#fffdfa;color:#244e50;border:1px solid #b8dfcb;border-radius:7px;padding:8px 9px;font-size:12px;line-height:1.5;margin-top:7px}
+.a1-a2-ai-review .a1-result-translation[hidden]{display:none!important}
+.a1-a2-ai-review .a1-evaluation-point{background:#f3f8fe;border:1px solid #dce9f8;border-radius:7px;padding:7px 8px}
+.a1-a2-ai-review .a1-evaluation-point-head{display:flex;gap:8px;justify-content:space-between;align-items:flex-start}
+.a1-a2-ai-review .a1-evaluation-point-head b{color:#16447d;font-size:11.5px}
+.a1-a2-ai-review .a1-point-score{flex:0 0 auto;background:#d9e8fe;color:#19569d;border-radius:5px;padding:3px 6px;font-size:11px;font-weight:950}
+.a1-a2-ai-review .a1-evaluation-point p{margin:5px 0 0;font-size:11.5px;line-height:1.45;color:#263f5a}
+.a1-a2-ai-review .a1-learning-note{background:#fffaf0;border-left:3px solid #dba041;color:#4a4437;border-radius:5px;padding:7px 9px;font-size:11.5px;line-height:1.45;margin:5px 0}
+.a1-a2-ai-review .a1-practice-caption{font-size:11px;color:#42617a;line-height:1.4;margin:0}
+.a1-a2-ai-review .retry-actions{margin:0 0 12px!important}
+@media(max-width:799px){
+ html body.mobile-review #result.resultwrap{padding:6px 8px 16px!important;touch-action:pan-y!important;overflow-y:auto!important}
+ html body.mobile-review #result .review-inner.a1-a2-ai-review{display:flex!important;position:static!important;width:100%!important;max-width:100%!important;transform:none!important;padding:0 0 8px!important;gap:8px!important}
+ html body.mobile-review #result .a1-a2-ai-review .a1-email-text{font-size:13.2px!important;line-height:1.45!important}
+ html body.mobile-review #result .a1-a2-ai-review .a1-issue-card{padding:7px 8px!important}
+}
+
 </style>
 </head>
 <body class="view-intro a1-translation-off">
@@ -2658,57 +2701,147 @@ function correctGerman(text){
  t=t.replace(/(^|[.!?]\s+|\n\s*)([a-zäöü])/g,(m,p,c)=>p+c.toUpperCase());
  return t.trim();
 }
+
+/* A1/A2: bezbedan prikaz tekstova kroz textContent, u originalu greske su
+   crvene, a u ispravljenom mejlu izmenjene reci su zelene. */
+function a1ReviewNode(tag,text,cls){
+ const el=document.createElement(tag);
+ if(cls)el.className=cls;
+ if(text!==undefined&&text!==null)el.textContent=String(text);
+ return el;
+}
+function a1ComparisonTokens(a,b){
+ const x=String(a||'').match(/\s+|[^\s]+/gu)||[];
+ const y=String(b||'').match(/\s+|[^\s]+/gu)||[];
+ if(x.length*y.length>85000)return {old:[{text:String(a),changed:false}],fixed:[{text:String(b),changed:false}]};
+ const dp=Array.from({length:x.length+1},()=>new Uint16Array(y.length+1));
+ for(let i=x.length-1;i>=0;i--)for(let j=y.length-1;j>=0;j--)
+  dp[i][j]=x[i]===y[j]?1+dp[i+1][j+1]:Math.max(dp[i+1][j],dp[i][j+1]);
+ const old=[],fixed=[];
+ function add(arr,txt,changed){
+  if(!txt)return;
+  const last=arr[arr.length-1];
+  if(last&&last.changed===changed)last.text+=txt;
+  else arr.push({text:txt,changed});
+ }
+ let i=0,j=0;
+ while(i<x.length||j<y.length){
+  if(i<x.length&&j<y.length&&x[i]===y[j]){
+   add(old,x[i],false);add(fixed,y[j],false);i++;j++;
+  }else if(i<x.length&&(j>=y.length||dp[i+1][j]>=dp[i][j+1])){
+   add(old,x[i],!/^\s+$/u.test(x[i]));i++;
+  }else{
+   add(fixed,y[j],!/^\s+$/u.test(y[j]));j++;
+  }
+ }
+ return {old,fixed};
+}
+function a1AppendMarkedText(root,segments,cls){
+ for(const part of segments){
+  const span=a1ReviewNode(part.changed?'mark':'span',part.text,part.changed?cls:'');
+  root.append(span);
+ }
+}
+function a1ReviewSection(parent,title,cls){
+ const sec=a1ReviewNode('section',null,cls);
+ sec.append(a1ReviewNode('h4',title));
+ parent.append(sec);
+ return sec;
+}
 function renderResult(r){
  if(words($('answer').value)<15)return;
  const original=$('answer').value;
  const missingClosing=!hasA1Closing(original);
- let correction=correctA1Umlauts(correctSportExpression(r.correctedText||original)).trim();
- if(missingClosing&&!hasA1Closing(correction))correction+='\n\nViele Grüße';
- const notes=Array.isArray(r.questionFeedback)&&r.questionFeedback.length===3
-   ?r.questionFeedback:MAILS[current].questions.map(q=>'Proveri da li si odgovorio/la na pitanje: '+q);
- const items=notes.map((note,i)=>{
-  const explanation=String(note||'').trim();
-  // Pitanja ocenjujemo redom, bez ponavljanja cele nemacke ispravke.
-  const brief=Number(r.points?.[i])===2?shortReview(explanation,175):explanation.slice(0,780);
-  return '<div class="review-question"><b>'+(i+1)+'. pitanje:</b> '+escapeHtml(brief)+'</div>';
- }).join('');
- const sportTip=/\bSport\s+spielen\b/i.test(original)&&!/Sport\s+(?:machen|spielen)/i.test(r.feedback||'')
-  ?'Za opšti sport koristi „Sport machen“.':'';
- const umlautErrors=missingA1Umlauts(original);
- const umlautTip=umlautErrors.length&&!/umlaut/i.test(String(r.feedback||''))?
-  'Ispravi umlaute: '+[...new Set(umlautErrors.map(e=>e.from+' → '+e.to))].slice(0,3).join(', ')+'.':'';
- const greetingTip=missingClosing?'Nedostaje završni pozdrav. Dodaj: Liebe Grüße, Bis bald ili Viele Grüße.':'';
- const fullFeedback=String(r.feedback||'').replace(/\bNAPOMENA:\s*/gi,'').trim();
- const extra=shortReview(fullFeedback,195);
- const tips=[extra,sportTip,umlautTip,greetingTip].filter((x,i,arr)=>x&&arr.indexOf(x)===i)
-  .filter((x)=>!missingClosing||x===greetingTip||!/nedostaje.{0,25}pozdrav|završni pozdrav/i.test(x));
- const parts=tips.slice(0,4).map(x=>'<div class="review-note">'+escapeHtml(x)+'</div>').join('');
- const sentenceNotes=Array.isArray(r.sentenceFeedback)?
-  r.sentenceFeedback.filter(x=>x&&x.explanationSr&&x.original&&x.corrected):[];
- // Stvarne greske objasni unutar postojeceg KOMENTARA,
- // bez dodatnog dugmeta, prozora ili naslova "Detaljne ispravke recenica".
- const sentenceComment=sentenceNotes.map((x,i)=>{
-  // Ispravljene recenice su VEC u polju "ISPRAVLJEN MEJL".
-  // U komentaru prikazuj ISKLJUCIVO obrazlozenje na srpskom.
-  const why=String(x.explanationSr).replace(/\s+/g,' ').trim();
-  return '<div class="review-note review-sentence-note"><b>Objašnjenje '+(i+1)+':</b> '+escapeHtml(why)+'</div>';
- }).join('');
-
-
- $('result').innerHTML=`
- <div class="review-inner">
-   <div class="correction-label">ISPRAVLJEN MEJL <span class="verified-score">${Number.isFinite(Number(r.score))?Math.round(Number(r.score)):0}/10</span></div>
-   <div class="corrected" lang="de">${escapeHtml(correction)}</div>
-   <div class="translation-label">TAČAN PREVOD ISPRAVLJENOG MEJLA</div>
-   <div class="translated" lang="sr-Latn">${escapeHtml(String(r.translationSr||'').trim()||'Prevod nije dostupan: potrebno je ažurirati OpenAI proveru na Cloudflare.')}</div>
-   <div class="feedback-heading">OBJAŠNJENJA NA SRPSKOM</div>
-   <div class="review-comment" lang="sr-Latn">
-      ${items}
-      ${parts}
-      ${sentenceComment}
-   </div>
-   <div class="retry-actions"><button type="button" id="retryMail" class="retry-mail-btn">↻ Vežbaj ponovo isti mejl</button></div>
- </div>`;
+ let corrected=correctA1Umlauts(correctSportExpression(r.correctedText||original)).trim();
+ if(missingClosing&&!hasA1Closing(corrected))corrected+='\n\nViele Grüße';
+ const comparison=a1ComparisonTokens(original,corrected);
+ const holder=$('result');holder.replaceChildren();
+ const root=a1ReviewNode('div',null,'review-inner a1-a2-ai-review');
+ const head=a1ReviewNode('div',null,'a1-ai-result-heading');
+ head.append(a1ReviewNode('h3','REZULTAT AI PROVERE · ÖSD A1'));
+ const grade=a1ReviewNode('div',null,'a1-score-line');
+ const score=Number(r.score);
+ grade.append(a1ReviewNode('strong',(Number.isFinite(score)?Math.max(0,Math.min(10,Math.round(score))):0)+'/10 bodova'),
+  a1ReviewNode('span','Napisano: '+words(original)+' reči · cilj oko 30'));
+ head.append(grade);root.append(head);
+ root.append(a1ReviewNode('p','Crveno označava greške u tvom tekstu, a zeleno ispravke.',
+  'a1-comparison-guide'));
+ const written=a1ReviewSection(root,'1. TVOJ MEJL — NAPISAO','a1-email-sample a1-student-email');
+ const originalMail=a1ReviewNode('div',null,'a1-email-text');
+ originalMail.lang='de';a1AppendMarkedText(originalMail,comparison.old,'a1-error-word');
+ written.append(originalMail);
+ const revised=a1ReviewSection(root,'2. ISPRAVLJENA VERZIJA TVOG MEJLA','a1-email-sample a1-corrected-email');
+ const correctMail=a1ReviewNode('div',null,'a1-email-text');
+ correctMail.lang='de';a1AppendMarkedText(correctMail,comparison.fixed,'a1-fixed-word');
+ revised.append(correctMail);
+ const translationButton=a1ReviewNode('button','🇷🇸 PREVOD NA SRPSKOM','a1-result-translate');
+ translationButton.id='a1ResultSrToggle';translationButton.type='button';
+ translationButton.setAttribute('aria-expanded','false');
+ translationButton.setAttribute('aria-controls','a1ResultSrText');
+ const sr=a1ReviewNode('div',String(r.translationSr||'').trim()||
+  'Prevod nije dostupan. Potrebno je ažurirati A1 Cloudflare Worker.','a1-result-translation');
+ sr.id='a1ResultSrText';sr.lang='sr-Latn';sr.hidden=true;
+ revised.append(translationButton,sr);
+ const errors=a1ReviewSection(root,'3. GREŠKE I OBJAŠNJENJA','a1-issue-list');
+ const sentenceNotes=Array.isArray(r.sentenceFeedback)?r.sentenceFeedback.filter(x=>
+  x&&typeof x==='object'&&String(x.original||'').trim()&&
+  String(x.corrected||'').trim()&&String(x.original).trim()!==String(x.corrected).trim()
+ ).slice(0,20):[];
+ if(sentenceNotes.length){
+  sentenceNotes.forEach((note,i)=>{
+   const card=a1ReviewNode('article',null,'a1-issue-card');
+   card.append(a1ReviewNode('h5','ISPRAVKA '+(i+1)));
+   const wrong=a1ReviewNode('div',null,'a1-issue-wrong');
+   wrong.append(a1ReviewNode('b','Napisao:'),a1ReviewNode('div',note.original));
+   const right=a1ReviewNode('div',null,'a1-issue-right');
+   right.append(a1ReviewNode('b','Ispravljeno:'),a1ReviewNode('div',note.corrected));
+   card.append(wrong,right);
+   if(String(note.explanationSr||'').trim()){
+    const p=a1ReviewNode('p');
+    p.append(a1ReviewNode('b','Objašnjenje: '),
+     document.createTextNode(String(note.explanationSr)));
+    card.append(p);
+   }
+   errors.append(card);
+  });
+ }else errors.append(a1ReviewNode('p',
+   'AI nije izdvojio pojedinačne rečenične ispravke. Uporedi označene reči iznad.',
+   'a1-no-issues'));
+ const questions=a1ReviewSection(root,'4. ODGOVORI NA SVA TRI PITANJA','a1-questions-review');
+ const q=ORIGINAL_MAILS[current]?.q||MAILS[current].questions||[];
+ for(let i=0;i<3;i++){
+  const block=a1ReviewNode('div',null,'a1-evaluation-point');
+  const heading=a1ReviewNode('div',null,'a1-evaluation-point-head');
+  heading.append(a1ReviewNode('b',(i+1)+'. '+String(q[i]||'Pitanje')));
+  const p=Number(r.points?.[i]);
+  if(Number.isFinite(p))heading.append(a1ReviewNode('span',
+   Math.max(0,Math.min(2,p))+'/2','a1-point-score'));
+  block.append(heading,a1ReviewNode('p',
+   String(r.questionFeedback?.[i]||'Proveri da li si odgovorio/la na ovo pitanje.')));
+  questions.append(block);
+ }
+ const feedback=String(r.feedback||'').replace(/\bNAPOMENA:\s*/gi,'').trim();
+ const notes=[];
+ if(feedback)notes.push(feedback);
+ const umlauts=missingA1Umlauts(original);
+ if(umlauts.length&&!/umlaut/i.test(feedback))
+  notes.push('Ispravi umlaute: '+[...new Set(umlauts.map(e=>e.from+' → '+e.to))].slice(0,5).join(', ')+'.');
+ if(missingClosing)notes.push('U originalnom mejlu nedostaje završni pozdrav. Primer: Liebe Grüße, Bis bald ili Viele Grüße.');
+ const otherNotes=Array.isArray(r.sentenceFeedback)?
+  r.sentenceFeedback.filter(x=>x?.explanationSr&&
+   (!x.original||!x.corrected||String(x.original).trim()===String(x.corrected).trim()))
+   .map(x=>String(x.explanationSr)):[];
+ if(notes.length||otherNotes.length){
+  const tips=a1ReviewSection(root,'5. NAPOMENE ZA VEŽBANJE','a1-feedback-tips');
+  for(const tip of [...notes,...otherNotes])tips.append(a1ReviewNode('div',tip,'a1-learning-note'));
+ }
+ root.append(a1ReviewNode('p',
+  'Ocena se odnosi samo na napisani mejl. Ispravke su za učenje i ne menjaju bodove.',
+  'a1-practice-caption'));
+ const actions=a1ReviewNode('div',null,'retry-actions');
+ const retry=a1ReviewNode('button','↻ UVEŽBAJ PONOVO','retry-mail-btn');
+ retry.type='button';retry.id='retryMail';actions.append(retry);root.append(actions);
+ holder.append(root);
  $('answerPanel').classList.add('has-result');
  if(document.body.classList.contains('mobile-writing'))closeMobileWriting(true);
  if(document.body.classList.contains('mobile-review'))requestAnimationFrame(fitMailReviewScreen);
@@ -2732,7 +2865,14 @@ function retryCurrentMail(){
  }
 }
 $('result').addEventListener('click',event=>{
- if(event.target.closest('#retryMail'))retryCurrentMail();
+ if(event.target.closest('#retryMail')){retryCurrentMail();return;}
+ const toggle=event.target.closest('#a1ResultSrToggle');
+ if(toggle){
+  const trans=$('a1ResultSrText');if(!trans)return;
+  const show=trans.hidden;trans.hidden=!show;
+  toggle.setAttribute('aria-expanded',String(show));
+  toggle.textContent=show?'🇷🇸 SAKRIJ PREVOD':'🇷🇸 PREVOD NA SRPSKOM';
+ }
 });
 
 function updateCount(){
