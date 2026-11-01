@@ -3329,6 +3329,84 @@ html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .actions #grad
   order:3!important;
  }
 }
+
+/* De-Max A2 · 2026-11-01: tanka A1-stil lajsna: minimum 26, skala do 50 reci.
+   Ispod istih pet dugmadi, prisutna i iznad mobilne tastature. */
+#writerScreen .editor .actions #a2WordTracker{
+ display:flex!important;flex:1 1 100%!important;flex-direction:column!important;
+ justify-content:center!important;gap:1px!important;
+ grid-column:1/-1!important;grid-row:2!important;
+ width:100%!important;min-width:0!important;
+ height:17px!important;min-height:17px!important;max-height:17px!important;
+ box-sizing:border-box!important;overflow:hidden!important;
+ background:#fff5f6!important;border:1px solid #c52a40!important;
+ border-radius:4px!important;color:#a3182d!important;
+ padding:1px 5px!important;margin:0!important;
+}
+#writerScreen .editor .actions .a2-word-tracker-copy{
+ display:flex!important;align-items:center!important;justify-content:space-between!important;
+ gap:4px!important;width:100%!important;line-height:9px!important;min-height:9px!important;
+}
+#writerScreen .editor .actions .a2-word-tracker-copy strong{
+ font-weight:950!important;font-size:8.5px!important;white-space:nowrap!important;
+ font-variant-numeric:tabular-nums!important;line-height:9px!important;
+}
+#writerScreen .editor .actions .a2-word-tracker-copy span{
+ font-size:8px!important;font-weight:850!important;white-space:nowrap!important;line-height:9px!important;
+}
+#writerScreen .editor .actions .a2-word-tracker-track{
+ width:100%!important;height:2px!important;min-height:2px!important;flex:0 0 2px!important;
+ border-radius:4px!important;background:#f3c9cf!important;overflow:hidden!important;
+}
+#writerScreen .editor .actions #a2WordsFill{
+ display:block!important;width:0;height:100%!important;border-radius:4px!important;
+ background:#db3048!important;transition:width .14s linear,background-color .14s linear;
+}
+#writerScreen .editor .actions #a2WordTracker.ready{
+ background:#f0fff4!important;border-color:#13844a!important;color:#096739!important;
+}
+#writerScreen .editor .actions #a2WordTracker.ready .a2-word-tracker-track{background:#bde9ce!important}
+#writerScreen .editor .actions #a2WordTracker.ready #a2WordsFill{background:#0b9251!important}
+body.writing:not(.reviewing) #writerScreen .editor .actions{
+ flex-wrap:wrap!important;overflow:visible!important;
+}
+body.writing:not(.reviewing) #writerScreen .editor .actions #gradeBtn:disabled{
+ background:#b62e42!important;background-color:#b62e42!important;
+ color:white!important;opacity:.7!important;cursor:not-allowed!important;
+}
+body.writing:not(.reviewing) #writerScreen .editor .actions #gradeBtn:enabled{
+ background:#13844a!important;background-color:#13844a!important;
+ color:white!important;opacity:1!important;
+}
+@media(max-width:700px){
+ body.writing:not(.reviewing) #writerScreen .editor .actions,
+ html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .actions,
+ html:not(.b1-typing) body.writing:not(.reviewing) #writerScreen .editor .actions,
+ body.writing.keyboardOpen:not(.reviewing) #writerScreen .editor .actions{
+  display:grid!important;grid-template-rows:27px 17px!important;
+  row-gap:2px!important;column-gap:3px!important;
+  flex:0 0 48px!important;height:48px!important;
+  min-height:48px!important;max-height:48px!important;
+  box-sizing:border-box!important;padding:1px 2px!important;
+  overflow:visible!important;align-items:center!important;
+ }
+ body.writing:not(.reviewing) #writerScreen .editor .actions #a2WordTracker,
+ html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .actions #a2WordTracker{
+  grid-row:2!important;grid-column:1/-1!important;
+  height:17px!important;min-height:17px!important;max-height:17px!important;
+ }
+}
+@media(max-width:700px) and (max-height:390px){
+ body.writing:not(.reviewing) #writerScreen .editor .actions,
+ html.b1-typing body.writing:not(.reviewing) #writerScreen .editor .actions{
+  grid-template-rows:25px 16px!important;
+  flex-basis:45px!important;height:45px!important;
+  min-height:45px!important;max-height:45px!important;
+ }
+ body.writing:not(.reviewing) #writerScreen .editor .actions #a2WordTracker{
+  height:16px!important;min-height:16px!important;max-height:16px!important;
+ }
+}
 </style>
 </head>
 <body class="intro">
@@ -3434,7 +3512,11 @@ vielen Dank für deine Nachricht.
         <button id="writerPlus" type="button" aria-label="Uvećaj slova u mejlu">A+</button>
       </div>
       <button type="button" id="b1RestoreScreen" class="b1RestoreScreen" title="Prikaži ceo mejl nakon zatvaranja tastature" aria-label="Puni ekran mejla">PUN EKRAN</button>
-      <button id="gradeBtn" class="grade" type="button">✓ PROVERI MEJL</button>
+      <button id="gradeBtn" class="grade" type="button" disabled>✓ PROVERI MEJL</button>
+      <div id="a2WordTracker" class="a2-word-tracker" role="progressbar" aria-label="Broj reči u mejlu, minimum 26, cilj 50" aria-valuemin="0" aria-valuemax="50" aria-valuenow="0" aria-valuetext="Napisano 0 reči. Nedostaje najmanje 26.">
+       <div class="a2-word-tracker-copy"><strong id="a2WordsNow">NAPISANO: 0 / 50 REČI</strong><span id="a2WordsLeft">NEDOSTAJE JOŠ 26</span></div>
+       <div class="a2-word-tracker-track" aria-hidden="true"><span id="a2WordsFill"></span></div>
+      </div>
     </div>
     <div id="status" class="notice">Obradi sve četiri tačke, napiši uvod i pozdrav. Odgovor se čuva lokalno.</div>
   </div>
@@ -3864,9 +3946,19 @@ function startWriting(){
 function backTask(){if(current<0)return;screen("taskScreen")}
 function updateCount(){
  const n=countWords($("draft").value);
+ const ready=n>=26;
+ const missing=Math.max(0,26-n);
+ const percent=Math.min(100,n/50*100);
  $("counter").textContent=n+" reči"+(n>=50?" ✓":"");
  $("liveCounter").textContent=n+" reči"+(n>=50?" ✓":"");
- $("gradeBtn").disabled=n<26;
+ $("a2WordTracker").classList.toggle("ready",ready);
+ $("a2WordTracker").setAttribute("aria-valuenow",String(Math.min(50,n)));
+ $("a2WordTracker").setAttribute("aria-valuetext","Napisano "+n+" reči. "+(ready?(n>=50?"Cilj od 50 reči je dostignut.":"Može AI provera. Cilj je 50 reči."):"Nedostaje još "+missing+" reči do minimuma od 26."));
+ $("a2WordsNow").textContent="NAPISANO: "+n+" / 50 REČI";
+ $("a2WordsLeft").textContent=n<26?"NEDOSTAJE JOŠ "+missing:n<50?"✓ PROVERA MOGUĆA":n===50?"✓ CILJ 50":"✓ PREKO 50: +"+(n-50);
+ $("a2WordsFill").style.width=percent+"%";
+ $("gradeBtn").disabled=n<26||gradePending||validB1Result(current);
+ $("gradeBtn").title=n<26?"Za ocenjivanje napiši još "+missing+" reči.":n<50?"Ocenjivanje je moguće; cilj je 50 reči.":"Proveri mejl (50 reči je cilj).";
  $("status").textContent=n+" reči · "+(n<26?"Za proveru je potrebno najmanje 26 reči. Cilj je 50.":"A2 · 4 pitanja · 15 bodova · završni pozdrav.");
 }
 function textSection(root,heading,items){
