@@ -39,6 +39,18 @@ button,a{-webkit-tap-highlight-color:transparent}
 .start svg{flex:none}
 .start:focus-visible{outline:3px solid #224d9b;outline-offset:2px}
 .start:active{background:#0c713b}
+
+/* Jasno centriran DE-MAX, pregledno uputstvo i nacrtana strelica za Dalje */
+.brand{flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:1px;min-height:37px;padding:3px 5px}
+.brand b{font-size:clamp(19px,2.85vh,24px);line-height:1.08;letter-spacing:-.7px}
+.brand span{font-size:clamp(9px,1.25vh,11px);line-height:1.12}
+.instructions{padding:clamp(8px,1.25vh,11px) 10px}
+.instructions strong{display:block;font-size:clamp(12px,1.9vh,15px);color:#174983;line-height:1.25;text-align:center}
+.instructions p{font-size:clamp(10.2px,1.5vh,12px);line-height:1.42;color:#486786;margin:5px 0 0;text-align:center}
+.instructions .plus-mark{display:inline-grid;place-items:center;background:#e5f0ff;color:#225cab;border-radius:4px;min-width:17px;height:17px;font-size:15px;font-weight:950;vertical-align:middle}
+.instructions .next-hint{display:inline-flex;align-items:center;justify-content:center;gap:2px;vertical-align:middle;white-space:nowrap;border-radius:5px;background:#15904c;color:white;padding:2px 5px;font-size:inherit;font-weight:850}
+.instructions .next-hint svg{display:block;flex:none}
+@media(max-height:570px){.brand{min-height:27px;padding:1px 3px}.brand b{font-size:17px}.brand span{font-size:9px}.instructions{padding:4px 7px}.instructions strong{font-size:11px}.instructions p{font-size:9.5px;line-height:1.25;margin:2px 0 0}.instructions .next-hint{padding:1px 3px}.instructions .next-hint svg{width:12px;height:12px}}
 @media(max-height:570px){
  .welcome{padding:5px;gap:4px}
  .brand{min-height:21px}
@@ -68,7 +80,7 @@ button,a{-webkit-tap-highlight-color:transparent}
  </section>
  <section class="instructions" aria-label="Uputstvo za vežbanje">
   <strong>Uputstvo za učenike</strong>
-  <p>U svakom koraku dodaj rečenice pritiskom na <b>+</b>. Prelazi dugmetom <b>Dalje</b>, a na kraju pogledaj ceo svoj opis.</p>
+  <p>U svakom koraku izaberi rečenice pritiskom na <b class="plus-mark">+</b>. Zatim dodirni zeleno dugme <span class="next-hint">Dalje <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></span> za prelazak na sledeći deo. Kada prođeš svih <b>7 koraka</b>, pogledaj svoj kompletan opis slike.</p>
  </section>
  <ol class="steps" aria-label="Sedam koraka opisa slike">
   <li><span class="number">1</span><span class="step-name">Opis osoba</span></li>
