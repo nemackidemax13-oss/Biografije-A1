@@ -701,3 +701,83 @@ body[data-step-page] .wizard-footer .wizard-forward .next-arrow{
  body[data-step-page] .wizard-footer .wizard-forward .next-arrow{font-size:20px!important}
  body[data-step-page] .wizard-footer .wizard-back{font-size:12px!important;padding-left:7px!important;padding-right:7px!important}
 }
+
+
+/* 7 odvojenih stranica: plavo levo naziv prethodne, zeleno desno naziv sledeće. */
+body[data-step-page] .wizard-footer{
+ display:flex!important;
+ align-items:center!important;
+ gap:5px!important;
+}
+body[data-step-page] .wizard-footer .wizard-back{
+ display:flex!important;
+ flex:0 1 38%!important;
+ min-width:0!important;
+ align-items:center!important;
+ justify-content:space-between!important;
+ gap:4px!important;
+ background:#2268b7!important;
+ border-color:#17539c!important;
+ color:white!important;
+ padding:5px 6px!important;
+ text-align:center!important;
+}
+body[data-step-page] .wizard-footer .wizard-back:disabled{
+ display:none!important;
+}
+body[data-step-page] .wizard-footer .wizard-forward{
+ display:flex!important;
+ flex:1 1 62%!important;
+ min-width:0!important;
+ align-items:center!important;
+ justify-content:space-between!important;
+ gap:4px!important;
+ background:#15904c!important;
+ border-color:#0f763c!important;
+ color:white!important;
+ padding:5px 7px!important;
+ text-align:center!important;
+}
+body[data-step-page] .wizard-footer .wizard-back .back-label,
+body[data-step-page] .wizard-footer .wizard-forward .next-label{
+ flex:1 1 0!important;
+ min-width:0!important;
+ display:block!important;
+ white-space:normal!important;
+ overflow-wrap:break-word!important;
+ hyphens:auto!important;
+ font-size:clamp(10px,2.8vw,12px)!important;
+ line-height:1.12!important;
+ font-weight:900!important;
+ text-align:center!important;
+}
+body[data-step-page] .wizard-footer .wizard-back .back-arrow,
+body[data-step-page] .wizard-footer .wizard-forward .next-arrow{
+ flex:0 0 auto!important;
+ font-size:18px!important;
+ line-height:1!important;
+ margin:0!important;
+ font-weight:1000!important;
+}
+body[data-step-page] .separate-header h1{
+ font-size:clamp(13.5px,3.7vw,17px)!important;
+ white-space:normal!important;
+ overflow:visible!important;
+ text-overflow:clip!important;
+ text-align:center!important;
+ line-height:1.12!important;
+}
+@media(max-width:360px){
+ body[data-step-page] .wizard-footer .wizard-back{flex-basis:39%!important;padding:3px!important;gap:2px!important}
+ body[data-step-page] .wizard-footer .wizard-forward{flex-basis:61%!important;padding:3px 4px!important;gap:2px!important}
+ body[data-step-page] .wizard-footer .wizard-back .back-label,
+ body[data-step-page] .wizard-footer .wizard-forward .next-label{font-size:10px!important;line-height:1.08!important}
+ body[data-step-page] .wizard-footer .wizard-back .back-arrow,
+ body[data-step-page] .wizard-footer .wizard-forward .next-arrow{font-size:15px!important}
+}
+@media(max-height:670px){
+ body[data-step-page] .wizard-footer .wizard-back .back-label,
+ body[data-step-page] .wizard-footer .wizard-forward .next-label{font-size:10px!important;line-height:1.08!important}
+ body[data-step-page] .wizard-footer .wizard-back .back-arrow,
+ body[data-step-page] .wizard-footer .wizard-forward .next-arrow{font-size:16px!important}
+}
