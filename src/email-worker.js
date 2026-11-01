@@ -1094,7 +1094,7 @@ var email_worker_default = {
   async fetch(request, env) {
     const url = new URL(request.url), origin = request.headers.get("Origin");
     if (request.method === "GET" && url.pathname === "/health")
-      return json({ status: "ok", openaiConfigured: Boolean(env.OPENAI_API_KEY), tasks: 35, provider: "OpenAI", verificationVersion: "a1-osd-schreiben-v6-20261101", attemptsLimitedByWorker: false }, 200, origin);
+      return json({ status: "ok", openaiConfigured: Boolean(env.OPENAI_API_KEY), tasks: 35, provider: "OpenAI", verificationVersion: "a1-osd-schreiben-v6-20261101", workerBuild: "20261101-a1-json-popravka", attemptsLimitedByWorker: false }, 200, origin);
     if (url.pathname !== "/api/check-email" && url.pathname !== "/api/rafaela-review" && url.pathname !== "/api/check-a2-email")
       return json({ error: "Nepoznata putanja. Koristi /health, /api/check-email ili /api/rafaela-review." }, 404, origin);
     if (!SITE_ORIGINS.has(origin))
