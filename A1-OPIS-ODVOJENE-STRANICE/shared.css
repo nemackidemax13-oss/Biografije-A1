@@ -445,3 +445,52 @@ body.summary-mode .separate-header{height:70px!important}
  body.summary-mode .separate-header{height:59px!important}
 }
 @media(max-width:355px){.separate-header h1{font-size:20px}}
+
+
+/* DE-MAX potpis desno, naziv trenutne zasebne stranice levo. */
+.separate-header{
+ display:grid!important;
+ grid-template-columns:minmax(0,1fr) max-content!important;
+ grid-template-rows:minmax(0,1fr)!important;
+ align-items:center!important;
+ column-gap:9px!important;
+}
+.separate-header h1{
+ grid-column:1!important;
+ grid-row:1!important;
+ min-width:0!important;
+ font-size:clamp(17px,4.3vw,23px)!important;
+ overflow-wrap:break-word;
+}
+.separate-header .separate-brand{
+ grid-column:2!important;
+ grid-row:1!important;
+ display:flex!important;
+ flex-direction:column!important;
+ align-items:flex-end!important;
+ justify-content:center!important;
+ gap:4px!important;
+ text-align:right!important;
+ white-space:nowrap!important;
+ font-size:15px!important;
+}
+.separate-header .separate-brand small{
+ margin:0!important;
+ font-size:9.5px!important;
+ font-weight:900!important;
+ letter-spacing:.35px!important;
+ color:#345e91!important;
+}
+/* Nemačko ispitno pitanje i srpski prevod imaju istu crvenu boju. */
+.example .samplehead,.example .samplesr{
+ color:#d21f3a!important;
+}
+@media(max-height:670px){
+ .separate-header .separate-brand{font-size:13.5px!important;gap:3px!important}
+ .separate-header .separate-brand small{font-size:8.5px!important}
+}
+@media(max-width:345px){
+ .separate-header h1{font-size:17px!important}
+ .separate-header .separate-brand{font-size:12px!important}
+ .separate-header .separate-brand small{font-size:8px!important}
+}
