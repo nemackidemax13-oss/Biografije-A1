@@ -2501,6 +2501,16 @@ html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.promp
 }
 
 </style>
+<style>
+/* Zvanični ÖSD A1 v6.0 prikaz kriterijuma, bez dodatnog velikog naslova. */
+.a1-osd-rubric{margin:6px 0 9px;background:#f4f8ff;border:1px solid #bdd4f5;border-radius:9px;padding:7px 9px}
+.a1-osd-rubric h4{margin:0 0 6px;font-size:11px;font-weight:900;color:#154080}
+.a1-osd-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}
+.a1-osd-metric{display:flex;align-items:center;justify-content:space-between;gap:5px;background:#fff;border:1px solid #d9e5f7;border-radius:6px;padding:5px 6px;font-size:10px;color:#284a74}
+.a1-osd-metric b{font-size:12px;color:#0d3876;white-space:nowrap}
+.a1-osd-warning{color:#a72e35;font-weight:850;font-size:11px;margin:6px 0 1px}
+@media(max-width:400px){.a1-osd-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.a1-osd-metric{font-size:9px}}
+</style>
 </head>
 <body class="view-intro a1-translation-off">
 <div class="app">
@@ -2513,7 +2523,9 @@ html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.promp
       <div class="a1-intro-rule"><span>⏱</span><b>Formular i mejl rade se ukupno 20 minuta.</b></div>
       <div class="a1-intro-rule"><span>✓</span><b>Odgovorite na sve tri tačke, odnosno pitanja mejla.</b></div>
       <div class="a1-intro-rule"><span>✎</span><b>Napišite oko 30 reči.</b></div>
-      <div class="a1-intro-rule warning"><span>!</span><b>Mejl sa manje od 15 reči se ne boduje.</b></div>
+      <div class="a1-intro-rule warning"><span>!</span><b>Mejl sa manje od 15 reči se ne boduje (0 bodova).</b></div>
+      <div class="a1-intro-rule"><span>▤</span><b>25 ili više reči: bez odbitka. 20–24 reči: −1 bod. 15–19 reči: −2 boda.</b></div>
+      <div class="a1-intro-rule"><span>✓</span><b>ÖSD A1 v6.0: K (0–1), T (0–1), rečnik L (0–4), jezička tačnost F (0–4); dodatni odbici za dužinu i nedovoljno odgovorena pitanja.</b></div>
       <div class="a1-intro-rule"><span>✉</span><b>Na kraju mejla napišite završni pozdrav.</b></div>
       <div class="a1-intro-rule"><span>★</span><b>Formular: 5 bodova. Mejl: najviše 10 bodova. Ukupno: 15 bodova.</b></div>
       <div class="a1-intro-rule"><span>✓</span><b>Za prolaz je potrebno najmanje 4 od ukupno 15 bodova.</b></div>
@@ -2819,7 +2831,28 @@ function renderResult(r){
  const grade=a1ReviewNode('div',null,'a1-score-line');
  const score=Number(r.score);
  grade.append(a1ReviewNode('strong',(Number.isFinite(score)?Math.max(0,Math.min(10,Math.round(score))):0)+'/10 bodova'),
-  a1ReviewNode('span','Napisano: '+words(original)+' reči · cilj oko 30'));
+  a1ReviewNode('span','ÖSD A1 v6.0 · Napisano: '+words(original)+' reči'));
+ const rubric=r.osdRubric;
+ if(rubric&&rubric.criteriaVersion==='ÖSD A1 Schreiben v6.0'){
+  const box=a1ReviewNode('section',null,'a1-osd-rubric');
+  box.append(a1ReviewNode('h4','KRITERIJUM OCENJIVANJA · ÖSD A1'));
+  const items=a1ReviewNode('div',null,'a1-osd-metrics');
+  [
+   ['Komunikacija (K)',rubric.osdK+'/1'],
+   ['Povezanost (T)',rubric.osdT+'/1'],
+   ['Rečnik (L)',rubric.osdL+'/4'],
+   ['Jezička tačnost (F)',rubric.osdF+'/4'],
+   ['Dužina teksta','−'+rubric.textLengthDeduction],
+   ['Sadržaj zadatka','−'+rubric.taskDeduction]
+  ].forEach(pair=>{
+   const cell=a1ReviewNode('div',null,'a1-osd-metric');
+   cell.append(a1ReviewNode('span',pair[0]),a1ReviewNode('b',pair[1]));
+   items.append(cell);
+  });
+  box.append(items);
+  if(rubric.offTopic)box.append(a1ReviewNode('p','POTPUNO PROMAŠENA TEMA: prema ÖSD kriterijumu mejl dobija 0 bodova.','a1-osd-warning'));
+  head.append(box);
+ }
  head.append(grade);root.append(head);
  root.append(a1ReviewNode('p','Crveno označava greške u tvom tekstu, a zeleno ispravke.',
   'a1-comparison-guide'));
@@ -2879,7 +2912,7 @@ function renderResult(r){
   heading.append(a1ReviewNode('b',(i+1)+'. '+String(q[i]||'Pitanje')));
   const p=Number(r.points?.[i]);
   if(Number.isFinite(p))heading.append(a1ReviewNode('span',
-   Math.max(0,Math.min(2,p))+'/2','a1-point-score'));
+   p===2?'Dovoljno':p===1?'Delimično':'Nedovoljno','a1-point-score'));
   block.append(heading,a1ReviewNode('p',
    String(r.questionFeedback?.[i]||'Proveri da li si odgovorio/la na ovo pitanje.')+
    (dayHourFix.added&&i===dayHourFix.questionIndex?' Dopuna za vežbanje: navedi i precizan sat ('+dayHourFix.hour+' Uhr), ne samo dan ili deo dana.':'')));
@@ -2901,7 +2934,7 @@ function renderResult(r){
   for(const tip of [...notes,...otherNotes])tips.append(a1ReviewNode('div',tip,'a1-learning-note'));
  }
  root.append(a1ReviewNode('p',
-  'Ocena se odnosi samo na napisani mejl. Ispravke su za učenje i ne menjaju bodove.',
+  'Bodovanje prema ÖSD Zertifikat A1, v6.0 (Schreiben 2). Ispravke služe za učenje i ne povećavaju bodove.',
   'a1-practice-caption'));
  const actions=a1ReviewNode('div',null,'retry-actions');
  const retry=a1ReviewNode('button','↻ UVEŽBAJ PONOVO','retry-mail-btn');
@@ -3038,7 +3071,17 @@ $('check').onclick=async()=>{
   }
   // Ocenu prikazi iskljucivo ako je AI proverio SVA pitanja prema bazi
   // i svako bodovano pitanje potkrepio citatom iz ucenikovog odgovora.
-  if(payload.verificationVersion!=='a1-database-verb-slots-v4'||
+  if(payload.verificationVersion!=='a1-osd-schreiben-v6-20261101'||
+     !payload.osdRubric ||
+     !Number.isInteger(payload.score)||payload.score<0||payload.score>10 ||
+     ![0,1].includes(payload.osdRubric.osdK)||
+     ![0,1].includes(payload.osdRubric.osdT)||
+     !Number.isInteger(payload.osdRubric.osdL)||payload.osdRubric.osdL<0||payload.osdRubric.osdL>4 ||
+     !Number.isInteger(payload.osdRubric.osdF)||payload.osdRubric.osdF<0||payload.osdRubric.osdF>4 ||
+     !Number.isInteger(payload.osdRubric.textLengthDeduction)||
+     !Number.isInteger(payload.osdRubric.taskDeduction)||
+     payload.osdRubric.wordCount!==wc ||
+     payload.osdRubric.criteriaVersion!=='ÖSD A1 Schreiben v6.0' ||
      payload.taskIndex!==idx ||
      payload.taskFingerprint!==fingerprintOpenMail(idx) ||
      !Array.isArray(payload.points)||payload.points.length!==3 ||
@@ -3048,7 +3091,7 @@ $('check').onclick=async()=>{
      typeof payload.correctedText!=='string'||!payload.correctedText.trim() ||
      typeof payload.translationSr!=='string'||!payload.translationSr.trim() ||
      !Array.isArray(payload.sentenceFeedback)){
-   throw Error('Cloudflare a1nivo koristi staru ili nepotpunu proveru. Potrebna je nova AI verzija sa proverom zamenica i ispravljenih rečenica prema bazi svih 35 mejlova.');
+   throw Error('Cloudflare A1 Worker koristi staro bodovanje. Objavi Worker „DE-MAX_A1_WORKER_OSD_V6_KRITERIJUM_20261101.txt“ sa zvaničnim ÖSD A1 kriterijumom iz PDF-a.');
   }
   if(current===idx&&$('answer').value===answerText){
    const data={...payload,mode:'ai'};
@@ -3516,7 +3559,7 @@ function renderMailGrid(){
   // Status „Proveren” se stiče samo eksplicitnom proverom završenog odgovora.
   const checked=Boolean(count>=15 && saved.completed[i]===draft && saved.results[i] &&
    saved.results[i].text===draft && saved.results[i].data?.mode==='ai' &&
-   saved.results[i].data?.verificationVersion==='a1-database-verb-slots-v4');
+   saved.results[i].data?.verificationVersion==='a1-osd-schreiben-v6-20261101');
   if(checked)finished++;
   const started=!checked&&count>0;
   const button=document.createElement('button');button.type='button';
