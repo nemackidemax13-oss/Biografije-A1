@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#eaf3ff">
+<meta name="description" content="DE-MAX Tutin – A1 opis cele slike, sedam koraka i vežbanje nemačkog jezika.">
+<title>DE-MAX Tutin | A1 – Opis cele slike · Uputstvo</title>
+<style>
+:root{color-scheme:light;--navy:#173b70;--blue:#235fa9;--light:#eaf3ff;--line:#dce8f7;--green:#15904c}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;overscroll-behavior:none}
+body{background:linear-gradient(140deg,#e8f2ff,#f9fbff);display:flex;align-items:center;justify-content:center;color:var(--navy);font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+button,a{-webkit-tap-highlight-color:transparent}
+.welcome{height:100vh;height:100dvh;min-height:0;width:min(100vw,480px);background:#fff;padding:clamp(7px,1.3vh,12px);display:grid;grid-template-rows:auto auto auto minmax(0,1fr) auto auto;gap:clamp(5px,1.1vh,10px);box-shadow:0 10px 45px #14396a19;overflow:hidden}
+.brand{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:2px 5px;min-height:24px}
+.brand b{color:#d51d3b;font-style:italic;font-size:clamp(17px,2.4vh,21px);font-weight:1000;letter-spacing:-.6px}
+.brand span{font-size:clamp(10px,1.4vh,12px);font-weight:850;color:#315f96;white-space:nowrap}
+.hero{background:linear-gradient(110deg,#eaf4ff,#f8fbff);border:1px solid #d7e6f8;border-radius:13px;text-align:center;padding:clamp(7px,1.3vh,12px) 6px}
+.hero .eyebrow{font-size:clamp(10px,1.4vh,12px);color:#607fa0;letter-spacing:1.1px;font-weight:850;margin:0 0 2px}
+.hero h1{margin:0;color:#174983;font-size:clamp(20px,3.2vh,29px);line-height:1.15;font-weight:1000}
+.hero h2{margin:4px 0 0;color:#d31f3d;font-size:clamp(12px,1.85vh,16px);line-height:1.2;font-weight:900}
+.instructions{background:#fff;border:1px solid #e0e9f5;border-radius:10px;padding:clamp(6px,1vh,10px) 10px;text-align:center}
+.instructions strong{font-size:clamp(11px,1.65vh,13px);color:#174983}
+.instructions p{font-size:clamp(10px,1.5vh,12px);line-height:1.35;color:#52708d;margin:3px 0 0}
+.steps{margin:0;padding:0;list-style:none;display:grid;grid-template-rows:repeat(7,minmax(0,1fr));gap:clamp(3px,.7vh,6px);min-height:0}
+.steps li{min-height:0;border:1px solid var(--line);border-radius:9px;background:#f7faff;display:flex;align-items:center;gap:10px;padding:3px clamp(8px,2vw,12px)}
+.steps li:nth-child(2n){background:#fff}
+.steps .number{flex:0 0 auto;display:grid;place-items:center;width:clamp(23px,3.9vh,31px);height:clamp(23px,3.9vh,31px);border-radius:8px;background:#e3efff;color:#2064b2;font-weight:950;font-size:clamp(11px,1.6vh,14px)}
+.steps li:last-child{background:#eaf7ef;border-color:#c5e5ce}
+.steps li:last-child .number{background:#16904d;color:white}
+.steps .step-name{font-weight:850;font-size:clamp(11px,1.75vh,14px);line-height:1.15;color:#214d81}
+.steps li:last-child .step-name{color:#16613d}
+.slogan{text-align:center;min-height:0;padding:clamp(3px,.9vh,7px) 4px 1px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
+.slogan .love{font-family:"Segoe Script","Apple Chancery","Brush Script MT",Georgia,cursive;font-weight:700;font-style:italic;font-size:clamp(15px,2.6vh,21px);line-height:1.25;color:#bd2545;white-space:nowrap;letter-spacing:-.25px}
+.slogan .tutin{color:#1b4e85;font-size:clamp(10px,1.65vh,13px);font-weight:900;letter-spacing:1px;text-transform:uppercase}
+.start{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:clamp(41px,6vh,51px);padding:7px 13px;background:#15904c;color:white;text-decoration:none;border:1px solid #0e7940;border-radius:10px;font-weight:900;box-shadow:0 3px 9px #16834d23}
+.start span{flex:1;text-align:center;font-size:clamp(12px,2vh,16px)}
+.start svg{flex:none}
+.start:focus-visible{outline:3px solid #224d9b;outline-offset:2px}
+.start:active{background:#0c713b}
+@media(max-height:570px){
+ .welcome{padding:5px;gap:4px}
+ .brand{min-height:21px}
+ .hero{padding:5px}
+ .hero h1{font-size:20px}
+ .hero h2{font-size:12px;margin-top:2px}
+ .instructions{padding:4px 7px}
+ .instructions p{font-size:10px;margin-top:1px}
+ .steps{gap:3px}
+ .steps li{padding:2px 8px}
+ .steps .step-name{font-size:11px}
+ .slogan{padding:1px}
+ .slogan .love{font-size:15px}
+ .start{min-height:40px}
+}
+@media(max-width:350px){.slogan .love{font-size:14px}.steps .step-name{font-size:11px}.steps li{gap:7px}}
+@media(max-height:430px){.hero .eyebrow,.instructions p{display:none}.hero{padding:3px}.steps li{padding:0 7px}.slogan .tutin{display:none}.slogan .love{font-size:13px}}
+</style>
+</head>
+<body>
+<main class="welcome" aria-label="A1 opis cele slike – početna stranica sa uputstvom">
+ <header class="brand"><b>DE-MAX</b><span>TUTIN · NEMAČKI JEZIK A1</span></header>
+ <section class="hero" aria-labelledby="mainTitle">
+  <p class="eyebrow">ŠABLON ZA USMENI OPIS</p>
+  <h1 id="mainTitle">A1 – Opis cele slike</h1>
+  <h2>7 koraka opisa</h2>
+ </section>
+ <section class="instructions" aria-label="Uputstvo za vežbanje">
+  <strong>Uputstvo za učenike</strong>
+  <p>U svakom koraku dodaj rečenice pritiskom na <b>+</b>. Prelazi dugmetom <b>Dalje</b>, a na kraju pogledaj ceo svoj opis.</p>
+ </section>
+ <ol class="steps" aria-label="Sedam koraka opisa slike">
+  <li><span class="number">1</span><span class="step-name">Opis osoba</span></li>
+  <li><span class="number">2</span><span class="step-name">Razgovor osoba</span></li>
+  <li><span class="number">3</span><span class="step-name">Mesto osoba na slici</span></li>
+  <li><span class="number">4</span><span class="step-name">Izgled osoba na slici</span></li>
+  <li><span class="number">5</span><span class="step-name">Odeća osoba na slici</span></li>
+  <li><span class="number">6</span><span class="step-name">Detalji na slici</span></li>
+  <li><span class="number">7</span><span class="step-name">Moj opis cele slike</span></li>
+ </ol>
+ <div class="slogan" aria-label="Slogan DE-MAX Tutin">
+  <div class="love">S ljubavlju učimo nemački</div>
+  <div class="tutin">De-Max Tutin</div>
+ </div>
+ <a class="start" href="./1-opis-osoba.html" aria-label="Započni prvi korak: Opis osoba"><span>Započni: 1. Opis osoba</span><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></a>
+</main>
+</body>
+</html>
