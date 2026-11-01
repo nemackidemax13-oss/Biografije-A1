@@ -2410,6 +2410,53 @@ html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.promp
  }
 }
 
+
+/* A1/A2 identicno: dok je tastatura otvorena, BEZ skrolovanja gore-dole.
+   Svi delovi pisanja i sam textarea ostaju nepokretni; samo tastatura kuca.
+   Poredjenje: A2 "B1_A2_STYLE_KEYBOARD_FIXED_NO_VERTICAL_SWIPE". */
+@media(max-width:799px){
+ html:has(body.view-mail.mobile-writing.keyboardOpen),
+ html body.view-mail.mobile-writing.keyboardOpen{
+  overflow:hidden!important;
+  overscroll-behavior:none!important;
+  touch-action:none!important;
+ }
+ html body.view-mail.mobile-writing.keyboardOpen .app,
+ html body.view-mail.mobile-writing.keyboardOpen main.workspace,
+ html body.view-mail.mobile-writing.keyboardOpen section#answerPanel,
+ html body.view-mail.mobile-writing.keyboardOpen #answerPanel .editorarea,
+ html body.view-mail.mobile-writing.keyboardOpen #answerPanel .editorarea .task-paired,
+ html body.view-mail.mobile-writing.keyboardOpen #answerPanel .editorarea #a1DraftFrame{
+  overflow:hidden!important;
+  overscroll-behavior:none!important;
+  touch-action:none!important;
+ }
+ html body.view-mail.mobile-writing.keyboardOpen #answerPanel .editorarea #a1DraftFrame #answer{
+  overflow-x:hidden!important;
+  overflow-y:hidden!important;
+  overscroll-behavior:none!important;
+  touch-action:none!important;
+  -webkit-overflow-scrolling:auto!important;
+  scrollbar-width:none!important;
+ }
+ html body.view-mail.mobile-writing.keyboardOpen #answerPanel .editorarea #a1DraftFrame #answer::-webkit-scrollbar{
+  width:0!important;
+  display:none!important;
+ }
+ /* Vracanje pregleda celog mejla kada tastatura nije otvorena. */
+ html body.view-mail.mobile-writing:not(.keyboardOpen) #answerPanel .editorarea #a1DraftFrame #answer{
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  touch-action:pan-y!important;
+  overscroll-behavior:contain!important;
+  -webkit-overflow-scrolling:touch!important;
+ }
+ /* Tajmer, pitanja i pet dugmadi ostaju na svojim mestima. */
+ html body.view-mail.mobile-writing.keyboardOpen #answerPanel .editorarea .a1-write-whitebar,
+ html body.view-mail.mobile-writing.keyboardOpen #answerPanel .editorarea .foot{
+  flex-shrink:0!important;
+ }
+}
 </style>
 </head>
 <body class="view-intro a1-translation-off">
@@ -3185,6 +3232,11 @@ window.addEventListener('resize',()=>requestAnimationFrame(updateA1DraftRail));
    dok su pitanja i donja dugmad fiksirani u dostupnoj visini. */
 function a1WriterOutsideScrollBlocked(event){
  if(!document.body.classList.contains('mobile-writing'))return false;
+ // Isto kao u A2: kada je Android/iOS tastatura otvorena, nema
+ // vertikalnog prevlačenja ni spolja ni unutar napisanog mejla.
+ if(document.body.classList.contains('keyboardOpen'))return true;
+ // Nakon zatvaranja tastature može se pregledati ceo napisani mejl,
+ // ali sama stranica i pitanja ostaju fiksirani.
  if(event.target?.closest?.('#answer, #a1ScrollRail'))return false;
  return true;
 }
