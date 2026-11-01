@@ -847,6 +847,12 @@ function showWizard(position){
   $("#sampleNumber").textContent=(wizardPosition+1)+".";
   $("#samplehead").textContent=PAGE_QUESTIONS[wizardPosition];
   $("#samplesr").textContent=PAGE_TRANSLATIONS[wizardPosition];
+  if(wizardPosition===0){
+   $("#samplehead").textContent="";
+   $("#samplesr").textContent="";
+  }else if(wizardPosition===1){
+   $("#samplehead").innerHTML='<span class="conversation-question-first">Was sehen Sie auf dem Bild?</span><span class="conversation-question-second">Worüber sprechen die Personen?</span>';
+  }
  }
  $("#wizardTitle").textContent=(wizardPosition+1)+". "+WIZARD_NAMES[wizardPosition];
  $("#wizardCounter").textContent=(wizardPosition+1)+" / 9";
