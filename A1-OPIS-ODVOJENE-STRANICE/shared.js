@@ -730,7 +730,7 @@ if("ResizeObserver" in window){new ResizeObserver(()=>renderList()).observe($("#
 window.addEventListener("resize",()=>{renderList();renderChosen()});
 
 // Kretanje kroz sedam odvojenih ekrana: šest tema + sastavljeni opis.
-const WIZARD_NAMES=["Opis osoba","Razgovor","Mesto","Izgled osoba","Odeća","Detalji","Moj opis"];
+const WIZARD_NAMES=["Opis osoba","Razgovor na slici","Mesto osoba na slici","Izgled osoba na slici","Odeća osoba na slici","Detalji na slici","Moj opis cele slike"];
 
 const PAGE_LINKS=["1-opis-osoba.html","2-razgovor.html","3-mesto.html","4-izgled-osoba.html","5-odeca.html","6-detalji.html","7-moj-opis.html"];
 const PAGE_INDEX=Math.max(0,Math.min(6,Number(document.body.dataset.stepPage)||0));
@@ -793,10 +793,13 @@ function showWizard(position){
  $("#wizardCounter").textContent=(wizardPosition+1)+" / 7";
  $("#wizardFooterCount").textContent=summary?"Završni opis":"Korak "+(wizardPosition+1)+" od 7";
  $("#wizardBack").disabled=wizardPosition===0;
- $("#wizardBack").textContent="❮ Nazad";
- $("#wizardBack").title=wizardPosition===0?"Prvi korak":"Nazad: "+wizardPosition+". "+WIZARD_NAMES[wizardPosition-1];
+ const previousLabel=wizardPosition===0?"Nazad":"Nazad: "+wizardPosition+". "+WIZARD_NAMES[wizardPosition-1];
+ $("#wizardBack").innerHTML='<span class="back-arrow" aria-hidden="true">❮</span><span class="back-label">'+escapeHTML(previousLabel)+'</span>';
+ $("#wizardBack").title=wizardPosition===0?"Prvi korak":previousLabel;
+ $("#wizardBack").setAttribute("aria-label",previousLabel);
  const nextLabel=summary?"Od početka":"Dalje: "+(wizardPosition+2)+". "+WIZARD_NAMES[wizardPosition+1];
  $("#wizardForward").innerHTML='<span class="next-label">'+escapeHTML(nextLabel)+'</span><span class="next-arrow" aria-hidden="true">❯</span>';
+ $("#wizardForward").setAttribute("aria-label",nextLabel);
  $("#wizardHint").textContent=summary?"Sve izabrane rečenice na preglednim stranama.":wizardPosition===0?"Dodirni + da dodaš rečenicu u svoj opis.":wizardPosition===1?"Izaberi rečenice o razgovoru. Prvi izbor je sačuvan.":"Dodirni + da dodaš ono što želiš.";
  document.querySelectorAll(".wizard-progress i").forEach((node,i)=>{
   node.classList.toggle("done",i<wizardPosition);
