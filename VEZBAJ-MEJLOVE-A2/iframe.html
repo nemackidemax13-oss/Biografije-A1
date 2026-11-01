@@ -4213,7 +4213,7 @@ function convertA2Result(d,answer){
    comment:String(d.questionFeedback?.[i]||"Nema komentara.")})),
   strengths:[d.perspectiveFeedback].filter(v=>typeof v==="string"&&v.trim()),
   improvements:[d.tenseFeedback,...contextIssues].filter(v=>typeof v==="string"&&v.trim()),
-  contextIssues,issues,summary:String(d.feedback||""),
+  contextIssues,issues,formalitiesNotes:Array.isArray(d.formalitiesNotes)?d.formalitiesNotes.map(String):[],summary:String(d.feedback||""),
   corrected:String(d.correctedText||""),corrected_sr:String(d.translationSr||""),
   correctedSegments:a2MarkedSegments(answer,d.correctedText),
   modelEmail:String(d.modelEmail||""),modelTranslationSr:String(d.modelTranslationSr||""),
@@ -4245,6 +4245,7 @@ function renderResult(d){
  r.append(ul);
  if(d.strengths?.length)textSection(r,"Šta je dobro",d.strengths);
  if(d.improvements?.length)textSection(r,"Šta treba ispraviti",d.improvements);
+ if(d.formalitiesNotes?.length)textSection(r,"Napomena — pozdrav i potpis",d.formalitiesNotes);
  if(!document.getElementById("demaxA2B1CorrectionStyles")){
   const style=document.createElement("style");style.id="demaxA2B1CorrectionStyles";
   style.textContent=[
