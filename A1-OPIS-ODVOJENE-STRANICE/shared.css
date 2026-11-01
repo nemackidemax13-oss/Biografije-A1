@@ -548,3 +548,52 @@ body.summary-mode .separate-header{height:70px!important}
 @media(max-width:355px){
  .separate-header h1{font-size:16.5px!important}
 }
+
+
+/* Sve postavke zadataka u centru, manji tekst i jasno plave boje. */
+.separate-header h1{
+ display:block!important;
+ width:100%!important;
+ text-align:center!important;
+ justify-self:center!important;
+ margin:0 auto!important;
+ font-size:17px!important;
+ font-weight:900!important;
+}
+.example{
+ padding-left:39px!important;
+ padding-right:39px!important;
+}
+.example .sample-content{
+ width:100%!important;
+ display:flex!important;
+ flex-direction:column!important;
+ justify-content:center!important;
+ align-items:center!important;
+ text-align:center!important;
+ gap:3px!important;
+}
+.example .samplehead{
+ width:100%!important;
+ text-align:center!important;
+ font-size:13px!important;
+ line-height:1.16!important;
+ color:#175bb0!important;
+}
+.example .samplesr{
+ width:100%!important;
+ text-align:center!important;
+ font-size:11px!important;
+ line-height:1.16!important;
+ color:#175bb0!important;
+}
+@media(max-height:670px){
+ .separate-header h1{font-size:15.5px!important}
+ .example .samplehead{font-size:12px!important}
+ .example .samplesr{font-size:10px!important}
+}
+@media(max-width:350px){
+ .separate-header h1{font-size:15.5px!important}
+ .example .samplehead{font-size:11.8px!important}
+ .example .samplesr{font-size:9.8px!important}
+}
