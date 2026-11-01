@@ -2199,6 +2199,117 @@ html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.promp
  #mailHome .mail-home-hero{padding-top:42px}
  #homeBackInstructions{top:8px;right:8px;min-height:28px;padding:5px 9px;font-size:10px}
 }
+
+/* ÖSD A1 – tastatura i polje za mejl kao u A2 (telefon/iframe).
+   Bela traka i 3 pitanja na vrhu; pisanje zauzima ostatak; 5 dugmadi
+   ostaje iznad otvorene tastature. Posle zatvaranja polje popunjava ekran. */
+@media(max-width:799px){
+ html:has(body.view-mail.mobile-writing),
+ html body.view-mail.mobile-writing{
+  overflow:hidden!important;
+  overscroll-behavior:none!important;
+ }
+ html body.view-mail.mobile-writing{
+  position:fixed!important;
+  inset:auto!important;
+  left:0!important;
+  right:0!important;
+  top:var(--mobile-visible-top,0px)!important;
+  width:100%!important;
+  height:var(--mobile-visible-height,100dvh)!important;
+  max-height:var(--mobile-visible-height,100dvh)!important;
+ }
+ html body.view-mail.mobile-writing .app,
+ html body.view-mail.mobile-writing main.workspace,
+ html body.view-mail.mobile-writing section#answerPanel{
+  display:flex!important;
+  flex-direction:column!important;
+  flex:1 1 0%!important;
+  height:100%!important;
+  min-height:0!important;
+  max-height:100%!important;
+  overflow:hidden!important;
+ }
+ html body.view-mail.mobile-writing #answerPanel .editorarea,
+ html body.view-mail.mobile-writing #answerPanel.has-result .editorarea{
+  display:flex!important;
+  flex-direction:column!important;
+  flex:1 1 0%!important;
+  height:0!important;
+  min-height:0!important;
+  max-height:100%!important;
+  overflow:hidden!important;
+  padding:3px 6px 3px!important;
+  gap:3px!important;
+  margin:0!important;
+  box-sizing:border-box!important;
+ }
+ html body.view-mail.mobile-writing #answerPanel .editorarea .a1-write-whitebar{
+  order:-1!important;
+  flex:0 0 29px!important;
+  min-height:29px!important;
+  max-height:29px!important;
+  height:29px!important;
+ }
+ html body.view-mail.mobile-writing #answerPanel .editorarea .task-paired{
+  order:0!important;
+  flex:0 1 auto!important;
+  min-height:0!important;
+  max-height:46%!important;
+  overflow:hidden!important;
+  overflow-y:hidden!important;
+  touch-action:none!important;
+ }
+ html body.view-mail.mobile-writing #answerPanel .editorarea textarea#answer{
+  display:block!important;
+  order:1!important;
+  flex:1 1 0%!important;
+  height:0!important;
+  min-height:40px!important;
+  max-height:none!important;
+  width:100%!important;
+  margin:0!important;
+  padding:6px 8px!important;
+  font-size:var(--a1-write-font,16px)!important;
+  line-height:1.33!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  touch-action:pan-y!important;
+  overscroll-behavior:contain!important;
+  -webkit-overflow-scrolling:touch!important;
+  resize:none!important;
+ }
+ html body.view-mail.mobile-writing #answerPanel .editorarea .foot{
+  order:3!important;
+  display:grid!important;
+  flex:0 0 31px!important;
+  height:31px!important;
+  min-height:31px!important;
+  max-height:31px!important;
+  width:100%!important;
+  padding:2px 1px!important;
+  margin:0!important;
+  box-sizing:border-box!important;
+  grid-template-columns:minmax(0,1.55fr) 24px 24px minmax(0,.95fr) minmax(0,1.35fr)!important;
+  grid-template-rows:27px!important;
+  column-gap:3px!important;
+  align-items:center!important;
+  background:#fff!important;
+ }
+ html body.view-mail.mobile-writing.keyboardOpen #answerPanel .editorarea .foot{
+  visibility:visible!important;
+  opacity:1!important;
+ }
+ html body.view-mail.mobile-writing #answerPanel .editorarea .mini-progress{
+  display:none!important;
+ }
+}
+@media(max-width:355px){
+ html body.view-mail.mobile-writing #answerPanel .editorarea .foot{
+  grid-template-columns:minmax(0,1.55fr) 22px 22px minmax(0,.95fr) minmax(0,1.35fr)!important;
+  column-gap:2px!important;
+ }
+}
 </style>
 </head>
 <body class="view-intro a1-translation-off">
@@ -2618,10 +2729,18 @@ $('answer').addEventListener('focus',()=>{
  if(document.body.classList.contains('reading-mode'))toggleReading(false);
  document.body.classList.add('is-typing');
  a1ForceFull=false;
+ a1KeyboardRestored=false;
+ a1PreviousGeometry=false;
+ a1KeyboardWasVisible=false;
+ mailFocusAt=Date.now();
 });
 $('answer').addEventListener('blur',()=>{
  document.body.classList.remove('is-typing');
- if(document.body.classList.contains('mobile-writing')){a1ForceFull=true;requestAnimationFrame(setMobileVisibleHeight);setTimeout(setMobileVisibleHeight,180);}
+ if(document.body.classList.contains('mobile-writing')){
+  a1ForceFull=true;a1KeyboardRestored=true;
+  requestAnimationFrame(setMobileVisibleHeight);
+  [90,180,350,650].forEach(ms=>setTimeout(setMobileVisibleHeight,ms));
+ }
  mailFocusAt=0;
  mailParentVisibleHeight=0;
 });
@@ -2732,7 +2851,7 @@ $('a1WriterMinus').onclick=()=>a1AdjustWriter(-1);
 $('a1WriterPlus').onclick=()=>a1AdjustWriter(1);
 $('a1WriterBack').onclick=()=>closeMobileWriting(false);
 $('a1FullScreen').onclick=()=>{
- a1ForceFull=true;$('answer').blur();
+ a1ForceFull=true;a1KeyboardRestored=true;$('answer').blur();
  const full=Math.max(window.innerHeight,mailViewportBeforeKeyboard||0);
  if(full>0)document.documentElement.style.setProperty('--mobile-visible-height',full+'px');
  setMobileVisibleHeight();setTimeout(setMobileVisibleHeight,160);setTimeout(setMobileVisibleHeight,420);
@@ -2748,37 +2867,61 @@ document.addEventListener('visibilitychange',a1UpdateClock);
 let mailViewportBeforeKeyboard=0;
 let mailFocusAt=0;
 let mailParentVisibleHeight=0;
+let a1KeyboardWasVisible=false;
+let a1PreviousGeometry=false;
+let a1PreviousViewport=0;
+let a1KeyboardRestored=false;
 function setMobileVisibleHeight(){
  if(!document.body.classList.contains('mobile-writing'))return;
  const vv=window.visualViewport;
- const inner=Math.max(1,Math.floor(window.innerHeight));
+ const inner=Math.max(1,Math.floor(window.innerHeight||0));
  const visual=Math.max(1,Math.floor(vv?.height||inner));
  const raw=Math.min(inner,visual);
- const keyboardRect=window.navigator.virtualKeyboard?.boundingRect;
- const apiKeyboardHeight=Math.max(0,Math.floor(keyboardRect?.height||0));
- const baseline=Math.max(raw,mailViewportBeforeKeyboard||raw);
- let height=raw;
- let offset=Math.max(0,Math.floor(vv?.offsetTop||0));
- if(apiKeyboardHeight>70)height=Math.min(height,Math.max(1,inner-apiKeyboardHeight));
- if(mailParentVisibleHeight>100)height=Math.min(height,mailParentVisibleHeight);
- const writingFocused=document.activeElement===$('answer');
- const keyboardNotReported=writingFocused && mailFocusAt>0 &&
-   Date.now()-mailFocusAt>=420 && baseline-raw<80 &&
-   apiKeyboardHeight<70 && !mailParentVisibleHeight;
- if(keyboardNotReported&&!a1ForceFull){
-   // Pregledaci unutar iframe-a cesto ne menjaju visualViewport.
-   // Rezervni prostor (57% visine) spusta traku blize tastaturi ako resize nije prijavljen.
-   height=Math.min(height,Math.max(190,Math.floor(baseline*.57)));
+ const top=Math.max(0,Math.floor(vv?.offsetTop||0));
+ const focused=document.activeElement===$('answer');
+ const keyboardRect=navigator.virtualKeyboard?.boundingRect;
+ const virtualHeight=Math.max(0,Math.floor(keyboardRect?.height||0));
+ const geometry=focused&&virtualHeight>80;
+ const full=Math.max(inner,visual,mailViewportBeforeKeyboard||raw);
+ if(!focused)mailViewportBeforeKeyboard=Math.max(mailViewportBeforeKeyboard,full);
+ const isResized=focused&&full-raw>105;
+ const parentResized=focused&&mailParentVisibleHeight>100&&full-mailParentVisibleHeight>100;
+ const measured=geometry||isResized||parentResized;
+ // Kao na A2: kada se tastatura skloni, ekran se vraća u punu visinu
+ // čak i ako Android WebView zadrži fokus u tekst-polju.
+ if(focused&&a1PreviousGeometry&&!geometry)a1KeyboardRestored=true;
+ if(focused&&a1KeyboardWasVisible&&
+    a1PreviousViewport>0&&a1PreviousViewport<full-105&&raw>=full-65){
+   a1KeyboardRestored=true;
  }
- if(a1ForceFull&&!writingFocused)height=Math.max(height,mailViewportBeforeKeyboard||0);
+ if(!focused){a1KeyboardRestored=true;a1ForceFull=true;}
+ const fallback=focused&&!measured&&!a1ForceFull&&!a1KeyboardRestored&&
+    mailFocusAt>0&&Date.now()-mailFocusAt>=250;
+ const keyboardOpen=focused&&!a1ForceFull&&!a1KeyboardRestored&&(measured||fallback);
+ let height=full;
+ if(keyboardOpen){
+   if(geometry)height=Math.min(raw,Math.max(1,Math.floor(keyboardRect.top-top)));
+   else if(parentResized)height=Math.min(raw,mailParentVisibleHeight);
+   else if(isResized)height=raw;
+   else height=Math.min(raw,Math.max(190,Math.floor(full*.57)));
+ }
  height=Math.max(165,Math.floor(height));
  document.documentElement.style.setProperty('--mobile-visible-height',height+'px');
- document.documentElement.style.setProperty('--mobile-visible-top',offset+'px');
+ document.documentElement.style.setProperty('--mobile-visible-top',(keyboardOpen?top:0)+'px');
+ document.body.classList.toggle('keyboardOpen',keyboardOpen);
  document.body.classList.toggle('keyboard-tight',height<410);
  document.body.classList.toggle('keyboard-micro',height<310);
+ a1PreviousViewport=raw;
+ a1PreviousGeometry=geometry;
+ a1KeyboardWasVisible=keyboardOpen;
 }
+
 function openMobileWriting(){
  a1ForceFull=false;
+ a1KeyboardRestored=false;
+ a1PreviousGeometry=false;
+ a1KeyboardWasVisible=false;
+ a1PreviousViewport=0;
  if(!window.matchMedia('(max-width:799px)').matches){document.getElementById('answerPanel').scrollIntoView({behavior:'smooth'});return}
  document.body.classList.remove('reading-mode','mobile-review');
  document.body.classList.add('mobile-writing','is-typing');
@@ -2823,7 +2966,8 @@ window.visualViewport?.addEventListener('resize',()=>requestAnimationFrame(fitMa
 
 function closeMobileWriting(toResult=false){
  $('answer').blur();
- document.body.classList.remove('mobile-writing','is-typing','keyboard-tight','keyboard-micro');
+ a1KeyboardRestored=true;
+ document.body.classList.remove('mobile-writing','is-typing','keyboardOpen','keyboard-tight','keyboard-micro');
  document.body.classList.toggle('mobile-review',toResult);
  $('writeHeading').textContent=toResult?'REZULTAT PROVERE':'2. NAPIŠI SVOJ ODGOVOR';
  growMailEditor();
@@ -2834,6 +2978,42 @@ $('mobileStartTop').addEventListener('click',openMobileWriting);
 $('mobileStartBottom').addEventListener('click',openMobileWriting);
 $('mobileBackToMail').addEventListener('click',()=>closeMobileWriting(false));
 $('mobileBackInline').addEventListener('click',()=>closeMobileWriting(false));
+
+/* Android/iOS: praćenje zatvaranja tastature i u ugrađenom iframe-u,
+   kao na A2. Ne dira se sačuvan mejl niti tok provere. */
+let a1ViewportSignature='';
+setInterval(()=>{
+ if(!window.matchMedia('(max-width:799px)').matches||
+    !document.body.classList.contains('mobile-writing'))return;
+ const vv=window.visualViewport, vk=navigator.virtualKeyboard?.boundingRect;
+ const signature=[window.innerHeight,Math.round(vv?.height||0),
+  Math.round(vv?.offsetTop||0),Math.round(vk?.height||0),
+  document.activeElement===$('answer')?1:0].join(':');
+ if(signature!==a1ViewportSignature){
+  a1ViewportSignature=signature;
+  setMobileVisibleHeight();
+ }
+},300);
+function a1RestoreAfterKeyboardBack(){
+ if(!document.body.classList.contains('mobile-writing'))return;
+ a1ForceFull=true;
+ a1KeyboardRestored=true;
+ a1KeyboardWasVisible=false;
+ $('answer').blur();
+ setMobileVisibleHeight();
+ [90,220,480].forEach(ms=>setTimeout(setMobileVisibleHeight,ms));
+}
+document.addEventListener('keydown',event=>{
+ if(!['Escape','BrowserBack','GoBack','Back'].includes(event.key))return;
+ if(document.body.classList.contains('mobile-writing')&&
+    (document.body.classList.contains('keyboardOpen')||
+     document.activeElement===$('answer')))a1RestoreAfterKeyboardBack();
+},{capture:true});
+document.addEventListener('visibilitychange',()=>{
+ if(document.visibilityState==='visible'&&
+    document.body.classList.contains('mobile-writing')&&
+    document.activeElement!==$('answer'))a1RestoreAfterKeyboardBack();
+});
 
 // Keyboard API (Android Chrome) when the visual viewport does not shrink.
 window.navigator.virtualKeyboard?.addEventListener?.('geometrychange',setMobileVisibleHeight);
