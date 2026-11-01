@@ -4201,6 +4201,63 @@ function a2MarkedSegments(original,corrected){
  }
  return parts;
 }
+/* A2: kratak i konkretan prikaz AI objašnjenja, bez promene bodovanja. */
+function a2BriefExplanation(value,maxSentences=2,maxChars=260){
+ const clean=String(value||'').replace(/\s+/gu,' ').trim();
+ if(!clean)return '';
+ const sentences=clean.match(/[^.!?]+(?:[.!?]+(?=\s|$)|$)/gu)||[clean];
+ const short=sentences.slice(0,maxSentences).join(' ').trim();
+ if(short.length<=maxChars)return short;
+ const cut=short.slice(0,maxChars);
+ return cut.replace(/\s+\S*$/u,'').trimEnd()+'…';
+}
+function a2StudentSignaturePresent(value){
+ const original=String(value||'').trim();
+ const closing=/(?:liebe|viele|herzliche|beste|freundliche)\s+gr(?:ü|ue|u)(?:ß|ss)e|bis\s+bald|mit\s+freundlichen\s+gr(?:ü|ue|u)(?:ß|ss)en/giu;
+ const matches=[...original.matchAll(closing)];
+ if(!matches.length)return false;
+ const last=matches[matches.length-1];
+ const after=original.slice(last.index+last[0].length)
+  .replace(/^[\s,.:!—–-]+/u,'').trim();
+ return /^[\p{L}][\p{L}'’-]*(?:[ \t]+[\p{L}][\p{L}'’-]*){0,2}[.!]?$/u.test(after);
+}
+function a2PracticeNotes(d){
+ const notes=[],keys=new Set();
+ const add=(value)=>{
+  const note=a2BriefExplanation(value,2,260);
+  const key=note.toLocaleLowerCase('sr').replace(/[^\p{L}\p{N}]+/gu,' ').trim();
+  if(note&&!keys.has(key)){keys.add(key);notes.push(note);}
+ };
+ if(d.offTopic) add('Promašena tema: mejl nije u skladu sa zadatkom. Proveri situaciju i sva četiri pitanja.');
+ for(const issue of (Array.isArray(d.contextIssues)?d.contextIssues:[]).slice(0,2))
+  add('Postavka: '+issue);
+ const weak=(Array.isArray(d.points)?d.points:[])
+  .map((p,i)=>p.answered===false||(Number.isFinite(Number(p.level))&&Number(p.level)<2)?i+1:null)
+  .filter(Boolean);
+ if(weak.length) add('Dopuni ili ispravi odgovore na pitanja: '+weak.join(', ')+'.');
+ if(Number(d.rubric?.closing)===0)
+  add('Nedostaje ili nije ispravan završni pozdrav: Liebe Grüße, Viele Grüße ili Bis bald.');
+ const draft=String(state.drafts?.[current]||$('draft')?.value||'');
+ if(draft.trim()&&!a2StudentSignaturePresent(draft))
+  add('Na kraju mejla napiši svoje ime kao potpis.');
+ if(Number(d.rubric?.opening)===0)
+  add('Proveri početno oslovljavanje primaoca mejla.');
+ const extras=[...(Array.isArray(d.improvements)?d.improvements:[]),
+  ...(Array.isArray(d.formalitiesNotes)?d.formalitiesNotes:[]),d.summary];
+ let extrasUsed=0;
+ for(const info of extras){
+  if(extrasUsed>=2)break;
+  const txt=String(info||'').trim();
+  if(!txt||/^\s*(?:nema (?:grešaka|primedbi)|sve je tačno)/iu.test(txt))continue;
+  if(d.offTopic&&/promašen.{0,12}tem|pogrešn.{0,12}tem/iu.test(txt))continue;
+  if(d.contextIssues?.length&&/postavka\s*\/|odstupanja od postavke/iu.test(txt))continue;
+  const length=notes.length;
+  add(txt);
+  if(notes.length>length)extrasUsed++;
+ }
+ return notes;
+}
+
 function convertA2Result(d,answer){
  const issues=(Array.isArray(d.grammarCorrections)?d.grammarCorrections:[])
   .filter(x=>x?.original&&x?.corrected&&String(x.original).trim()!==String(x.corrected).trim())
@@ -4210,7 +4267,7 @@ function convertA2Result(d,answer){
  return {
   total:Number(d.score),verificationVersion:d.verificationVersion,rubric:d.rubric,
   points:Array.from({length:4},(_,i)=>({answered:Number(d.questionPoints?.[i]||0)>0,
-   comment:String(d.questionFeedback?.[i]||"Nema komentara.")})),
+   level:Number(d.questionPoints?.[i]||0),comment:String(d.questionFeedback?.[i]||"Nema komentara.")})),
   strengths:[d.perspectiveFeedback].filter(v=>typeof v==="string"&&v.trim()),
   improvements:[d.tenseFeedback,...contextIssues].filter(v=>typeof v==="string"&&v.trim()),
   contextIssues,issues,formalitiesNotes:Array.isArray(d.formalitiesNotes)?d.formalitiesNotes.map(String):[],summary:String(d.feedback||""),
@@ -4235,17 +4292,13 @@ function renderResult(d){
   const box=node("div");box.append(node("b",(v??0)+" / "+max),node("span",label));scores.append(box);
  });
  r.append(scores,node("div",(d.total??0)+" / 15 bodova","scoreTotal"),
-  node("p","Napisano: "+(d.wordCount||0)+" reči · Prolaz 3/15 · Cilj 50 reči."),
-  node("p",d.summary||""));
+  node("p","Napisano: "+(d.wordCount||0)+" reči · Prolaz 3/15 · Cilj 50 reči."));
  r.append(node("h4","Odgovori na sva četiri pitanja"));
  const ul=node("ul");
  (d.points||[]).forEach((p,i)=>{
-  ul.append(node("li",(p.answered?"✓ ":"✗ ")+(i+1)+". "+(mails[current]?.questions?.[i]||"")+" — "+(p.comment||"Nema komentara.")));
+  ul.append(node("li",(p.answered?"✓ ":"✗ ")+(i+1)+". "+(mails[current]?.questions?.[i]||"")+" — "+a2BriefExplanation(p.comment||"Nema komentara.",2,280)));
  });
  r.append(ul);
- if(d.strengths?.length)textSection(r,"Šta je dobro",d.strengths);
- if(d.improvements?.length)textSection(r,"Šta treba ispraviti",d.improvements);
- if(d.formalitiesNotes?.length)textSection(r,"Napomena — pozdrav i potpis",d.formalitiesNotes);
  if(!document.getElementById("demaxA2B1CorrectionStyles")){
   const style=document.createElement("style");style.id="demaxA2B1CorrectionStyles";
   style.textContent=[
@@ -4268,17 +4321,18 @@ function renderResult(d){
    box.append(node("div","Greška "+(i+1)+" — "+(it.category||"Gramatika"),"demax-issue-title-v4"));
    box.append(node("div","Napisano: "+it.original,"demax-wrong-v4"));
    box.append(node("div","Ispravljeno: "+it.correction,"demax-right-v4"));
-   box.append(node("div","Objašnjenje: "+it.explanation,"demax-explain-v4"));
+   box.append(node("div","Objašnjenje: "+a2BriefExplanation(it.explanation,2,260),"demax-explain-v4"));
    list.append(box);
   });r.append(list);
  }else r.append(node("p","Nema pronađenih gramatičkih ili pravopisnih grešaka."));
  if(d.offTopic){
   const warning=node("div",undefined,"a2-topic-warning");
   warning.append(node("strong","⚠ Odgovor je na pogrešnu temu"),
-   node("p",d.offTopicReason||"Odgovor se ne odnosi na dati zadatak. Sadržaj može biti ocenjen sa nula bodova."));
+   node("p",a2BriefExplanation(d.offTopicReason||"Odgovor se ne odnosi na dati zadatak. Sadržaj može biti ocenjen sa nula bodova.",2,320)));
   r.append(warning);
  }
- if(d.contextIssues?.length)textSection(r,"Važna odstupanja od postavke (datum, vreme, mesto, tema)",d.contextIssues);
+ const shortNotes=a2PracticeNotes(d);
+ if(shortNotes.length)textSection(r,"Napomene za vežbanje",shortNotes);
  // Glavni ispravljeni mejl je isključivo učenikov tekst — bez novih odgovora.
  if(d.corrected)appendCorrectedTranslation(d,r);
 
