@@ -3069,29 +3069,37 @@ $('check').onclick=async()=>{
    if(response.status===429)problem=problem||'OpenAI je dostigao limit. Proveri stanje API kredita.';
    throw Error(problem||'Cloudflare/OpenAI greska (HTTP '+response.status+').');
   }
-  // Ocenu prikazi iskljucivo ako je AI proverio SVA pitanja prema bazi
-  // i svako bodovano pitanje potkrepio citatom iz ucenikovog odgovora.
-  if(payload.verificationVersion!=='a1-osd-schreiben-v6-20261101'||
-     !payload.osdRubric ||
-     !Number.isInteger(payload.score)||payload.score<0||payload.score>10 ||
-     ![0,1].includes(payload.osdRubric.osdK)||
-     ![0,1].includes(payload.osdRubric.osdT)||
-     !Number.isInteger(payload.osdRubric.osdL)||payload.osdRubric.osdL<0||payload.osdRubric.osdL>4 ||
-     !Number.isInteger(payload.osdRubric.osdF)||payload.osdRubric.osdF<0||payload.osdRubric.osdF>4 ||
-     !Number.isInteger(payload.osdRubric.textLengthDeduction)||
-     !Number.isInteger(payload.osdRubric.taskDeduction)||
-     payload.osdRubric.wordCount!==wc ||
-     payload.osdRubric.criteriaVersion!=='ÖSD A1 Schreiben v6.0' ||
-     payload.taskIndex!==idx ||
-     payload.taskFingerprint!==fingerprintOpenMail(idx) ||
-     !Array.isArray(payload.points)||payload.points.length!==3 ||
-     !Array.isArray(payload.questionFeedback)||payload.questionFeedback.length!==3 ||
-     !Array.isArray(payload.questionEvidence)||payload.questionEvidence.length!==3 ||
-     !Array.isArray(payload.correctedEvidence)||payload.correctedEvidence.length!==3 ||
-     typeof payload.correctedText!=='string'||!payload.correctedText.trim() ||
-     typeof payload.translationSr!=='string'||!payload.translationSr.trim() ||
-     !Array.isArray(payload.sentenceFeedback)){
-   throw Error('Cloudflare A1 Worker koristi staro bodovanje. Objavi Worker „DE-MAX_A1_WORKER_OSD_V6_KRITERIJUM_20261101.txt“ sa zvaničnim ÖSD A1 kriterijumom iz PDF-a.');
+  // Razdvojena provera: stara verzija Workera i nepotpun odgovor nisu isti kvar.
+  const requiredVersion='a1-osd-schreiben-v6-20261101';
+  const serverName=new URL(WORKER_API_URL).host;
+  const returnedVersion=String(payload.verificationVersion||'nije prijavljena').slice(0,100);
+  if(payload.verificationVersion!==requiredVersion){
+    throw Error('Cloudflare server '+serverName+' vratio je verziju „'+returnedVersion+'“, a aplikacija očekuje „'+requiredVersion+'“. Novi Worker je upisan u GitHub, ali za ovaj server mora biti objavljen i u Cloudflare → Workers & Pages → a1nivo → Edit Code → Deploy.');
+  }
+  const rubric=payload.osdRubric;
+  const invalid=[];
+  if(!rubric||typeof rubric!=='object')invalid.push('osdRubric nedostaje');
+  else{
+    if(![0,1].includes(rubric.osdK))invalid.push('K');
+    if(![0,1].includes(rubric.osdT))invalid.push('T');
+    if(!Number.isInteger(rubric.osdL)||rubric.osdL<0||rubric.osdL>4)invalid.push('L');
+    if(!Number.isInteger(rubric.osdF)||rubric.osdF<0||rubric.osdF>4)invalid.push('F');
+    if(!Number.isInteger(rubric.textLengthDeduction))invalid.push('odbitak za dužinu');
+    if(!Number.isInteger(rubric.taskDeduction))invalid.push('odbitak za zadatak');
+    if(rubric.wordCount!==wc)invalid.push('broj reči: lokalno '+wc+', server '+rubric.wordCount);
+    if(rubric.criteriaVersion!=='ÖSD A1 Schreiben v6.0')invalid.push('kriterijum');
+  }
+  if(!Number.isInteger(payload.score)||payload.score<0||payload.score>10)invalid.push('ocena 0–10');
+  if(payload.taskIndex!==idx)invalid.push('broj zadatka');
+  if(payload.taskFingerprint!==fingerprintOpenMail(idx))invalid.push('kontrolna oznaka zadatka');
+  for(const key of ['points','questionFeedback','questionEvidence','correctedEvidence']){
+    if(!Array.isArray(payload[key])||payload[key].length!==3)invalid.push(key+' (3 stavke)');
+  }
+  if(typeof payload.correctedText!=='string'||!payload.correctedText.trim())invalid.push('ispravljeni mejl');
+  if(typeof payload.translationSr!=='string'||!payload.translationSr.trim())invalid.push('srpski prevod');
+  if(!Array.isArray(payload.sentenceFeedback))invalid.push('ispravke rečenica');
+  if(invalid.length){
+    throw Error('Cloudflare server '+serverName+' javlja ÖSD A1 verziju, ali rezultat nije potpun. Neispravna ili nedostajuća polja: '+invalid.join(', ')+'. Proveri najnoviji kod u Cloudflare-u; bez kompletne provere mejl neće biti ocenjen.');
   }
   if(current===idx&&$('answer').value===answerText){
    const data={...payload,mode:'ai'};
