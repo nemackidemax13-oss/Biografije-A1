@@ -2600,7 +2600,7 @@ html body.view-mail.mobile-writing #answerPanel .editorarea .foot button#check.c
       <div class="a1-intro-rule warning"><span>!</span><b>Mejl sa manje od 15 reči se ne boduje (0 bodova).</b></div>
       <div class="a1-intro-rule"><span>▤</span><b>25 ili više reči: bez odbitka. 20–24 reči: −1 bod. 15–19 reči: −2 boda.</b></div>
       <div class="a1-intro-rule"><span>✓</span><b>ÖSD A1 v6.0: K (0–1), T (0–1), rečnik L (0–4), jezička tačnost F (0–4); dodatni odbici za dužinu i nedovoljno odgovorena pitanja.</b></div>
-      <div class="a1-intro-rule"><span>✉</span><b>Na kraju mejla napišite završni pozdrav.</b></div>
+      <div class="a1-intro-rule"><span>✉</span><b>Na kraju mejla napišite završni pozdrav i svoje ime.</b></div>
       <div class="a1-intro-rule"><span>★</span><b>Formular: 5 bodova. Mejl: najviše 10 bodova. Ukupno: 15 bodova.</b></div>
       <div class="a1-intro-rule"><span>✓</span><b>Za prolaz je potrebno najmanje 4 od ukupno 15 bodova.</b></div>
     </div>
@@ -2800,12 +2800,26 @@ function correctA1Umlauts(text){
 }
 
 
-/* Tri prihvatljiva pozdrava na KRAJU A1 mejla; latinicna zamena
-   bez umlauta samo se prepoznaje, a u ispravci se pise standardno. */
-function hasA1Closing(text){
- const txt=String(text||'').replace(/\r/g,'').trim();
- return /(?:liebe\s+gr(?:ü|ue|u)(?:ß|ss)e|viele\s+gr(?:ü|ue|u)(?:ß|ss)e|bis\s+bald)\s*[!,.]?(?:\s*\n\s*[\p{L}][\p{L}' -]{0,45})?\s*$/iu.test(txt);
+/* Zavrsni pozdrav i sopstveni potpis su odvojeni uslovi.
+   Ime moze biti bilo koje; ne poredi se s imenom posiljaoca mejla. */
+function a1ClosingDetails(text){
+ const lines=String(text||'').replace(/\r/g,'').split('\n').map(x=>x.trim()).filter(Boolean);
+ const closing=/^(?:liebe\s+gr(?:ü|ue|u)(?:ß|ss)e|viele\s+gr(?:ü|ue|u)(?:ß|ss)e|bis\s+bald)(?=$|[\s,!.\-])\s*[,!.]?\s*(.*)$/iu;
+ const inlineClosing=/(?:^|[.!?]\s+)(?:liebe\s+gr(?:ü|ue|u)(?:ß|ss)e|viele\s+gr(?:ü|ue|u)(?:ß|ss)e|bis\s+bald)(?=$|[\s,!.\-])\s*[,!.]?\s*(.*)$/iu;
+ const name=value=>{
+  const x=String(value||'').replace(/^[,;:!.\s]+|[,;:!.\s]+$/g,'').trim();
+  if(!x||x.length>65||!/^[\p{L}]{2,35}(?:[-’'][\p{L}]{1,35})?(?:\s+[\p{L}]{1,35}(?:[-’'][\p{L}]{1,35})?){0,3}$/iu.test(x))return '';
+  if(/^(?:hallo|hi|guten|liebe|lieber|liebes|viele|grüße|gruesse|grusse|bis|bald|danke|tschüss|ciao|ich|wir|du|dein|deine|name|unterschrift|mit|freundlichen|schöne|schönen|freue|mich|auf)(?:\s|$)/iu.test(x))return '';
+  return x;
+ };
+ const last=lines.at(-1)||'',prev=lines.length>1?lines.at(-2):'';
+ const final=last.match(closing)||last.match(inlineClosing);
+ if(final)return {hasClosing:true,signature:name(final[1])};
+ const before=prev.match(closing)||prev.match(inlineClosing);
+ if(before)return {hasClosing:true,signature:name(last)||name(before[1])};
+ return {hasClosing:false,signature:lines.length>1?name(last):''};
 }
+function hasA1Closing(text){return a1ClosingDetails(text).hasClosing;}
 function shortReview(text,max=150){
  const value=String(text||'').replace(/\s+/g,' ').replace(/^\s*(?:\d\.\s*|NAPOMENA:\s*)/i,'').trim();
  if(value.length<=max)return value;
@@ -2952,7 +2966,9 @@ function a1PreventAutoSalutation(answer, correctedText, translationSr) {
 function renderResult(r){
  if(words($('answer').value)<15)return;
  const original=$('answer').value;
- const missingClosing=!hasA1Closing(original);
+ const ending=a1ClosingDetails(original);
+ const missingClosing=!ending.hasClosing;
+ const missingSignature=!ending.signature;
  let corrected=correctA1Umlauts(correctSportExpression(r.correctedText||original)).trim();
  const dayHourFix=a1CompleteDayAndHour(current,original,corrected);
  corrected=dayHourFix.text;
@@ -2965,10 +2981,12 @@ function renderResult(r){
  const head=a1ReviewNode('div',null,'a1-ai-result-heading');
  head.append(a1ReviewNode('h3','REZULTAT AI PROVERE · ÖSD A1'));
  const grade=a1ReviewNode('div',null,'a1-score-line');
- const score=Number(r.score);
+ const existingK=Number(r.osdRubric?.osdK||0);
+ const correctedK=(missingClosing||missingSignature)?0:existingK;
+ const score=Math.max(0,Number(r.score||0)-Math.max(0,existingK-correctedK));
  grade.append(a1ReviewNode('strong',(Number.isFinite(score)?Math.max(0,Math.min(10,Math.round(score))):0)+'/10 bodova'),
   a1ReviewNode('span','ÖSD A1 v6.0 · Napisano: '+words(original)+' reči'));
- const rubric=r.osdRubric;
+ const rubric=r.osdRubric?{...r.osdRubric,osdK:correctedK}:null;
  if(rubric&&rubric.criteriaVersion==='ÖSD A1 Schreiben v6.0'){
   const box=a1ReviewNode('section',null,'a1-osd-rubric');
   box.append(a1ReviewNode('h4','KRITERIJUM OCENJIVANJA · ÖSD A1'));
@@ -3060,7 +3078,10 @@ function renderResult(r){
  const umlauts=missingA1Umlauts(original);
  if(umlauts.length&&!/umlaut/i.test(feedback))
   notes.push('Ispravi umlaute: '+[...new Set(umlauts.map(e=>e.from+' → '+e.to))].slice(0,5).join(', ')+'.');
- if(missingClosing)notes.push('U originalnom mejlu nedostaje završni pozdrav. Primer: Liebe Grüße, Bis bald ili Viele Grüße.');
+ if(missingClosing && !/nedostaje.{0,25}pozdrav|završni pozdrav/i.test(feedback))
+  notes.push('Nedostaje završni pozdrav. Primer: Liebe Grüße, Bis bald ili Viele Grüße. Komunikacija (K) je 0/1.');
+ if(missingSignature && !/nedostaje.{0,30}(?:potpis|ime)/i.test(feedback))
+  notes.push('Nedostaje potpis učenika. Na kraju mejla napiši svoje ime ili ime i prezime. Komunikacija (K) je 0/1.');
  const otherNotes=Array.isArray(r.sentenceFeedback)?
   r.sentenceFeedback.filter(x=>x?.explanationSr&&
    (!x.original||!x.corrected||String(x.original).trim()===String(x.corrected).trim()))
