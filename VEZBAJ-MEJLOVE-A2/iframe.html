@@ -4188,20 +4188,7 @@ function renderResult(d){
  if(d.contextIssues?.length)textSection(r,"Važna odstupanja od postavke (datum, vreme, mesto, tema)",d.contextIssues);
  // Glavni ispravljeni mejl je isključivo učenikov tekst — bez novih odgovora.
  if(d.corrected)appendCorrectedTranslation(d,r);
- if(d.suggestedAdditions?.length){
-  const block=node("section",undefined,"a2-teaching-additions");
-  block.append(node("h4","Predlog dopune — ne računa se u tvoju ocenu"),
-   node("p","Ovo su nove rečenice za vežbanje, a ne deo tvog originalnog mejla. Ocena ostaje zasnovana samo na onome što si napisao/la."));
-  const list=node("ol");
-  d.suggestedAdditions.forEach(a=>{
-   const item=node("li");
-   item.append(node("strong","Pitanje "+a.pointIndex+": "),
-     node("div",a.sentence,"a2-suggestion-de"));
-   if(a.explanation)item.append(node("div",a.explanation,"a2-suggestion-sr"));
-   list.append(item);
-  });
-  block.append(list);r.append(block);
- }
+
  // Ceo primer prikazuj SAMO kad nedostaje makar jedno važno pitanje ili je tema promašena.
  const missingPoint=Array.isArray(d.points)&&d.points.some(p=>p.answered===false);
  if(d.modelEmail&&(d.offTopic||missingPoint))appendA2ModelTranslation(d,r);
