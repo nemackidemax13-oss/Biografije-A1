@@ -949,3 +949,40 @@ body[data-step-page="0"] #sceneFilters .scene-arrow:focus-visible{
  body[data-step-page="0"] #sceneFilters .scene-name{font-size:10px!important}
  body[data-step-page="0"] #sceneAll{font-size:9px!important;padding:3px 4px!important;height:24px!important}
 }
+
+
+/* Crvena navigacija, narandzasto sve, Priroda pocetno - 20261102 */
+body[data-step-page="0"] .panel:not(.compose) .paneltitle #selectorTitle{
+ display:none!important;
+}
+body[data-step-page="0"] #sceneFilters{
+ flex:1 1 auto!important;
+ margin:0!important;
+ justify-content:center!important;
+ min-width:0!important;
+}
+body[data-step-page="0"] #sceneFilters .scene-arrow{
+ color:#d51d3b!important;
+ border-color:#efa1ae!important;
+ background:#fff0f3!important;
+ font-weight:1000!important;
+}
+body[data-step-page="0"] #sceneFilters .scene-arrow:active{
+ color:#a6102a!important;
+ background:#ffdce4!important;
+}
+body[data-step-page="0"] #sceneFilters .scene-name{
+ color:#d51d3b!important;
+ font-weight:1000!important;
+}
+body[data-step-page="0"] #sceneAll,
+body[data-step-page="0"] #sceneAll.active{
+ color:#fff!important;
+ background:#f18b12!important;
+ border-color:#c96d00!important;
+ font-weight:950!important;
+ box-shadow:0 1px 3px #a44d0020!important;
+}
+body[data-step-page="0"] #sceneAll:active{
+ background:#d97800!important;
+}
