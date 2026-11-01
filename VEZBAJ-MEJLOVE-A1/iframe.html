@@ -2510,12 +2510,13 @@ html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.promp
     <div class="a1-intro-eyebrow">ÖSD A1 · VEŽBAJ MEJLOVE</div>
     <h1>Uputstvo za pisanje mejla</h1>
     <div class="a1-intro-rules">
-      <div class="a1-intro-rule"><span>⏱</span><b>Vreme za vežbu: 20 minuta.</b></div>
+      <div class="a1-intro-rule"><span>⏱</span><b>Formular i mejl rade se ukupno 20 minuta.</b></div>
       <div class="a1-intro-rule"><span>✓</span><b>Odgovorite na sve tri tačke, odnosno pitanja mejla.</b></div>
       <div class="a1-intro-rule"><span>✎</span><b>Napišite oko 30 reči.</b></div>
       <div class="a1-intro-rule warning"><span>!</span><b>Mejl sa manje od 15 reči se ne boduje.</b></div>
       <div class="a1-intro-rule"><span>✉</span><b>Na kraju mejla napišite završni pozdrav.</b></div>
-      <div class="a1-intro-rule"><span>★</span><b>Maksimalan broj bodova: 10.</b></div>
+      <div class="a1-intro-rule"><span>★</span><b>Formular: 5 bodova. Mejl: najviše 10 bodova. Ukupno: 15 bodova.</b></div>
+      <div class="a1-intro-rule"><span>✓</span><b>Za prolaz je potrebno najmanje 4 od ukupno 15 bodova.</b></div>
     </div>
     <button id="goMailList" class="a1-intro-go" type="button">IZABERI MEJL <span>➜</span></button>
   </div>
@@ -2748,11 +2749,67 @@ function a1ReviewSection(parent,title,cls){
  parent.append(sec);
  return sec;
 }
+/* ÖSD A1: u ispravljenoj verziji mora da postoji i tačan sat ako
+   pitanje zahteva DAN + SAT. Dopuna služi učenju, ne povećava AI bodove. */
+function a1CompleteDayAndHour(mailIndex,studentText,modelText){
+ const questions=ORIGINAL_MAILS[mailIndex]?.q||[];
+ const questionIndex=questions.findIndex(q=>/\bTag\b/i.test(q)&&/\bUhr\b/i.test(q));
+ const fixedSpelling=String(modelText||'').replace(/\bMongag\b/gi,'Montag');
+ if(questionIndex<0)return {text:fixedSpelling,added:false};
+ // Po pravilu je potreban konkretan čas, a ne samo "am Morgen/Abend".
+ const clockRegex=/\b(?:um\s+)?(?:[01]?\d|2[0-3])(?:(?:[:.][0-5]\d))?\s*Uhr\b|\bum\s+(?:[01]?\d|2[0-3])(?::[0-5]\d)?\b|\b(?:[01]?\d|2[0-3]):[0-5]\d\b/i;
+ if(clockRegex.test(fixedSpelling))return {text:fixedSpelling,added:false};
+ const dayRegex=/\b(?:am\s+)?(?:Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)(?:morgen|vormittag|nachmittag|abend)?(?:\s+am\s+(?:Morgen|Vormittag|Nachmittag|Abend))?\b/i;
+ const corpus=String(studentText||'')+'\n'+fixedSpelling;
+ const hour=/\bam\s+Abend\b|\babends\b|\b(?:Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)abend\b/i.test(corpus)?19:
+  /\bam\s+Vormittag\b|\bvormittags\b|\b(?:Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)vormittag\b/i.test(corpus)?10:
+  /\bam\s+Morgen\b|\bmorgens\b|\b(?:Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)morgen\b/i.test(corpus)?9:
+  /\bam\s+Nachmittag\b|\bnachmittags\b|\b(?:Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)nachmittag\b/i.test(corpus)?15:16;
+ const subject=(ORIGINAL_MAILS[mailIndex]?.email||'')+' '+questions.join(' ');
+ const weekend=/\bWochenende\b|\bam\s+Samstag\b|\bam\s+Sonntag\b/i.test(subject);
+ // Izvorni zadatak ima prednost nad proizvoljnim izborom dana.
+ const dayMatch=fixedSpelling.match(dayRegex)||String(studentText||'').replace(/\bMongag\b/gi,'Montag').match(dayRegex);
+ const dayFromText=dayMatch?.[0]?.match(/Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag/i)?.[0]||'';
+ let day=dayFromText ? dayFromText[0].toUpperCase()+dayFromText.slice(1).toLowerCase() : (weekend?'Samstag':'Montag');
+ const dayNames={Montag:'ponedeljak',Dienstag:'utorak',Mittwoch:'sredu',Donnerstag:'četvrtak',Freitag:'petak',Samstag:'subotu',Sonntag:'nedelju'};
+ let result=fixedSpelling;
+ let placed=false;
+ // Pre svega dopuni odgovarajuću rečenicu, bez prepravljanja učenikovog originala.
+ result=result.replace(/[^.!?\n]+[.!?]?/g,sentence=>{
+  if(placed||!dayRegex.test(sentence)||
+     !/\b(?:Zeit|kann|können|komme|kommen|treffen|gehe|gehen|fahre|fahren|möchte|will)\b/i.test(sentence)||
+     /\b(?:keine\s+Zeit|nicht\s+(?:am\s+\w+\s+)?(?:kommen|gehen|fahren|treffen))\b/i.test(sentence))return sentence;
+  placed=true;
+  return sentence.replace(dayRegex,matched=>matched+' um '+hour+' Uhr');
+ });
+ if(!placed){
+  const period=/\bam\s+(Morgen|Vormittag|Nachmittag|Abend)\b/i;
+  const positive=result.match(/[^.!?\n]+[.!?]?/g)||[];
+  const choice=positive.find(part=>period.test(part)&&/\b(?:Zeit|komme|kommen|treffen|gehe|gehen|fahre|fahren)\b/i.test(part));
+  if(choice){
+   const updated=choice.replace(period,(_,part)=>'am '+day+part.toLowerCase()+' um '+hour+' Uhr');
+   result=result.replace(choice,updated);
+   placed=true;
+  }
+ }
+ if(!placed){
+  const addition='Ich habe am '+day+' um '+hour+' Uhr Zeit.';
+  const closing=result.match(/\n\s*(?=(?:Liebe\s+Grüße|Viele\s+Grüße|Bis\s+bald)\b)/i);
+  if(closing)result=result.slice(0,closing.index).trimEnd()+'\n'+addition+'\n'+result.slice(closing.index).trimStart();
+  else result=result.trimEnd()+'\n'+addition;
+ }
+ return {text:result,added:true,day,hour,questionIndex,
+  sr:'Dopuna ispravljenog mejla: '+(questions[questionIndex].toLowerCase().includes('kommst')?'Dolazim':'Imam vremena')+
+  ' u '+dayNames[day]+' u '+hour+' časova.'};
+}
+
 function renderResult(r){
  if(words($('answer').value)<15)return;
  const original=$('answer').value;
  const missingClosing=!hasA1Closing(original);
  let corrected=correctA1Umlauts(correctSportExpression(r.correctedText||original)).trim();
+ const dayHourFix=a1CompleteDayAndHour(current,original,corrected);
+ corrected=dayHourFix.text;
  if(missingClosing&&!hasA1Closing(corrected))corrected+='\n\nViele Grüße';
  const comparison=a1ComparisonTokens(original,corrected);
  const holder=$('result');holder.replaceChildren();
@@ -2778,8 +2835,9 @@ function renderResult(r){
  translationButton.id='a1ResultSrToggle';translationButton.type='button';
  translationButton.setAttribute('aria-expanded','false');
  translationButton.setAttribute('aria-controls','a1ResultSrText');
- const sr=a1ReviewNode('div',String(r.translationSr||'').trim()||
-  'Prevod nije dostupan. Potrebno je ažurirati A1 Cloudflare Worker.','a1-result-translation');
+ const sr=a1ReviewNode('div',(String(r.translationSr||'').trim()||
+  'Prevod nije dostupan. Potrebno je ažurirati A1 Cloudflare Worker.')+
+  (dayHourFix.added?'\n\n'+dayHourFix.sr:''),'a1-result-translation');
  sr.id='a1ResultSrText';sr.lang='sr-Latn';sr.hidden=true;
  revised.append(translationButton,sr);
  const errors=a1ReviewSection(root,'3. GREŠKE I OBJAŠNJENJA','a1-issue-list');
@@ -2807,6 +2865,12 @@ function renderResult(r){
  }else errors.append(a1ReviewNode('p',
    'AI nije izdvojio pojedinačne rečenične ispravke. Uporedi označene reči iznad.',
    'a1-no-issues'));
+ if(dayHourFix.added){
+  const addition=a1ReviewNode('article',null,'a1-issue-card');
+  addition.append(a1ReviewNode('h5','NEDOSTAJE TAČAN SAT'));
+  addition.append(a1ReviewNode('p','Postavka traži i dan i sat. Samo „am Montag“, „am Morgen“, „am Vormittag“ ili „am Abend“ nije dovoljno. U ispravljenom mejlu dodat je primer: '+dayHourFix.day+' u '+dayHourFix.hour+' časova. Ova dopuna ne donosi dodatne bodove.'));
+  errors.append(addition);
+ }
  const questions=a1ReviewSection(root,'4. ODGOVORI NA SVA TRI PITANJA','a1-questions-review');
  const q=ORIGINAL_MAILS[current]?.q||MAILS[current].questions||[];
  for(let i=0;i<3;i++){
@@ -2817,7 +2881,8 @@ function renderResult(r){
   if(Number.isFinite(p))heading.append(a1ReviewNode('span',
    Math.max(0,Math.min(2,p))+'/2','a1-point-score'));
   block.append(heading,a1ReviewNode('p',
-   String(r.questionFeedback?.[i]||'Proveri da li si odgovorio/la na ovo pitanje.')));
+   String(r.questionFeedback?.[i]||'Proveri da li si odgovorio/la na ovo pitanje.')+
+   (dayHourFix.added&&i===dayHourFix.questionIndex?' Dopuna za vežbanje: navedi i precizan sat ('+dayHourFix.hour+' Uhr), ne samo dan ili deo dana.':'')));
   questions.append(block);
  }
  const feedback=String(r.feedback||'').replace(/\bNAPOMENA:\s*/gi,'').trim();
