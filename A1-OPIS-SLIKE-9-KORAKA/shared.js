@@ -822,7 +822,7 @@ function showWizard(position){
  });
 }
 $("#wizardBack").addEventListener("click",()=>{if(PAGE_INDEX===0){persistDraft();window.location.assign("index.html")}else goToPage(PAGE_INDEX-1)});
-$("#wizardForward").addEventListener("click",()=>{if(PAGE_INDEX===6){persistDraft();window.location.assign("index.html")}else goToPage(PAGE_INDEX+1)});
+$("#wizardForward").addEventListener("click",()=>{if(PAGE_INDEX===8){persistDraft();window.location.assign("index.html")}else goToPage(PAGE_INDEX+1)});
 window.addEventListener("pagehide",persistDraft);
 restoreDraft();
 showWizard(PAGE_INDEX);
