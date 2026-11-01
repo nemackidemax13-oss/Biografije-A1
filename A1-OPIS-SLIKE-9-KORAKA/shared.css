@@ -789,3 +789,68 @@ body[data-step-page] .phrase.selected .plus{background:#e21d3c!important;color:#
 body[data-step-page] .separate-header h1{font-size:clamp(13.5px,3.5vw,17px)!important}
 body[data-step-page="5"] .panel.appearance-only .hairbar:not([hidden]),
 body[data-step-page="6"] .panel.appearance-only .agebar:not([hidden]){flex:1!important;min-height:0!important}
+
+
+/* Brzi filteri scene na prvoj stranici, odmah desno od naslova "Opis osoba". */
+body[data-step-page="0"] .panel:not(.compose) .paneltitle{
+ height:33px!important;
+ min-height:33px!important;
+ display:flex!important;
+ justify-content:space-between!important;
+ align-items:center!important;
+ padding:3px 5px!important;
+ gap:3px!important;
+}
+body[data-step-page="0"] .panel:not(.compose) .paneltitle strong{
+ flex:0 1 auto!important;
+ min-width:0!important;
+ white-space:nowrap!important;
+ color:#194e8b!important;
+ font-size:clamp(10.5px,3vw,12.5px)!important;
+}
+body[data-step-page="0"] .scene-filters{
+ display:flex!important;
+ flex:0 0 auto!important;
+ justify-content:flex-end!important;
+ align-items:center!important;
+ gap:3px!important;
+ min-width:0!important;
+}
+body[data-step-page="0"] .scene-filters button{
+ height:25px!important;
+ min-width:0!important;
+ padding:2px clamp(5px,1.7vw,8px)!important;
+ font-family:inherit!important;
+ font-size:clamp(9px,2.5vw,11px)!important;
+ font-weight:900!important;
+ line-height:1!important;
+ color:#21588f!important;
+ background:#f5f9ff!important;
+ border:1px solid #9fbbdf!important;
+ border-radius:7px!important;
+ white-space:nowrap!important;
+}
+body[data-step-page="0"] .scene-filters button.active{
+ color:#fff!important;
+ background:#2268b7!important;
+ border-color:#17539c!important;
+}
+body[data-step-page="0"] .scene-filters button:focus-visible{
+ outline:2px solid #e32b4e!important;
+ outline-offset:1px!important;
+}
+body[data-step-page="0"] #categoryCount{
+ position:absolute!important;
+ width:1px!important;
+ height:1px!important;
+ padding:0!important;
+ margin:-1px!important;
+ overflow:hidden!important;
+ clip-path:inset(50%)!important;
+ white-space:nowrap!important;
+}
+@media(max-width:350px){
+ body[data-step-page="0"] .panel:not(.compose) .paneltitle{padding:2px 3px!important}
+ body[data-step-page="0"] .scene-filters{gap:2px!important}
+ body[data-step-page="0"] .scene-filters button{padding:2px 4px!important;font-size:9px!important;height:24px!important}
+}
