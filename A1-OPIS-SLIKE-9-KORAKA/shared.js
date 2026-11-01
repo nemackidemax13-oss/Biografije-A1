@@ -553,7 +553,18 @@ function listen(i){
   }
  });
 }
-function source(){const ids=BANK.map((_,i)=>i).filter(i=>BANK[i].cat===category);if(category==="extra"){const closing=ids.filter(i=>BANK[i].de==="Das war meine Bildbeschreibung.");return ids.filter(i=>BANK[i].de!=="Das war meine Bildbeschreibung.").concat(closing)}if(category==="start"&&step===0){const moveToEnd=["Im Vordergrund sehe ich einen Mann.","Im Hintergrund sehe ich eine Frau.","Im Hintergrund sehe ich viele Personen."];const original=ids.slice(0,6).concat(ids.filter(i=>BANK[i].personExample&&!moveToEnd.includes(BANK[i].de)));const last=moveToEnd.map(de=>ids.find(i=>BANK[i].de===de)).filter(i=>i!==undefined);return original.concat(last)}if(category==="start"&&step===1)return ids.slice(6).filter(i=>!BANK[i].personExample);return ids}
+/* Brzi izbor rečenica iz cele postojeće baze za pekaru i cvećaru. */
+let sceneFilter="all";
+const SCENE_PATTERNS={
+ pekara:/\bBäckerei\b|\bBäcker\b|\bBrötchen\b|\bBrot\b/i,
+ cvecara:/\bBlumenladen\b|\bFloristin\b|\bBlumenstrauß\b|\bBlumen\b|\bPflanzen\b/i
+};
+function source(){
+ if(step===0&&sceneFilter!=="all"&&SCENE_PATTERNS[sceneFilter]){
+  const matcher=SCENE_PATTERNS[sceneFilter];
+  return BANK.map((row,i)=>matcher.test(row.de)?i:-1).filter(i=>i>=0);
+ }
+ const ids=BANK.map((_,i)=>i).filter(i=>BANK[i].cat===category);if(category==="extra"){const closing=ids.filter(i=>BANK[i].de==="Das war meine Bildbeschreibung.");return ids.filter(i=>BANK[i].de!=="Das war meine Bildbeschreibung.").concat(closing)}if(category==="start"&&step===0){const moveToEnd=["Im Vordergrund sehe ich einen Mann.","Im Hintergrund sehe ich eine Frau.","Im Hintergrund sehe ich viele Personen."];const original=ids.slice(0,6).concat(ids.filter(i=>BANK[i].personExample&&!moveToEnd.includes(BANK[i].de)));const last=moveToEnd.map(de=>ids.find(i=>BANK[i].de===de)).filter(i=>i!==undefined);return original.concat(last)}if(category==="start"&&step===1)return ids.slice(6).filter(i=>!BANK[i].personExample);return ids}
 
 /* Pretraga statičkih rečenica po nemačkom i srpskom; ostaje lokalna i radi i u iframe-u. */
 const SEARCHABLE_CATEGORIES=new Set(["start","extra","places","mann","frau","kind"]);
@@ -667,7 +678,7 @@ function showRoles(){
  const panel=$("#phrases").closest(".panel");
  panel.classList.toggle("appearance-only",appearance);
  panel.classList.toggle("clothing-only",step===4);
- $("#selectorTitle").textContent=step===4?"Izaberi odeću i boju":step===3?(appearanceMode==="age"?"Izaberi godine":appearanceMode==="hair"?"Izaberi kosu":"Opis osobe"):step===0?"Opis osoba · izaberi rečenice":step===1?"Razgovor · izaberi rečenice":"Izaberi rečenice";
+ $("#selectorTitle").textContent=step===4?"Izaberi odeću i boju":step===3?(appearanceMode==="age"?"Izaberi godine":appearanceMode==="hair"?"Izaberi kosu":"Opis osobe"):step===0?"Opis osoba":step===1?"Razgovor · izaberi rečenice":"Izaberi rečenice";
  document.querySelectorAll("[data-role]").forEach(b=>b.classList.toggle("active",b.dataset.role===activeRole));
  renderModes();renderAge();renderHair();renderClothing();
 }
@@ -703,6 +714,22 @@ $("#hairAdd").addEventListener("click",()=>addOrRemove(HAIR_INDEX[category]));
 $("#clothingbar").addEventListener("click",e=>{const b=e.target.closest("[data-clothing-turn]");if(b)turnClothing(b.dataset.clothingTurn,Number(b.dataset.delta))});
 $("#clothingSound").addEventListener("click",()=>listen(CLOTH_INDEX[activeRole]));
 $("#clothingAdd").addEventListener("click",toggleClothing);
+/* Dugmad su samo na prvoj kartici. Filtriranje ne menja izabrane rečenice. */
+const sceneButtons=$("#sceneFilters");
+if(sceneButtons)sceneButtons.addEventListener("click",e=>{
+ const button=e.target.closest("[data-scene]");
+ if(!button||!sceneButtons.contains(button))return;
+ const next=button.dataset.scene;
+ if(next!=="all"&&!SCENE_PATTERNS[next])return;
+ sceneFilter=next;
+ page=0;
+ sceneButtons.querySelectorAll("[data-scene]").forEach(b=>{
+  const selected=b.dataset.scene===sceneFilter;
+  b.classList.toggle("active",selected);
+  b.setAttribute("aria-pressed",String(selected));
+ });
+ renderList();
+});
 $("#phrases").addEventListener("click",e=>{let b=e.target.closest("[data-add]");if(b){addOrRemove(Number(b.dataset.add));return}b=e.target.closest("[data-sound]");if(b)listen(Number(b.dataset.sound))});
 $("#prev").addEventListener("click",()=>{page--;renderList()});
 $("#next").addEventListener("click",()=>{page++;renderList()});
