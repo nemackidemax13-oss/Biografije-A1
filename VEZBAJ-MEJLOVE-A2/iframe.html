@@ -4206,7 +4206,7 @@ function a2BriefExplanation(value,maxSentences=2,maxChars=260){
  const clean=String(value||'').replace(/\s+/gu,' ').trim();
  if(!clean)return '';
  const sentences=clean.match(/[^.!?]+(?:[.!?]+(?=\s|$)|$)/gu)||[clean];
- const short=sentences.slice(0,maxSentences).join(' ').trim();
+ const short=sentences.map(part=>part.trim()).filter(Boolean).slice(0,maxSentences).join(' ');
  if(short.length<=maxChars)return short;
  const cut=short.slice(0,maxChars);
  return cut.replace(/\s+\S*$/u,'').trimEnd()+'…';
