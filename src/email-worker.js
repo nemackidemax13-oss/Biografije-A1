@@ -473,7 +473,7 @@ function resolveA1SourceEvidence(answer,evidence){
    }
   }
  }
- return highest>=(q.length<=2?0.9:0.78)?best:"";
+ return highest>=(q.length<=2?0.9:q.length>=6?0.70:0.78)?best:"";
 }
 __name(resolveA1SourceEvidence,"resolveA1SourceEvidence");
 async function grade(body, env) {
