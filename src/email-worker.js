@@ -456,7 +456,7 @@ function resolveA1SourceEvidence(answer,evidence){
    if(!requestedDays.every(x=>days.includes(x)))continue;
   }
   if(requestedClocks.length){
-   const clocks=sentence.match(/\d{1,2}(?:[.:]\d{2})?/g)||[];
+   const clocks=/** @type {string[]} */ (sentence.match(/\d{1,2}(?:[.:]\d{2})?/g)||[]);
    if(!requestedClocks.every(x=>clocks.includes(x)))continue;
   }
   const words=tokenize(sentence);
