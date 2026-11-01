@@ -424,6 +424,58 @@ var FORMAT = {
     }
   }
 };
+/* Proverava AI citat prema originalu, tolerisuci samo male pravopisne razlike.
+   Nikada ne vraca AI-jev korigovani tekst kao original ucenika. */
+function resolveA1SourceEvidence(answer,evidence){
+ const quote=String(evidence||"").trim();
+ if(!quote)return "";
+ if(isRealEvidence(answer,quote))return quote;
+ const tokenize=value=>String(value||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLocaleLowerCase("de").replace(/ß/g,"ss").match(/[\p{L}\p{N}]+/gu)||[];
+ const q=tokenize(quote);
+ if(q.length<2||q.length>90)return "";
+ const dates=/(?:montag|dienstag|mittwoch|donnerstag|freitag|samstag|sonntag)/giu;
+ const requestedDays=(quote.match(dates)||[]).map(x=>x.toLowerCase());
+ const requestedClocks=(quote.match(/(?:\b\d{1,2}(?:[.:]\d{2})?\s*uhr\b|\bum\s+\d{1,2}\b)/giu)||[]).map(x=>(x.match(/\d{1,2}(?:[.:]\d{2})?/)||[])[0]).filter(Boolean);
+ const similar=(a,b)=>{
+  if(a===b)return true;
+  if(a.length<4||b.length<4||Math.abs(a.length-b.length)>1)return false;
+  let i=0,j=0,diff=0;
+  while(i<a.length&&j<b.length){
+   if(a[i]===b[j]){i++;j++;continue;}
+   if(++diff>1)return false;
+   if(a.length>b.length)i++;
+   else if(a.length<b.length)j++;
+   else{i++;j++;}
+  }
+  return diff+Math.max(a.length-i,b.length-j)<=1;
+ };
+ let best="",highest=0;
+ for(const sentence of String(answer||"").match(/[^.!?\n]+[.!?]?/gu)||[]){
+  if(requestedDays.length){
+   const days=(sentence.match(dates)||[]).map(x=>x.toLowerCase());
+   if(!requestedDays.every(x=>days.includes(x)))continue;
+  }
+  if(requestedClocks.length){
+   const clocks=sentence.match(/\d{1,2}(?:[.:]\d{2})?/g)||[];
+   if(!requestedClocks.every(x=>clocks.includes(x)))continue;
+  }
+  const words=tokenize(sentence);
+  for(let n=Math.max(1,q.length-2);n<=Math.min(words.length,q.length+2);n++){
+   for(let start=0;start+n<=words.length;start++){
+    const part=words.slice(start,start+n),used=new Set();
+    let matched=0;
+    for(const word of q){
+     const j=part.findIndex((y,k)=>!used.has(k)&&similar(word,y));
+     if(j>=0){matched++;used.add(j);}
+    }
+    const fraction=matched/Math.max(q.length,n);
+    if(fraction>highest){highest=fraction;best=sentence.trim();}
+   }
+  }
+ }
+ return highest>=(q.length<=2?0.9:0.78)?best:"";
+}
+__name(resolveA1SourceEvidence,"resolveA1SourceEvidence");
 async function grade(body, env) {
   const index = body && body.mailIndex, answer = body && body.answer;
   if (!Number.isInteger(index) || index < 0 || index > 34 || typeof answer !== "string" || !answer.trim() || answer.length > MAX_ANSWER_CHARS) {
@@ -499,17 +551,22 @@ async function grade(body, env) {
   if (!parsed || typeof parsed!=="object" || Array.isArray(parsed) || ![0,1].includes(parsed.osdK) || ![0,1].includes(parsed.osdT) || !Number.isInteger(parsed.osdL) || parsed.osdL<0 || parsed.osdL>4 || !Number.isInteger(parsed.osdF) || parsed.osdF<0 || parsed.osdF>4 || typeof parsed.offTopic !== "boolean" || typeof parsed.offTopicReason !== "string" || !Array.isArray(parsed.contextIssues) || parsed.contextIssues.some(x=>typeof x!=="string") || !Array.isArray(parsed.points) || parsed.points.length !== 3 || parsed.points.some((x) => !Number.isInteger(x) || x < 0 || x > 2) || !Array.isArray(parsed.questionEvidence) || parsed.questionEvidence.length !== 3 || !Array.isArray(parsed.correctedEvidence) || parsed.correctedEvidence.length !== 3 || parsed.correctedEvidence.some((x) => typeof x !== "string") || parsed.questionEvidence.some((x) => typeof x !== "string") || !Array.isArray(parsed.questionFeedback) || parsed.questionFeedback.length !== 3 || parsed.questionFeedback.some((x) => typeof x !== "string" || !x.trim()) || typeof parsed.correctedText !== "string" || !parsed.correctedText.trim() || typeof parsed.translationSr !== "string" || !parsed.translationSr.trim() || !Array.isArray(parsed.sentenceFeedback) || parsed.sentenceFeedback.length > 25 || parsed.sentenceFeedback.some((x) => !x || typeof x.original !== "string" || typeof x.corrected !== "string" || typeof x.explanationSr !== "string")) {
     return { status: 502, data: { error: "AI nije vratio potpunu proveru sva tri pitanja iz baze. Poku\u0161aj ponovo." } };
   }
-  const normalizeQuote = /* @__PURE__ */ __name((x) => String(x).normalize("NFC").replace(/\s+/g, " ").trim().toLocaleLowerCase("de"), "normalizeQuote");
-  const written = normalizeQuote(answer);
-  const evidenceValid = parsed.points.every((point, i) => {
-    const evidence = normalizeQuote(parsed.questionEvidence[i]);
-    if (point === 0) return true;
-    if (!evidence || evidence.length < 4 || !written.includes(evidence)) return false;
-    return true;
-  });
-  if (!evidenceValid) return { status: 502, data: {
-    error: "AI rezultat nije dovoljno pouzdan: nije potvr\u0111en odgovor za sva tri pitanja. Poku\u0161aj ponovo."
-  } };
+  // Ako AI pogresno citira rec, pronadji originalnu recenicu ili to pitanje
+  // oceni sa 0. Ne odbacuj celu proveru niti neproverenu tvrdnju tretiraj kao dokaz.
+  const evidenceWarnings=[];
+  for(let i=0;i<3;i++){
+    const actual=resolveA1SourceEvidence(answer,parsed.questionEvidence[i]);
+    if(actual){
+      parsed.questionEvidence[i]=actual;
+    }else{
+      if(parsed.points[i]>0){parsed.points[i]=0;evidenceWarnings.push(i);}
+      parsed.questionEvidence[i]="";
+      parsed.correctedEvidence[i]="";
+    }
+  }
+  for(const i of evidenceWarnings){
+    parsed.questionFeedback[i]="AI nije uspeo da potvrdi citat originalnog odgovora; za ovo pitanje nisu pripisani bodovi. "+String(parsed.questionFeedback[i]||"");
+  }
   const noAnswersSupported=parsed.points.every(x=>x===0) &&
     parsed.questionEvidence.every(x=>!isRealEvidence(answer,x));
   const fullyOffTopic=parsed.offTopic===true;
