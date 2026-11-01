@@ -793,9 +793,10 @@ function showWizard(position){
  $("#wizardCounter").textContent=(wizardPosition+1)+" / 7";
  $("#wizardFooterCount").textContent=summary?"Završni opis":"Korak "+(wizardPosition+1)+" od 7";
  $("#wizardBack").disabled=wizardPosition===0;
- $("#wizardBack").textContent=summary?"❮ Detalji":"❮ Nazad";
- $("#wizardForward").textContent=summary?"↻ Počni od početka":wizardPosition===5?"Moj opis ❯":"Dalje: "+WIZARD_NAMES[wizardPosition+1]+" ❯";
- $("#wizardBack").textContent=wizardPosition===0?"❮ Nazad":"❮ "+WIZARD_NAMES[wizardPosition-1];
+ $("#wizardBack").textContent="❮ Nazad";
+ $("#wizardBack").title=wizardPosition===0?"Prvi korak":"Nazad: "+wizardPosition+". "+WIZARD_NAMES[wizardPosition-1];
+ const nextLabel=summary?"Od početka":"Dalje: "+(wizardPosition+2)+". "+WIZARD_NAMES[wizardPosition+1];
+ $("#wizardForward").innerHTML='<span class="next-label">'+escapeHTML(nextLabel)+'</span><span class="next-arrow" aria-hidden="true">❯</span>';
  $("#wizardHint").textContent=summary?"Sve izabrane rečenice na preglednim stranama.":wizardPosition===0?"Dodirni + da dodaš rečenicu u svoj opis.":wizardPosition===1?"Izaberi rečenice o razgovoru. Prvi izbor je sačuvan.":"Dodirni + da dodaš ono što želiš.";
  document.querySelectorAll(".wizard-progress i").forEach((node,i)=>{
   node.classList.toggle("done",i<wizardPosition);
