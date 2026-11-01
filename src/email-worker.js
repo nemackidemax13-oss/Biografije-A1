@@ -185,7 +185,7 @@ var SYSTEM = [
   "JELA I PICA PROVERAVAJ PO PITANJU, A NE GLOBALNO U CELOM MEJLU: nadji recenicu/dokaz namenjen tom pitanju. Ako u drugoj recenici kandidat samo pominje Wasser, to NE dokazuje da je odgovorio na pitanje o picu. Ako se trazi hrana, pice samo nije dovoljno. Ako se trazi hrana i pice, proveri obe kategorije u relevantnom odgovoru. Prihvati bilo koju odgovarajucu stvarnu namirnicu, npr. Schokolade, Br\xF6tchen, Sandwich, Quark, Brot, Kuchen; spisak primera nije iscrpan. Nemoj mehanicki traziti jednu kljucnu rec.",
   "OBAVEZNA CINJENICA I SLOBODAN IZBOR: ne kaznjavaj slobodan dan, sat, mesto ili jelo ako u originalnoj postavci nije fiksirano. Ako je navedeno da festival traje od petka do nedelje 10-15, oceni kao netacan posetu u ponedeljak u 18. Razlikuj dan posete od ranije kupovine poklona ili pomoci pre proslave. Objasni konkretnu kontradikciju samo ako zaista postoji.",
   "SVE TRI NAPOMENE questionFeedback su na SRPSKOM LATINICOM: samo obrazlozenje za svako pitanje, bez dodatih kompletnih nemackih recenica, navedi konkretan uslov iz originalne postavke kada je prekr\u0161en. feedback na srpskom: gramatika, pravopis, zamenice i zavrsni pozdrav, bez dupliranja primera. correctedText na nemackom ispravlja samo ono sto je ucenik stvarno napisao i ne izmislja preskocene odgovore.",
-  "ZABRANA DODAVANJA HALLO: Ako ucenik ne napise Hallo, nemoj ga dodavati u correctedText. Pocetno Hallo/Anrede nije uslov i izostanak nije greska. Ako ucenik sam napise pozdrav na pocetku, slobodno ga sacuvaj.",
+  "ZABRANA AUTOMATSKOG OSLOVLJAVANJA: Ako ucenik nije napisao pozdrav na pocetku, correctedText mora da pocne njegovom prvom recenicom. Ne dodaj Hallo Melanie, Hallo, Liebe Melanie ili bilo koje oslovljavanje ili ime iz postavke, primaoca, mejla ili situacije. Ako je ucenik napisao samo Hallo, sacuvaj Hallo bez dodavanja imena. Ako je sam napisao ime, sacuvaj to ime, bez zamene imenom iz zadatka. Izostanak pocetnog oslovljavanja NIJE greska i ne umanjuje bodove. TranslationSr ne sme prevoditi uvodni pozdrav koji nije napisao ucenik.",
   "ZAVRSNI POZDRAV: Na kraju mejla prihvati 'Liebe Gr\xFC\xDFe', 'Bis bald' ili 'Viele Gr\xFC\xDFe'. Prepoznaj i 'Liebe Grusse', 'Viele Gruesse' bez umlauta, ali u correctedText popravi pravopis. Pozdrav usred tela mejla nije zavrsni pozdrav.",
   "Ako ucenik na kraju NEMA podrzan pozdrav, obavezno napomeni na srpskom 'Nedostaje zavr\u0161ni pozdrav. Na kraju dodaj: Liebe Gr\xFC\xDFe, Bis bald ili Viele Gr\xFC\xDFe.' U correctedText dodaj 'Viele Gr\xFC\xDFe'. Smanji formu na 0, ne bodove za sadrzaj pitanja.",
   "VRATI SAZETE KOMENTARE: questionFeedback tacno tri kratke recenice na srpskom latinicom, svaka do 145 znakova, po jedna za svako pitanje. Navedi tacno sta je dobro ili sta treba ispraviti uz stvarni dan, sat, mesto i jelo kada je relevantno. Polje feedback najvise 240 znakova i samo najvaznije gramaticke/pravopisne napomene i nedostajuci zavrsni pozdrav; ne dupliraj ista objasnjenja. Polje correctedText je ceo ispravljeni A1 mejl na nemackom.",
@@ -505,6 +505,28 @@ function parseA1ModelReply(output){
 }
 __name(parseA1ModelReply,"parseA1ModelReply");
 
+
+function a1PreventAutoSalutation(answer, correctedText, translationSr) {
+ const deIntro=/^[ \t]*(?:Hallo|Hi|Liebe(?:r|s)?|Guten[ \t]+(?:Tag|Morgen|Abend)|Sehr[ \t]+geehrte[rs]?)(?:[ \t]*,[ \t]*|[ \t]+)?(?:[\p{L}][\p{L}'’.-]{0,40})?[ \t]*[,!]?[ \t]*(?:\r?\n|$)(?:[ \t]*\r?\n)*/iu;
+ const srIntro=/^[ \t]*(?:Zdravo|Ćao|Cao|Draga|Dragi|Poštovana|Poštovani|Dobar[ \t]+dan|Dobro[ \t]+jutro|Dobro[ \t]+veče)(?:[ \t]*,[ \t]*|[ \t]+)?(?:[\p{L}][\p{L}'’.-]{0,40})?[ \t]*[,!]?[ \t]*(?:\r?\n|$)(?:[ \t]*\r?\n)*/iu;
+ const userIntro=String(answer||"").trimStart().match(deIntro),aiIntro=String(correctedText||"").trimStart().match(deIntro);
+ let de=String(correctedText||"").trim(),sr=String(translationSr||"").trim();
+ if(!aiIntro)return {correctedText:de,translationSr:sr};
+ if(!userIntro){de=de.replace(deIntro,"").trimStart();if(srIntro.test(sr))sr=sr.replace(srIntro,"").trimStart()}
+ else{
+  const originalLine=userIntro[0].trim().split(/\r?\n/)[0].trim(),aiLine=aiIntro[0].trim().split(/\r?\n/)[0].trim();
+  const plain=v=>v.toLocaleLowerCase("de").replace(/[!,.\s]+$/g,"").replace(/,\s*/g," ").trim();
+  if(plain(originalLine)!==plain(aiLine)){
+   de=de.replace(deIntro,originalLine.replace(/[!,.\s]+$/g,"")+",\n\n").trim();
+   const type=originalLine.match(/^(Hallo|Hi|Liebe|Lieber|Liebes|Guten\s+Tag|Guten\s+Morgen|Guten\s+Abend)/iu);
+   const name=type?originalLine.slice(type[0].length).replace(/^[,\s]+|[!,.\s]+$/g,""):"";
+   const greetingSr=/^Lieber/iu.test(originalLine)?"Dragi":/^(Liebe|Liebes)/iu.test(originalLine)?"Draga":/^Guten/iu.test(originalLine)?"Dobar dan":"Zdravo";
+   if(srIntro.test(sr))sr=sr.replace(srIntro,greetingSr+(name?(greetingSr==="Zdravo"?", ":" ")+name:"")+",\n\n").trim();
+  }
+ }
+ return {correctedText:de,translationSr:sr};
+}
+
 async function grade(body, env) {
   const index = body && body.mailIndex, answer = body && body.answer;
   if (!Number.isInteger(index) || index < 0 || index > 34 || typeof answer !== "string" || !answer.trim() || answer.length > MAX_ANSWER_CHARS) {
@@ -532,7 +554,7 @@ async function grade(body, env) {
     "PROVERI SVA TRI PITANJA REDOM, SA KONKRETNIM USLOVIMA:\n" + questionRequirements(task),
     "STROGO: questionEvidence treba da bude doslovan kratak citat odgovora kandidata za SVAKO pojedinacno pitanje. Prazan dokaz i 0 poena kada nema odgovora. Ne koristi citate iz postavke.",
     "OBAVEZNE CINJENICE I OGRANICENJA ZA OVAJ ZADATAK (ne predstavljaju kandidatov odgovor):\n" + TASK_GUIDANCE[index],
-    "NAPOMENA ZA ODGOVOR: feedback i svaki od tri questionFeedback napi\u0161i isklju\u010Divo na srpskom latinicom. correctedText mora ostati na nema\u010Dkom. U nema\u010Dkom tekstu navedi samo nema\u010Dki ispravljeni mejl.",
+    "NAPOMENA ZA ODGOVOR: feedback i svaki od tri questionFeedback napi\u0161i isklju\u010Divo na srpskom latinicom. correctedText mora ostati na nema\u010Dkom. U nema\u010Dkom tekstu navedi samo nema\u010Dki ispravljeni mejl. Ne dodaj oslovljavanje ni ime osobe iz postavke: bez ucenikovog Hallo nema automatskog Hallo Melanie; ako je napisao samo Hallo, ne dopisuj ime.",
     "PODSETNIK: vrati translationSr - potpun prevod SVAKOG DELA ispravljenog mejla na srpski latinicom; sentenceFeedback - objasni po stvarnoj gresci bez izmisljanja; osnova je ovaj zadatak, sva tri pitanja i ucenikov stvarni odgovor.",
     "VRATI correctedEvidence[0..2] doslovno iz correctedText, sa konjugovanim glagolom i perspektivom iz checkingRules za dato pitanje. Ako questionEvidence[i] nije prisutan u stvarnom u\u010Denikovom tekstu, correctedEvidence[i] mora biti prazan. U prevodu translationSr koristi isklju\u010Divo zavr\u0161ne, ve\u0107 ispravljene re\u010Denice.",
     "DODATNA KONTROLA: Proveri koliko day+clock pitanja ima ovaj zadatak i da li učenik zaista daje oba podatka; ispravke moraju sadržati potpun primer, ali ocena samo prema originalnom mejlu. Obezbedi pravilno du->ich, wir->wir, sagovornikovo ich->du, poštuj SITUATION. Ako je ceo mejl van teme, vrati offTopic=true i 0 bodova. Prihvati Liebe Grüße, Viele Grüße i Bis bald.",
@@ -656,7 +678,7 @@ async function grade(body, env) {
     } };
     const repairPrompt = [
       "Popravi isključivo nepravilno ispravljene rečenice u correctedText koristeći PERSPEKTIVU, GLAGOL i obavezne podatke (DAN i SAT). Kod delimičnog odgovora na day+clock pitanje dopuni konkretnim primerom koji nije fiksni termin kada situacija ne daje termin. Nikada ne pripisuj dodatne bodove originalnom tekstu. U objašnjenju jasno navedi da je dopuna primer. Ne prepisuj samo komentar.",
-      "Pravi tri correctedEvidence koja su doslovan deo correctedText; prazno ako u\u010Denik nije odgovorio. NE izmi\u0161ljaj presko\u010Dene odgovore.",
+      "Pravi tri correctedEvidence koja su doslovan deo correctedText; prazno ako u\u010Denik nije odgovorio. NE izmi\u0161ljaj presko\u010Dene odgovore. Ne dodaj automatski uvodni pozdrav ili ime primaoca iz postavke u correctedText i njegov prevod.",
       "translationSr je potpuno tačan srpski latinicom prevod ZAVRŠNOG correctedText. Svaka dopuna primera dan+sat mora biti prevedena, a questionFeedback objašnjava da je dodat primer za vežbanje.",
       "sentenceFeedback popunjavaj stvarnim u\u010Denikovim gre\u0161kama: original doslovno iz u\u010Deni\u010Dkog teksta, corrected doslovno u correctedText, explanationSr na srpskom.",
       "NEMA\u010CKI KANDIDATA:\n" + answer,
@@ -722,6 +744,9 @@ async function grade(body, env) {
   const sportError = /\bSport\s+spielen\b/i.test(answer);
   let corrected = correctKnownUmlauts(parsed.correctedText.replace(/\bSport\s+spielen\b/gi, "Sport machen")).slice(0, 2400);
   let translationSr = String(parsed.translationSr || "").trim().slice(0, 3500);
+  const safeIntro=a1PreventAutoSalutation(answer,corrected,translationSr);
+  corrected=safeIntro.correctedText;
+  translationSr=safeIntro.translationSr;
   if (signoffMissing && !hasA1Closing(corrected)) {
     corrected = (corrected.trim() + "\n\nViele Gr\xFC\xDFe").slice(0, 2400);
     translationSr = (translationSr + "\n\nSrda\u010Dan pozdrav").slice(0, 3500);
