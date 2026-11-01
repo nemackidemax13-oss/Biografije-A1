@@ -2962,6 +2962,15 @@ function a1PreventAutoSalutation(answer, correctedText, translationSr) {
  return {correctedText:de,translationSr:sr};
 }
 
+
+/* Sažeta objašnjenja i samo važne napomene za A1 vežbanje. */
+function a1ShortReviewExplanation(value){
+ const text=String(value||'').replace(/\s+/gu,' ').trim();
+ if(!text)return '';
+ const sentences=text.match(/[^.!?]+[.!?]+(?=\s|$)|[^.!?]+$/gu)||[text];
+ return sentences.slice(0,2).join(' ').replace(/\s+/gu,' ').trim();
+}
+
 function renderResult(r){
  if(words($('answer').value)<15)return;
  const original=$('answer').value;
@@ -3043,7 +3052,7 @@ function renderResult(r){
    if(String(note.explanationSr||'').trim()){
     const p=a1ReviewNode('p');
     p.append(a1ReviewNode('b','Objašnjenje: '),
-     document.createTextNode(String(note.explanationSr)));
+     document.createTextNode(a1ShortReviewExplanation(note.explanationSr)));
     card.append(p);
    }
    errors.append(card);
@@ -3054,7 +3063,7 @@ function renderResult(r){
  if(dayHourFix.added){
   const addition=a1ReviewNode('article',null,'a1-issue-card');
   addition.append(a1ReviewNode('h5','NEDOSTAJE TAČAN SAT'));
-  addition.append(a1ReviewNode('p','Postavka traži i dan i sat. Samo „am Montag“, „am Morgen“, „am Vormittag“ ili „am Abend“ nije dovoljno. U ispravljenom mejlu dodat je primer: '+dayHourFix.day+' u '+dayHourFix.hour+' časova. Ova dopuna ne donosi dodatne bodove.'));
+  addition.append(a1ReviewNode('p','Potreban je dan i tačan sat, a ne samo deo dana. Primer za vežbanje: '+dayHourFix.day+' u '+dayHourFix.hour+' časova (ne donosi dodatne bodove).'));
   errors.append(addition);
  }
  const questions=a1ReviewSection(root,'4. ODGOVORI NA SVA TRI PITANJA','a1-questions-review');
@@ -3077,21 +3086,51 @@ function renderResult(r){
   .replace(/Komunikacija\s*\(K\)\s+je\s+0\s*\/\s*1\s*\.?/giu,'')
   .replace(/[ \t]+\n/g,'\n').trim();
  const notes=[];
- if(feedback)notes.push(feedback);
+ const noteKeys=new Set();
+ const addNote=(value)=>{
+  const brief=a1ShortReviewExplanation(value).trim();
+  const key=brief.toLocaleLowerCase('sr').replace(/\W+/gu,' ');
+  if(brief&&!noteKeys.has(key)){notes.push(brief);noteKeys.add(key);}
+ };
+ const offTopic=Boolean(r.offTopic||r.osdRubric?.offTopic);
+ if(offTopic){
+  addNote('Promašena tema — mejl dobija 0 bodova.'+
+   (r.offTopicReason?' '+String(r.offTopicReason):' Proveri situaciju i odgovori na zadatak.'));
+ }
+ const contextIssues=Array.isArray(r.contextIssues)?r.contextIssues:[];
+ for(const issue of contextIssues.slice(0,2))
+  addNote('Postavka: '+String(issue));
+ const weakQuestions=Array.isArray(r.points)?r.points
+  .map((p,i)=>Number(p)<2?i+1:null).filter(Boolean):[];
+ if(weakQuestions.length&&!offTopic)
+  addNote('Dopuni ili ispravi odgovore na pitanja: '+weakQuestions.join(', ')+'.');
+ if(missingClosing)
+  addNote('Nedostaje završni pozdrav: Liebe Grüße, Viele Grüße ili Bis bald.');
+ if(missingSignature)
+  addNote('Nedostaje potpis: na kraju napiši svoje ime.');
+ if(Number(r.osdRubric?.textLengthDeduction)>0)
+  addNote('Za pun broj bodova na dužini napiši najmanje 25 reči.');
  const umlauts=missingA1Umlauts(original);
- if(umlauts.length&&!/umlaut/i.test(feedback))
-  notes.push('Ispravi umlaute: '+[...new Set(umlauts.map(e=>e.from+' → '+e.to))].slice(0,5).join(', ')+'.');
- if(missingClosing && !/nedostaje.{0,25}pozdrav|završni pozdrav/i.test(feedback))
-  notes.push('Nedostaje završni pozdrav. Primer: Liebe Grüße, Bis bald ili Viele Grüße.');
- if(missingSignature && !/nedostaje.{0,30}(?:potpis|ime)/i.test(feedback))
-  notes.push('Nedostaje potpis učenika. Na kraju mejla napiši svoje ime ili ime i prezime.');
+ if(umlauts.length)
+  addNote('Ispravi nemačka slova: '+[...new Set(umlauts.map(e=>e.from+' → '+e.to))].slice(0,3).join(', ')+'.');
+ const feedbackItems=feedback.split(/\n+/u)
+  .flatMap(line=>line.split(/(?<=[.!?])\s+(?=[A-ZČĆŽŠĐ0-9])/u))
+  .map(x=>x.trim()).filter(Boolean)
+  .filter(x=>!/^(?:postavka\s*\/\s*situacija|pomoćne rečenice su uračunate)/iu.test(x))
+  .filter(x=>!(offTopic&&/promašen[aeiou]? tem|0\/10 bodova/iu.test(x)))
+  .filter(x=>!(missingClosing&&/završni pozdrav|nedostaje pozdrav/iu.test(x)))
+  .filter(x=>!(missingSignature&&/nedostaje.{0,24}(?:potpis|ime)/iu.test(x)))
+  .sort((a,b)=>Number(/grešk|pogreš|netač|nedostaj|postav|gramatik|zamenic|glagol/iu.test(b))-
+               Number(/grešk|pogreš|netač|nedostaj|postav|gramatik|zamenic|glagol/iu.test(a)));
+ for(const item of feedbackItems.slice(0,2))addNote(item);
  const otherNotes=Array.isArray(r.sentenceFeedback)?
   r.sentenceFeedback.filter(x=>x?.explanationSr&&
    (!x.original||!x.corrected||String(x.original).trim()===String(x.corrected).trim()))
    .map(x=>String(x.explanationSr)):[];
- if(notes.length||otherNotes.length){
+ for(const tip of otherNotes.slice(0,1))addNote(tip);
+ if(notes.length){
   const tips=a1ReviewSection(root,'5. NAPOMENE ZA VEŽBANJE','a1-feedback-tips');
-  for(const tip of [...notes,...otherNotes])tips.append(a1ReviewNode('div',tip,'a1-learning-note'));
+  for(const tip of notes)tips.append(a1ReviewNode('div',tip,'a1-learning-note'));
  }
  const actions=a1ReviewNode('div',null,'retry-actions');
  const retry=a1ReviewNode('button','↻ UVEŽBAJ PONOVO','retry-mail-btn');
