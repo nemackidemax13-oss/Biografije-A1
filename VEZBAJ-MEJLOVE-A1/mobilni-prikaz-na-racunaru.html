@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="sr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0c2c66">
+  <title>DE-MAX A1 mejlovi | Mobilni prikaz na računaru</title>
+  <style>
+    :root { color-scheme: light; --blue:#0b3479; --red:#c92039; --device:390px; }
+    * { box-sizing:border-box; }
+    html, body { margin:0; width:100%; min-height:100%; }
+    body { font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif; background:#e6edf7; color:#15284b; }
+    .toolbar { background:linear-gradient(115deg,#08285e,#1453a1); color:white; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; padding:9px max(12px,calc((100vw - 1160px)/2)); min-height:62px; }
+    .brand { display:flex; flex-direction:column; gap:2px; }
+    .brand strong { font-size:17px; letter-spacing:-.5px; font-style:italic; }
+    .brand small { font-size:11px; opacity:.85; }
+    .tools { display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+    button, .link { border:1px solid #ffffff66; border-radius:8px; color:white; background:#ffffff20; font:700 12px system-ui,sans-serif; padding:9px 10px; text-decoration:none; cursor:pointer; }
+    button[aria-pressed="true"] { color:#0b3479; background:#fff; }
+    button:focus-visible,.link:focus-visible { outline:3px solid #ffca52; outline-offset:2px; }
+    .stage { width:100%; display:flex; justify-content:center; padding:12px 10px 14px; }
+    .phone { width:var(--device); max-width:100%; height:calc(100dvh - 90px); min-height:420px; max-height:860px; border:6px solid #172b4e; border-radius:22px; overflow:hidden; background:white; box-shadow:0 12px 32px #061a4133; position:relative; }
+    .phone iframe { width:100%; height:100%; border:0; display:block; background:#fff; }
+    .phone:before { content:''; position:absolute; width:60px; height:5px; background:#172b4e; border-radius:6px; top:0; left:50%; transform:translateX(-50%); pointer-events:none; z-index:1; opacity:.8; }
+    .hint { text-align:center; color:#5b6b86; font-size:11px; padding:0 12px 14px; }
+    :fullscreen .phone { height:calc(100dvh - 85px); max-height:none; }
+    @media(max-width:600px) {
+      .toolbar { justify-content:center; padding:9px 10px; }
+      .brand { width:100%; text-align:center; }
+      .tools { justify-content:center; }
+      .stage { padding:7px 4px; }
+      .phone { height:calc(100dvh - 124px); min-height:300px; border-width:3px; border-radius:12px; }
+      .hint { display:none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <div class="brand">
+      <strong>DE-MAX Tutin · A1 mejlovi</strong>
+      <small>Mobilna verzija prikazana na računaru</small>
+    </div>
+    <div class="tools" role="group" aria-label="Širina mobilnog prikaza">
+      <button type="button" data-size="360" aria-pressed="false">360 px</button>
+      <button type="button" data-size="390" aria-pressed="true">390 px</button>
+      <button type="button" data-size="430" aria-pressed="false">430 px</button>
+      <button id="fullscreen" type="button">⛶ Puni ekran</button>
+      <a class="link" href="./iframe.html?v=20261101-bodovi-prolaz-4" target="_blank" rel="noopener">Original</a>
+    </div>
+  </div>
+  <main class="stage">
+    <div class="phone" aria-label="Interaktivni prikaz mobilne aplikacije">
+      <iframe id="mail" title="DE-MAX A1 vežbaj mejlove - mobilni prikaz" src="./iframe.html?v=20261101-bodovi-prolaz-4" loading="eager" allow="fullscreen; clipboard-write" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+    </div>
+  </main>
+  <div class="hint">Unutar mobilnog ekrana rade isti zadaci, pisanje mejlova i AI provera kao na originalnoj stranici.</div>
+  <script>
+    document.querySelectorAll('[data-size]').forEach(button => {
+      button.addEventListener('click', () => {
+        document.documentElement.style.setProperty('--device',button.dataset.size+'px');
+        document.querySelectorAll('[data-size]').forEach(b => b.setAttribute('aria-pressed',String(b===button)));
+      });
+    });
+    const fullscreenButton=document.getElementById('fullscreen');
+    fullscreenButton.addEventListener('click',async () => {
+      try {
+        if (!document.fullscreenElement) await document.documentElement.requestFullscreen();
+        else await document.exitFullscreen();
+      } catch(e) { fullscreenButton.textContent='Puni ekran nije dostupan'; }
+    });
+    document.addEventListener('fullscreenchange',() => {
+      fullscreenButton.textContent=document.fullscreenElement?'✕ Izađi iz punog ekrana':'⛶ Puni ekran';
+    });
+  </script>
+</body>
+</html>
