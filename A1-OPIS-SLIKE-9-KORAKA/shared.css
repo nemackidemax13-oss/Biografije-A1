@@ -1053,3 +1053,103 @@ body[data-step-page="1"]:not(.summary-mode) .example .samplesr{
   font-size:10px!important;
  }
 }
+
+
+/* 2026-11-02: prva stranica BEZ scene; izbor scene isključivo na koracima 2, 3, 8 */
+body[data-step-page="0"] .panel:not(.compose) .paneltitle[hidden]{
+ display:none!important;
+ height:0!important;
+ min-height:0!important;
+ padding:0!important;
+ margin:0!important;
+ border:0!important;
+}
+body[data-scene-selector="true"] .panel:not(.compose) .paneltitle{
+ display:flex!important;
+ flex-wrap:nowrap!important;
+ align-items:center!important;
+ justify-content:space-between!important;
+ height:34px!important;
+ min-height:34px!important;
+ padding:3px 5px!important;
+ gap:4px!important;
+}
+body[data-scene-selector="true"] .paneltitle #selectorTitle{
+ display:none!important;
+}
+body[data-scene-selector="true"] #sceneFilters{
+ display:flex!important;
+ flex:1 1 0!important;
+ min-width:0!important;
+ align-items:center!important;
+ justify-content:center!important;
+ gap:3px!important;
+}
+body[data-scene-selector="true"] #sceneFilters .scene-arrow{
+ display:grid!important;
+ place-items:center!important;
+ flex:0 0 26px!important;
+ width:26px!important;
+ height:26px!important;
+ min-height:26px!important;
+ padding:0!important;
+ border:1px solid #e99eaa!important;
+ border-radius:6px!important;
+ background:#fff0f2!important;
+ color:#d51d3b!important;
+ font-size:17px!important;
+ line-height:1!important;
+ font-weight:950!important;
+}
+body[data-scene-selector="true"] #sceneFilters .scene-arrow:active{
+ background:#ffdce4!important;
+}
+body[data-scene-selector="true"] #sceneFilters .scene-name{
+ display:block!important;
+ flex:1 1 0!important;
+ min-width:0!important;
+ color:#d51d3b!important;
+ font-size:clamp(11px,2.9vw,13px)!important;
+ line-height:1.1!important;
+ text-align:center!important;
+ font-weight:1000!important;
+ white-space:nowrap!important;
+ overflow:hidden!important;
+ text-overflow:ellipsis!important;
+}
+body[data-scene-selector="true"] #sceneAll,
+body[data-scene-selector="true"] #sceneAll.active{
+ display:block!important;
+ flex:0 0 auto!important;
+ height:26px!important;
+ padding:3px 8px!important;
+ margin:0!important;
+ border:1px solid #c96d00!important;
+ border-radius:7px!important;
+ color:white!important;
+ background:#f18b12!important;
+ font-size:clamp(9.5px,2.55vw,11px)!important;
+ font-weight:900!important;
+ line-height:1!important;
+ white-space:nowrap!important;
+}
+body[data-scene-selector="true"] #sceneAll:active{
+ background:#d97800!important;
+}
+body[data-scene-selector="true"] #categoryCount{
+ position:absolute!important;
+ width:1px!important;
+ height:1px!important;
+ padding:0!important;
+ margin:-1px!important;
+ overflow:hidden!important;
+ clip-path:inset(50%)!important;
+ white-space:nowrap!important;
+}
+@media(max-width:360px){
+ body[data-scene-selector="true"] .panel:not(.compose) .paneltitle{padding:2px 3px!important;gap:2px!important}
+ body[data-scene-selector="true"] #sceneFilters{gap:2px!important}
+ body[data-scene-selector="true"] #sceneFilters .scene-arrow{flex-basis:22px!important;width:22px!important;height:24px!important;min-height:24px!important;font-size:15px!important}
+ body[data-scene-selector="true"] #sceneFilters .scene-name{font-size:10.5px!important}
+ body[data-scene-selector="true"] #sceneAll{padding:2px 4px!important;font-size:9px!important;height:24px!important}
+}
