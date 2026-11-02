@@ -107,5 +107,6 @@ $d("dpNext").onclick=()=>{item=(item+1)%groups[group].items.length;render()};
 $d("dpListen").onclick=()=>{stop();utter(current().de)};
 $d("dpAdd").onclick=()=>{const v=current(),existing=chosen.find(k=>BANK[k]?.cat==="custom-detail"&&BANK[k]?.de===v.de);if(existing!==undefined)addOrRemove(existing);else{const i=BANK.length;BANK.push(v);addOrRemove(i)}render()};
 render();
+const title=document.getElementById("wizardTitle");if(title)title.textContent="8. Detalji osobe";
 })();
 </script></body></html>
