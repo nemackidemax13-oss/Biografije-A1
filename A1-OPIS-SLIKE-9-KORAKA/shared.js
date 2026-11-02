@@ -619,6 +619,13 @@ function source(){
   return ids.filter(i=>BANK[i].de!=="Das war meine Bildbeschreibung.").concat(closing);
  }
  if(category==="start"&&step===1)return ids.slice(6).filter(i=>!BANK[i].personExample);
+ // Prvo puni nazivi osoba (Der Mann / Die Frau / Das Kind), potom zamenice (Er / Sie / Es).
+ // Sortiraj samo prikaz; ne pomeraj unose u BANK-u jer učenici već imaju sačuvane izbore.
+ if(step===3&&appearanceMode==="description"&&["mann","frau","kind"].includes(category)){
+  const noun=category==="mann"?"Der Mann":category==="frau"?"Die Frau":"Das Kind";
+  return ids.filter(i=>BANK[i].de.startsWith(noun+" "))
+    .concat(ids.filter(i=>!BANK[i].de.startsWith(noun+" ")));
+ }
  if(scenePage===2&&category==="places")return pairPlaces(ids);
  return ids;
 }
