@@ -90,6 +90,68 @@ const common=[
 [["Das Foto wurde draußen aufgenommen.","Fotografija je snimljena napolju."],["Im Hintergrund sehe ich die Umgebung.","U pozadini vidim okolinu."],["Das Wetter ist schön.","Vreme je lepo."]],
 [["Das ist alles, was ich auf dem Bild sehe.","To je sve što vidim na slici."],["Das ist alles, was ich auf dem Bild sehen kann.","To je sve što mogu da vidim na slici."],["Ich finde das Bild interessant.","Mislim da je slika zanimljiva."],["Das Bild gefällt mir.","Slika mi se dopada."],["Das war meine Bildbeschreibung.","To je bio moj opis slike."],["Vielen Dank fürs Zuhören.","Hvala na slušanju."]]
 ];
+
+const sharedPoses=[
+["Die Frau steht und der Mann sitzt.","Žena stoji, a muškarac sedi."],
+["Der Mann steht und die Frau sitzt.","Muškarac stoji, a žena sedi."],
+["Die Personen sitzen.","Osobe sede."],
+["Die Personen stehen.","Osobe stoje."],
+["Die Personen sprechen miteinander.","Osobe razgovaraju međusobno."],
+["Die Personen stehen nebeneinander.","Osobe stoje jedna pored druge."],
+["Die Personen sitzen nebeneinander.","Osobe sede jedna pored druge."]
+];
+const weather=[
+["Die Sonne scheint.","Sunce sija."],["Es ist sonnig.","Sunčano je."],
+["Es ist warm.","Toplo je."],["Es ist kalt.","Hladno je."],
+["Es ist windig.","Vetrovito je."],["Es ist bewölkt.","Oblačno je."],
+["Es regnet.","Pada kiša."],["Es schneit.","Pada sneg."],
+["Der Himmel ist blau.","Nebo je plavo."],["Im Hintergrund sehe ich viele Wolken.","U pozadini vidim mnogo oblaka."],
+["Ich denke, es ist Sommer.","Mislim da je leto."],["Vielleicht ist es Winter.","Možda je zima."]
+];
+const customScenes={
+pekara:[["Ich denke, die Frau möchte Brot kaufen.","Mislim da žena želi da kupi hleb."],["Im Hintergrund sehe ich viele Brote.","U pozadini vidim mnogo hlebova."],["Im Hintergrund sehe ich Regale mit Brot.","U pozadini vidim police sa hlebom."]],
+cvecara:[["Ich denke, die Frau möchte Blumen kaufen.","Mislim da žena želi da kupi cveće."],["Im Hintergrund sehe ich viele Blumen.","U pozadini vidim mnogo cveća."],["Im Hintergrund sehe ich rote Rosen.","U pozadini vidim crvene ruže."]],
+obucara:[["Ich denke, die Frau möchte Schuhe kaufen.","Mislim da žena želi da kupi cipele."],["Im Hintergrund sehe ich Regale mit Schuhen.","U pozadini vidim police sa cipelama."],["Im Hintergrund sehe ich Schuhkartons.","U pozadini vidim kutije za cipele."]],
+kafic:[["Ich denke, die Personen trinken Kaffee.","Mislim da osobe piju kafu."],["Vielleicht trinken sie Tee.","Možda piju čaj."],["Im Hintergrund sehe ich viele Tische.","U pozadini vidim mnogo stolova."]],
+supermarket:[["Ich denke, die Personen kaufen Lebensmittel.","Mislim da osobe kupuju namirnice."],["Im Hintergrund sehe ich viele Regale.","U pozadini vidim mnogo polica."],["Im Hintergrund sehe ich Obst und Gemüse.","U pozadini vidim voće i povrće."]],
+radionica:[["Ich denke, der Mann repariert das Auto.","Mislim da muškarac popravlja automobil."],["Im Hintergrund sehe ich Werkzeuge und Reifen.","U pozadini vidim alat i gume."]],
+stan:[["Vielleicht sehen die Personen fern.","Možda osobe gledaju televiziju."],["Im Hintergrund sehe ich ein Sofa und einen Fernseher.","U pozadini vidim kauč i televizor."]],
+kuhinja:[["Ich denke, die Personen kochen zusammen.","Mislim da osobe kuvaju zajedno."],["Im Hintergrund sehe ich einen Kühlschrank und einen Herd.","U pozadini vidim frižider i šporet."]],
+butik:[["Vielleicht möchte die Frau ein Kleid kaufen.","Možda žena želi da kupi haljinu."],["Im Hintergrund sehe ich viele Jacken und Hosen.","U pozadini vidim mnogo jakni i pantalona."]],
+apoteka:[["Ich denke, die Frau braucht Medikamente.","Mislim da su ženi potrebni lekovi."],["Im Hintergrund sehe ich viele Medikamente.","U pozadini vidim mnogo lekova."]],
+doktor:[["Vielleicht ist der Mann krank.","Možda je muškarac bolestan."],["Im Hintergrund sehe ich einen Schreibtisch.","U pozadini vidim radni sto."]],
+mesara:[["Ich denke, die Frau kauft Fleisch.","Mislim da žena kupuje meso."],["Im Hintergrund sehe ich Fleisch in einer Vitrine.","U pozadini vidim meso u vitrini."]],
+biblioteka:[["Die Personen lesen Bücher.","Osobe čitaju knjige."],["Im Hintergrund sehe ich viele Bücherregale.","U pozadini vidim mnogo polica sa knjigama."]],
+skola:[["Ich denke, die Kinder lernen Deutsch.","Mislim da deca uče nemački."],["Im Hintergrund sehe ich eine Tafel und viele Schulbänke.","U pozadini vidim tablu i mnogo školskih klupa."]],
+basta:[["Vielleicht arbeiten die Personen im Garten.","Možda osobe rade u bašti."],["Im Hintergrund sehe ich Blumen und grünes Gras.","U pozadini vidim cveće i zelenu travu."]],
+suma:[["Ich denke, die Personen machen einen Spaziergang.","Mislim da osobe šetaju."],["Im Hintergrund sehe ich viele große Bäume.","U pozadini vidim mnogo velikog drveća."]],
+hotel:[["Vielleicht möchten die Personen ein Zimmer buchen.","Možda osobe žele da rezervišu sobu."],["Im Hintergrund sehe ich eine Rezeption.","U pozadini vidim recepciju."]],
+knjizara:[["Ich denke, die Frau sucht ein Buch.","Mislim da žena traži knjigu."],["Im Hintergrund sehe ich viele Bücher.","U pozadini vidim mnogo knjiga."]],
+voz:[["Vielleicht fahren die Personen nach Berlin.","Možda osobe putuju u Berlin."],["Im Hintergrund sehe ich Sitze und Fenster.","U pozadini vidim sedišta i prozore."]],
+cekaonica:[["Die Personen sitzen und warten.","Osobe sede i čekaju."],["Im Hintergrund sehe ich viele Stühle und eine Tür.","U pozadini vidim mnogo stolica i vrata."]],
+soba:[["Vielleicht möchte die Frau schlafen.","Možda žena želi da spava."],["Im Hintergrund sehe ich ein Bett und einen Schrank.","U pozadini vidim krevet i ormar."]],
+fitnes:[["Ich denke, die Personen machen Sport.","Mislim da osobe treniraju."],["Im Hintergrund sehe ich viele Sportgeräte.","U pozadini vidim mnogo sprava za vežbanje."]],
+biro:[["Vielleicht sucht der Mann Arbeit.","Možda muškarac traži posao."],["Im Hintergrund sehe ich einen Computer und einen Schreibtisch.","U pozadini vidim računar i radni sto."]],
+bioskop:[["Ich denke, die Personen sehen einen Film.","Mislim da osobe gledaju film."],["Im Hintergrund sehe ich viele Sitze und eine große Leinwand.","U pozadini vidim mnogo sedišta i veliko platno."]],
+reka:[["Vielleicht machen die Personen einen Ausflug.","Možda su osobe na izletu."],["Im Hintergrund sehe ich einen Fluss und viele Bäume.","U pozadini vidim reku i mnogo drveća."]],
+stanica:[["Ich denke, die Personen warten auf den Bus.","Mislim da osobe čekaju autobus."],["Im Hintergrund sehe ich eine Haltestelle und eine Straße.","U pozadini vidim stajalište i ulicu."]],
+plaza:[["Vielleicht möchten die Personen schwimmen.","Možda osobe žele da plivaju."],["Im Hintergrund sehe ich Sonnenschirme und Liegestühle.","U pozadini vidim suncobrane i ležaljke."]],
+more:[["Ich denke, die Personen machen Urlaub.","Mislim da su osobe na odmoru."],["Im Hintergrund sehe ich das Meer und Boote.","U pozadini vidim more i čamce."]],
+jezero:[["Vielleicht möchten die Personen angeln.","Možda osobe žele da pecaju."],["Im Hintergrund sehe ich einen See und Berge.","U pozadini vidim jezero i planine."]],
+pijaca:[["Ich denke, die Frau kauft frisches Obst.","Mislim da žena kupuje sveže voće."],["Im Hintergrund sehe ich Obst und Gemüse.","U pozadini vidim voće i povrće."]],
+ulica:[["Die Personen stehen auf dem Gehweg.","Osobe stoje na trotoaru."],["Im Hintergrund sehe ich Autos, Häuser und eine Straße.","U pozadini vidim automobile, kuće i ulicu."]],
+kasa:[["Ich denke, die Frau möchte bezahlen.","Mislim da žena želi da plati."],["Im Hintergrund sehe ich eine Kasse und viele Produkte.","U pozadini vidim kasu i mnogo proizvoda."]],
+veterinar:[["Ich denke, der Hund ist krank.","Mislim da je pas bolestan."],["Im Hintergrund sehe ich einen Untersuchungstisch.","U pozadini vidim sto za pregled."]],
+frizer:[["Ich denke, die Frau bekommt einen neuen Haarschnitt.","Mislim da se žena šiša."],["Im Hintergrund sehe ich Spiegel und Stühle.","U pozadini vidim ogledala i stolice."]],
+restoran:[["Ich denke, die Personen essen zu Mittag.","Mislim da osobe ručaju."],["Im Hintergrund sehe ich Tische und Stühle.","U pozadini vidim stolove i stolice."]],
+autobus:[["Die Personen sitzen im Bus.","Osobe sede u autobusu."],["Im Hintergrund sehe ich viele Sitze und Fenster.","U pozadini vidim mnogo sedišta i prozora."]],
+auto:[["Ich denke, die Personen fahren in die Stadt.","Mislim da osobe putuju u grad."],["Der Mann fährt und die Frau zeigt den Weg.","Muškarac vozi, a žena pokazuje put."]],
+park:[["Vielleicht gehen die Personen spazieren.","Možda osobe šetaju."],["Im Hintergrund sehe ich Bäume, Bänke und Blumen.","U pozadini vidim drveće, klupe i cveće."]],
+posta:[["Ich denke, die Frau möchte einen Brief schicken.","Mislim da žena želi da pošalje pismo."],["Im Hintergrund sehe ich Pakete und einen Schalter.","U pozadini vidim pakete i šalter."]],
+aerodrom:[["Vielleicht fliegen die Personen nach Deutschland.","Možda osobe lete za Nemačku."],["Im Hintergrund sehe ich Koffer und viele Reisende.","U pozadini vidim kofere i mnogo putnika."]],
+priroda:[["Ich denke, die Personen genießen die Natur.","Mislim da osobe uživaju u prirodi."],["Im Hintergrund sehe ich Berge und Bäume.","U pozadini vidim planine i drveće."]]
+};
+
 let group=0,scene=Math.max(0,scenes.findIndex(s=>s.id==="pekara"));
 function ensure(de,sr,cat="closing",ending=false){
  let i=BANK.findIndex(v=>v.cat===cat&&v.de===de);
@@ -101,7 +163,10 @@ function sceneOptions(){
  if(group===2)return base[2];
  const s=scenes[scene],isOutdoor=outdoor.has(s.id);
  const lines=[...base[group]];
- if((group===1&&!isOutdoor)||(group===0&&isOutdoor))return lines;
+for(const [de,sr] of sharedPoses)lines.push(ensure(de,sr,"closing"));
+if(group===1)for(const [de,sr] of weather)lines.push(ensure(de,sr,"closing"));
+for(const [de,sr] of (customScenes[s.id]||[]))lines.push(ensure(de,sr,"closing"));
+ if((group===1&&!isOutdoor)||(group===0&&isOutdoor))return [...base[group],...sharedPoses.map(([de,sr])=>ensure(de,sr,"closing"))];
  const matching=BANK.map((v,i)=>({v,i})).filter(({v})=>v.cat==="extra"&&Array.isArray(v.sceneDetailIds)&&v.sceneDetailIds.includes(s.id)&&/^(Im Hintergrund|Auf |In |Neben |Hinter |Vor |Am |An |Unter |Über |Der Raum|Die Sonne|Der Himmel|Das Wetter|Es gibt |Ich sehe |Dort |Links |Rechts |Auf dem|Auf der|Zwischen |In der Ferne)/.test(v.de));
  for(const {i} of matching.slice(0,12))if(!lines.includes(i))lines.push(i);
  // Konkretnu situaciju dopunjuju samo recenice koje vec postoje za to mesto.
