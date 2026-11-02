@@ -712,6 +712,46 @@ function renderList(){
  PAGE_SIZE=Math.max(3,Math.min(12,Math.floor(Math.max(0,usable-5)/ideal)));
  document.documentElement.style.setProperty("--page-rows",PAGE_SIZE);
  const data=source();const pages=Math.max(1,Math.ceil(data.length/PAGE_SIZE));page=Math.max(0,Math.min(page,pages-1));const visible=data.slice(page*PAGE_SIZE,(page+1)*PAGE_SIZE);$("#categoryCount").textContent=data.length+" rečenica";$("#pageCount").textContent="Strana "+(page+1)+" od "+pages;$("#prev").disabled=page<=0;$("#next").disabled=page>=pages-1;$("#phrases").innerHTML=visible.map(i=>{const a=BANK[i],is=chosen.includes(i);return '<div class="phrase '+(is?'selected':'')+'"><button class="add" data-add="'+i+'" aria-pressed="'+is+'"><span class="plus">'+(is?'✓':'❯')+'</span><span class="phrasetxt"><span class="de">'+escapeHTML(a.de)+'</span><span class="sr">'+escapeHTML(a.sr)+'</span></span></button><button class="sound" data-sound="'+i+'" aria-label="Izgovori rečenicu">🔊</button></div>'}).join("")}
+
+/* Stranica 10: opis iste osobe je jedna celina, bez obzira na redosled odabira.
+   Ne pomeramo originalne indekse niti redosled u localStorage-u. */
+function summaryPersonRole(line){
+ if(!line)return null;
+ if(["mann","frau","kind"].includes(line.role))return line.role;
+ if(["mann","frau","kind"].includes(line.cat))return line.cat;
+ const sentence=line.de||"";
+ if(/^Der (?:andere )?Mann\b/.test(sentence))return "mann";
+ if(/^Die (?:andere )?Frau\b/.test(sentence))return "frau";
+ if(/^Das (?:andere )?Kind\b/.test(sentence))return "kind";
+ // Samo bezbedno prepoznatljive jedninske radnje, nikako "Sie sprechen/sind/suchen".
+ if(line.cat==="extra"&&/^Sie (?:braucht|kauft|liest|schneidet|gießt|probiert|bestellt|legt|läuft|räumt|zeigt)\b/.test(sentence))return "frau";
+ return null;
+}
+function summaryIsPronoun(line,role){
+ const pronoun=role==="mann"?"Er":role==="frau"?"Sie":"Es";
+ return (line.de||"").startsWith(pronoun+" ");
+}
+function orderedChosen(){
+ if(!document.body.classList.contains("summary-mode"))return chosen;
+ const index=chosen.findIndex(id=>summaryPersonRole(BANK[id])!==null);
+ if(index<0)return chosen;
+ const groupOrder=[],groups=new Map(),other=[];
+ for(const id of chosen.slice(index)){
+  const role=summaryPersonRole(BANK[id]);
+  if(!role){other.push(id);continue}
+  if(!groups.has(role)){groups.set(role,[]);groupOrder.push(role)}
+  groups.get(role).push(id);
+ }
+ const grouped=[];
+ for(const role of groupOrder){
+  const entries=groups.get(role);
+  // "Der Mann" pa "Er", "Die Frau" pa "Sie", "Das Kind" pa "Es".
+  grouped.push(...entries.filter(id=>!summaryIsPronoun(BANK[id],role)));
+  grouped.push(...entries.filter(id=>summaryIsPronoun(BANK[id],role)));
+ }
+ return chosen.slice(0,index).concat(grouped,other);
+}
+
 function chosenPageSize(){
  const box=$("#selectedArea");
  if(!document.body.classList.contains("summary-mode"))
@@ -735,10 +775,11 @@ function chosenPageSize(){
  return Math.max(1,Math.min(chosen.length,Math.floor((available+4)/(row+4))));
 }
 function renderChosen(){
- const n=chosen.length;chosenIndex=Math.min(Math.max(0,chosenIndex),Math.max(0,n-1));
+ const arranged=orderedChosen();
+ const n=arranged.length;chosenIndex=Math.min(Math.max(0,chosenIndex),Math.max(0,n-1));
  $("#total").textContent=n+" rečenica";if($("#wizardSelected"))$("#wizardSelected").textContent=n+" izabrano";
  if(!n){$("#chosenPage").textContent="Opis strana 1";$("#chosenPrev").disabled=true;$("#chosenNext").disabled=true;$("#selectedArea").innerHTML='<p class="empty">Dodaj rečenice pomoću ❯. Ovde će se videti više rečenica tvog opisa istovremeno.</p>';return}
- const per=chosenPageSize(),first=Math.floor(chosenIndex/per)*per,last=Math.min(first+per,n),visible=chosen.slice(first,last);
+ const per=chosenPageSize(),first=Math.floor(chosenIndex/per)*per,last=Math.min(first+per,n),visible=arranged.slice(first,last);
  $("#chosenPage").textContent=document.body.classList.contains("summary-mode")?"Stranica "+(Math.floor(first/per)+1)+" / "+Math.ceil(n/per):"Opis strana "+(Math.floor(first/per)+1);
  $("#chosenPrev").disabled=first===0;$("#chosenNext").disabled=last===n;
  $("#selectedArea").style.setProperty("--chosen-rows",per);
@@ -757,7 +798,7 @@ function updateSpeakingFrame(){
   row.querySelector(".index").textContent=(pos+1)+".";
  }
 }
-function addOrRemove(i){const pos=chosen.indexOf(i);if(pos<0){chosen.push(i);chosenIndex=chosen.length-1;listen(i)}else{stop();chosen.splice(pos,1);chosenIndex=Math.min(pos,chosen.length-1)}renderChosen();renderList();renderAge();renderHair();renderClothing();persistDraft()}
+function addOrRemove(i){const displayPosition=orderedChosen().indexOf(i),pos=chosen.indexOf(i);if(pos<0){chosen.push(i);chosenIndex=orderedChosen().indexOf(i);listen(i)}else{stop();chosen.splice(pos,1);chosenIndex=Math.max(0,Math.min(displayPosition,chosen.length-1))}renderChosen();renderList();renderAge();renderHair();renderClothing();persistDraft()}
 function showRoles(){
  const show=step===3||step===4,appearance=step===3&&appearanceMode!=="description";
  $("#rolebar").hidden=!show;
@@ -771,7 +812,7 @@ function showRoles(){
 function chooseStep(n){step=n;if(n===3){category=activeRole}else category=STEP_CATS[n];page=0;showRoles();renderSample();renderList()}
 function playAll(){
  stop();
- const my=runId,arr=[...chosen];
+ const my=runId,arr=[...orderedChosen()];
  let position=0;
  function playNext(){
   if(my!==runId)return;
