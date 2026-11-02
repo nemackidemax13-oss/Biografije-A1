@@ -1247,3 +1247,28 @@ body[data-step-page="5"] #hairbar .optionarrow:disabled{
  opacity:.4!important;
  cursor:default!important;
 }
+
+
+/* Deveti korak: izdvojeni izbor vremena i zatvorenog prostora. */
+body[data-step-page="8"] .closing-modes{
+ display:flex!important;flex:none!important;
+ height:29px;min-height:29px;padding:3px 5px;
+ align-items:center;justify-content:center;gap:5px;
+ background:#f6f9fe;border-bottom:1px solid #dce7f6;
+}
+body[data-step-page="8"] .closing-modes button{
+ flex:1 1 0;min-width:0;height:23px;
+ padding:0 6px;border:1px solid #9fbddd;border-radius:6px;
+ color:#205890;background:#eef5ff;font-size:10px;font-weight:900;
+ white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+body[data-step-page="8"] .closing-modes button.active{
+ background:#e11d3c;border-color:#b31630;color:#fff;
+}
+body[data-step-page="8"] .closing-modes button:focus-visible{
+ outline:2px solid #e11d3c;outline-offset:1px;
+}
+@media(max-height:620px){
+ body[data-step-page="8"] .closing-modes{height:25px;min-height:25px;padding:2px 4px;}
+ body[data-step-page="8"] .closing-modes button{height:20px;font-size:9px;}
+}
