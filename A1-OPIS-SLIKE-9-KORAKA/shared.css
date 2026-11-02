@@ -1225,3 +1225,25 @@ body[data-step-page="0"] .person-filters button:focus-visible{
 body[data-step-page] .separate-header h1#wizardTitle{
  color:#d51d3b!important;
 }
+
+
+/* 2026-11-02: crvena dugmad −/+ za godine (7) i strelice ‹/› za kosu (6). */
+body[data-step-page="6"] #agebar .age-btn,
+body[data-step-page="5"] #hairbar .optionarrow{
+ background:#e11d3c!important;
+ background-color:#e11d3c!important;
+ border:1px solid #a91a32!important;
+ color:#fff!important;
+ font-weight:950!important;
+}
+body[data-step-page="6"] #agebar .age-btn:active,
+body[data-step-page="5"] #hairbar .optionarrow:active{
+ background:#ad1630!important;
+ background-color:#ad1630!important;
+ color:#fff!important;
+}
+body[data-step-page="6"] #agebar .age-btn:disabled,
+body[data-step-page="5"] #hairbar .optionarrow:disabled{
+ opacity:.4!important;
+ cursor:default!important;
+}
