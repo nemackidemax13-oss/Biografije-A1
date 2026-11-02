@@ -474,7 +474,7 @@ function makeClothing(role){
  const adjective=color.de+(color.fixed?"":suffix);
  const article=item.article==="m"?"einen ":item.article==="f"?"eine ":item.article==="n"?"ein ":"";
  const noun=(item.article==="p"?"":"")+article+adjective+" "+item.de;
- const who={mann:["Der Mann trägt ","Muškarac nosi "],frau:["Die Frau trägt ","Žena nosi "],kind:["Das Kind trägt ","Dete nosi "]}[role];
+ const who={mann:["Er trägt ","On nosi "],frau:["Sie trägt ","Ona nosi "],kind:["Es trägt ","Ono nosi "]}[role];
  const idx={m:0,f:1,n:2,p:3}[item.srType];
  return {cat:"custom-clothing",role,de:who[0]+noun+".",sr:who[1]+color.sr[idx]+" "+item.sr+"."};
 }
@@ -977,6 +977,22 @@ function persistDraft(){
   }));
  }catch(err){/* Storage may be unavailable in some embedded browser views. */}
 }
+/* Sačuvani opisi odeće iz ranijih verzija zadržavaju se,
+   ali koriste zamenice Er / Sie / Es kao i nova verzija. */
+function normalizeSavedClothing(entry){
+ if(entry.cat!=="custom-clothing")return entry;
+ const who={
+  mann:["Der Mann trägt ","Muškarac nosi ","Er trägt ","On nosi "],
+  frau:["Die Frau trägt ","Žena nosi ","Sie trägt ","Ona nosi "],
+  kind:["Das Kind trägt ","Dete nosi ","Es trägt ","Ono nosi "]
+ }[entry.role];
+ if(!who)return entry;
+ return {
+  ...entry,
+  de:entry.de.startsWith(who[0])?who[2]+entry.de.slice(who[0].length):entry.de,
+  sr:entry.sr.startsWith(who[1])?who[3]+entry.sr.slice(who[1].length):entry.sr
+ };
+}
 function restoreDraft(){
  let saved=null;
  try{saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||"null")}catch(err){return}
@@ -998,14 +1014,15 @@ function restoreDraft(){
  const recovered=[];
  for(const entry of saved.entries){
   if(!entry||typeof entry.de!=="string"||typeof entry.sr!=="string"||typeof entry.cat!=="string")continue;
-  let i=BANK.findIndex(a=>a.de===entry.de&&a.sr===entry.sr&&a.cat===entry.cat&&a.role===entry.role);
+  const normalized=normalizeSavedClothing(entry);
+  let i=BANK.findIndex(a=>a.de===normalized.de&&a.sr===normalized.sr&&a.cat===normalized.cat&&a.role===normalized.role);
   if(i<0&&entry.de==="Die Personen sprechen über etwas, vielleicht über Fleisch.")i=BANK.findIndex(a=>a.de==="Die Personen sprechen über etwas, vielleicht über das Fleisch.");
   if(i<0&&entry.de==="Sie sprechen vielleicht über das Wetter.")i=BANK.findIndex(a=>a.de==="Die Personen sprechen vielleicht über das Wetter.");
   // Prati ranije izabranu rečenicu i kad je premeštena iz Detalja u Opis osoba.
   if(i<0&&entry.de==="Im Hintergrund sehe ich noch viele Personen.")
    i=BANK.findIndex(a=>a.de===entry.de&&a.sr===entry.sr);
-  if(i<0&&["custom-clothing","custom-hair","age"].includes(entry.cat)){
-   i=BANK.length;BANK.push({...entry});
+  if(i<0&&["custom-clothing","custom-hair","age"].includes(normalized.cat)){
+   i=BANK.length;BANK.push({...normalized});
   }
   if(i>=0&&!recovered.includes(i))recovered.push(i);
  }
