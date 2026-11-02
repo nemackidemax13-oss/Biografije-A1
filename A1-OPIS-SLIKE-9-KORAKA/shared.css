@@ -1272,3 +1272,28 @@ body[data-step-page="8"] .closing-modes button:focus-visible{
  body[data-step-page="8"] .closing-modes{height:25px;min-height:25px;padding:2px 4px;}
  body[data-step-page="8"] .closing-modes button{height:20px;font-size:9px;}
 }
+
+
+/* Crvena recenica koja se trenutno izgovara na 10. stranici. */
+body.summary-mode #selectedArea .current.speaking-now{
+ background:#fff0f2!important;
+ border:2px solid #e11d3c!important;
+ box-shadow:inset 0 0 0 1px #ffccd5!important;
+}
+body.summary-mode #selectedArea .current.speaking-now .sentence .de{
+ color:#db1838!important;
+ font-weight:950!important;
+}
+body.summary-mode #selectedArea .current.speaking-now .sentence .sr{
+ color:#b21d39!important;
+ font-weight:700!important;
+}
+body.summary-mode #selectedArea .current.speaking-now .index{
+ color:#fff!important;
+ background:#e11d3c!important;
+}
+body.summary-mode #selectedArea .current.speaking-now .sound{
+ background:#e11d3c!important;
+ color:#fff!important;
+ border-color:#aa1831!important;
+}
