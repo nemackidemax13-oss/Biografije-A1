@@ -1219,3 +1219,9 @@ body[data-step-page="0"] .person-filters button:focus-visible{
  body[data-step-page="0"] .person-filters{grid-template-rows:repeat(2,26px)!important;padding:3px!important;gap:2px!important}
  body[data-step-page="0"] .person-filters button{height:26px!important;font-size:8.4px!important}
 }
+
+
+/* Jedinstven crveni naslov na vrhu svih 10 koraka A1 opisa slike. */
+body[data-step-page] .separate-header h1#wizardTitle{
+ color:#d51d3b!important;
+}
