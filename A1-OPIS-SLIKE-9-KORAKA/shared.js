@@ -1084,7 +1084,44 @@ function showWizard(position){
 }
 $("#wizardBack").addEventListener("click",()=>{if(PAGE_INDEX===0){persistDraft();window.location.assign("index.html")}else goToPage(PAGE_INDEX-1)});
 $("#wizardForward").addEventListener("click",()=>{if(PAGE_INDEX===9){persistDraft();window.location.assign("index.html")}else goToPage(PAGE_INDEX+1)});
+/* Tanka linija napretka, od 10% na prvoj do 100% na desetoj stranici.
+   Ne menja izabrane recenice i ne utice na njihov redosled ili izgovor. */
+function setupStepProgress(){
+ const footer=document.querySelector(".wizard-footer");
+ if(!footer)return;
+ const step=PAGE_INDEX+1,total=PAGE_LINKS.length;
+ const track=document.createElement("div");
+ track.className="demax-step-progress";
+ track.setAttribute("role","progressbar");
+ track.setAttribute("aria-label","Napredak kroz 10 koraka opisa slike");
+ track.setAttribute("aria-valuemin","0");
+ track.setAttribute("aria-valuemax",String(total));
+ track.setAttribute("aria-valuenow",String(step));
+ track.setAttribute("aria-valuetext","Korak "+step+" od "+total);
+ track.title=step+"/"+total+" koraka";
+ const fill=document.createElement("span");
+ fill.className="demax-step-progress-fill";
+ track.appendChild(fill);
+ footer.prepend(track);
+ let previous=step-1;
+ try{
+  const saved=Number(sessionStorage.getItem("demax-description-last-page"));
+  if(saved>=1&&saved<=total)previous=saved;
+  sessionStorage.setItem("demax-description-last-page",String(step));
+ }catch(e){/* Privatni pregledac moze blokirati sessionStorage. */}
+ if(step===1)previous=0;
+ fill.style.width=(previous/total*100)+"%";
+ if(previous!==step)requestAnimationFrame(()=>{fill.style.width=(step/total*100)+"%"});
+ if(step===total){
+  const button=$("#playAll");
+  if(button){
+   button.textContent="▶ Poslušaj svoj opis";
+   button.title="Poslušaj svoj kompletan opis slike";
+  }
+ }
+}
 window.addEventListener("pagehide",persistDraft);
 restoreDraft();
 showWizard(PAGE_INDEX);
+setupStepProgress();
 
