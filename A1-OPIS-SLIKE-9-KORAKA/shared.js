@@ -539,7 +539,9 @@ function utter(text,callback){if(!("speechSynthesis" in window)){alert("Nemački
 function listen(i){
  stop();
  const currentRun=runId;
- const position=chosen.indexOf(i);
+ // U "Moj opis" recenice su drugacije poredjane nego u localStorage-u.
+ // Obelezi stvarno prikazanu recenicu, ne njen prvobitni redosled izbora.
+ const position=orderedChosen().indexOf(i);
  if(position>=0){
   chosenIndex=position;
   speakingChosenPosition=position;
