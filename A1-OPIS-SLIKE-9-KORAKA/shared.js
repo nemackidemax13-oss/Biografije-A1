@@ -593,6 +593,18 @@ function pairPlaces(indices){
  }
  return pairs;
 }
+/* Korak 4 prikazuje samo izgled; detalji osoba pripadaju koraku 8.
+   Identiteti unosa ostaju isti da se sačuvaju ranije izabrane rečenice. */
+const TRANSFERRED_PERSON_DETAILS=new Set(["Der Mann hat schöne weiße Zähne.","Der Mann hat ein schönes Gesicht.","Der Mann trägt eine Armbanduhr.","Der Mann trägt ein Armband.","Der Mann hält eine Tüte.","Der Mann hat einen Bart.","Der Mann hat einen Schnurrbart.","Der Mann trägt eine Kette.","Die Frau hat schöne weiße Zähne.","Die Frau hat ein schönes Gesicht.","Die Frau trägt eine Armbanduhr.","Die Frau trägt ein Armband.","Die Frau hält eine Tüte.","Die Frau trägt Ohrringe.","Die Frau trägt einen Ring.","Die Frau trägt eine Halskette.","Das Kind hat schöne weiße Zähne.","Das Kind hat ein schönes Gesicht.","Das Kind trägt eine Armbanduhr.","Das Kind trägt ein Armband.","Das Kind hält eine Tüte.","Das Kind trägt eine Brille.","Das Kind trägt eine Sonnenbrille.","Das Kind hat ein schönes Lachen."]);
+function isTransferredPersonDetail(row){
+ return ["mann","frau","kind"].includes(row.cat)&&TRANSFERRED_PERSON_DETAILS.has(row.de);
+}
+function isHairOnlyPersonSentence(row){
+ return ["mann","frau","kind"].includes(row.cat)&&/^(?:Er|Sie|Es) (?:hat .*?(?:Haare|Haarsträhne)\\.|ist haarlos\\.)$/.test(row.de);
+}
+function movedPersonDetailIds(){
+ return BANK.map((row,i)=>isTransferredPersonDetail(row)?i:-1).filter(i=>i>=0);
+}
 function source(){
  // U 1. koraku prikazuj samo opise osoba, bez izbora situacija.
  if(step===0){
@@ -611,20 +623,21 @@ function source(){
    const found=sceneMatches(scene);
    if(scenePage===1)return found.filter(i=>/\bsprechen\b/i.test(BANK[i].de));
    if(scenePage===2)return pairPlaces(found.filter(i=>BANK[i].cat==="places"));
-   if(scenePage===7)return found.filter(i=>BANK[i].cat==="extra");
+   if(scenePage===7)return found.filter(i=>BANK[i].cat==="extra").concat(movedPersonDetailIds());
   }
  }
  if(category==="extra"){
   const closing=ids.filter(i=>BANK[i].de==="Das war meine Bildbeschreibung.");
-  return ids.filter(i=>BANK[i].de!=="Das war meine Bildbeschreibung.").concat(closing);
+  return ids.filter(i=>BANK[i].de!=="Das war meine Bildbeschreibung.").concat(scenePage===7?movedPersonDetailIds():[],closing);
  }
  if(category==="start"&&step===1)return ids.slice(6).filter(i=>!BANK[i].personExample);
  // Prvo puni nazivi osoba (Der Mann / Die Frau / Das Kind), potom zamenice (Er / Sie / Es).
  // Sortiraj samo prikaz; ne pomeraj unose u BANK-u jer učenici već imaju sačuvane izbore.
  if(step===3&&appearanceMode==="description"&&["mann","frau","kind"].includes(category)){
   const noun=category==="mann"?"Der Mann":category==="frau"?"Die Frau":"Das Kind";
-  return ids.filter(i=>BANK[i].de.startsWith(noun+" "))
-    .concat(ids.filter(i=>!BANK[i].de.startsWith(noun+" ")));
+  const appearance=ids.filter(i=>!isTransferredPersonDetail(BANK[i])&&!isHairOnlyPersonSentence(BANK[i]));
+  return appearance.filter(i=>BANK[i].de.startsWith(noun+" "))
+    .concat(appearance.filter(i=>!BANK[i].de.startsWith(noun+" ")));
  }
  if(scenePage===2&&category==="places")return pairPlaces(ids);
  return ids;
