@@ -736,41 +736,61 @@ function renderList(){
 
 /* Stranica 10: opis iste osobe je jedna celina, bez obzira na redosled odabira.
    Ne pomeramo originalne indekse niti redosled u localStorage-u. */
+/* Jedinstven redosled na 10. stranici, nezavisan od redosleda klikova:
+   sta i koliko osoba vidim -> gde su -> puna slika svake osobe (opis,
+   odeca, godine, kosa) -> razgovor i detalji -> vreme/prostor -> kraj.
+   Ne menjati izabrane BANK ID-jeve, niti izvorni localStorage redosled. */
 function summaryPersonRole(line){
  if(!line)return null;
  if(["mann","frau","kind"].includes(line.role))return line.role;
  if(["mann","frau","kind"].includes(line.cat))return line.cat;
- const sentence=line.de||"";
- if(/^Der (?:andere )?Mann\b/.test(sentence))return "mann";
- if(/^Die (?:andere )?Frau\b/.test(sentence))return "frau";
- if(/^Das (?:andere )?Kind\b/.test(sentence))return "kind";
- // Samo bezbedno prepoznatljive jedninske radnje, nikako "Sie sprechen/sind/suchen".
- if(line.cat==="extra"&&/^Sie (?:braucht|kauft|liest|schneidet|gießt|probiert|bestellt|legt|läuft|räumt|zeigt)\b/.test(sentence))return "frau";
  return null;
 }
-function summaryIsPronoun(line,role){
- const pronoun=role==="mann"?"Er":role==="frau"?"Sie":"Es";
- return (line.de||"").startsWith(pronoun+" ");
+function summaryPersonPart(line){
+ if(line.cat==="custom-clothing")return 2;
+ if(line.cat==="age")return 3;
+ if(line.cat==="custom-hair"||isHairOnlyPersonSentence(line))return 4;
+ // Naziv osobe pre zamenica Er/Sie/Es, i pri pomesanom redosledu izbora.
+ return /^(?:Er|Sie|Es) /.test(line.de)?1:0;
+}
+function summarySortKey(line,selectionIndex){
+ const de=line.de||"";
+ const role=summaryPersonRole(line);
+ // Uvodni opis: najpre sta vidimo, pa opsta recenica o broju osoba.
+ if(line.cat==="start"&&!CLOSING_SENTENCES.includes(de)){
+  if(/sprechen\b/i.test(de))return [4,0,0,0,selectionIndex];
+  if(/^(?:Im Hintergrund|Im Vordergrund)\b/.test(de))return [5,0,0,0,selectionIndex];
+  if(/\b(?:zwei|drei|vier|fünf|sechs|\d+) Personen\b/i.test(de)&&!/Mann|Frau|Kind|Vater|Mutter|Erwachsene|Männer|Frauen|Kinder/i.test(de))
+   return [1,0,0,0,selectionIndex];
+  return [0,0,0,0,selectionIndex];
+ }
+ if(line.cat==="places")return [2,0,0,0,selectionIndex];
+ // Detalji lica, sata, brade, nakita i slicno su izdvojeni u 8. koraku.
+ if(role&&!isTransferredPersonDetail(line)){
+  const rank={mann:0,frau:1,kind:2}[role];
+  const isOther=/^(?:Der andere Mann|Die andere Frau|Das andere Kind)\b/.test(de);
+  return [3,rank,isOther?1:0,summaryPersonPart(line),selectionIndex];
+ }
+ if(line.cat==="closing"){
+  if(line.closingEnding)return [7,de==="Das war meine Bildbeschreibung."?3:1,0,0,selectionIndex];
+  return [6,0,0,0,selectionIndex];
+ }
+ if(de==="Das war meine Bildbeschreibung.")return [7,3,0,0,selectionIndex];
+ if(de==="Das ist alles, was ich sehe."||de==="Das ist alles, was ich auf dem Bild sehen kann.")return [7,2,0,0,selectionIndex];
+ // Ranije izabrane 9. zavrsne recenice ostaju posle detalja.
+ if(CLOSING_SENTENCES.includes(de))return [6,1,0,0,selectionIndex];
+ return [5,0,0,0,selectionIndex];
 }
 function orderedChosen(){
  if(!document.body.classList.contains("summary-mode"))return chosen;
- const index=chosen.findIndex(id=>summaryPersonRole(BANK[id])!==null);
- if(index<0)return chosen;
- const groupOrder=[],groups=new Map(),other=[];
- for(const id of chosen.slice(index)){
-  const role=summaryPersonRole(BANK[id]);
-  if(!role){other.push(id);continue}
-  if(!groups.has(role)){groups.set(role,[]);groupOrder.push(role)}
-  groups.get(role).push(id);
- }
- const grouped=[];
- for(const role of groupOrder){
-  const entries=groups.get(role);
-  // "Der Mann" pa "Er", "Die Frau" pa "Sie", "Das Kind" pa "Es".
-  grouped.push(...entries.filter(id=>!summaryIsPronoun(BANK[id],role)));
-  grouped.push(...entries.filter(id=>summaryIsPronoun(BANK[id],role)));
- }
- return chosen.slice(0,index).concat(grouped,other);
+ // Sortira se samo prikaz i redosled citanja, bez promene sacuvanih izbora.
+ return chosen.map((id,position)=>({id,key:summarySortKey(BANK[id],position)}))
+  .sort((a,b)=>{
+   for(let i=0;i<a.key.length;i++){
+    if(a.key[i]!==b.key[i])return a.key[i]-b.key[i];
+   }
+   return 0;
+  }).map(x=>x.id);
 }
 
 function chosenPageSize(){
