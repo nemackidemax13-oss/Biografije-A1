@@ -382,6 +382,52 @@ for(let sceneNumber=0;sceneNumber<scenes.length;sceneNumber++){
 }
 if(totalSceneExamples!==1500)throw Error("Ocekivano 1500 primera: "+totalSceneExamples);
 
+
+// Dodatnih 500 primera: muskarac i zena su oboje kupci, prodavci i ucesnici.
+// 8 situacija dobija 13 novih recenica, ostalih 33 po 12.
+const newSceneExamples={"pekara":["Der Mann kauft Brot.","Muškarac kupuje hleb.","Die Frau verkauft Brötchen.","Žena prodaje zemičke."],"cvecara":["Der Mann kauft Blumen.","Muškarac kupuje cveće.","Die Frau verkauft Rosen.","Žena prodaje ruže."],"obucara":["Der Mann kauft neue Schuhe.","Muškarac kupuje nove cipele.","Die Frau verkauft Schuhe.","Žena prodaje cipele."],"kafic":["Der Mann bestellt Kaffee.","Muškarac naručuje kafu.","Die Frau bringt den Kaffee.","Žena donosi kafu."],"supermarket":["Der Mann kauft Brot und Milch.","Muškarac kupuje hleb i mleko.","Die Frau verkauft Lebensmittel.","Žena prodaje namirnice."],"radionica":["Der Mann braucht neue Reifen.","Muškarcu su potrebne nove gume.","Die Frau fragt nach dem Preis.","Žena pita za cenu."],"stan":["Der Mann sitzt auf dem Sofa.","Muškarac sedi na kauču.","Die Frau öffnet das Fenster.","Žena otvara prozor."],"kuhinja":["Der Mann macht Frühstück.","Muškarac priprema doručak.","Die Frau deckt den Tisch.","Žena postavlja sto."],"butik":["Der Mann kauft eine Jacke.","Muškarac kupuje jaknu.","Die Frau verkauft Kleidung.","Žena prodaje odeću."],"apoteka":["Der Mann kauft Medikamente.","Muškarac kupuje lekove.","Die Frau verkauft Medikamente.","Žena prodaje lekove."],"doktor":["Der Mann wartet auf den Arzt.","Muškarac čeka lekara.","Die Frau hat einen Termin beim Arzt.","Žena ima zakazan termin kod lekara."],"mesara":["Der Mann kauft Fleisch.","Muškarac kupuje meso.","Die Frau verkauft Fleisch.","Žena prodaje meso."],"biblioteka":["Der Mann sucht ein Buch.","Muškarac traži knjigu.","Die Frau liest ein Buch.","Žena čita knjigu."],"skola":["Der Mann schreibt an die Tafel.","Muškarac piše na tabli.","Die Frau erklärt eine Aufgabe.","Žena objašnjava zadatak."],"basta":["Der Mann gießt die Blumen.","Muškarac zaliva cveće.","Die Frau pflanzt Blumen.","Žena sadi cveće."],"suma":["Der Mann geht durch den Wald.","Muškarac ide kroz šumu.","Die Frau macht Fotos.","Žena fotografiše."],"hotel":["Der Mann bezahlt das Zimmer.","Muškarac plaća sobu.","Die Frau zeigt den Zimmerschlüssel.","Žena pokazuje ključ od sobe."],"knjizara":["Der Mann kauft ein Buch.","Muškarac kupuje knjigu.","Die Frau verkauft Bücher.","Žena prodaje knjige."],"voz":["Der Mann kauft eine Fahrkarte.","Muškarac kupuje voznu kartu.","Die Frau sucht ihren Sitzplatz.","Žena traži svoje sedište."],"cekaonica":["Der Mann wartet auf seinen Termin.","Muškarac čeka svoj termin.","Die Frau schaut auf die Uhr.","Žena gleda na sat."],"soba":["Der Mann macht das Bett.","Muškarac namešta krevet.","Die Frau öffnet den Schrank.","Žena otvara ormar."],"fitnes":["Der Mann macht Sport.","Muškarac trenira.","Die Frau trinkt Wasser.","Žena pije vodu."],"biro":["Der Mann arbeitet am Computer.","Muškarac radi za računarom.","Die Frau schreibt ein Dokument.","Žena piše dokument."],"bioskop":["Der Mann kauft zwei Kinokarten.","Muškarac kupuje dve bioskopske karte.","Die Frau verkauft Kinokarten.","Žena prodaje bioskopske karte."],"reka":["Der Mann steht am Wasser.","Muškarac stoji pored vode.","Die Frau fotografiert den Fluss.","Žena fotografiše reku."],"stanica":["Der Mann kauft eine Fahrkarte.","Muškarac kupuje kartu.","Die Frau wartet auf den Bus.","Žena čeka autobus."],"plaza":["Der Mann sitzt unter dem Sonnenschirm.","Muškarac sedi ispod suncobrana.","Die Frau geht zum Wasser.","Žena ide prema vodi."],"more":["Der Mann schwimmt im Meer.","Muškarac pliva u moru.","Die Frau sitzt am Strand.","Žena sedi na plaži."],"jezero":["Der Mann angelt am See.","Muškarac peca na jezeru.","Die Frau schaut auf das Wasser.","Žena gleda u vodu."],"pijaca":["Der Mann kauft Äpfel.","Muškarac kupuje jabuke.","Die Frau verkauft Obst.","Žena prodaje voće."],"ulica":["Der Mann geht über die Straße.","Muškarac prelazi ulicu.","Die Frau wartet an der Ampel.","Žena čeka na semaforu."],"kasa":["Der Mann kauft Lebensmittel.","Muškarac kupuje namirnice.","Die Frau arbeitet an der Kasse.","Žena radi na kasi."],"veterinar":["Der Mann bringt seinen Hund zum Tierarzt.","Muškarac vodi psa veterinaru.","Die Frau untersucht das Tier.","Žena pregleda životinju."],"frizer":["Der Mann bezahlt den Haarschnitt.","Muškarac plaća šišanje.","Die Frau schneidet die Haare.","Žena šiša kosu."],"restoran":["Der Mann bestellt das Essen.","Muškarac naručuje hranu.","Die Frau bringt die Speisekarte.","Žena donosi jelovnik."],"autobus":["Der Mann kauft ein Busticket.","Muškarac kupuje autobusku kartu.","Die Frau zeigt ihre Fahrkarte.","Žena pokazuje svoju kartu."],"auto":["Der Mann fährt langsam.","Muškarac vozi polako.","Die Frau schaut auf die Karte.","Žena gleda mapu."],"park":["Der Mann sitzt auf einer Bank.","Muškarac sedi na klupi.","Die Frau geht durch den Park.","Žena prolazi kroz park."],"posta":["Der Mann kauft Briefmarken.","Muškarac kupuje poštanske marke.","Die Frau verkauft Briefmarken.","Žena prodaje poštanske marke."],"aerodrom":["Der Mann kauft ein Flugticket.","Muškarac kupuje avionsku kartu.","Die Frau zeigt ihren Reisepass.","Žena pokazuje svoj pasoš."],"priroda":["Der Mann macht ein Foto.","Muškarac fotografiše.","Die Frau schaut auf die Berge.","Žena gleda planine."]};
+const moreGeneral=[
+["Die Frau steht vor dem Mann.","Žena stoji ispred muškarca."],
+["Der Mann steht vor der Frau.","Muškarac stoji ispred žene."],
+["Der Mann steht hinter der Frau.","Muškarac stoji iza žene."],
+["Die Frau steht hinter dem Mann.","Žena stoji iza muškarca."],
+["Die Frau zeigt auf etwas.","Žena pokazuje na nešto."],
+["Der Mann zeigt auf etwas.","Muškarac pokazuje na nešto."],
+["Die Frau schaut nach vorne.","Žena gleda napred."],
+["Der Mann schaut nach vorne.","Muškarac gleda napred."],
+["Die Frau ist auf der linken Seite.","Žena je na levoj strani."],
+["Der Mann ist auf der rechten Seite.","Muškarac je na desnoj strani."],
+["Die Frau ist auf der rechten Seite.","Žena je na desnoj strani."],
+["Der Mann ist auf der linken Seite.","Muškarac je na levoj strani."],
+["Die Frau hält eine Tasche in der Hand.","Žena drži torbu u ruci."],
+["Der Mann hält eine Tasche in der Hand.","Muškarac drži torbu u ruci."],
+["Vielleicht wartet der Mann.","Možda muškarac čeka."],
+["Vielleicht wartet die Frau.","Možda žena čeka."],
+["Ich denke, der Mann hat eine Frage.","Mislim da muškarac ima pitanje."],
+["Ich denke, die Frau hat eine Frage.","Mislim da žena ima pitanje."]
+];
+const salesMore=[
+["Der Mann fragt nach dem Preis.","Muškarac pita za cenu."],
+["Die Frau fragt nach dem Preis.","Žena pita za cenu."],
+["Der Mann möchte etwas kaufen.","Muškarac želi nešto da kupi."],
+["Die Frau möchte etwas kaufen.","Žena želi nešto da kupi."],
+["Der Mann bezahlt mit Karte.","Muškarac plaća karticom."],
+["Die Frau bezahlt mit Bargeld.","Žena plaća gotovinom."],
+["Der Mann bekommt eine Quittung.","Muškarac dobija račun."],
+["Die Frau bekommt eine Quittung.","Žena dobija račun."]
+];
+let addedNew=0;
+for(let sceneNumber=0;sceneNumber<scenes.length;sceneNumber++){
+ const s=scenes[sceneNumber],list=exampleIndexByScene.get(s.id);
+ if(!list)throw Error("Nema situacije "+s.id);
+ const target=sceneNumber<8?13:12,seen=new Set(list.map(id=>BANK[id].de));
+ const a=newSceneExamples[s.id]||[];
+ const extra=[...[a.length===4?[[a[0],a[1]],[a[2],a[3]]]:[]],...(buyingIds.has(s.id)?salesMore:[]),...moreGeneral];
+ for(const [de,sr] of extra){if(list.length>= (sceneNumber<24?37:36)+target)break;if(seen.has(de)||noExamples.has(de))continue;list.push(ensure(de,sr,"closing"));seen.add(de);addedNew++}
+ if(list.length!==(sceneNumber<24?37:36)+target)throw Error("Nedovoljno novih primera za "+s.id);
+}
+if(addedNew!==500)throw Error("Dodato "+addedNew+" umesto 500");
+
 let group=1,scene=0,allScenes=false,endPage=0;
 function ensure(de,sr,cat="closing",ending=false){
  let i=BANK.findIndex(v=>v.cat===cat&&v.de===de);
