@@ -1000,8 +1000,8 @@ function goToPage(target){
 
 const PAGE_TO_ORIGINAL_STEP=[0,1,2,3,4,3,3,5,6];
 const PAGE_MODES=["description","description","description","description","description","hair","age","description","description"];
-const PAGE_QUESTIONS=["Was sehen Sie auf dem Bild?","Worüber sprechen die Personen?","Wo sind die Personen auf dem Bild?","Wie sehen die Personen aus?","Was tragen die Personen?","Welche Haare haben die Personen?","Wie alt sind die Personen?","Was sehen Sie noch?","Was können Sie noch über die Personen sagen?"];
-const PAGE_TRANSLATIONS=["Šta vidiš na slici?","O čemu razgovaraju osobe?","Gde se nalaze osobe na slici?","Kako izgledaju osobe na slici?","Šta nose osobe na slici?","Kakvu kosu imaju osobe?","Koliko godina imaju osobe?","Šta još vidiš na slici?","Šta još možeš reći o osobama?"];
+const PAGE_QUESTIONS=["Was sehen Sie auf dem Bild?","Worüber sprechen die Personen?","Wo sind die Personen auf dem Bild?","Wie sehen die Personen aus?","Was tragen die Personen?","Welche Haare haben die Personen?","Wie alt sind die Personen?","Was sehen Sie noch?","Wie ist das Wetter oder wie sieht der Raum aus?"];
+const PAGE_TRANSLATIONS=["Šta vidiš na slici?","O čemu razgovaraju osobe?","Gde se nalaze osobe na slici?","Kako izgledaju osobe na slici?","Šta nose osobe na slici?","Kakvu kosu imaju osobe?","Koliko godina imaju osobe?","Šta još vidiš na slici?","Kakvo je vreme ili kako izgleda prostorija?"];
 let wizardPosition=0;
 function showWizard(position){
   wizardPosition=Math.max(0,Math.min(9,position));
