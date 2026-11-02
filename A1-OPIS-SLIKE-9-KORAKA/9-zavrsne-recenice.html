@@ -52,6 +52,17 @@ body[data-step-page="8"] .paneltitle.scene-paneltitle{height:34px!important;min-
 /* Kraj opisa je uvek crveno dugme. */
 #endCategories button[data-end-group="2"],#endCategories button[data-end-group="2"].active,#endCategories button[data-end-group="2"]:hover{background:#d6273e!important;color:#fff!important;border:1px solid #ae1930!important}
 #endCategories button[data-end-group="2"].active{box-shadow:inset 0 0 0 2px #fff!important}
+
+/* Korak 9 koristi isti raspored izbora situacija i listanja kao korak 3. */
+body[data-step-page="8"] .paneltitle.scene-paneltitle{height:28px!important;min-height:28px!important;justify-content:space-between!important;gap:3px!important;padding:1px 6px!important;background:#f3f8ff!important}
+#endScene{display:flex!important;flex:0 1 auto!important;justify-content:flex-start!important;align-items:center!important;gap:3px!important;padding:0!important;margin:0!important;background:none!important;border:0!important;min-width:0!important}
+#endSceneName{flex:0 1 auto!important;min-width:52px!important;max-width:170px!important;font-weight:900!important;font-size:clamp(11px,2.8vw,13px)!important}
+#endScenePrev,#endSceneNext{width:27px!important;height:25px!important;min-width:27px!important;border-radius:6px!important;font-size:16px!important;line-height:1!important}
+#endAllScenes{margin:0!important;padding:4px 7px!important;line-height:1.1!important;font-size:10px!important}
+#endPager{position:static!important;transform:none!important;flex:none!important;height:27px!important;background:#f9fbff!important;border-top:1px solid #e9f0fa!important;display:flex!important;align-items:center!important;justify-content:space-between!important;padding:2px 7px!important;gap:5px!important}
+#endPager button{height:24px!important;min-width:34px!important;width:auto!important;padding:0 8px!important;border-radius:7px!important;font-size:19px!important;line-height:1!important}
+#endPagerCount{position:static!important;transform:none!important;background:none!important;font-size:10px!important}
+#endChoices{padding:2px!important;grid-template-rows:repeat(3,minmax(0,1fr))!important}
 </style></head>
 <body data-step-page="8" data-scene-selector="true">
 <main class="app" id="app" aria-label="A1 opis slike — mustra za učenike">
