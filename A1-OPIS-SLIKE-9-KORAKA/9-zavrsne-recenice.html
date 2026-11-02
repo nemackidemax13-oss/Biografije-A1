@@ -387,7 +387,7 @@ function ensure(de,sr,cat="closing",ending=false){
 const base=common.map((rows,g)=>rows.map(([de,sr])=>ensure(de,sr,"closing",g===2)));
 const removedSentences=new Set(["Die Personen sprechen miteinander.","Das Foto wurde drinnen aufgenommen."]);
 function sceneOptions(){
- if(group!==2){if(allScenes){return scenes.filter(s=>outdoor.has(s.id)===(group===1)).flatMap(s=>exampleIndexByScene.get(s.id)||[])}const s=scenes[scene];return outdoor.has(s.id)===(group===1)?(exampleIndexByScene.get(s.id)||[]):[...base[group]];}
+ if(group!==2){if(allScenes){return scenes.filter(s=>outdoor.has(s.id)===(group===1)).flatMap(s=>exampleIndexByScene.get(s.id)||[])}const s=scenes[scene];return outdoor.has(s.id)===(group===1)?(exampleIndexByScene.get(s.id)||[]):[];}
 
  if(allScenes&&group!==2){const result=new Set(base[group]);for(const [de,sr] of sharedPoses)result.add(ensure(de,sr,"closing"));if(group===1)for(const [de,sr] of weather)result.add(ensure(de,sr,"closing"));for(const s of scenes){if(outdoor.has(s.id)!==(group===1))continue;for(const [de,sr] of customScenes[s.id]||[])result.add(ensure(de,sr,"closing"));for(let i=0;i<BANK.length;i++){const v=BANK[i];if(v.cat==="extra"&&Array.isArray(v.sceneDetailIds)&&v.sceneDetailIds.includes(s.id))result.add(i)}}return [...result]}
 
