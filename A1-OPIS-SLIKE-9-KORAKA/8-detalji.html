@@ -118,18 +118,20 @@ const groups=[
 ["möchte mit Karte bezahlen","želi da plati karticom"],["möchte mit Bargeld bezahlen","želi da plati gotovinom"],["möchte bar bezahlen","želi da plati kešom"],["bezahlt mit Karte","plaća karticom"],["bezahlt bar","plaća gotovinom"],["hat Geld in der Hand","drži novac u ruci"],["hat eine Einkaufstüte in der Hand","drži kesu za kupovinu u ruci"],["trägt eine Einkaufstüte","nosi kesu za kupovinu"],["hat zwei Einkaufstüten","ima dve kese za kupovinu"],["möchte eine Tüte haben","želi da dobije kesu"],["fragt vielleicht nach einer Tüte","možda traži kesu"],["möchte vielleicht eine Quittung haben","možda želi račun"],["fragt vielleicht nach der Rechnung","možda traži račun"],["möchte die Rechnung bezahlen","želi da plati račun"],["wartet auf die Rechnung","čeka račun"],["hat die Rechnung in der Hand","drži račun u ruci"],["hält eine Tasche in der Hand","drži torbu u ruci"],["hat ein Handy in der Hand","drži mobilni telefon u ruci"],["hat einen Schlüssel in der Hand","drži ključ u ruci"],["kauft vielleicht etwas ein","možda nešto kupuje"],["möchte etwas kaufen","želi nešto da kupi"],["schaut sich die Waren an","razgleda robu"],["spricht vielleicht mit dem Verkäufer","možda razgovara s prodavcem"],["spricht vielleicht mit der Verkäuferin","možda razgovara s prodavačicom"]]}
 ];
 let role=0,group=0,item=0;const $d=id=>document.getElementById(id);
-function current(){const p=people[role],v=groups[group].items[item];return {cat:"custom-detail",role:p.key,de:p.de+" "+v[0]+".",sr:p.sr+" "+v[1]+".",step:5}}
+const beardTerms=new Set(["hat einen Bart","hat einen Schnurrbart","hat einen kurzen Bart","hat einen langen Bart"]);
+function visibleItems(){return groups[group].items.filter(v=>role===0||!beardTerms.has(v[0]))}
+function current(){const p=people[role],v=visibleItems()[item];return {cat:"custom-detail",role:p.key,de:p.de+" "+v[0]+".",sr:p.sr+" "+v[1]+".",step:5}}
 function render(){
  $d("dpRoles").innerHTML=people.map((p,i)=>'<button class="dp-tab '+(role===i?'active':'')+'" data-roleidx="'+i+'">'+p.label+'</button>').join("");
  $d("dpGroups").innerHTML=groups.map((g,i)=>'<button class="dp-tab '+(group===i?'active':'')+'" data-groupidx="'+i+'">'+g.label+'</button>').join("");
- const v=current();$d("dpValue").textContent=groups[group].items[item][1];$d("dpGerman").textContent=v.de;$d("dpSerbian").textContent=v.sr;
+ const v=current();$d("dpValue").textContent=visibleItems()[item][1];$d("dpGerman").textContent=v.de;$d("dpSerbian").textContent=v.sr;
  const active=chosen.some(k=>BANK[k]?.cat==="custom-detail"&&BANK[k]?.de===v.de);
  $d("dpAdd").textContent=active?"✓ Izabrano":"❯ Dodaj";$d("dpAdd").classList.toggle("selected",active);$d("dpAdd").setAttribute("aria-pressed",String(active));$d("dpGerman").closest(".dp-preview").classList.toggle("dp-selected",active);
 }
-$d("dpRoles").onclick=e=>{const b=e.target.closest("[data-roleidx]");if(b){role=Number(b.dataset.roleidx);render()}};
+$d("dpRoles").onclick=e=>{const b=e.target.closest("[data-roleidx]");if(b){role=Number(b.dataset.roleidx);item=0;render()}};
 $d("dpGroups").onclick=e=>{const b=e.target.closest("[data-groupidx]");if(b){group=Number(b.dataset.groupidx);item=0;render()}};
-$d("dpPrev").onclick=()=>{item=(item-1+groups[group].items.length)%groups[group].items.length;render()};
-$d("dpNext").onclick=()=>{item=(item+1)%groups[group].items.length;render()};
+$d("dpPrev").onclick=()=>{item=(item-1+visibleItems().length)%visibleItems().length;render()};
+$d("dpNext").onclick=()=>{item=(item+1)%visibleItems().length;render()};
 $d("dpListen").onclick=()=>{stop();utter(current().de)};
 $d("dpAdd").onclick=()=>{const v=current(),existing=chosen.find(k=>BANK[k]?.cat==="custom-detail"&&BANK[k]?.de===v.de);if(existing!==undefined)addOrRemove(existing);else{const i=BANK.length;BANK.push(v);addOrRemove(i)}render()};
 render();
