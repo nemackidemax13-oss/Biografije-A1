@@ -63,6 +63,11 @@ body[data-step-page="8"] .paneltitle.scene-paneltitle{height:28px!important;min-
 #endPager button{height:24px!important;min-width:34px!important;width:auto!important;padding:0 8px!important;border-radius:7px!important;font-size:19px!important;line-height:1!important}
 #endPagerCount{position:static!important;transform:none!important;background:none!important;font-size:10px!important}
 #endChoices{padding:2px!important;grid-template-rows:repeat(3,minmax(0,1fr))!important}
+
+/* Strelice za listanje u istoj horizontalnoj ravni, vertikalno centrirane. */
+#endPager{display:flex!important;align-items:center!important;justify-content:space-between!important;flex-direction:row!important;min-height:32px!important;height:32px!important;padding:2px 9px!important}
+#endPagePrev,#endPageNext{display:flex!important;align-items:center!important;justify-content:center!important;height:27px!important;min-height:27px!important;line-height:1!important;padding:0 8px 3px!important;vertical-align:middle!important}
+#endPagerCount{align-self:center!important;line-height:1.1!important}
 </style></head>
 <body data-step-page="8" data-scene-selector="true">
 <main class="app" id="app" aria-label="A1 opis slike — mustra za učenike">
