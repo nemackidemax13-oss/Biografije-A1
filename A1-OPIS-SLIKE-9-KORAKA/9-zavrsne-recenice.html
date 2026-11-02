@@ -89,6 +89,11 @@ body[data-step-page="8"] .paneltitle.scene-paneltitle{position:relative!importan
 body[data-step-page="8"] #endScene{position:absolute!important;left:50%!important;top:50%!important;transform:translate(-50%,-50%)!important;width:max-content!important;max-width:65%!important;flex:none!important;display:flex!important;justify-content:center!important;align-items:center!important;gap:3px!important}
 body[data-step-page="8"] #endSceneName{max-width:min(35vw,145px)!important;text-align:center!important;flex:0 1 auto!important}
 body[data-step-page="8"] #endAllScenes{position:relative!important;z-index:1!important}
+
+/* Korak 9: razmaknute strelice kao u 3. Mesto osoba na slici. */
+body[data-step-page="8"] #endScene{width:56%!important;max-width:56%!important;justify-content:space-between!important;gap:8px!important}
+body[data-step-page="8"] #endSceneName{flex:1 1 auto!important;max-width:none!important;text-align:center!important;min-width:0!important}
+@media(max-width:390px){body[data-step-page="8"] #endScene{width:54%!important;max-width:54%!important}}
 </style></head>
 <body data-step-page="8" data-scene-selector="true">
 <main class="app" id="app" aria-label="A1 opis slike — mustra za učenike">
