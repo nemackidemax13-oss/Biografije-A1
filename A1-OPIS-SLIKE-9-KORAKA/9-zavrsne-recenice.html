@@ -83,6 +83,12 @@ body[data-step-page="8"] #endScene{display:flex!important;align-items:center!imp
 body[data-step-page="8"] #endSceneName{flex:0 1 auto!important;min-width:0!important;text-align:center!important;white-space:nowrap!important}
 body[data-step-page="8"] #endScenePrev,body[data-step-page="8"] #endSceneNext{display:grid!important;place-items:center!important;flex:0 0 26px!important;width:26px!important;min-width:26px!important;height:26px!important;min-height:26px!important;padding:0!important;border-radius:6px!important;background:#fff0f2!important;border:1px solid #e99eaa!important;color:#d51d3b!important;font-size:17px!important;line-height:1!important;font-weight:950!important}
 body[data-step-page="8"] #endScenePrev:active,body[data-step-page="8"] #endSceneNext:active{background:#ffdce4!important;color:#a6102a!important}
+
+/* Centriranje gornjih strelica i naziva tacno po sredini kao u koraku 2. */
+body[data-step-page="8"] .paneltitle.scene-paneltitle{position:relative!important;display:flex!important;justify-content:flex-end!important;align-items:center!important}
+body[data-step-page="8"] #endScene{position:absolute!important;left:50%!important;top:50%!important;transform:translate(-50%,-50%)!important;width:max-content!important;max-width:65%!important;flex:none!important;display:flex!important;justify-content:center!important;align-items:center!important;gap:3px!important}
+body[data-step-page="8"] #endSceneName{max-width:min(35vw,145px)!important;text-align:center!important;flex:0 1 auto!important}
+body[data-step-page="8"] #endAllScenes{position:relative!important;z-index:1!important}
 </style></head>
 <body data-step-page="8" data-scene-selector="true">
 <main class="app" id="app" aria-label="A1 opis slike — mustra za učenike">
