@@ -600,7 +600,7 @@ function isTransferredPersonDetail(row){
  return ["mann","frau","kind"].includes(row.cat)&&TRANSFERRED_PERSON_DETAILS.has(row.de);
 }
 function isHairOnlyPersonSentence(row){
- return ["mann","frau","kind"].includes(row.cat)&&/^(?:Er|Sie|Es) (?:hat .*?(?:Haare|Haarsträhne)\\.|ist haarlos\\.)$/.test(row.de);
+ return ["mann","frau","kind"].includes(row.cat)&&/^(?:Er|Sie|Es) (?:hat .*(?:Haare|Haarsträhne)[.]|ist haarlos[.])$/.test(row.de);
 }
 function movedPersonDetailIds(){
  return BANK.map((row,i)=>isTransferredPersonDetail(row)?i:-1).filter(i=>i>=0);
