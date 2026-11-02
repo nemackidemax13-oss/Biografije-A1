@@ -32,6 +32,10 @@ body[data-step-page="7"] #sceneFilters,body[data-step-page="7"] #sceneAll,body[d
 /* Sve tri kategorije pune narandzaste boje bez svetle pozadine. */
 #detailPicker .dp-groups .dp-tab,#detailPicker .dp-groups .dp-tab[data-groupidx="2"],#detailPicker .dp-groups .dp-tab:hover,#detailPicker .dp-groups .dp-tab:focus{background:#ee8317!important;color:#fff!important;border:1px solid #d56c07!important;box-shadow:none!important}
 #detailPicker .dp-groups .dp-tab.active,#detailPicker .dp-groups .dp-tab[data-groupidx="2"].active{background:#cd6509!important;color:#fff!important;border:2px solid #a94e04!important;box-shadow:none!important}
+
+/* Samo aktivna kategorija narandzasta, ostale potpuno bele. */
+#detailPicker .dp-groups .dp-tab,#detailPicker .dp-groups .dp-tab[data-groupidx="2"],#detailPicker .dp-groups .dp-tab:not(.active):hover,#detailPicker .dp-groups .dp-tab:not(.active):focus{background:#ffffff!important;color:#174b91!important;border:1px solid #b9cde4!important;box-shadow:none!important}
+#detailPicker .dp-groups .dp-tab.active,#detailPicker .dp-groups .dp-tab[data-groupidx="2"].active,#detailPicker .dp-groups .dp-tab.active:hover{background:#ee8317!important;color:#fff!important;border:2px solid #cf6809!important;box-shadow:none!important}
 </style></head>
 <body data-step-page="7" data-scene-selector="true">
 <main class="app" id="app" aria-label="A1 opis slike — mustra za učenike">
