@@ -1297,3 +1297,12 @@ body.summary-mode #selectedArea .current.speaking-now .sound{
  color:#fff!important;
  border-color:#aa1831!important;
 }
+
+
+/* Samo trenutno izgovarana recenica ima crveni okvir.
+   Ostale recenice, ukljucujuci odecu, kosu i godine, imaju neutralan okvir. */
+body.summary-mode #selectedArea .current:not(.speaking-now){
+ border:1px solid #dce8f6!important;
+ background:#fff!important;
+ box-shadow:none!important;
+}
