@@ -378,7 +378,7 @@ for(let sceneNumber=0;sceneNumber<scenes.length;sceneNumber++){
 }
 if(totalSceneExamples!==1500)throw Error("Ocekivano 1500 primera: "+totalSceneExamples);
 
-let group=0,scene=0,allScenes=false,endPage=0;
+let group=1,scene=0,allScenes=false,endPage=0;
 function ensure(de,sr,cat="closing",ending=false){
  let i=BANK.findIndex(v=>v.cat===cat&&v.de===de);
  if(i<0){i=BANK.length;BANK.push({cat,de,sr,closingEnding:ending})}
@@ -414,8 +414,8 @@ function render(){
  const ids=[...new Set(sceneOptions())].filter(id=>!removedSentences.has(BANK[id]?.de));const pages=Math.max(1,Math.ceil(ids.length/3));endPage=Math.min(endPage,pages-1);const visible=ids.slice(endPage*3,endPage*3+3);document.getElementById("endPagerCount").textContent="Strana "+(endPage+1)+" od "+pages;document.getElementById("endPagePrev").disabled=endPage===0;document.getElementById("endPageNext").disabled=endPage>=pages-1;
  document.getElementById("endChoices").innerHTML=visible.map(id=>{const v=BANK[id],sel=chosen.includes(id);return '<div class="end-line '+(sel?'selected':'')+'"><div class="end-text"><strong>'+escapeHTML(v.de)+'</strong><small>'+escapeHTML(v.sr)+'</small></div><button type="button" data-end-play="'+id+'" aria-label="Poslušaj">🔊</button><button type="button" class="end-add" data-end-add="'+id+'" aria-pressed="'+sel+'">'+(sel?'✓ Izabrano':'❯ Dodaj')+'</button></div>'}).join("");
 }
-document.getElementById("endScenePrev").onclick=()=>{scene=(scene-1+scenes.length)%scenes.length;allScenes=false;endPage=0;render()};
-document.getElementById("endSceneNext").onclick=()=>{scene=(scene+1)%scenes.length;allScenes=false;render()};
+document.getElementById("endScenePrev").onclick=()=>{scene=(scene-1+scenes.length)%scenes.length;group=outdoor.has(scenes[scene].id)?1:0;allScenes=false;endPage=0;render()};
+document.getElementById("endSceneNext").onclick=()=>{scene=(scene+1)%scenes.length;group=outdoor.has(scenes[scene].id)?1:0;allScenes=false;endPage=0;render()};
 document.getElementById("endAllScenes").onclick=()=>{allScenes=!allScenes;endPage=0;render()};
 document.getElementById("endCategories").addEventListener("click",e=>{const b=e.target.closest("[data-end-group]");if(b){group=Number(b.dataset.endGroup);endPage=0;render()}});
 document.getElementById("endChoices").addEventListener("click",e=>{const play=e.target.closest("[data-end-play]");if(play){listen(Number(play.dataset.endPlay));return}const add=e.target.closest("[data-end-add]");if(add){addOrRemove(Number(add.dataset.endAdd));render()}});
