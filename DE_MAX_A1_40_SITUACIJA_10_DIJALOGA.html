@@ -56,7 +56,25 @@ function dialogue(){
 35:[["Hallo! Schau mal, das Meer ist so schön!","Zdravo! Pogledaj, more je tako lepo!"],["Hallo! Ja, das Wasser ist ganz blau.","Zdravo! Da, voda je sasvim plava."]],
 38:[["Guten Tag! Entschuldigung, können Sie mir helfen?","Dobar dan! Izvinite, možete li da mi pomognete?"],["Guten Tag! Ja, natürlich. Was suchen Sie?","Dobar dan! Da, naravno. Šta tražite?"]]
 };
-const opening=specialOpenings[s.n]||base.slice(0,2);
+const greetingKinds=formal.has(s.n)?["Guten Morgen","Guten Tag","Guten Abend","Guten Tag","Guten Morgen","Guten Abend","Guten Tag","Guten Morgen","Guten Tag","Guten Abend"]:["Hallo","Guten Morgen","Hallo","Guten Tag","Hallo","Guten Morgen","Hallo","Guten Abend","Hallo","Guten Tag"];
+const chosenGreeting=greetingKinds[di];
+const greetingSr={"Hallo":"Zdravo","Guten Morgen":"Dobro jutro","Guten Tag":"Dobar dan","Guten Abend":"Dobro veče"};
+function adjustGreeting(line){
+ const out=line.slice();
+ const de=out[0],sr=out[1];
+ const dePattern=/^(Guten Morgen|Guten Tag|Guten Abend|Hallo)(?=[!,.\s])/i;
+ const srPattern=/^(Dobro jutro|Dobar dan|Dobro veče|Zdravo)(?=[!,.\s])/i;
+ const match=de.match(dePattern);
+ if(match){
+   out[0]=chosenGreeting+de.slice(match[0].length);
+   out[1]=srPattern.test(sr)?sr.replace(srPattern,greetingSr[chosenGreeting]):greetingSr[chosenGreeting]+"! "+sr;
+ }else{
+   out[0]=chosenGreeting+"! "+de;
+   out[1]=greetingSr[chosenGreeting]+"! "+sr;
+ }
+ return out;
+}
+const opening=(specialOpenings[s.n]||base.slice(0,2)).map(adjustGreeting);
  const isSale=sales.has(s.n);
  const finish=isSale?(salesBuyerFirst.has(s.n)?retailBuyerEnd:retailEnd):
  (goodbye[s.n]||(formal.has(s.n)?[["Vielen Dank! Auf Wiedersehen!","Hvala vam! Doviđenja!"],["Gern geschehen. Auf Wiedersehen!","Nema na čemu. Doviđenja!"]]:[["Schön, dass wir gesprochen haben. Bis bald!","Drago mi je što smo razgovarali. Vidimo se uskoro!"],["Ja, bis bald!","Da, vidimo se uskoro!"]]));
