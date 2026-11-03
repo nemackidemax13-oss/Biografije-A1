@@ -64,19 +64,19 @@ function dialogue(){
  const g=greetings[di],sr={"Guten Morgen":"Dobro jutro","Guten Tag":"Dobar dan","Guten Abend":"Dobro veče"}[g];
  const doctor=(s.n===7&&di>=5)||s.n===23,vet=s.n===42,repair=s.n===41,pharm=s.n===7&&!doctor,checkout=s.n===40,supermarket=s.n===13;
  let opener;
- if(doctor)opener=[[g+"! Was fehlt Ihnen?",sr+"! Šta vam je?"],[g+"! Ich brauche Ihre Hilfe.",sr+"! Potrebna mi je vaša pomoć."],["Was ist das Problem?","U čemu je problem?"]];
- else if(vet)opener=[[g+"! Was fehlt Ihrem Tier?",sr+"! Šta je vašoj životinji?"],[g+"! Ich brauche Hilfe für mein Tier.",sr+"! Potrebna mi je pomoć za moju životinju."],["Was ist passiert?","Šta se dogodilo?"]];
+ if(doctor)opener=[[g+"! Willkommen in der Praxis.",sr+"! Dobro došli u ordinaciju."],[g+"! Danke.",sr+"! Hvala."],["Was fehlt Ihnen?","Šta vam je?"]];
+ else if(vet)opener=[[g+"! Willkommen in der Tierarztpraxis.",sr+"! Dobro došli u veterinarsku ambulantu."],[g+"! Danke.",sr+"! Hvala."],["Was fehlt Ihrem Tier?","Šta je vašoj životinji?"]];
  else if(repair)opener=[[g+"! Hier ist der Reparaturservice.",sr+"! Ovde je servis za popravke."],[g+"! Ich habe ein Problem mit einem Gerät.",sr+"! Imam problem sa jednim uređajem."],["Was funktioniert nicht?","Šta ne radi?"]];
  else if(s.n===15||s.n===39)opener=[[g+"! Willkommen im Hotel.",sr+"! Dobro došli u hotel."],[g+"! Danke.",sr+"! Hvala."],["Wie kann ich Ihnen helfen?","Kako mogu da vam pomognem?"]];
  else if(checkout)opener=[[g+"! Haben Sie alles gefunden?",sr+"! Da li ste pronašli sve?"],[g+"! Ja, danke.",sr+"! Da, hvala."],["Wie kann ich Ihnen helfen?","Kako mogu da vam pomognem?"]];
  else if(supermarket)opener=[[g+"! Kann ich Ihnen helfen?",sr+"! Mogu li da vam pomognem?"],[g+"! Ja, bitte.",sr+"! Da, molim."],["Was suchen Sie?","Šta tražite?"]];
  else if(s.n===9)opener=[[g+"! Willkommen in der Bibliothek.",sr+"! Dobro došli u biblioteku."],[g+"! Danke.",sr+"! Hvala."],["Wie kann ich Ihnen helfen?","Kako mogu da vam pomognem?"]];
- else if(s.n===27)opener=[["Hallo! Bist du bereit?","Zdravo! Jesi li spreman/spremna?"],["Hallo! Ja, ich bin bereit.","Zdravo! Da, spreman/spremna sam."],["Wohin fahren wir?","Kuda idemo?"]];
+ else if(s.n===27)opener=[["Hallo! Bist du bereit?","Zdravo! Jesi li spreman/spremna?"],["Hallo! Ja, ich bin bereit.","Zdravo! Da, spreman/spremna sam."],["Was machen wir jetzt?","Šta ćemo sada?"]];
  else if(s.n===24)opener=[[g+"! Willkommen im Schwimmbad.",sr+"! Dobro došli na bazen."],[g+"! Danke.",sr+"! Hvala."],["Wie kann ich Ihnen helfen?","Kako mogu da vam pomognem?"]];
  else if(s.n===29)opener=[[g+"! Willkommen im Kino.",sr+"! Dobro došli u bioskop."],[g+"! Danke.",sr+"! Hvala."],["Wie kann ich Ihnen helfen?","Kako mogu da vam pomognem?"]];
  else if(s.n===32)opener=[[g+"! Kann ich Ihnen helfen?",sr+"! Mogu li da vam pomognem?"],[g+"! Ja, bitte.",sr+"! Da, molim."],["Wie kann ich Ihnen helfen?","Kako mogu da vam pomognem?"]];
  else if(s.n===11)opener=[[g+"! Willkommen in unserem Café.",sr+"! Dobro došli u naš kafić."],[g+"! Vielen Dank.",sr+"! Hvala vam."],["Wie kann ich Ihnen helfen?","Kako mogu da vam pomognem?"]];
- else if(pharm)opener=[[g+"! Was brauchen Sie?",sr+"! Šta vam treba?"],[g+"! Ich brauche etwas aus der Apotheke.",sr+"! Treba mi nešto iz apoteke."],["Wie kann ich Ihnen helfen?","Kako mogu da vam pomognem?"]];
+ else if(pharm)opener=[[g+"! Willkommen in der Apotheke.",sr+"! Dobro došli u apoteku."],[g+"! Danke.",sr+"! Hvala."],["Was brauchen Sie?","Šta vam treba?"]];
  else opener=[[g+"! Willkommen!",sr+"! Dobro došli!"],[g+"! Danke.",sr+"! Hvala."],["Wie kann ich Ihnen helfen?","Kako mogu da vam pomognem?"]];
  // Four specifically paired question-and-answer turns keep the correct speaker order.
  const noPayment=doctor||vet||repair||pharm||supermarket||checkout||s.n===9||s.n===15||s.n===27||s.n===39||
