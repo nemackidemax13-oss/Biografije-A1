@@ -114,13 +114,37 @@ function dialogue(){
  [["Das habe ich verstanden, danke.","Razumeo/razumela sam, hvala."],["Sehr gern.","Vrlo rado."],["Dann gehe ich jetzt.","Onda sada idem."],["Ich wünsche Ihnen einen schönen Tag!","Želim vam prijatan dan!"],["Ihnen auch!","Takođe!"]],
  [["Danke für die Information.","Hvala na informaciji."],["Gern. Haben Sie noch Fragen?","Rado. Imate li još pitanja?"],["Nein, danke.","Ne, hvala."],["Dann wünsche ich Ihnen alles Gute!","Onda vam želim sve najbolje!"],["Auf Wiedersehen!","Doviđenja!"]],
  [["Das ist sehr nett von Ihnen.","Veoma ljubazno od vas."],["Kein Problem.","Nema problema."],["Jetzt ist alles klar. Danke!","Sada je sve jasno. Hvala!"],["Gerne. Auf Wiedersehen!","Rado. Doviđenja!"],["Auf Wiedersehen!","Doviđenja!"]],
- [["Danke, jetzt kenne ich den Weg.","Hvala, sada znam put."],["Schön, dass ich helfen konnte.","Drago mi je što sam mogao/mogla da pomognem."],["Dann gehe ich weiter.","Onda nastavljam dalje."],["Viel Erfolg und auf Wiedersehen!","Mnogo uspeha i doviđenja!"],["Auf Wiedersehen!","Doviđenja!"]],
+ [["Danke, jetzt ist alles klar.","Hvala, sada je sve jasno."],["Schön, dass ich helfen konnte.","Drago mi je što sam mogao/mogla da pomognem."],["Dann gehe ich weiter.","Onda nastavljam dalje."],["Viel Erfolg und auf Wiedersehen!","Mnogo uspeha i doviđenja!"],["Auf Wiedersehen!","Doviđenja!"]],
  [["Das war sehr hilfreich, danke.","To je bilo veoma korisno, hvala."],["Sehr gern geschehen.","Bilo mi je zadovoljstvo."],["Ich muss jetzt weiter.","Sada moram da nastavim."],["Dann auf Wiedersehen!","Onda doviđenja!"],["Bis zum nächsten Mal!","Do sledećeg puta!"]],
  [["Vielen Dank, ich habe alles verstanden.","Hvala vam, sve sam razumeo/razumela."],["Das ist gut.","To je dobro."],["Ich komme bei Fragen wieder.","Doći ću ponovo ako budem imao/imala pitanja."],["Sie sind jederzeit willkommen.","Uvek ste dobrodošli."],["Auf Wiedersehen!","Doviđenja!"]],
  [["Danke für Ihre Zeit.","Hvala vam na vremenu."],["Sehr gern.","Vrlo rado."],["Dann verabschiede ich mich.","Onda se pozdravljam."],["Auf Wiedersehen und einen schönen Tag!","Doviđenja i prijatan dan!"],["Vielen Dank, ebenfalls!","Hvala vam, takođe!"]]
  ];
  const alreadyPaying=topic.some(p=>/\bbezahlen\b|\bZahlung\b|\bWechselgeld\b|\bPIN\b|\bKassenbon\b|\bBargeld\b/i.test(p[0]));
- const contextualNoPayment=newlyAuthored.has(s.n)||alreadyPaying||doctor||vet||repair||pharm||supermarket||checkout||s.n===9||s.n===15||s.n===27||s.n===39||
+ const friendClosings=[
+ [["Das klingt gut.","To zvuči dobro."],["Ja, finde ich auch.","Da, i ja tako mislim."],["Wir sehen uns später.","Vidimo se kasnije."],["Bis später!","Vidimo se kasnije!"],["Tschüss!","Ćao!"]],
+ [["Prima, danke!","Odlično, hvala!"],["Gerne.","Rado."],["Ich freue mich schon.","Već se radujem."],["Bis morgen!","Vidimo se sutra!"],["Ja, bis morgen!","Da, vidimo se sutra!"]],
+ [["Das finde ich schön.","To mi se sviđa."],["Ich auch.","I meni."],["Dann machen wir das so.","Onda ćemo tako."],["Gut, bis bald!","Dobro, vidimo se uskoro!"],["Bis bald!","Vidimo se uskoro!"]],
+ [["Das ist eine gute Idee.","To je dobra ideja."],["Dann los!","Onda krenimo!"],["Ich bin bereit.","Spreman/spremna sam."],["Viel Spaß!","Uživaj!"],["Danke dir!","Hvala ti!"]],
+ [["Dann ist alles klar.","Onda je sve jasno."],["Genau.","Upravo tako."],["Wir sprechen später.","Razgovaraćemo kasnije."],["Bis später!","Vidimo se kasnije!"],["Bis dann!","Vidimo se!"]],
+ [["Ja, das passt für mich.","Da, meni to odgovara."],["Gut, dann bleiben wir dabei.","Dobro, onda se tako dogovaramo."],["Danke dir!","Hvala ti!"],["Gerne, bis bald!","Rado, vidimo se uskoro!"],["Bis bald!","Vidimo se uskoro!"]],
+ [["Super, ich freue mich.","Odlično, radujem se."],["Ich mich auch.","I ja se radujem."],["Bis zum nächsten Mal!","Do sledećeg puta!"],["Tschüss!","Ćao!"],["Mach's gut!","Čuvaj se!"]],
+ [["Jetzt weiß ich Bescheid.","Sada mi je sve jasno."],["Das ist gut.","To je dobro."],["Danke für deine Hilfe.","Hvala ti na pomoći."],["Keine Ursache.","Nema na čemu."],["Bis später!","Vidimo se kasnije!"]],
+ [["Gut, ich muss weiter.","Dobro, moram da nastavim."],["Okay, wir sehen uns.","U redu, vidimo se."],["Bis bald!","Vidimo se uskoro!"],["Tschüss!","Ćao!"],["Tschüss, mach's gut!","Ćao, čuvaj se!"]],
+ [["Das war schön.","Bilo je lepo."],["Ja, finde ich auch.","Da, i ja tako mislim."],["Ich melde mich morgen.","Javiću se sutra."],["Gerne, bis morgen!","Rado, vidimo se sutra!"],["Bis morgen!","Vidimo se sutra!"]]
+ ];
+ const familyClosings=[
+ [["Das hört sich gut an.","To zvuči dobro."],["Dann machen wir das so.","Onda ćemo tako."],["Danke!","Hvala!"],["Gerne.","Rado."],["Gut, ich fange an.","Dobro, počinjem.")],
+ [["Jetzt habe ich alles verstanden.","Sada sam sve razumeo/razumela."],["Das freut mich.","Drago mi je."],["Kann ich sonst noch helfen?","Mogu li još da pomognem?"],["Nein, danke.","Ne, hvala."],["Okay, ich bin hier.","U redu, tu sam.")],
+ [["Das machen wir zusammen.","Uradićemo to zajedno."],["Ja, so geht es schneller.","Da, tako ide brže."],["Dann beginnen wir.","Onda počnimo."],["Gute Idee!","Dobra ideja!"],["Los geht's!","Krenimo!")],
+ [["Danke für deine Antwort.","Hvala ti na odgovoru."],["Gerne.","Rado."],["Ich weiß jetzt Bescheid.","Sada mi je sve jasno."],["Gut, dann machen wir weiter.","Dobro, nastavljamo dalje."],["Ja, gerne.","Da, rado.")],
+ [["Das klingt nach einem guten Plan.","To zvuči kao dobar plan."],["Das finde ich auch.","I ja tako mislim."],["Wann fangen wir an?","Kada počinjemo?"],["Gleich jetzt.","Odmah sada."],["Prima!","Odlično!")],
+ [["Ich freue mich darauf.","Radujem se tome."],["Ja, ich auch.","Da, i ja."],["Brauchen wir noch etwas?","Treba li nam još nešto?"],["Nein, wir haben alles.","Ne, imamo sve."],["Dann können wir anfangen.","Onda možemo da počnemo.")],
+ [["Das ist nett von dir.","To je lepo od tebe."],["Gern geschehen.","Nema na čemu."],["Dann mache ich das jetzt.","Onda ću to sada da uradim."],["Okay, ich warte hier.","U redu, čekaću ovde."],["Bis gleich!","Vidimo se za koji trenutak!")],
+ [["Danke, das hilft mir.","Hvala, to mi pomaže."],["Kein Problem.","Nema problema."],["Ich bin gleich fertig.","Uskoro završavam."],["Gut, ich bin hier.","Dobro, ja sam ovde."],["Danke!","Hvala!")],
+ [["Jetzt ist alles klar.","Sada je sve jasno."],["Ja, wunderbar.","Da, odlično."],["Dann geht es weiter.","Onda nastavljamo."],["Gut, los geht's.","Dobro, krenimo."],["Okay!","U redu!")],
+ [["Wir haben heute viel geschafft.","Danas smo mnogo uradili."],["Ja, das stimmt.","Da, tako je."],["Machen wir eine Pause?","Hoćemo li da napravimo pauzu?"],["Ja, gerne.","Da, rado."],["Super!","Odlično!")]]
+ ];
+  const contextualNoPayment=newlyAuthored.has(s.n)||alreadyPaying||doctor||vet||repair||pharm||supermarket||checkout||s.n===9||s.n===15||s.n===27||s.n===39||
  /zurückgeben|umtauschen|zurückbringen|umtausch/i.test(topic[0][0])||
  (s.n===11&&[7,9].includes(di))||(s.n===24&&di>=2)||
  (s.n===29&&[1,7,9].includes(di))||(s.n===32&&[1,4,7,8,9].includes(di));
@@ -152,6 +176,7 @@ function dialogue(){
  if(doctor)end=medicalClosings[di];
  else if(vet)end=vetClosings[di];
  else if(repair)end=politeClosings[di];
+ else if(newlyAuthored.has(s.n)&&friendlyNew.has(s.n))end=([5,20,30,35].includes(s.n)?familyClosings:friendClosings)[di];
  else if(s.n===27)end=[
  ["Danke für die Fahrt!","Hvala na vožnji!"],
  ["Hast du noch etwas vor?","Imaš li još nešto u planu?"],
