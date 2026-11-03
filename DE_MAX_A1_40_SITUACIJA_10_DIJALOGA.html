@@ -48,6 +48,12 @@ const goodbye={
 38:[["Vielen Dank für die Auskunft! Auf Wiedersehen!","Hvala vam na informaciji! Doviđenja!"],["Gern. Auf Wiedersehen!","Rado. Doviđenja!"]],
 39:[["Vielen Dank für Ihre Hilfe!","Hvala vam na pomoći!"],["Gern. Einen schönen Aufenthalt!","Rado. Želim vam prijatan boravak!"]]
 };
+goodbye[3]=[["Ich melde mich, wenn das Auto fertig ist.","Javiću vam se kada automobil bude gotov."],["Vielen Dank. Auf Wiedersehen!","Hvala vam. Doviđenja!"]];
+goodbye[10]=[["Für heute sind wir fertig. Auf Wiedersehen!","Za danas smo završili. Doviđenja!"],["Auf Wiedersehen, Frau Müller!","Doviđenja, gospođo Miler!"]];
+goodbye[20]=[["Das Zimmer sieht jetzt gut aus!","Soba sada lepo izgleda!"],["Danke für deine Hilfe!","Hvala ti na pomoći!"]];
+goodbye[21]=[["Viel Spaß beim Training!","Uživajte u treningu!"],["Vielen Dank! Auf Wiedersehen!","Hvala vam! Doviđenja!"]];
+goodbye[30]=[["Jetzt ist alles sauber!","Sada je sve čisto!"],["Danke für deine Hilfe!","Hvala ti na pomoći!"]];
+goodbye[34]=[["Guten Flug! Auf Wiedersehen!","Prijatan let! Doviđenja!"],["Vielen Dank! Auf Wiedersehen!","Hvala vam! Doviđenja!"]];
 const retailEnd=[["Möchten Sie bar oder mit Karte bezahlen?","Želite li da platite gotovinom ili karticom?"],["Mit Karte, bitte.","Karticom, molim."],["Vielen Dank. Auf Wiedersehen!","Hvala vam. Doviđenja!"],["Danke. Auf Wiedersehen!","Hvala. Doviđenja!"]];
 const retailBuyerEnd=[["Ich möchte jetzt bezahlen.","Želim sada da platim."],["Gerne. Bar oder mit Karte?","Naravno. Gotovinom ili karticom?"],["Mit Karte, bitte. Vielen Dank!","Karticom, molim. Hvala vam!"],["Danke. Auf Wiedersehen!","Hvala. Doviđenja!"]];
 function dialogue(){
@@ -109,7 +115,7 @@ function dialogue(){
  [["Auf Wiedersehen!","Doviđenja!"],["Auf Wiedersehen!","Doviđenja!"]];
  return [...greeting,...core,...closing];
 }
-const reversed=new Set([38]);
+const reversed=new Set([5,30,38]);
 function speakerNames(){const s=S[sc];if(s.n===7)return di>=5?["Doktor","Pacijent"]:["Apotekar","Mušterija"];let parts=s.roles.split(/\s*\/\s*/);if(parts.length!==2)return ["Osoba A","Osoba B"];return reversed.has(s.n)?parts.reverse():parts}
 function stop(){run++;playing=false;$("play").classList.remove("running");synth?.cancel();document.querySelectorAll(".line.on").forEach(x=>x.classList.remove("on"))}
 function say(t,done){if(!synth)return;const u=new SpeechSynthesisUtterance(t),id=run;u.lang="de-DE";u.rate=rate;const vs=synth.getVoices().filter(v=>v.lang.toLowerCase().startsWith("de"));if(vs.length)u.voice=vs.find(v=>/google|natural/i.test(v.name))||vs[0];u.onend=()=>{if(run===id)done?.()};synth.speak(u)}
