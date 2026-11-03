@@ -86,21 +86,28 @@ function dialogue(){
  else end=[["Kann ich mit Karte bezahlen?","Mogu li da platim karticom?"],["Ja, natürlich.","Da, naravno."],["Vielen Dank!","Hvala vam!"],["Danke. Auf Wiedersehen!","Hvala. Doviđenja!"],["Auf Wiedersehen!","Doviđenja!"]];
  return [...opener,...topic,...end];
  }
- const base=s.dialog,extra=s.extra;
- const informal=![...formal].includes(s.n);
- const greetings=formal.has(s.n)?["Guten Morgen","Guten Tag","Guten Abend","Guten Tag","Guten Morgen","Guten Abend","Guten Tag","Guten Morgen","Guten Tag","Guten Abend"]:["Hallo","Guten Morgen","Hallo","Guten Tag","Hallo","Guten Morgen","Hallo","Guten Abend","Hallo","Guten Tag"];
- const greeting=greetings[di], greetingSr={"Hallo":"Zdravo","Guten Morgen":"Dobro jutro","Guten Tag":"Dobar dan","Guten Abend":"Dobro veče"}[greeting];
- // Keep original conversational order and intact reply pairs (never shift a speaker by an odd number).
- const segments=[];for(let i=2;i+1<base.length;i+=2)segments.push([base[i],base[i+1]]);
- const extraPairs=[];for(let i=0;i+1<extra.length;i+=2)extraPairs.push([extra[i],extra[i+1]]);
- const all=[...segments,...extraPairs];
- const start=(di*2)%Math.max(1,all.length);
- const body=[];for(let k=0;k<4;k++){const pair=all[(start+k)%all.length];if(pair)body.push(...pair)}
- const a=base[0],b=base[1];
- const clean=(p)=>{let [de,sr]=p;de=de.replace(/^(Guten Morgen|Guten Tag|Guten Abend|Hallo)[!,.\s]*/i,"").trim();sr=sr.replace(/^(Dobro jutro|Dobar dan|Dobro veče|Zdravo)[!,.\s]*/i,"").trim();return [greeting+"! "+de,greetingSr+"! "+sr]};
- const opening=[clean(a),clean(b)];
- const finish=goodbye[s.n]||(informal?[["Dann bis bald!","Onda se vidimo uskoro!"],["Ja, bis bald!","Da, vidimo se uskoro!"]]:[["Vielen Dank! Auf Wiedersehen!","Hvala vam! Doviđenja!"],["Gern. Auf Wiedersehen!","Rado. Doviđenja!"]]);
- return [...opening,...body,...finish];
+ const base=s.dialog;
+ const gFormal=["Guten Morgen","Guten Tag","Guten Abend","Guten Tag","Guten Morgen","Guten Abend","Guten Tag","Guten Morgen","Guten Tag","Guten Abend"];
+ const gInformal=["Hallo","Guten Morgen","Hallo","Guten Tag","Hallo","Guten Morgen","Hallo","Guten Abend","Hallo","Guten Tag"];
+ const g=(formal.has(s.n)?gFormal:gInformal)[di];
+ const gs={"Guten Morgen":"Dobro jutro","Guten Tag":"Dobar dan","Guten Abend":"Dobro veče","Hallo":"Zdravo"}[g];
+ const greeting=[[g+"!",gs+"!"],[g+"!",gs+"!"]];
+ // Use actual consecutive source turns, never shuffle speakers or break a response pair.
+ const core=base.slice(di*2,di*2+8).map((p,i)=>{
+  const de=p[0].replace(/^(?:Guten Morgen|Guten Tag|Guten Abend|Hallo)[!,.\s]*/i,"").trim();
+  const sr=p[1].replace(/^(?:Dobro jutro|Dobar dan|Dobro veče|Zdravo)[!,.\s]*/i,"").trim();
+  return (di===0&&i<2&&de&&sr)?[de.charAt(0).toUpperCase()+de.slice(1),sr.charAt(0).toUpperCase()+sr.slice(1)]:p;
+ });
+ const friendly=!formal.has(s.n);
+ const fill=friendly?
+ [["Hast du noch eine Frage?","Imaš li još neko pitanje?"],["Nein, danke.","Ne, hvala."],["Gut, dann machen wir das so.","Dobro, onda ćemo tako."],["Ja, gerne.","Da, rado."],["Das klingt gut.","To zvuči dobro."],["Ja, finde ich auch.","Da, i ja tako mislim."]]:
+ [["Haben Sie noch eine Frage?","Imate li još neko pitanje?"],["Nein, danke.","Ne, hvala."],["Gut, dann ist alles klar.","Dobro, onda je sve jasno."],["Ja, vielen Dank.","Da, hvala vam."],["Das ist gut.","To je dobro."],["Vielen Dank.","Hvala vam."]];
+ while(core.length<8)core.push(fill[core.length%6]);
+ const specialGoodbye=goodbye[s.n];
+ const closing=specialGoodbye&&specialGoodbye.length===2?specialGoodbye:
+ friendly?[["Bis bald!","Vidimo se uskoro!"],["Ja, bis bald!","Da, vidimo se uskoro!"]]:
+ [["Auf Wiedersehen!","Doviđenja!"],["Auf Wiedersehen!","Doviđenja!"]];
+ return [...greeting,...core,...closing];
 }
 const reversed=new Set([38]);
 function speakerNames(){const s=S[sc];if(s.n===7)return di>=5?["Doktor","Pacijent"]:["Apotekar","Mušterija"];let parts=s.roles.split(/\s*\/\s*/);if(parts.length!==2)return ["Osoba A","Osoba B"];return reversed.has(s.n)?parts.reverse():parts}
