@@ -79,17 +79,60 @@ function dialogue(){
  else if(pharm)opener=[[g+"! Willkommen in der Apotheke.",sr+"! Dobro došli u apoteku."],[g+"! Danke.",sr+"! Hvala."],["Was brauchen Sie?","Šta vam treba?"]];
  else opener=[[g+"! Willkommen!",sr+"! Dobro došli!"],[g+"! Danke.",sr+"! Hvala."],["Wie kann ich Ihnen helfen?","Kako mogu da vam pomognem?"]];
  // Four specifically paired question-and-answer turns keep the correct speaker order.
- const noPayment=doctor||vet||repair||pharm||supermarket||checkout||s.n===9||s.n===15||s.n===27||s.n===39||
+ const cardOrCash=[
+ // Buyer, seller, buyer, seller, buyer — five coherent closing replies.
+ [["Kann ich kontaktlos bezahlen?","Mogu li da platim beskontaktno?"],["Ja, bitte halten Sie die Karte an das Lesegerät.","Da, molim vas prislonite karticu na aparat."],["So, bitte.","Evo, izvolite."],["Die Zahlung ist erfolgreich. Danke für Ihren Einkauf!","Plaćanje je uspešno. Hvala na kupovini!"],["Vielen Dank, auf Wiedersehen!","Hvala vam, doviđenja!"]],
+ [["Ich möchte mit Karte bezahlen.","Želim da platim karticom."],["Natürlich. Bitte geben Sie Ihre PIN ein.","Naravno. Molim vas unesite PIN."],["Fertig. Ist alles in Ordnung?","Gotovo. Da li je sve u redu?"],["Ja, die Zahlung hat funktioniert. Einen schönen Tag!","Da, plaćanje je uspelo. Prijatan dan!"],["Danke, auf Wiedersehen!","Hvala, doviđenja!"]],
+ [["Kann ich meine Karte hier auflegen?","Mogu li ovde da prislonim karticu?"],["Ja, genau hier, bitte.","Da, upravo ovde, molim."],["Ist das schon bezahlt?","Da li je već plaćeno?"],["Ja, alles ist bezahlt. Vielen Dank für Ihren Einkauf!","Da, sve je plaćeno. Hvala na kupovini!"],["Auf Wiedersehen!","Doviđenja!"]],
+ [["Ich möchte bar bezahlen.","Želim da platim gotovinom."],["Gerne. Geben Sie mir bitte das Geld.","Naravno. Dajte mi novac, molim vas."],["Hier, bitte.","Evo, izvolite."],["Danke. Hier ist Ihr Kassenbon.","Hvala. Evo vašeg računa."],["Vielen Dank. Auf Wiedersehen!","Hvala vam. Doviđenja!"]],
+ [["Kann ich mit Karte bezahlen?","Mogu li da platim karticom?"],["Natürlich. Bitte stecken Sie die Karte in das Gerät.","Naravno. Molim vas ubacite karticu u uređaj."],["Soll ich meine PIN eingeben?","Da li treba da unesem PIN?"],["Ja, bitte. Danach ist alles erledigt.","Da, molim vas. Posle toga je sve završeno."],["Danke. Auf Wiedersehen!","Hvala. Doviđenja!"]],
+ [["Ich bezahle heute mit Bargeld.","Danas plaćam gotovinom."],["Kein Problem. Geben Sie mir bitte das Geld.","Nema problema. Dajte mi novac, molim vas."],["Hier, bitte. Stimmt der Betrag?","Evo, izvolite. Da li je iznos tačan?"],["Ja, alles stimmt. Vielen Dank!","Da, sve je tačno. Hvala vam!"],["Auf Wiedersehen und einen schönen Tag!","Doviđenja i prijatan dan!"]],
+ [["Geht das auch mit dem Handy?","Može li i telefonom da se plati?"],["Ja, halten Sie bitte Ihr Handy an das Gerät.","Da, prislonite telefon na aparat, molim vas."],["Jetzt ist es grün.","Sada svetli zeleno."],["Ja, die Zahlung ist abgeschlossen. Vielen Dank!","Da, plaćanje je završeno. Hvala vam!"],["Danke, auf Wiedersehen!","Hvala, doviđenja!"]],
+ [["Haben Sie auch Kartenzahlung?","Da li primate i kartice?"],["Ja. Bitte halten Sie die Karte an das Terminal.","Da. Prislonite karticu na terminal, molim vas."],["Einen Moment, bitte. Jetzt?","Samo trenutak, molim. Sada?"],["Ja, alles ist in Ordnung. Danke für Ihren Einkauf!","Da, sve je u redu. Hvala na kupovini!"],["Danke, bis zum nächsten Mal!","Hvala, do sledećeg puta!"]],
+ [["Kann ich bar bezahlen und eine Quittung bekommen?","Mogu li da platim gotovinom i dobijem potvrdu?"],["Ja, selbstverständlich. Geben Sie mir bitte das Geld.","Da, naravno. Dajte mi novac, molim vas."],["Bitte sehr.","Izvolite."],["Danke. Hier ist Ihre Quittung. Auf Wiedersehen!","Hvala. Evo vaše potvrde. Doviđenja!"],["Auf Wiedersehen!","Doviđenja!"]],
+ [["Ich möchte mit Karte bezahlen. Ist das möglich?","Želim da platim karticom. Da li je moguće?"],["Ja. Bitte halten Sie die Karte kurz an das Gerät.","Da. Kratko prislonite karticu na uređaj, molim vas."],["Das habe ich gemacht.","Uradio/uradila sam to."],["Die Zahlung ist bestätigt. Vielen Dank für Ihren Einkauf!","Plaćanje je potvrđeno. Hvala na kupovini!"],["Vielen Dank. Auf Wiedersehen!","Hvala vam. Doviđenja!"]]
+ ];
+ const politeClosings=[
+ [["Vielen Dank für Ihre Auskunft.","Hvala vam na informaciji."],["Gern geschehen.","Nema na čemu."],["Dann weiß ich Bescheid.","Onda mi je sve jasno."],["Einen schönen Tag noch!","Prijatan ostatak dana!"],["Auf Wiedersehen!","Doviđenja!"]],
+ [["Danke, das hilft mir sehr.","Hvala, to mi mnogo pomaže."],["Das freut mich.","Drago mi je."],["Ich habe keine weiteren Fragen.","Nemam više pitanja."],["Alles Gute und auf Wiedersehen!","Sve najbolje i doviđenja!"],["Vielen Dank, auf Wiedersehen!","Hvala vam, doviđenja!"]],
+ [["Vielen Dank für die Hilfe.","Hvala na pomoći."],["Brauchen Sie sonst noch etwas?","Treba li vam još nešto?"],["Nein, das ist alles.","Ne, to je sve."],["Gut, dann auf Wiedersehen!","Dobro, onda doviđenja!"],["Auf Wiedersehen!","Doviđenja!"]],
+ [["Das habe ich verstanden, danke.","Razumeo/razumela sam, hvala."],["Sehr gern.","Vrlo rado."],["Dann gehe ich jetzt.","Onda sada idem."],["Ich wünsche Ihnen einen schönen Tag!","Želim vam prijatan dan!"],["Ihnen auch!","Takođe!"]],
+ [["Danke für die Information.","Hvala na informaciji."],["Gern. Haben Sie noch Fragen?","Rado. Imate li još pitanja?"],["Nein, danke.","Ne, hvala."],["Dann wünsche ich Ihnen alles Gute!","Onda vam želim sve najbolje!"],["Auf Wiedersehen!","Doviđenja!"]],
+ [["Das ist sehr nett von Ihnen.","Veoma ljubazno od vas."],["Kein Problem.","Nema problema."],["Jetzt ist alles klar. Danke!","Sada je sve jasno. Hvala!"],["Gerne. Auf Wiedersehen!","Rado. Doviđenja!"],["Auf Wiedersehen!","Doviđenja!"]],
+ [["Danke, jetzt kenne ich den Weg.","Hvala, sada znam put."],["Schön, dass ich helfen konnte.","Drago mi je što sam mogao/mogla da pomognem."],["Dann gehe ich weiter.","Onda nastavljam dalje."],["Viel Erfolg und auf Wiedersehen!","Mnogo uspeha i doviđenja!"],["Auf Wiedersehen!","Doviđenja!"]],
+ [["Das war sehr hilfreich, danke.","To je bilo veoma korisno, hvala."],["Sehr gern geschehen.","Bilo mi je zadovoljstvo."],["Ich muss jetzt weiter.","Sada moram da nastavim."],["Dann auf Wiedersehen!","Onda doviđenja!"],["Bis zum nächsten Mal!","Do sledećeg puta!"]],
+ [["Vielen Dank, ich habe alles verstanden.","Hvala vam, sve sam razumeo/razumela."],["Das ist gut.","To je dobro."],["Ich komme bei Fragen wieder.","Doći ću ponovo ako budem imao/imala pitanja."],["Sie sind jederzeit willkommen.","Uvek ste dobrodošli."],["Auf Wiedersehen!","Doviđenja!"]],
+ [["Danke für Ihre Zeit.","Hvala vam na vremenu."],["Sehr gern.","Vrlo rado."],["Dann verabschiede ich mich.","Onda se pozdravljam."],["Auf Wiedersehen und einen schönen Tag!","Doviđenja i prijatan dan!"],["Vielen Dank, ebenfalls!","Hvala vam, takođe!"]]
+ ];
+ const contextualNoPayment=doctor||vet||repair||pharm||supermarket||checkout||s.n===9||s.n===15||s.n===27||s.n===39||
  /zurückgeben|umtauschen|zurückbringen|umtausch/i.test(topic[0][0])||
  (s.n===11&&[7,9].includes(di))||(s.n===24&&di>=2)||
  (s.n===29&&[1,7,9].includes(di))||(s.n===32&&[1,4,7,8,9].includes(di));
  let end;
- if(doctor)end=[["Vielen Dank, Frau Doktor!","Hvala vam, doktorka!"],["Brauchen Sie noch etwas?","Treba li vam još nešto?"],["Nein, danke.","Ne, hvala."],["Gute Besserung! Auf Wiedersehen!","Brz oporavak! Doviđenja!"],["Auf Wiedersehen!","Doviđenja!"]];
- else if(vet)end=[["Vielen Dank für Ihre Hilfe.","Hvala vam na pomoći."],["Haben Sie noch Fragen?","Imate li još pitanja?"],["Nein, danke.","Ne, hvala."],["Alles Gute für Ihr Tier! Auf Wiedersehen!","Sve najbolje vašoj životinji! Doviđenja!"],["Auf Wiedersehen!","Doviđenja!"]];
- else if(repair)end=[["Vielen Dank für Ihre Hilfe.","Hvala vam na pomoći."],["Haben Sie noch eine Frage?","Imate li još neko pitanje?"],["Nein, danke.","Ne, hvala."],["Gern. Auf Wiedersehen!","Rado. Doviđenja!"],["Auf Wiedersehen!","Doviđenja!"]];
- else if(s.n===27)end=[["Danke für die Fahrt!","Hvala na vožnji!"],["Hast du noch etwas vor?","Imaš li još nešto u planu?"],["Nein, heute nicht.","Ne, danas ne."],["Gut, dann bis bald!","Dobro, onda se vidimo uskoro!"],["Ja, bis bald!","Da, vidimo se uskoro!"]];
- else if(noPayment)end=[["Vielen Dank für Ihre Hilfe.","Hvala vam na pomoći."],["Kann ich Ihnen sonst noch helfen?","Mogu li još nekako da vam pomognem?"],["Nein, danke. Das ist alles.","Ne, hvala. To je sve."],["Gern. Auf Wiedersehen!","Rado. Doviđenja!"],["Auf Wiedersehen!","Doviđenja!"]];
- else end=[["Kann ich mit Karte bezahlen?","Mogu li da platim karticom?"],["Ja, natürlich.","Da, naravno."],["Vielen Dank!","Hvala vam!"],["Danke. Auf Wiedersehen!","Hvala. Doviđenja!"],["Auf Wiedersehen!","Doviđenja!"]];
+ if(doctor)end=[
+ ["Vielen Dank für die Untersuchung.","Hvala na pregledu."],
+ ["Haben Sie noch Fragen?","Imate li još pitanja?"],
+ ["Nein, danke.","Ne, hvala."],
+ ["Gute Besserung! Auf Wiedersehen!","Brz oporavak! Doviđenja!"],
+ ["Auf Wiedersehen!","Doviđenja!"]
+ ];
+ else if(vet)end=[
+ ["Vielen Dank für Ihre Hilfe.","Hvala vam na pomoći."],
+ ["Haben Sie noch Fragen?","Imate li još pitanja?"],
+ ["Nein, danke.","Ne, hvala."],
+ ["Alles Gute für Ihr Tier! Auf Wiedersehen!","Sve najbolje vašoj životinji! Doviđenja!"],
+ ["Auf Wiedersehen!","Doviđenja!"]
+ ];
+ else if(repair)end=politeClosings[di];
+ else if(s.n===27)end=[
+ ["Danke für die Fahrt!","Hvala na vožnji!"],
+ ["Hast du noch etwas vor?","Imaš li još nešto u planu?"],
+ ["Nein, heute nicht.","Ne, danas ne."],
+ ["Gut, dann bis bald!","Dobro, onda se vidimo uskoro!"],
+ ["Ja, bis bald!","Da, vidimo se uskoro!"]
+ ];
+ else if(contextualNoPayment)end=politeClosings[di];
+ else end=cardOrCash[di];
  return [...opener,...topic,...end];
  }
  const base=s.dialog;
