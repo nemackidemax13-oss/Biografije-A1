@@ -178,7 +178,7 @@ function dialogue(){
   }
   if(winner){chosen.push(winner);winner.part.forEach(p=>used.add(p[0]))}
  }
- const topic=chosen[di]?.part||base.slice(0,8);
+ const excerpt=chosen[di]?.part||base.slice(0,8);
  const informalEnd=[
  [["Dann bis bald!","Onda se vidimo uskoro!"],["Ja, bis bald!","Da, vidimo se uskoro!"]],
  [["Wir sehen uns morgen!","Vidimo se sutra!"],["Bis morgen!","Vidimo se sutra!"]],
@@ -204,7 +204,7 @@ function dialogue(){
  [["Auf Wiedersehen. Alles Gute!","Doviđenja. Sve najbolje!"],["Danke. Auf Wiedersehen!","Hvala. Doviđenja!"]]
  ];
  const closing=(formal.has(s.n)?formalEnd:informalEnd)[di];
- return [...greeting,...topic,...closing];
+ return [...greeting,...excerpt,...closing];
 }
 const reversed=new Set([5,30,38]);
 function speakerNames(){const s=S[sc];if(s.n===7)return di>=5?["Doktor","Pacijent"]:["Apotekar","Mušterija"];let parts=s.roles.split(/\s*\/\s*/);if(parts.length!==2)return ["Osoba A","Osoba B"];return reversed.has(s.n)?parts.reverse():parts}
