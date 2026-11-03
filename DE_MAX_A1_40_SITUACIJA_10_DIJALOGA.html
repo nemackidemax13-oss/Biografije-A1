@@ -104,7 +104,8 @@ function dialogue(){
  [["Vielen Dank, ich habe alles verstanden.","Hvala vam, sve sam razumeo/razumela."],["Das ist gut.","To je dobro."],["Ich komme bei Fragen wieder.","Doći ću ponovo ako budem imao/imala pitanja."],["Sie sind jederzeit willkommen.","Uvek ste dobrodošli."],["Auf Wiedersehen!","Doviđenja!"]],
  [["Danke für Ihre Zeit.","Hvala vam na vremenu."],["Sehr gern.","Vrlo rado."],["Dann verabschiede ich mich.","Onda se pozdravljam."],["Auf Wiedersehen und einen schönen Tag!","Doviđenja i prijatan dan!"],["Vielen Dank, ebenfalls!","Hvala vam, takođe!"]]
  ];
- const contextualNoPayment=doctor||vet||repair||pharm||supermarket||checkout||s.n===9||s.n===15||s.n===27||s.n===39||
+ const alreadyPaying=topic.some(p=>/\bbezahlen\b|\bZahlung\b|\bWechselgeld\b|\bPIN\b|\bKassenbon\b|\bBargeld\b/i.test(p[0]));
+ const contextualNoPayment=alreadyPaying||doctor||vet||repair||pharm||supermarket||checkout||s.n===9||s.n===15||s.n===27||s.n===39||
  /zurückgeben|umtauschen|zurückbringen|umtausch/i.test(topic[0][0])||
  (s.n===11&&[7,9].includes(di))||(s.n===24&&di>=2)||
  (s.n===29&&[1,7,9].includes(di))||(s.n===32&&[1,4,7,8,9].includes(di));
