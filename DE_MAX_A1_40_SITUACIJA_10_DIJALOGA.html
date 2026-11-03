@@ -148,28 +148,63 @@ function dialogue(){
  else end=cardOrCash[di];
  return [...opener,...topic,...end];
  }
- const base=s.dialog;
+ const base=s.dialog,extras=s.extra;
  const gFormal=["Guten Morgen","Guten Tag","Guten Abend","Guten Tag","Guten Morgen","Guten Abend","Guten Tag","Guten Morgen","Guten Tag","Guten Abend"];
  const gInformal=["Hallo","Guten Morgen","Hallo","Guten Tag","Hallo","Guten Morgen","Hallo","Guten Abend","Hallo","Guten Tag"];
- const g=(formal.has(s.n)?gFormal:gInformal)[di];
- const gs={"Guten Morgen":"Dobro jutro","Guten Tag":"Dobar dan","Guten Abend":"Dobro veče","Hallo":"Zdravo"}[g];
+ const g=(formal.has(s.n)?gFormal:gInformal)[di],gs={"Guten Morgen":"Dobro jutro","Guten Tag":"Dobar dan","Guten Abend":"Dobro veče","Hallo":"Zdravo"}[g];
  const greeting=[[g+"!",gs+"!"],[g+"!",gs+"!"]];
- // Use actual consecutive source turns, never shuffle speakers or break a response pair.
- const core=base.slice(di*2,di*2+8).map((p,i)=>{
-  const de=p[0].replace(/^(?:Guten Morgen|Guten Tag|Guten Abend|Hallo)[!,.\s]*/i,"").trim();
-  const sr=p[1].replace(/^(?:Dobro jutro|Dobar dan|Dobro veče|Zdravo)[!,.\s]*/i,"").trim();
-  return (di===0&&i<2&&de&&sr)?[de.charAt(0).toUpperCase()+de.slice(1),sr.charAt(0).toUpperCase()+sr.slice(1)]:p;
- });
- const friendly=!formal.has(s.n);
- const fill=friendly?
- [["Hast du noch eine Frage?","Imaš li još neko pitanje?"],["Nein, danke.","Ne, hvala."],["Gut, dann machen wir das so.","Dobro, onda ćemo tako."],["Ja, gerne.","Da, rado."],["Das klingt gut.","To zvuči dobro."],["Ja, finde ich auch.","Da, i ja tako mislim."]]:
- [["Haben Sie noch eine Frage?","Imate li još neko pitanje?"],["Nein, danke.","Ne, hvala."],["Gut, dann ist alles klar.","Dobro, onda je sve jasno."],["Ja, vielen Dank.","Da, hvala vam."],["Das ist gut.","To je dobro."],["Vielen Dank.","Hvala vam."]];
- while(core.length<8)core.push(fill[core.length%6]);
- const specialGoodbye=goodbye[s.n];
- const closing=specialGoodbye&&specialGoodbye.length===2?specialGoodbye:
- friendly?[["Bis bald!","Vidimo se uskoro!"],["Ja, bis bald!","Da, vidimo se uskoro!"]]:
- [["Auf Wiedersehen!","Doviđenja!"],["Auf Wiedersehen!","Doviđenja!"]];
- return [...greeting,...core,...closing];
+ // Select a continuous, eight-turn excerpt of real conversation. Never end with an unanswered question.
+ const candidates=[];
+ for(let i=0;i+8<=base.length;i+=2)candidates.push({part:base.slice(i,i+8),src:"base",start:i});
+ for(let i=6;i+8<=extras.length;i+=2)candidates.push({part:extras.slice(i,i+8),src:"extra",start:i});
+ const used=new Set(),chosen=[];
+ const replyStart=/^(Ja|Nein|Danke|Gern|Gut|Natürlich|Hier|Um|In|Dann|Stimmt|Richtig|Doch)\b/i;
+ const farewell=/auf wiedersehen|tschüss|bis morgen|bis bald|vielen dank|gute reise/i;
+ for(let n=0;n<10;n++){
+  let winner=null,best=-Infinity;
+  for(const candidate of candidates){
+   if(chosen.includes(candidate))continue;
+   const p=candidate.part;
+   const first=p[0][0],last=p[7][0],spoken=p.map(x=>x[0]);
+   const reuse=spoken.filter(x=>used.has(x)).length;
+   let score=35-reuse*5;
+   if(replyStart.test(first))score-=13;
+   if(first.includes("?"))score+=4;
+   if(last.endsWith("?"))score-=25;
+   if(spoken.slice(0,7).some(x=>farewell.test(x)))score-=10;
+   if(candidate.src==="extra")score+=1;
+   if(n===0&&candidate.src==="base"&&candidate.start===0)score+=10;
+   if(score>best){best=score;winner=candidate}
+  }
+  if(winner){chosen.push(winner);winner.part.forEach(p=>used.add(p[0]))}
+ }
+ const topic=chosen[di]?.part||base.slice(0,8);
+ const informalEnd=[
+ [["Dann bis bald!","Onda se vidimo uskoro!"],["Ja, bis bald!","Da, vidimo se uskoro!"]],
+ [["Wir sehen uns morgen!","Vidimo se sutra!"],["Bis morgen!","Vidimo se sutra!"]],
+ [["Ich melde mich später.","Javiću ti se kasnije."],["Okay, bis später!","U redu, vidimo se kasnije!"]],
+ [["Ich gehe jetzt nach Hause.","Sada idem kući."],["Gut, bis bald!","Dobro, vidimo se uskoro!"]],
+ [["Es war schön, mit dir zu sprechen.","Bilo mi je lepo da razgovaramo."],["Finde ich auch. Tschüss!","I meni. Ćao!"]],
+ [["Dann machen wir das so.","Onda ćemo tako."],["Prima. Bis bald!","Odlično. Vidimo se uskoro!"]],
+ [["Wir sprechen morgen weiter.","Nastavljamo razgovor sutra."],["Ja, bis morgen!","Da, vidimo se sutra!"]],
+ [["Jetzt muss ich los.","Sada moram da idem."],["Alles klar. Tschüss!","U redu. Ćao!"]],
+ [["Danke für deine Zeit.","Hvala ti na vremenu."],["Gern, bis später!","Rado, vidimo se kasnije!"]],
+ [["Ich freue mich auf das nächste Mal.","Radujem se sledećem susretu."],["Ich auch. Bis bald!","I ja. Vidimo se uskoro!"]]
+ ];
+ const formalEnd=[
+ [["Auf Wiedersehen und vielen Dank!","Doviđenja i hvala vam!"],["Auf Wiedersehen!","Doviđenja!"]],
+ [["Einen schönen Tag noch!","Prijatan ostatak dana!"],["Danke, Ihnen auch!","Hvala, takođe!"]],
+ [["Dann ist alles klar. Auf Wiedersehen!","Onda je sve jasno. Doviđenja!"],["Danke, auf Wiedersehen!","Hvala, doviđenja!"]],
+ [["Vielen Dank und auf Wiedersehen!","Hvala vam i doviđenja!"],["Gern geschehen! Auf Wiedersehen!","Nema na čemu! Doviđenja!"]],
+ [["Bis zum nächsten Mal. Auf Wiedersehen!","Do sledećeg puta. Doviđenja!"],["Vielen Dank. Auf Wiedersehen!","Hvala vam. Doviđenja!"]],
+ [["Alles Gute und auf Wiedersehen!","Sve najbolje i doviđenja!"],["Danke, Ihnen auch!","Hvala, takođe!"]],
+ [["Ich wünsche Ihnen einen schönen Tag!","Želim vam prijatan dan!"],["Vielen Dank. Ihnen auch!","Hvala vam. Takođe!"]],
+ [["Dann auf Wiedersehen!","Onda doviđenja!"],["Auf Wiedersehen und vielen Dank!","Doviđenja i hvala vam!"]],
+ [["Auf Wiedersehen und viel Erfolg!","Doviđenja i mnogo uspeha!"],["Vielen Dank, auf Wiedersehen!","Hvala vam, doviđenja!"]],
+ [["Auf Wiedersehen. Alles Gute!","Doviđenja. Sve najbolje!"],["Danke. Auf Wiedersehen!","Hvala. Doviđenja!"]]
+ ];
+ const closing=(formal.has(s.n)?formalEnd:informalEnd)[di];
+ return [...greeting,...topic,...closing];
 }
 const reversed=new Set([5,30,38]);
 function speakerNames(){const s=S[sc];if(s.n===7)return di>=5?["Doktor","Pacijent"]:["Apotekar","Mušterija"];let parts=s.roles.split(/\s*\/\s*/);if(parts.length!==2)return ["Osoba A","Osoba B"];return reversed.has(s.n)?parts.reverse():parts}
