@@ -110,20 +110,32 @@ function dialogue(){
  (s.n===11&&[7,9].includes(di))||(s.n===24&&di>=2)||
  (s.n===29&&[1,7,9].includes(di))||(s.n===32&&[1,4,7,8,9].includes(di));
  let end;
- if(doctor)end=[
- ["Vielen Dank für die Untersuchung.","Hvala na pregledu."],
- ["Haben Sie noch Fragen?","Imate li još pitanja?"],
- ["Nein, danke.","Ne, hvala."],
- ["Gute Besserung! Auf Wiedersehen!","Brz oporavak! Doviđenja!"],
- ["Auf Wiedersehen!","Doviđenja!"]
+ const medicalClosings=[
+ [["Vielen Dank, Frau Doktor.","Hvala vam, doktorka."],["Ruhen Sie sich bitte aus.","Odmorite se, molim vas."],["Ja, das mache ich.","Da, uradiću to."],["Gute Besserung!","Brz oporavak!"],["Danke, auf Wiedersehen!","Hvala, doviđenja!"]],
+ [["Danke für die Untersuchung.","Hvala na pregledu."],["Haben Sie noch Fragen?","Imate li još pitanja?"],["Nein, danke.","Ne, hvala."],["Dann gute Besserung und auf Wiedersehen!","Onda vam želim brz oporavak i doviđenja!"],["Auf Wiedersehen!","Doviđenja!"]],
+ [["Danke, jetzt weiß ich Bescheid.","Hvala, sada mi je sve jasno."],["Bitte melden Sie sich, wenn es schlimmer wird.","Molim vas javite se ako vam bude gore."],["Das mache ich. Vielen Dank!","Hoću. Hvala vam!"],["Alles Gute!","Sve najbolje!"],["Auf Wiedersehen!","Doviđenja!"]],
+ [["Vielen Dank für Ihre Hilfe.","Hvala vam na pomoći."],["Trinken Sie bitte genug Wasser.","Pijte dovoljno vode, molim vas."],["Ja, danke für den Tipp.","Da, hvala na savetu."],["Gute Besserung!","Brz oporavak!"],["Auf Wiedersehen!","Doviđenja!"]],
+ [["Danke für die Untersuchung.","Hvala na pregledu."],["Haben Sie noch eine Frage?","Imate li još neko pitanje?"],["Nein, alles ist klar.","Ne, sve je jasno."],["Passen Sie gut auf sich auf!","Čuvajte se!"],["Vielen Dank und auf Wiedersehen!","Hvala vam i doviđenja!"]],
+ [["Danke für das Gespräch.","Hvala na razgovoru."],["Versuchen Sie, sich heute auszuruhen.","Pokušajte da se danas odmorite."],["Das werde ich tun.","Uradiću to."],["Alles Gute!","Sve najbolje!"],["Auf Wiedersehen!","Doviđenja!"]],
+ [["Vielen Dank, Frau Doktor.","Hvala vam, doktorka."],["Brauchen Sie noch etwas?","Treba li vam još nešto?"],["Nein, danke. Das war alles.","Ne, hvala. To je sve."],["Gute Besserung und auf Wiedersehen!","Brz oporavak i doviđenja!"],["Auf Wiedersehen!","Doviđenja!"]],
+ [["Danke für die Hilfe.","Hvala na pomoći."],["Ich wünsche Ihnen gute Besserung.","Želim vam brz oporavak."],["Vielen Dank, das ist nett.","Hvala vam, to je ljubazno."],["Auf Wiedersehen!","Doviđenja!"],["Auf Wiedersehen!","Doviđenja!"]],
+ [["Ich habe alles verstanden. Danke!","Sve sam razumeo/razumela. Hvala!"],["Bitte kommen Sie wieder, wenn die Schmerzen bleiben.","Dođite ponovo ako bolovi potraju."],["Ja, das mache ich.","Da, uradiću to."],["Passen Sie auf sich auf!","Čuvajte se!"],["Danke. Auf Wiedersehen!","Hvala. Doviđenja!"]],
+ [["Vielen Dank für Ihre Zeit.","Hvala vam na vremenu."],["Haben Sie noch Fragen?","Imate li još pitanja?"],["Nein, ich habe keine Fragen.","Ne, nemam pitanja."],["Gut. Auf Wiedersehen!","Dobro. Doviđenja!"],["Danke, auf Wiedersehen!","Hvala, doviđenja!"]]
  ];
- else if(vet)end=[
- ["Vielen Dank für Ihre Hilfe.","Hvala vam na pomoći."],
- ["Haben Sie noch Fragen?","Imate li još pitanja?"],
- ["Nein, danke.","Ne, hvala."],
- ["Alles Gute für Ihr Tier! Auf Wiedersehen!","Sve najbolje vašoj životinji! Doviđenja!"],
- ["Auf Wiedersehen!","Doviđenja!"]
+ const vetClosings=[
+ [["Danke, dass Sie meinen Hund untersucht haben.","Hvala što ste pregledali mog psa."],["Beobachten Sie ihn heute gut.","Pažljivo ga posmatrajte danas."],["Ja, das mache ich.","Da, uradiću to."],["Alles Gute für Ihren Hund!","Sve najbolje vašem psu!"],["Danke, auf Wiedersehen!","Hvala, doviđenja!"]],
+ [["Vielen Dank für Ihre Hilfe.","Hvala vam na pomoći."],["Hat Ihre Katze noch andere Probleme?","Ima li vaša mačka još neke probleme?"],["Nein, danke.","Ne, hvala."],["Alles Gute für Ihre Katze!","Sve najbolje vašoj mački!"],["Auf Wiedersehen!","Doviđenja!"]],
+ [["Danke für die Information.","Hvala na informaciji."],["Haben Sie noch Fragen zur Impfung?","Imate li još pitanja o vakcinaciji?"],["Nein, alles klar.","Ne, sve je jasno."],["Gut. Auf Wiedersehen!","Dobro. Doviđenja!"],["Vielen Dank, auf Wiedersehen!","Hvala vam, doviđenja!"]],
+ [["Vielen Dank, Herr Doktor.","Hvala vam, doktore."],["Bitte beobachten Sie Ihre Katze.","Posmatrajte svoju mačku, molim vas."],["Ja, natürlich.","Da, naravno."],["Alles Gute!","Sve najbolje!"],["Auf Wiedersehen!","Doviđenja!"]],
+ [["Danke für die Untersuchung.","Hvala na pregledu."],["Haben Sie noch Fragen?","Imate li još pitanja?"],["Nein, danke.","Ne, hvala."],["Passen Sie gut auf Ihren Hund auf.","Pazite dobro na svog psa."],["Danke. Auf Wiedersehen!","Hvala. Doviđenja!"]],
+ [["Vielen Dank für Ihre Hilfe.","Hvala vam na pomoći."],["Bitte rufen Sie an, wenn Ihr Kaninchen nicht frisst.","Pozovite ako vaš zec ne bude jeo."],["Ja, ich rufe dann an.","Da, tada ću pozvati."],["Alles Gute für Ihr Kaninchen!","Sve najbolje vašem zecu!"],["Auf Wiedersehen!","Doviđenja!"]],
+ [["Danke, dass Sie sich Zeit genommen haben.","Hvala što ste odvojili vreme."],["Haben Sie sonst noch Fragen?","Imate li još neka pitanja?"],["Nein, das war alles.","Ne, to je sve."],["Gute Besserung für Ihren Hund!","Brz oporavak vašem psu!"],["Danke, auf Wiedersehen!","Hvala, doviđenja!"]],
+ [["Vielen Dank. Bis Dienstag!","Hvala vam. Vidimo se u utorak!"],["Ja, bis Dienstag um elf Uhr!","Da, u utorak u jedanaest sati!"],["Ich bringe meine Katze mit.","Dovešću svoju mačku."],["Gut, wir sehen uns dann.","Dobro, vidimo se tada."],["Auf Wiedersehen!","Doviđenja!"]],
+ [["Danke für die Hilfe mit meinem Hund.","Hvala na pomoći mom psu."],["Beobachten Sie bitte das Ohr.","Posmatrajte uho, molim vas."],["Ja, das mache ich.","Da, uradiću to."],["Dann alles Gute!","Onda sve najbolje!"],["Auf Wiedersehen!","Doviđenja!"]],
+ [["Vielen Dank für die Kontrolle.","Hvala na kontroli."],["Haben Sie noch Fragen zu Ihrer Katze?","Imate li još pitanja o vašoj mački?"],["Nein, danke.","Ne, hvala."],["Dann wünsche ich Ihrer Katze alles Gute.","Onda vašoj mački želim sve najbolje."],["Auf Wiedersehen!","Doviđenja!"]]
  ];
+ if(doctor)end=medicalClosings[di];
+ else if(vet)end=vetClosings[di];
  else if(repair)end=politeClosings[di];
  else if(s.n===27)end=[
  ["Danke für die Fahrt!","Hvala na vožnji!"],
