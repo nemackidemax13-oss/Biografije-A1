@@ -221,7 +221,7 @@ function currentScene(){const p=Number(new URLSearchParams(location.search).get(
 function pairs(){return currentScene()?.dialog||[]}
 function k(p){return p[0]+"\u0001"+p[1]}
 function hardRows(){return scenes.flatMap(s=>s.dialog.filter(p=>hard[k(p)]).map(p=>({p,s})))}
-function rows(){if(mode==="hard")return hardRows().map(x=>x.p);if(mode==="review"){let rs=pairs().slice();return rs.sort((a,b)=>hash(k(a)+run)-hash(k(b)+run)).slice(0,5)}return pairs()}
+function rows(){if(mode==="role")return pairs().filter((x,i)=>(i%2===0?"A":"B")===role);if(mode==="hard")return hardRows().map(x=>x.p);if(mode==="review"){let rs=pairs().slice();return rs.sort((a,b)=>hash(k(a)+run)-hash(k(b)+run)).slice(0,5)}return pairs()}
 function hash(s){let h=0;for(let i=0;i<s.length;i++)h=(Math.imul(31,h)+s.charCodeAt(i))|0;return h}
 function stopAudio(){pauseId++;if(window.speechSynthesis)window.speechSynthesis.cancel()}
 function speak(t,onEnd){stopAudio();const id=pauseId;if(!window.speechSynthesis)return;const u=new SpeechSynthesisUtterance(t);u.lang="de-DE";u.rate=Number(localStorage.getItem("demax-a1-plus-rate")||"0.85");let vs=speechSynthesis.getVoices().filter(x=>x.lang.toLowerCase().startsWith("de"));if(vs.length)u.voice=vs.find(x=>/google|natural/i.test(x.name))||vs[0];u.onend=()=>{if(id===pauseId)onEnd?.()};speechSynthesis.speak(u)}
