@@ -57,7 +57,7 @@ function dialogue(){
   const helpScene=s.n===13, checkout=s.n===40;
   if(helpScene)opener[2]=["Was suchen Sie?","Šta tražite?"];
   if(checkout)opener[2]=["Wie kann ich Ihnen helfen?","Kako mogu da vam pomognem?"];
-  const noPayment=helpScene||checkout||/zurückgeben|umtauschen|zurückbringen/i.test(retail[0][0]);
+  const noPayment=helpScene||checkout||/zurückgeben|umtauschen|zurückbringen/i.test(retail[0][0])||(s.n===11&&[7,9].includes(di))||(s.n===24&&di>=2)||(s.n===29&&[1,7,8,9].includes(di))||(s.n===32&&[1,4,5,7,8,9].includes(di));
   const end=noPayment?
   [["Vielen Dank für Ihre Hilfe.","Hvala vam na pomoći."],["Kann ich Ihnen sonst noch helfen?","Mogu li još nekako da vam pomognem?"],["Nein, danke. Das ist alles.","Ne, hvala. To je sve."],["Gern. Auf Wiedersehen!","Rado. Doviđenja!"],["Auf Wiedersehen!","Doviđenja!"]]:
   [["Kann ich mit Karte bezahlen?","Mogu li da platim karticom?"],["Ja, natürlich.","Da, naravno."],["Vielen Dank!","Hvala vam!"],["Danke. Auf Wiedersehen!","Hvala. Doviđenja!"],["Auf Wiedersehen!","Doviđenja!"]];
@@ -107,7 +107,7 @@ const opening=(specialOpenings[s.n]||base.slice(0,2)).map(adjustGreeting);
  for(let i=0;i<count;i++)body.push(...pairs[(shift+i)%pairs.length]);
  return [...opening,...body,...finish];
 }
-const reversed=new Set([11,18,19,24,28,38]);
+const reversed=new Set([18,19,28,38]);
 function speakerNames(){let parts=S[sc].roles.split(/\s*\/\s*/);if(parts.length!==2)return ["Osoba A","Osoba B"];return reversed.has(S[sc].n)?parts.reverse():parts}
 function stop(){run++;playing=false;$("play").classList.remove("running");synth?.cancel();document.querySelectorAll(".line.on").forEach(x=>x.classList.remove("on"))}
 function say(t,done){if(!synth)return;const u=new SpeechSynthesisUtterance(t),id=run;u.lang="de-DE";u.rate=rate;const vs=synth.getVoices().filter(v=>v.lang.toLowerCase().startsWith("de"));if(vs.length)u.voice=vs.find(v=>/google|natural/i.test(v.name))||vs[0];u.onend=()=>{if(run===id)done?.()};synth.speak(u)}
