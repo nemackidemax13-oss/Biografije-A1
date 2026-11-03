@@ -64,6 +64,8 @@ function dialogue(){
  else if(s.n===15||s.n===39)opener=[[g+"! Willkommen im Hotel.",sr+"! Dobro došli u hotel."],[g+"! Danke.",sr+"! Hvala."],["Wie kann ich Ihnen helfen?","Kako mogu da vam pomognem?"]];
  else if(checkout)opener=[[g+"! Haben Sie alles gefunden?",sr+"! Da li ste pronašli sve?"],[g+"! Ja, danke.",sr+"! Da, hvala."],["Wie kann ich Ihnen helfen?","Kako mogu da vam pomognem?"]];
  else if(supermarket)opener=[[g+"! Kann ich Ihnen helfen?",sr+"! Mogu li da vam pomognem?"],[g+"! Ja, bitte.",sr+"! Da, molim."],["Was suchen Sie?","Šta tražite?"]];
+ else if(s.n===9)opener=[[g+"! Willkommen in der Bibliothek.",sr+"! Dobro došli u biblioteku."],[g+"! Danke.",sr+"! Hvala."],["Wie kann ich Ihnen helfen?","Kako mogu da vam pomognem?"]];
+ else if(s.n===27)opener=[["Hallo! Bist du bereit?","Zdravo! Jesi li spreman/spremna?"],["Hallo! Ja, ich bin bereit.","Zdravo! Da, spreman/spremna sam."],["Wohin fahren wir?","Kuda idemo?"]];
  else if(s.n===24)opener=[[g+"! Willkommen im Schwimmbad.",sr+"! Dobro došli na bazen."],[g+"! Danke.",sr+"! Hvala."],["Wie kann ich Ihnen helfen?","Kako mogu da vam pomognem?"]];
  else if(s.n===29)opener=[[g+"! Willkommen im Kino.",sr+"! Dobro došli u bioskop."],[g+"! Danke.",sr+"! Hvala."],["Wie kann ich Ihnen helfen?","Kako mogu da vam pomognem?"]];
  else if(s.n===32)opener=[[g+"! Kann ich Ihnen helfen?",sr+"! Mogu li da vam pomognem?"],[g+"! Ja, bitte.",sr+"! Da, molim."],["Wie kann ich Ihnen helfen?","Kako mogu da vam pomognem?"]];
@@ -71,7 +73,7 @@ function dialogue(){
  else if(pharm)opener=[[g+"! Was brauchen Sie?",sr+"! Šta vam treba?"],[g+"! Ich brauche etwas aus der Apotheke.",sr+"! Treba mi nešto iz apoteke."],["Wie kann ich Ihnen helfen?","Kako mogu da vam pomognem?"]];
  else opener=[[g+"! Willkommen!",sr+"! Dobro došli!"],[g+"! Danke.",sr+"! Hvala."],["Wie kann ich Ihnen helfen?","Kako mogu da vam pomognem?"]];
  // Four specifically paired question-and-answer turns keep the correct speaker order.
- const noPayment=doctor||vet||repair||pharm||supermarket||checkout||s.n===15||s.n===39||
+ const noPayment=doctor||vet||repair||pharm||supermarket||checkout||s.n===9||s.n===15||s.n===27||s.n===39||
  /zurückgeben|umtauschen|zurückbringen|umtausch/i.test(topic[0][0])||
  (s.n===11&&[7,9].includes(di))||(s.n===24&&di>=2)||
  (s.n===29&&[1,7,9].includes(di))||(s.n===32&&[1,4,7,8,9].includes(di));
@@ -79,6 +81,7 @@ function dialogue(){
  if(doctor)end=[["Vielen Dank, Frau Doktor!","Hvala vam, doktorka!"],["Brauchen Sie noch etwas?","Treba li vam još nešto?"],["Nein, danke.","Ne, hvala."],["Gute Besserung! Auf Wiedersehen!","Brz oporavak! Doviđenja!"],["Auf Wiedersehen!","Doviđenja!"]];
  else if(vet)end=[["Vielen Dank für Ihre Hilfe.","Hvala vam na pomoći."],["Haben Sie noch Fragen?","Imate li još pitanja?"],["Nein, danke.","Ne, hvala."],["Alles Gute für Ihr Tier! Auf Wiedersehen!","Sve najbolje vašoj životinji! Doviđenja!"],["Auf Wiedersehen!","Doviđenja!"]];
  else if(repair)end=[["Vielen Dank für Ihre Hilfe.","Hvala vam na pomoći."],["Haben Sie noch eine Frage?","Imate li još neko pitanje?"],["Nein, danke.","Ne, hvala."],["Gern. Auf Wiedersehen!","Rado. Doviđenja!"],["Auf Wiedersehen!","Doviđenja!"]];
+ else if(s.n===27)end=[["Danke für die Fahrt!","Hvala na vožnji!"],["Hast du noch etwas vor?","Imaš li još nešto u planu?"],["Nein, heute nicht.","Ne, danas ne."],["Gut, dann bis bald!","Dobro, onda se vidimo uskoro!"],["Ja, bis bald!","Da, vidimo se uskoro!"]];
  else if(noPayment)end=[["Vielen Dank für Ihre Hilfe.","Hvala vam na pomoći."],["Kann ich Ihnen sonst noch helfen?","Mogu li još nekako da vam pomognem?"],["Nein, danke. Das ist alles.","Ne, hvala. To je sve."],["Gern. Auf Wiedersehen!","Rado. Doviđenja!"],["Auf Wiedersehen!","Doviđenja!"]];
  else end=[["Kann ich mit Karte bezahlen?","Mogu li da platim karticom?"],["Ja, natürlich.","Da, naravno."],["Vielen Dank!","Hvala vam!"],["Danke. Auf Wiedersehen!","Hvala. Doviđenja!"],["Auf Wiedersehen!","Doviđenja!"]];
  return [...opener,...topic,...end];
