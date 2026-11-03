@@ -49,7 +49,14 @@ const retailBuyerEnd=[["Ich möchte jetzt bezahlen.","Želim sada da platim."],[
 function dialogue(){
  const s=S[sc], base=s.dialog, extra=s.extra;
  // Opening lines are always an authentic exchange from this scene's original conversation.
- const opening=base.slice(0,2);
+ const specialOpenings={
+13:[["Guten Tag! Entschuldigung, wo finde ich Milch?","Dobar dan! Izvinite, gde mogu da pronađem mleko?"],["Guten Tag! Die Milch ist hinten links.","Dobar dan! Mleko je pozadi levo."]],
+18:[["Guten Tag! Entschuldigung, ist dieser Platz frei?","Dobar dan! Izvinite, da li je ovo mesto slobodno?"],["Guten Tag! Ja, bitte setzen Sie sich.","Dobar dan! Da, izvolite, sedite."]],
+27:[["Hallo! Bist du bereit?","Zdravo! Jesi li spreman/spremna?"],["Hallo! Ja, wir können losfahren.","Zdravo! Da, možemo da krenemo."]],
+35:[["Hallo! Schau mal, das Meer ist so schön!","Zdravo! Pogledaj, more je tako lepo!"],["Hallo! Ja, das Wasser ist ganz blau.","Zdravo! Da, voda je sasvim plava."]],
+38:[["Guten Tag! Entschuldigung, können Sie mir helfen?","Dobar dan! Izvinite, možete li da mi pomognete?"],["Guten Tag! Ja, natürlich. Was suchen Sie?","Dobar dan! Da, naravno. Šta tražite?"]]
+};
+const opening=specialOpenings[s.n]||base.slice(0,2);
  const isSale=sales.has(s.n);
  const finish=isSale?(salesBuyerFirst.has(s.n)?retailBuyerEnd:retailEnd):
  (goodbye[s.n]||(formal.has(s.n)?[["Vielen Dank! Auf Wiedersehen!","Hvala vam! Doviđenja!"],["Gern geschehen. Auf Wiedersehen!","Nema na čemu. Doviđenja!"]]:[["Schön, dass wir gesprochen haben. Bis bald!","Drago mi je što smo razgovarali. Vidimo se uskoro!"],["Ja, bis bald!","Da, vidimo se uskoro!"]]));
