@@ -7,6 +7,7 @@ const STEP_CATS=["start","start","places","mann","clothing","extra","closing"];
 const $=(q)=>document.querySelector(q);
 let PAGE_SIZE=6;
 let category="start",page=0,step=0,chosen=[],chosenIndex=0,runId=0,activeRole="mann",appearanceMode="age",speakingChosenPosition=-1;
+let autoPlayback={mode:"idle",queue:[],cursor:0,session:-1,pendingAdvance:false,currentUtterance:null};
 const AGES={mann:30,frau:30,kind:8};
 const AGE_ROLES={mann:{label:"Der Mann",de:"Er",sr:"On"},frau:{label:"Die Frau",de:"Sie",sr:"Ona"},kind:{label:"Das Kind",de:"Es",sr:"Ono"}};
 const AGE_INDEX={};
@@ -760,13 +761,29 @@ function escapeHTML(t){return String(t).replaceAll("&","&amp;").replaceAll("<","
 function voice(){if(!("speechSynthesis" in window))return null;const list=speechSynthesis.getVoices();return list.find(v=>/^de/i.test(v.lang)&&/google/i.test(v.name))||list.find(v=>/^de-DE/i.test(v.lang))||list.find(v=>/^de/i.test(v.lang))||null}
 function stop(){
  runId++;
+ autoPlayback.mode="idle";
+ autoPlayback.queue=[];
+ autoPlayback.cursor=0;
+ autoPlayback.session=-1;
+ autoPlayback.pendingAdvance=false;
+ autoPlayback.currentUtterance=null;
  if("speechSynthesis" in window)speechSynthesis.cancel();
  if(speakingChosenPosition!==-1){
   speakingChosenPosition=-1;
   updateSpeakingFrame();
  }
+ updateAutoControls();
 }
-function utter(text,callback){if(!("speechSynthesis" in window)){alert("Nemački govor nije podržan u ovom pregledaču.");return}let u=new SpeechSynthesisUtterance(text);u.lang="de-DE";u.rate=.87;u.pitch=1;const v=voice();if(v)u.voice=v;u.onend=()=>{if(callback)callback()};u.onerror=()=>{if(callback)callback()};speechSynthesis.speak(u)}
+function utter(text,callback){
+ if(!("speechSynthesis" in window)){alert("Nemački govor nije podržan u ovom pregledaču.");return null}
+ const u=new SpeechSynthesisUtterance(text);
+ u.lang="de-DE";u.rate=.87;u.pitch=1;
+ const v=voice();if(v)u.voice=v;
+ u.onend=()=>{if(callback)callback()};
+ u.onerror=()=>{if(callback)callback()};
+ speechSynthesis.speak(u);
+ return u;
+}
 function listen(i){
  stop();
  const currentRun=runId;
@@ -1087,24 +1104,99 @@ function showRoles(){
  renderModes();renderAge();renderHair();renderClothing();
 }
 function chooseStep(n){step=n;if(n===3){category=activeRole}else category=STEP_CATS[n];page=0;showRoles();renderSample();renderList()}
-function playAll(){
- stop();
- const my=runId,arr=[...orderedChosen()];
- let position=0;
- function playNext(){
-  if(my!==runId)return;
-  if(position>=arr.length){
-   speakingChosenPosition=-1;
-   updateSpeakingFrame();
+/* Automatsko čitanje svih izabranih rečenica, pauza/nastavak/stop/ponovo.
+   Održava označavanje i redosled teksta na 10. koraku. */
+function updateAutoControls(){
+ const phase=autoPlayback.mode,active=phase!=="idle",current=Math.min(autoPlayback.cursor+1,autoPlayback.queue.length),total=autoPlayback.queue.length;
+ const summary=document.body.dataset.stepPage==="9";
+ const main=$("#playAll");
+ if(main){
+  const label=phase==="playing"?"⏸ Pauza"+(total?" · "+current+"/"+total:""):phase==="paused"?"▶ Nastavi"+(total?" · "+current+"/"+total:""):summary?"▶ Poslušaj svoj opis":"▶ Pusti sve";
+  main.textContent=label;
+  main.disabled=chosen.length===0;
+  main.setAttribute("aria-label",phase==="playing"?"Pauziraj automatsko čitanje":phase==="paused"?"Nastavi automatsko čitanje":"Automatski poslušaj sve izabrane rečenice");
+  main.setAttribute("aria-pressed",String(active));
+ }
+ const stopButton=$("#stopAuto"),againButton=$("#restartAuto");
+ if(stopButton)stopButton.disabled=!active;
+ if(againButton)againButton.disabled=chosen.length===0;
+ document.querySelectorAll("[data-auto-describe]").forEach(button=>{
+  button.textContent=phase==="playing"?"⏸ Pauza":phase==="paused"?"▶ Nastavi":"▶ Auto";
+  button.title=phase==="playing"?"Pauziraj automatsko čitanje":phase==="paused"?"Nastavi automatsko čitanje":"Poslušaj svoj opis automatski";
+  button.disabled=chosen.length===0;
+  button.setAttribute("aria-pressed",String(active));
+ });
+ document.querySelectorAll("[data-auto-stop]").forEach(button=>{
+  button.disabled=!active;
+ });
+}
+function autoReadNext(session){
+ if(session!==runId||autoPlayback.mode!=="playing")return;
+ const index=autoPlayback.cursor;
+ if(index>=autoPlayback.queue.length){
+  autoPlayback.mode="idle";
+  autoPlayback.queue=[];
+  autoPlayback.currentUtterance=null;
+  speakingChosenPosition=-1;
+  updateSpeakingFrame();
+  updateAutoControls();
+  return;
+ }
+ const id=autoPlayback.queue[index];
+ if(!BANK[id]){autoPlayback.cursor++;autoReadNext(session);return}
+ chosenIndex=index;
+ speakingChosenPosition=index;
+ updateSpeakingFrame();
+ updateAutoControls();
+ autoPlayback.currentUtterance=utter(BANK[id].de,()=>{
+  if(session!==runId)return;
+  autoPlayback.currentUtterance=null;
+  if(autoPlayback.mode==="paused"){
+   autoPlayback.pendingAdvance=true;
    return;
   }
-  chosenIndex=position;
-  speakingChosenPosition=position;
-  updateSpeakingFrame();
-  utter(BANK[arr[position++]].de,playNext);
- }
- playNext();
+  if(autoPlayback.mode!=="playing")return;
+  autoPlayback.cursor++;
+  autoReadNext(session);
+ });
 }
+function startAutoDescription(){
+ if(!chosen.length)return;
+ if(!("speechSynthesis" in window)||!("SpeechSynthesisUtterance" in window)){
+  alert("Automatski nemački izgovor nije podržan u ovom pregledaču.");
+  return;
+ }
+ stop();
+ autoPlayback.queue=[...orderedChosen()];
+ autoPlayback.cursor=0;
+ autoPlayback.mode="playing";
+ autoPlayback.session=runId;
+ autoPlayback.pendingAdvance=false;
+ autoReadNext(runId);
+}
+function pauseAutoDescription(){
+ if(autoPlayback.mode!=="playing")return;
+ autoPlayback.mode="paused";
+ if("speechSynthesis" in window)speechSynthesis.pause();
+ updateAutoControls();
+}
+function resumeAutoDescription(){
+ if(autoPlayback.mode!=="paused")return;
+ autoPlayback.mode="playing";
+ if("speechSynthesis" in window)speechSynthesis.resume();
+ updateAutoControls();
+ if(autoPlayback.pendingAdvance){
+  autoPlayback.pendingAdvance=false;
+  autoPlayback.cursor++;
+  autoReadNext(autoPlayback.session);
+ }
+}
+function playAll(){
+ if(autoPlayback.mode==="playing")pauseAutoDescription();
+ else if(autoPlayback.mode==="paused")resumeAutoDescription();
+ else startAutoDescription();
+}
+function restartAutoDescription(){startAutoDescription()}
 $("#steps").addEventListener("click",e=>{const b=e.target.closest("[data-step]");if(b)chooseStep(Number(b.dataset.step))});
 $("#rolebar").addEventListener("click",e=>{const b=e.target.closest("[data-role]");if(!b)return;activeRole=b.dataset.role;if(step===3)category=activeRole;page=0;showRoles();renderSample();renderList()});
 $("#modebar").addEventListener("click",e=>{const b=e.target.closest("[data-mode]");if(!b)return;appearanceMode=b.dataset.mode;page=0;showRoles();renderSample();renderList()});
@@ -1180,6 +1272,11 @@ $("#chosenPrev").addEventListener("click",()=>{chosenIndex=Math.max(0,(Math.floo
 $("#chosenNext").addEventListener("click",()=>{chosenIndex=Math.min(chosen.length-1,(Math.floor(chosenIndex/chosenPageSize())+1)*chosenPageSize());renderChosen()});
 $("#selectedArea").addEventListener("click",e=>{const sound=e.target.closest("[data-chosen-sound]");if(sound){listen(Number(sound.dataset.chosenSound));return}const remove=e.target.closest("[data-chosen-remove]");if(remove)addOrRemove(Number(remove.dataset.chosenRemove))});
 $("#playAll").addEventListener("click",playAll);
+const stopAutoButton=$("#stopAuto"),restartAutoButton=$("#restartAuto");
+if(stopAutoButton)stopAutoButton.addEventListener("click",stop);
+if(restartAutoButton)restartAutoButton.addEventListener("click",restartAutoDescription);
+document.querySelectorAll("[data-auto-describe]").forEach(button=>button.addEventListener("click",playAll));
+document.querySelectorAll("[data-auto-stop]").forEach(button=>button.addEventListener("click",stop));
 $("#clear").addEventListener("click",()=>{stop();chosen=[];chosenIndex=0;renderChosen();renderList();persistDraft()});
 $("#openSearch").addEventListener("click",openSentenceSearch);
 $("#closeSearch").addEventListener("click",closeSentenceSearch);
@@ -1354,8 +1451,9 @@ function setupStepProgress(){
   }
  }
 }
-window.addEventListener("pagehide",persistDraft);
+window.addEventListener("pagehide",()=>{stop();persistDraft()});
 restoreDraft();
 showWizard(PAGE_INDEX);
 setupStepProgress();
+updateAutoControls();
 

@@ -1409,3 +1409,71 @@ body[data-step-page="9"] .wizard-footer .wizard-forward:active{
  background:#0c713b!important;
  color:#fff!important;
 }
+
+
+/* 10. Moj opis: automatski izgovor, pauza/nastavak, ponovno čitanje i stop. */
+body.summary-mode .controls.centered-controls{
+ height:79px!important;
+ min-height:79px!important;
+ flex:none!important;
+ display:grid!important;
+ grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ grid-template-rows:repeat(2,32px)!important;
+ gap:5px!important;
+ align-items:stretch!important;
+ padding:5px 6px!important;
+}
+body.summary-mode .controls.centered-controls button{
+ width:100%!important;
+ min-width:0!important;
+ height:32px!important;
+ min-height:32px!important;
+ margin:0!important;
+ white-space:nowrap!important;
+ overflow:hidden!important;
+ text-overflow:ellipsis!important;
+ font-size:clamp(10px,2.75vw,12px)!important;
+ font-weight:900!important;
+ border-radius:8px!important;
+ padding:2px 5px!important;
+}
+body.summary-mode #playAll{background:#15904c!important;border-color:#0e7540!important;color:#fff!important}
+body.summary-mode #stopAuto{background:#e03848!important;border:1px solid #b82134!important;color:#fff!important}
+body.summary-mode #restartAuto{background:#286dba!important;border:1px solid #175493!important;color:#fff!important}
+body.summary-mode #clear{background:#fff3f4!important;border:1px solid #ebc6ce!important;color:#a61e35!important}
+body.summary-mode .controls button:disabled,
+.auto-preview-controls button:disabled{opacity:.46!important;cursor:default!important}
+/* Koraci 5 i 6: kompaktno Auto/Stop neposredno uz dugme Dodaj. */
+.auto-preview-controls{display:flex;align-items:center;gap:3px;flex:none;min-width:0}
+.auto-preview-controls button{
+ height:32px;
+ min-height:30px;
+ border:1px solid #b6d1ee;
+ border-radius:7px;
+ background:#e8f4ff;
+ color:#1b5799;
+ font-size:10px;
+ font-weight:900;
+ white-space:nowrap;
+ padding:2px 5px;
+}
+.auto-preview-controls .auto-preview-btn{min-width:52px}
+.auto-preview-controls .auto-preview-stop{min-width:28px;background:#fff1f3;color:#b72a40;border-color:#e8bdc5;font-size:12px}
+body[data-step-page="4"] .clothingbar .choicepreview,
+body[data-step-page="5"] .hairbar .choicepreview{gap:3px!important}
+body[data-step-page="4"] .clothingbar .choiceadd,
+body[data-step-page="5"] .hairbar .choiceadd{min-width:57px!important;height:32px!important;padding:2px 4px!important;font-size:10px!important}
+@media(max-width:355px){
+ .auto-preview-controls button{font-size:9px;padding:2px 3px}
+ .auto-preview-controls .auto-preview-btn{min-width:45px}
+ .auto-preview-controls .auto-preview-stop{min-width:25px}
+ body[data-step-page="4"] .clothingbar .choiceadd,
+ body[data-step-page="5"] .hairbar .choiceadd{min-width:52px!important}
+}
+@media(max-height:600px){
+ body.summary-mode .controls.centered-controls{
+  height:70px!important;min-height:70px!important;
+  grid-template-rows:repeat(2,28px)!important;padding:4px!important;gap:4px!important;
+ }
+ body.summary-mode .controls.centered-controls button{height:28px!important;min-height:28px!important}
+}

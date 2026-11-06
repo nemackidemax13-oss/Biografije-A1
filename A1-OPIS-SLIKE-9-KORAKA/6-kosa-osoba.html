@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#14366b">
 <title>DE-MAX A1 | Kosa osoba na slici — 10 koraka opisa slike</title>
-<link rel="stylesheet" href="./shared.css?v=20261107-zuta-navigacija-v3"><style>
+<link rel="stylesheet" href="./shared.css?v=20261107-auto-poslusaj-pauza-stop-v1"><style>
 /* Plavi izbor osobe: koraci 4–7 */
 body .rolebar button,body .rolebar button:hover,body .rolebar button:focus{background:#e6f1ff!important;color:#174b91!important;border-color:#a4c6ec!important;box-shadow:none!important}
 body .rolebar button.active,body .rolebar button.active:hover,body .rolebar button.active:focus{background:#1962b7!important;color:#fff!important;border-color:#15549f!important;box-shadow:none!important}
@@ -72,7 +72,7 @@ body .rolebar button.active:focus{
   <div class="choicebar hairbar" id="hairbar" hidden aria-label="Izbor kose">
    <div class="optionline"><span class="optionlabel">Kosa</span><button class="optionarrow" data-hair-turn="style" data-delta="-1" aria-label="Prethodni oblik kose">‹</button><span class="optionvalue" id="hairStyle"></span><button class="optionarrow" data-hair-turn="style" data-delta="1" aria-label="Sledeći oblik kose">›</button></div>
    <div class="optionline"><span class="optionlabel">Boja</span><button class="optionarrow" data-hair-turn="color" data-delta="-1" aria-label="Prethodna boja kose">‹</button><span class="optionvalue" id="hairColor"></span><button class="optionarrow" data-hair-turn="color" data-delta="1" aria-label="Sledeća boja kose">›</button></div>
-   <div class="choicepreview"><div class="choicetext"><strong id="hairSentence"></strong><small id="hairTranslation"></small></div><button class="sound" id="hairSound" aria-label="Poslušaj opis kose">🔊</button><button class="choiceadd" id="hairAdd" aria-pressed="false">+ Dodaj</button></div>
+   <div class="choicepreview"><div class="choicetext"><strong id="hairSentence"></strong><small id="hairTranslation"></small></div><button class="sound" id="hairSound" aria-label="Poslušaj opis kose">🔊</button><span class="auto-preview-controls"><button type="button" class="auto-preview-btn" data-auto-describe aria-label="Automatski poslušaj svoj opis">▶ Auto</button><button type="button" class="auto-preview-stop" data-auto-stop aria-label="Zaustavi automatsko čitanje">■</button></span><button class="choiceadd" id="hairAdd" aria-pressed="false">+ Dodaj</button></div>
   </div>
   <div class="choicebar clothingbar" id="clothingbar" hidden aria-label="Izbor odevnih predmeta">
    <div class="optionline"><span class="optionlabel">Odeća</span><button class="optionarrow" data-clothing-turn="item" data-delta="-1" aria-label="Prethodni odevni predmet">‹</button><span class="optionvalue" id="clothingItem"></span><button class="optionarrow" data-clothing-turn="item" data-delta="1" aria-label="Sledeći odevni predmet">›</button></div>
@@ -95,5 +95,5 @@ body .rolebar button.active:focus{
   <button id="wizardForward" type="button" class="wizard-forward" aria-label="Dalje: 7. Godine osoba na slici"><span class="next-label">Dalje: 7. Godine osoba na slici</span><span class="next-arrow" aria-hidden="true">❯</span></button>
  </footer>
 </main>
-<script src="./shared.js?v=20261107-prosirena-odeca-kosa-v2"></script>
+<script src="./shared.js?v=20261107-auto-poslusaj-pauza-stop-v1"></script>
 </body></html>
