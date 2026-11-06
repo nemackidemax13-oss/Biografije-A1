@@ -1340,3 +1340,14 @@ body[data-step-page="9"] .demax-step-progress-fill{
 @media(prefers-reduced-motion:reduce){
  body[data-step-page] .demax-step-progress-fill{transition:none;}
 }
+
+/* Završni korak: dugme „Početna stranica“ u žutoj boji, sa čitljivim tekstom. */
+body[data-step-page="9"] .wizard-footer .wizard-forward{
+ background:#ffcf24!important;
+ border-color:#c99b0c!important;
+ color:#213047!important;
+ box-shadow:0 2px 7px #b08a1640!important;
+}
+body[data-step-page="9"] .wizard-footer .wizard-forward:active{
+ background:#f2ba00!important;
+}

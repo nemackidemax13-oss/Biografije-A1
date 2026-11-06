@@ -449,6 +449,13 @@ const CLOTH_ITEMS=[
   "sr": "ranac",
   "srType": "m",
   "label": "ranac"
+ },
+ {
+  "de": "Arbeitsanzug",
+  "article": "m",
+  "sr": "radno odelo",
+  "srType": "n",
+  "label": "radno odelo"
  }
 ];
 const CLOTH_COLORS=[
