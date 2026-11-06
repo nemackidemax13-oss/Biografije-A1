@@ -1440,6 +1440,17 @@ body.summary-mode .controls.centered-controls button{
  border-radius:7px!important;
  padding:2px 3px!important;
 }
+/* Jače od starih pravila koja su dugmad držala na fiksnih 128/135 px. */
+body.summary-mode .controls.centered-controls .ctrl,
+body.summary-mode .controls.centered-controls .ctrl.main,
+body.summary-mode .controls.centered-controls .ctrl.danger{
+ width:100%!important;
+ min-width:0!important;
+ height:34px!important;
+ min-height:34px!important;
+ flex:none!important;
+ font-size:clamp(9.4px,2.6vw,12px)!important;
+}
 body.summary-mode #playAll{background:#15904c!important;border-color:#0e7540!important;color:#fff!important}
 body.summary-mode #pauseAuto{background:#e3f0ff!important;border:1px solid #8bb8ec!important;color:#1458a2!important}
 body.summary-mode #stopAuto{background:#e03848!important;border:1px solid #b82134!important;color:#fff!important}
@@ -1478,13 +1489,17 @@ body[data-step-page="5"] .hairbar .choiceadd{min-width:57px!important;height:32p
   height:39px!important;min-height:39px!important;
   grid-template-rows:30px!important;padding:4px 3px!important;gap:3px!important;
  }
- body.summary-mode .controls.centered-controls button{
+ body.summary-mode .controls.centered-controls .ctrl,
+ body.summary-mode .controls.centered-controls .ctrl.main,
+ body.summary-mode .controls.centered-controls .ctrl.danger{
   height:30px!important;min-height:30px!important;font-size:clamp(9px,2.55vw,11px)!important;
  }
 }
 @media(max-width:345px){
  body.summary-mode .controls.centered-controls{gap:2px!important;padding-left:3px!important;padding-right:3px!important}
- body.summary-mode .controls.centered-controls button{font-size:9px!important;padding:1px!important}
+ body.summary-mode .controls.centered-controls .ctrl,
+ body.summary-mode .controls.centered-controls .ctrl.main,
+ body.summary-mode .controls.centered-controls .ctrl.danger{font-size:9px!important;padding:1px!important}
 }
 
 
