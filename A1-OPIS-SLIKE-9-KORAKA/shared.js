@@ -532,6 +532,64 @@ function turnClothing(type,delta){
  stop();Object.assign(BANK[CLOTH_INDEX[activeRole]],makeClothing(activeRole));
  renderClothing();renderSample();renderChosen();
 }
+
+/* Koraci 5 i 6: brzo pretraživanje odevnih predmeta, oblika i boja kose.
+   Izbor koristi postojeći generator rečenica i čuva sve ranije opcije. */
+function setupVocabularySearch(){
+ const root=$("#vocabSearch");
+ if(!root)return;
+ const input=$("#vocabSearchInput"),list=$("#vocabSearchResults"),clear=$("#vocabSearchClear");
+ const isClothing=document.body.dataset.stepPage==="4";
+ $("#vocabSearchHeading").textContent=isClothing?"PRETRAGA ODEĆE":"PRETRAGA KOSE";
+ const articles={m:"der",f:"die",n:"das",p:"die"};
+ const entries=isClothing
+  ?CLOTH_ITEMS.map((item,index)=>({kind:"item",index,label:item.label,de:articles[item.article]+" "+item.de,group:"Odeća",search:item.label+" "+item.sr+" "+item.de}))
+   .concat(CLOTH_COLORS.map((item,index)=>({kind:"color",index,label:item.label,de:item.de,group:"Boja",search:item.label+" "+item.de+" "+item.sr.join(" ")})))
+  :HAIR_STYLE.map((item,index)=>({kind:"style",index,label:item.label,de:item.bald?"keine Haare":item.de+" Haare",group:"Oblik kose",search:item.label+" "+item.sr+" "+item.de+" Haare Kosa"}))
+   .concat(HAIR_COLORS.map((item,index)=>({kind:"color",index,label:item.label,de:item.de+" Haare",group:"Boja kose",search:item.label+" "+item.sr+" "+item.de+" Haare"})));
+ let matching=[];
+ function update(){
+  const q=searchNormalize(input.value);
+  clear.hidden=!q;
+  if(!q){
+   matching=[];list.hidden=true;list.innerHTML="";input.setAttribute("aria-expanded","false");
+   return;
+  }
+  const words=q.split(/\s+/).filter(Boolean);
+  matching=entries.filter(entry=>words.every(word=>searchNormalize(entry.search).includes(word)));
+  list.hidden=false;input.setAttribute("aria-expanded","true");
+  list.innerHTML=matching.length
+   ?matching.map((entry,n)=>'<button class="vocab-search-result" type="button" data-vocab-index="'+n+'"><span class="vocab-result-group">'+escapeHTML(entry.group)+'</span><span class="vocab-result-name">'+escapeHTML(entry.label)+'</span><small lang="de">'+escapeHTML(entry.de)+'</small><span class="vocab-result-arrow" aria-hidden="true">❯</span></button>').join("")
+   :'<p class="vocab-search-empty">Nema rezultata. Probaj drugu reč.</p>';
+ }
+ function select(index){
+  const entry=matching[index];if(!entry)return;
+  const role=isClothing?activeRole:category;
+  const state=isClothing?CLOTH_STATES[role]:HAIR_STATES[role];
+  if(!state)return;
+  state[entry.kind]=entry.index;
+  stop();
+  if(isClothing){Object.assign(BANK[CLOTH_INDEX[role]],makeClothing(role));renderClothing()}
+  else{Object.assign(BANK[HAIR_INDEX[role]],makeHair(role));renderHair()}
+  renderSample();renderChosen();persistDraft();
+  input.value="";update();input.blur();
+ }
+ input.addEventListener("input",update);
+ input.addEventListener("focus",()=>{if(input.value.trim())update()});
+ input.addEventListener("keydown",e=>{
+  if(e.key==="Escape"){input.value="";update();input.blur()}
+  if(e.key==="Enter"&&matching.length){e.preventDefault();select(0)}
+ });
+ list.addEventListener("click",e=>{
+  const button=e.target.closest("[data-vocab-index]");
+  if(button)select(Number(button.dataset.vocabIndex));
+ });
+ clear.addEventListener("click",()=>{input.value="";update();input.focus({preventScroll:true})});
+ document.addEventListener("pointerdown",e=>{
+  if(!root.contains(e.target)){list.hidden=true;input.setAttribute("aria-expanded","false")}
+ });
+}
+setupVocabularySearch();
 function escapeHTML(t){return String(t).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"','&quot;')}
 function voice(){if(!("speechSynthesis" in window))return null;const list=speechSynthesis.getVoices();return list.find(v=>/^de/i.test(v.lang)&&/google/i.test(v.name))||list.find(v=>/^de-DE/i.test(v.lang))||list.find(v=>/^de/i.test(v.lang))||null}
 function stop(){

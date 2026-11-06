@@ -1351,3 +1351,38 @@ body[data-step-page="9"] .wizard-footer .wizard-forward{
 body[data-step-page="9"] .wizard-footer .wizard-forward:active{
  background:#f2ba00!important;
 }
+
+/* Centrirana, mobilna pretraga reči na koracima 5 (odeća) i 6 (kosa). */
+body[data-step-page="4"] .vocab-search,
+body[data-step-page="5"] .vocab-search{
+ position:relative;z-index:20;flex:0 0 auto;min-height:66px;
+ display:flex;flex-direction:column;align-items:center;justify-content:center;
+ gap:4px;padding:6px 10px 7px;
+ background:linear-gradient(110deg,#fffdf0 0%,#f0f6ff 100%);
+ border-bottom:1px solid #e9d69a;
+}
+.vocab-search-label{width:100%;text-align:center;display:flex;align-items:center;justify-content:center;gap:5px;color:#174b88;font-size:11px;letter-spacing:.6px;font-weight:950;line-height:1.1}
+.vocab-search-label span:first-child{color:#d11f3b;font-size:17px;line-height:10px}
+.vocab-search-field{position:relative;display:flex;align-items:center;width:min(100%,350px);height:35px;min-height:35px;background:#fff;border:1.5px solid #92b7e1;border-radius:11px;box-shadow:0 2px 6px #244d8417;padding:0 8px;gap:7px;color:#2462a8}
+.vocab-search-field:focus-within{border-color:#e0a928;box-shadow:0 0 0 2px #ffe8a0}
+.vocab-search-field svg{flex:none}
+.vocab-search-field input{flex:1;min-width:0;width:100%;height:100%;border:0;outline:0;background:transparent;color:#173b70;font:600 16px system-ui,-apple-system,"Segoe UI",Arial,sans-serif;padding:0}
+.vocab-search-field input::placeholder{color:#718bad;opacity:1;font-size:clamp(11px,3.2vw,13px);font-weight:550}
+.vocab-search-field input::-webkit-search-cancel-button{-webkit-appearance:none}
+.vocab-search-clear{display:grid;place-items:center;flex:none;width:25px;height:25px;padding:0;background:#eaf2fc;border:0;border-radius:7px;color:#315c91;font-size:21px;line-height:1}
+.vocab-search-clear[hidden],.vocab-search-results[hidden]{display:none!important}
+.vocab-search-results{position:absolute;left:8px;right:8px;top:calc(100% - 3px);z-index:50;max-height:min(33dvh,225px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:5px;background:white;border:1.5px solid #abc9e8;border-radius:10px;box-shadow:0 9px 24px #173e6b42}
+.vocab-search-result{display:flex;align-items:center;gap:7px;width:100%;min-height:39px;padding:5px 7px;text-align:left;background:#fff;border:0;border-bottom:1px solid #e5eef8;color:#1b467e}
+.vocab-search-result:last-child{border-bottom:0}
+.vocab-search-result:active,.vocab-search-result:focus-visible{background:#eff5ff}
+.vocab-result-group{flex:none;min-width:42px;color:#bd2742;background:#fff4ef;border-radius:5px;padding:3px 4px;text-align:center;font-size:9px;font-weight:900}
+.vocab-result-name{flex:1;min-width:0;font-size:12px;font-weight:900}
+.vocab-search-result small{flex:0 1 36%;min-width:0;text-align:right;font-size:10px;font-weight:650;color:#617b9c}
+.vocab-result-arrow{flex:none;color:#d21f3c;font-size:12px}
+.vocab-search-empty{margin:0;padding:11px;text-align:center;color:#587592;font-size:12px}
+@media(max-height:670px){
+ body[data-step-page="4"] .vocab-search,body[data-step-page="5"] .vocab-search{min-height:56px;gap:3px;padding:3px 8px 4px}
+ .vocab-search-field{height:31px;min-height:31px}
+ .vocab-search-label{font-size:10px}
+ .vocab-search-results{max-height:min(29dvh,170px)}
+}
