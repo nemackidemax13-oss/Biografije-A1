@@ -1386,3 +1386,26 @@ body[data-step-page="5"] .vocab-search{
  .vocab-search-label{font-size:10px}
  .vocab-search-results{max-height:min(29dvh,170px)}
 }
+
+
+/* Koraci 1–9: žuto Dalje. Poslednji 10. korak: zeleno Početna stranica. */
+body[data-step-page]:not([data-step-page="9"]) .wizard-footer .wizard-forward{
+ background:#ffcf24!important;
+ border-color:#d3a318!important;
+ color:#23334a!important;
+ box-shadow:0 3px 10px #ae851e35!important;
+}
+body[data-step-page]:not([data-step-page="9"]) .wizard-footer .wizard-forward:active{
+ background:#f3bd09!important;
+ color:#23334a!important;
+}
+body[data-step-page="9"] .wizard-footer .wizard-forward{
+ background:#15904c!important;
+ border-color:#0d763d!important;
+ color:#fff!important;
+ box-shadow:0 3px 10px #16834d30!important;
+}
+body[data-step-page="9"] .wizard-footer .wizard-forward:active{
+ background:#0c713b!important;
+ color:#fff!important;
+}
