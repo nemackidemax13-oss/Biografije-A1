@@ -1477,3 +1477,29 @@ body[data-step-page="5"] .hairbar .choiceadd{min-width:57px!important;height:32p
  }
  body.summary-mode .controls.centered-controls button{height:28px!important;min-height:28px!important}
 }
+
+
+/* 1–9: napredak se puni žutom bojom; 10: zeleni FINISH. */
+body[data-step-page] .demax-step-progress-fill{
+ background:linear-gradient(90deg,#ffcb24,#ffe36b)!important;
+}
+body[data-step-page="9"] .demax-step-progress-fill{
+ background:linear-gradient(90deg,#15904c,#47cb7a)!important;
+}
+/* Samo prelaz sa koraka 9 na 10 je zelen. */
+body[data-step-page="8"] .wizard-footer .wizard-forward{
+ background:#15904c!important;
+ border-color:#0e793f!important;
+ color:#fff!important;
+ box-shadow:0 3px 10px #16834d30!important;
+}
+body[data-step-page="8"] .wizard-footer .wizard-forward:active{
+ background:#0c713b!important;
+ color:#fff!important;
+}
+/* Završni ekran zadržava zeleno dugme Početna stranica. */
+body[data-step-page="9"] .wizard-footer .wizard-forward{
+ background:#15904c!important;
+ border-color:#0e793f!important;
+ color:#fff!important;
+}
