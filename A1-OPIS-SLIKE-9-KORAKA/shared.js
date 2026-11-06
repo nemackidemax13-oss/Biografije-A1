@@ -1111,15 +1111,15 @@ function updateAutoControls(){
  const summary=document.body.dataset.stepPage==="9";
  const main=$("#playAll");
  if(main){
-  const label=phase==="playing"?"⏸ Pauza"+(total?" · "+current+"/"+total:""):phase==="paused"?"▶ Nastavi"+(total?" · "+current+"/"+total:""):summary?"▶ Poslušaj svoj opis":"▶ Pusti sve";
+  const label=summary?(phase==="playing"?"🔊 Sluša...":phase==="paused"?"▶ Nastavi":"▶ Poslušaj"):phase==="playing"?"⏸ Pauza"+(total?" · "+current+"/"+total:""):phase==="paused"?"▶ Nastavi"+(total?" · "+current+"/"+total:""):"▶ Pusti sve";
   main.textContent=label;
-  main.disabled=chosen.length===0;
-  main.setAttribute("aria-label",phase==="playing"?"Pauziraj automatsko čitanje":phase==="paused"?"Nastavi automatsko čitanje":"Automatski poslušaj sve izabrane rečenice");
+  main.disabled=chosen.length===0||(summary&&phase==="playing");
+  main.setAttribute("aria-label",phase==="playing"?(summary?"Automatsko čitanje je u toku":"Pauziraj automatsko čitanje"):phase==="paused"?"Nastavi automatsko čitanje":"Automatski poslušaj sve izabrane rečenice");
   main.setAttribute("aria-pressed",String(active));
  }
- const stopButton=$("#stopAuto"),againButton=$("#restartAuto");
+ const stopButton=$("#stopAuto"),pauseButton=$("#pauseAuto");
  if(stopButton)stopButton.disabled=!active;
- if(againButton)againButton.disabled=chosen.length===0;
+ if(pauseButton)pauseButton.disabled=phase!=="playing";
  document.querySelectorAll("[data-auto-describe]").forEach(button=>{
   button.textContent=phase==="playing"?"⏸ Pauza":phase==="paused"?"▶ Nastavi":"▶ Auto";
   button.title=phase==="playing"?"Pauziraj automatsko čitanje":phase==="paused"?"Nastavi automatsko čitanje":"Poslušaj svoj opis automatski";
@@ -1196,7 +1196,6 @@ function playAll(){
  else if(autoPlayback.mode==="paused")resumeAutoDescription();
  else startAutoDescription();
 }
-function restartAutoDescription(){startAutoDescription()}
 $("#steps").addEventListener("click",e=>{const b=e.target.closest("[data-step]");if(b)chooseStep(Number(b.dataset.step))});
 $("#rolebar").addEventListener("click",e=>{const b=e.target.closest("[data-role]");if(!b)return;activeRole=b.dataset.role;if(step===3)category=activeRole;page=0;showRoles();renderSample();renderList()});
 $("#modebar").addEventListener("click",e=>{const b=e.target.closest("[data-mode]");if(!b)return;appearanceMode=b.dataset.mode;page=0;showRoles();renderSample();renderList()});
@@ -1272,9 +1271,9 @@ $("#chosenPrev").addEventListener("click",()=>{chosenIndex=Math.max(0,(Math.floo
 $("#chosenNext").addEventListener("click",()=>{chosenIndex=Math.min(chosen.length-1,(Math.floor(chosenIndex/chosenPageSize())+1)*chosenPageSize());renderChosen()});
 $("#selectedArea").addEventListener("click",e=>{const sound=e.target.closest("[data-chosen-sound]");if(sound){listen(Number(sound.dataset.chosenSound));return}const remove=e.target.closest("[data-chosen-remove]");if(remove)addOrRemove(Number(remove.dataset.chosenRemove))});
 $("#playAll").addEventListener("click",playAll);
-const stopAutoButton=$("#stopAuto"),restartAutoButton=$("#restartAuto");
+const stopAutoButton=$("#stopAuto"),pauseAutoButton=$("#pauseAuto");
 if(stopAutoButton)stopAutoButton.addEventListener("click",stop);
-if(restartAutoButton)restartAutoButton.addEventListener("click",restartAutoDescription);
+if(pauseAutoButton)pauseAutoButton.addEventListener("click",pauseAutoDescription);
 document.querySelectorAll("[data-auto-describe]").forEach(button=>button.addEventListener("click",playAll));
 document.querySelectorAll("[data-auto-stop]").forEach(button=>button.addEventListener("click",stop));
 $("#clear").addEventListener("click",()=>{stop();chosen=[];chosenIndex=0;renderChosen();renderList();persistDraft()});
@@ -1446,7 +1445,7 @@ function setupStepProgress(){
  if(step===total){
   const button=$("#playAll");
   if(button){
-   button.textContent="▶ Poslušaj svoj opis";
+   button.textContent="▶ Poslušaj";
    button.title="Poslušaj svoj kompletan opis slike";
   }
  }
