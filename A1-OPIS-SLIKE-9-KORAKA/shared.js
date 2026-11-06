@@ -36,7 +36,19 @@ const HAIR_STYLE=[
  {de:"sehr kurze",sr:"veoma kratku",label:"veoma kratka"},
  {de:"schulterlange",sr:"do ramena",label:"do ramena"},
  {de:"",sr:"",label:"bez kose",bald:true},
- {de:"",sr:"",label:"ćelav",bald:true,glatze:true}
+ {de:"",sr:"",label:"ćelav",bald:true,glatze:true},
+ {de:"mittellange",sr:"srednje dugu",label:"srednje duga",displayDe:"mittellange Haare"},
+ {de:"sehr lange",sr:"veoma dugu",label:"veoma duga",displayDe:"sehr lange Haare"},
+ {de:"dünnes",sr:"retku",label:"proređena kosa",hairMode:"thin",displayDe:"dünnes Haar",keywords:"retka tanka kosa"},
+ {de:"dichtes",sr:"gustu",label:"gusta kosa",hairMode:"thick",displayDe:"dichtes Haar",keywords:"gusta kosa"},
+ {de:"",sr:"",label:"kosa vezana u rep",hairMode:"ponytail",displayDe:"ein Pferdeschwanz",keywords:"rep pferdeschwanz"},
+ {de:"",sr:"",label:"kosa u punđi",hairMode:"bun",displayDe:"ein Dutt",keywords:"punđa dutt"},
+ {de:"",sr:"",label:"kosa sa šiškama",hairMode:"bangs",displayDe:"Haare mit Pony",keywords:"šiške pony"},
+ {de:"",sr:"",label:"pletenice",hairMode:"braids",displayDe:"Zöpfe",keywords:"pletenice zopf zöpfe"},
+ {de:"",sr:"",label:"afro frizura",hairMode:"afro",displayDe:"Afrofrisur",keywords:"afrofrisur"},
+ {de:"",sr:"",label:"obrijana glava",hairMode:"shaved",colorless:true,displayDe:"ein rasierter Kopf",keywords:"obrijana glava glatze"},
+ {de:"zerzauste",sr:"razbarušenu",label:"razbarušena kosa",hairMode:"messy",displayDe:"zerzauste Haare"},
+ {de:"nach hinten gegelte",sr:"zalizanu",label:"zalizana kosa",hairMode:"gelled",displayDe:"nach hinten gegelte Haare",keywords:"zalizana unazad"}
 ];
 const HAIR_COLORS=[
  {de:"braune",sr:"smeđu",label:"smeđa"},
@@ -51,12 +63,31 @@ const HAIR_COLORS=[
 const HAIR_STATES={mann:{style:0,color:0},frau:{style:1,color:1},kind:{style:0,color:2}};
 const HAIR_INDEX={};
 function makeHair(role){
- const roleData=AGE_ROLES[role],state=HAIR_STATES[role],style=HAIR_STYLE[state.style],color=HAIR_COLORS[state.color];
- if(style.glatze)return {cat:"custom-hair",role,de:roleData.de+" hat eine Glatze.",sr:{mann:"On je ćelav.",frau:"Ona je ćelava.",kind:"Dete je ćelavo."}[role]};
- if(style.bald)return {cat:"custom-hair",role,de:roleData.de+" hat keine Haare.",sr:roleData.sr+" nema kosu."};
- const german=roleData.de+" hat "+style.de+" "+color.de+" Haare.";
- const serbian=roleData.sr+" ima "+(state.style===6?color.sr+" kosu do ramena":style.sr+" "+color.sr+" kosu")+".";
- return {cat:"custom-hair",role,de:german,sr:serbian};
+ const roleData=AGE_ROLES[role],state=HAIR_STATES[role],style=HAIR_STYLE[state.style],color=HAIR_COLORS[state.color],who=roleData.de,ime=roleData.sr;
+ const result=(de,sr)=>({cat:"custom-hair",role,de,sr});
+ if(style.glatze)return result(who+" hat eine Glatze.",{mann:"On je ćelav.",frau:"Ona je ćelava.",kind:"Dete je ćelavo."}[role]);
+ if(style.bald)return result(who+" hat keine Haare.",ime+" nema kosu.");
+ if(style.hairMode==="shaved")return result(who+" hat einen rasierten Kopf.",ime+" ima obrijanu glavu.");
+ const germanColor=color.de,serbianColor=color.sr;
+ if(style.hairMode==="thin"||style.hairMode==="thick"){
+  const germanSingularColor=germanColor.replace(/e$/,"es");
+  const germanAdj=style.hairMode==="thin"?"dünnes":"dichtes";
+  const serbianAdj=style.hairMode==="thin"?"retku":"gustu";
+  return result(who+" hat "+germanAdj+" "+germanSingularColor+" Haar.",ime+" ima "+serbianAdj+" "+serbianColor+" kosu.");
+ }
+ const special={
+  ponytail:()=>result(who+" hat "+germanColor+" Haare und einen Pferdeschwanz.",ime+" ima "+serbianColor+" kosu vezanu u rep."),
+  bun:()=>result(who+" hat "+germanColor+" Haare und einen Dutt.",ime+" ima "+serbianColor+" kosu vezanu u punđu."),
+  bangs:()=>result(who+" hat "+germanColor+" Haare mit Pony.",ime+" ima "+serbianColor+" kosu sa šiškama."),
+  braids:()=>result(who+" hat "+germanColor+" Haare und trägt Zöpfe.",ime+" ima "+serbianColor+" kosu spletenu u pletenice."),
+  afro:()=>result(who+" hat "+germanColor+" Haare und eine Afrofrisur.",ime+" ima "+serbianColor+" kosu i afro frizuru."),
+  messy:()=>result(who+" hat zerzauste "+germanColor+" Haare.",ime+" ima razbarušenu "+serbianColor+" kosu."),
+  gelled:()=>result(who+" hat nach hinten gegelte "+germanColor+" Haare.",ime+" ima "+serbianColor+" kosu zalizanu unazad.")
+ };
+ if(style.hairMode&&special[style.hairMode])return special[style.hairMode]();
+ const german=who+" hat "+style.de+" "+germanColor+" Haare.";
+ const serbian=ime+" ima "+(state.style===6?serbianColor+" kosu do ramena":style.sr+" "+serbianColor+" kosu")+".";
+ return result(german,serbian);
 }
 for(const role of ["mann","frau","kind"]){HAIR_INDEX[role]=BANK.length;BANK.push(makeHair(role))}
 const CLOTH_ITEMS=[
@@ -458,6 +489,139 @@ const CLOTH_ITEMS=[
   "sr": "radno odelo",
   "srType": "n",
   "label": "radno odelo"
+ },
+ {
+   "de": "Uniform",
+   "article": "f",
+   "sr": "uniformu",
+   "srType": "f",
+   "label": "uniforma"
+ },
+ {
+   "de": "Arbeitsoverall",
+   "article": "m",
+   "sr": "radni kombinezon",
+   "srType": "m",
+   "label": "radni kombinezon"
+ },
+ {
+   "de": "Arbeitskittel",
+   "article": "m",
+   "sr": "radni mantil",
+   "srType": "m",
+   "label": "radni mantil"
+ },
+ {
+   "de": "Arztkittel",
+   "article": "m",
+   "sr": "lekarski mantil",
+   "srType": "m",
+   "label": "lekarski mantil"
+ },
+ {
+   "de": "Schürze",
+   "article": "f",
+   "sr": "kecelju",
+   "srType": "f",
+   "label": "kecelja"
+ },
+ {
+   "de": "Warnweste",
+   "article": "f",
+   "sr": "zaštitni prsluk",
+   "srType": "m",
+   "label": "zaštitni prsluk"
+ },
+ {
+   "de": "Schutzhelm",
+   "article": "m",
+   "sr": "šlem",
+   "srType": "m",
+   "label": "šlem"
+ },
+ {
+   "de": "Kopftuch",
+   "article": "n",
+   "sr": "maramu za glavu",
+   "srType": "f",
+   "label": "marama za glavu"
+ },
+ {
+   "de": "Halstuch",
+   "article": "n",
+   "sr": "maramu oko vrata",
+   "srType": "f",
+   "label": "marama oko vrata"
+ },
+ {
+   "de": "Bermudashorts",
+   "article": "p",
+   "sr": "bermude",
+   "srType": "p",
+   "label": "bermude"
+ },
+ {
+   "de": "Jeansjacke",
+   "article": "f",
+   "sr": "teksas jaknu",
+   "srType": "f",
+   "label": "teksas jakna"
+ },
+ {
+   "de": "Kurzjacke",
+   "article": "f",
+   "sr": "kratku jaknu",
+   "srType": "f",
+   "label": "kratka jakna"
+ },
+ {
+   "de": "Tunika",
+   "article": "f",
+   "sr": "tuniku",
+   "srType": "f",
+   "label": "tunika"
+ },
+ {
+   "de": "Poncho",
+   "article": "m",
+   "sr": "pončo",
+   "srType": "m",
+   "label": "pončo"
+ },
+ {
+   "de": "Kostüm",
+   "article": "n",
+   "sr": "ženski kostim",
+   "srType": "m",
+   "label": "ženski kostim"
+ },
+ {
+   "de": "Overall",
+   "article": "m",
+   "sr": "kombinezon",
+   "srType": "m",
+   "label": "kombinezon"
+ },
+ {
+   "de": "Maxirock",
+   "article": "m",
+   "sr": "dugu suknju",
+   "srType": "f",
+   "label": "duga suknja"
+ },
+ {
+   "de": "Baumwollshirt",
+   "article": "n",
+   "sr": "pamučnu majicu",
+   "srType": "f",
+   "label": "pamučna majica"
+ },
+ {
+   "de": "Blazer",
+   "article": "m",
+   "sr": "blejzer",
+   "srType": "m",
+   "label": "blejzer"
  }
 ];
 const CLOTH_COLORS=[
@@ -496,8 +660,8 @@ function renderHair(){
  const show=step===3&&appearanceMode==="hair";$("#hairbar").hidden=!show;if(!show)return;
  const state=HAIR_STATES[category],row=BANK[HAIR_INDEX[category]],active=chosen.includes(HAIR_INDEX[category]);
  $("#hairStyle").textContent=HAIR_STYLE[state.style].label;
- $("#hairColor").textContent=HAIR_STYLE[state.style].bald?"nije važno":HAIR_COLORS[state.color].label;
- document.querySelectorAll('[data-hair-turn="color"]').forEach(b=>b.disabled=!!HAIR_STYLE[state.style].bald);
+ $("#hairColor").textContent=(HAIR_STYLE[state.style].bald||HAIR_STYLE[state.style].colorless)?"nije važno":HAIR_COLORS[state.color].label;
+ document.querySelectorAll('[data-hair-turn="color"]').forEach(b=>b.disabled=!!(HAIR_STYLE[state.style].bald||HAIR_STYLE[state.style].colorless));
  $("#hairSentence").textContent=row.de;$("#hairTranslation").textContent=row.sr;
  $("#hairbar").classList.toggle("is-selected",active);
  $("#hairAdd").textContent=active?"✓ Izabrano":"❯ Dodaj";
@@ -523,7 +687,7 @@ function toggleClothing(){
 }
 function turnHair(type,delta){
  const state=HAIR_STATES[category],options=type==="style"?HAIR_STYLE:HAIR_COLORS;
- if(type==="color"&&HAIR_STYLE[state.style].bald)return;
+ if(type==="color"&&(HAIR_STYLE[state.style].bald||HAIR_STYLE[state.style].colorless))return;
  state[type]=(state[type]+delta+options.length)%options.length;
  stop();Object.assign(BANK[HAIR_INDEX[category]],makeHair(category));
  renderHair();renderSample();renderChosen();
@@ -547,7 +711,7 @@ function setupVocabularySearch(){
  const entries=isClothing
   ?CLOTH_ITEMS.map((item,index)=>({kind:"item",index,label:item.label,de:articles[item.article]+" "+item.de,group:"Odeća",search:item.label+" "+item.sr+" "+item.de}))
    .concat(CLOTH_COLORS.map((item,index)=>({kind:"color",index,label:item.label,de:item.de,group:"Boja",search:item.label+" "+item.de+" "+item.sr.join(" ")})))
-  :HAIR_STYLE.map((item,index)=>({kind:"style",index,label:item.label,de:item.glatze?"eine Glatze":item.bald?"keine Haare":item.de+" Haare",group:"Oblik kose",search:item.label+" "+item.sr+" "+item.de+" Haare Kosa"}))
+  :HAIR_STYLE.map((item,index)=>({kind:"style",index,label:item.label,de:item.displayDe||(item.glatze?"eine Glatze":item.bald?"keine Haare":item.de+" Haare"),group:"Oblik kose",search:item.label+" "+item.sr+" "+item.de+" "+(item.displayDe||"")+" "+(item.keywords||"")+" "+(item.glatze?"Glatze":"")+" Haare Kosa"}))
    .concat(HAIR_COLORS.map((item,index)=>({kind:"color",index,label:item.label,de:item.de+" Haare",group:"Boja kose",search:item.label+" "+item.sr+" "+item.de+" Haare"})));
  let matching=[];
  function update(){
