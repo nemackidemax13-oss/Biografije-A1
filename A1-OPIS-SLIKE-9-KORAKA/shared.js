@@ -35,7 +35,8 @@ const HAIR_STYLE=[
  {de:"wellige",sr:"talasastu",label:"talasasta"},
  {de:"sehr kurze",sr:"veoma kratku",label:"veoma kratka"},
  {de:"schulterlange",sr:"do ramena",label:"do ramena"},
- {de:"",sr:"",label:"bez kose",bald:true}
+ {de:"",sr:"",label:"bez kose",bald:true},
+ {de:"",sr:"",label:"ćelav",bald:true,glatze:true}
 ];
 const HAIR_COLORS=[
  {de:"braune",sr:"smeđu",label:"smeđa"},
@@ -51,6 +52,7 @@ const HAIR_STATES={mann:{style:0,color:0},frau:{style:1,color:1},kind:{style:0,c
 const HAIR_INDEX={};
 function makeHair(role){
  const roleData=AGE_ROLES[role],state=HAIR_STATES[role],style=HAIR_STYLE[state.style],color=HAIR_COLORS[state.color];
+ if(style.glatze)return {cat:"custom-hair",role,de:roleData.de+" hat eine Glatze.",sr:{mann:"On je ćelav.",frau:"Ona je ćelava.",kind:"Dete je ćelavo."}[role]};
  if(style.bald)return {cat:"custom-hair",role,de:roleData.de+" hat keine Haare.",sr:roleData.sr+" nema kosu."};
  const german=roleData.de+" hat "+style.de+" "+color.de+" Haare.";
  const serbian=roleData.sr+" ima "+(state.style===6?color.sr+" kosu do ramena":style.sr+" "+color.sr+" kosu")+".";
@@ -545,7 +547,7 @@ function setupVocabularySearch(){
  const entries=isClothing
   ?CLOTH_ITEMS.map((item,index)=>({kind:"item",index,label:item.label,de:articles[item.article]+" "+item.de,group:"Odeća",search:item.label+" "+item.sr+" "+item.de}))
    .concat(CLOTH_COLORS.map((item,index)=>({kind:"color",index,label:item.label,de:item.de,group:"Boja",search:item.label+" "+item.de+" "+item.sr.join(" ")})))
-  :HAIR_STYLE.map((item,index)=>({kind:"style",index,label:item.label,de:item.bald?"keine Haare":item.de+" Haare",group:"Oblik kose",search:item.label+" "+item.sr+" "+item.de+" Haare Kosa"}))
+  :HAIR_STYLE.map((item,index)=>({kind:"style",index,label:item.label,de:item.glatze?"eine Glatze":item.bald?"keine Haare":item.de+" Haare",group:"Oblik kose",search:item.label+" "+item.sr+" "+item.de+" Haare Kosa"}))
    .concat(HAIR_COLORS.map((item,index)=>({kind:"color",index,label:item.label,de:item.de+" Haare",group:"Boja kose",search:item.label+" "+item.sr+" "+item.de+" Haare"})));
  let matching=[];
  function update(){
