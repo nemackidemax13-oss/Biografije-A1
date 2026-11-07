@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="sr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#193e82"><title>DE-MAX A1 | AI opis moje slike</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font:15px system-ui,Arial,sans-serif;background:#edf3fc;color:#182b43}.wrap{max-width:760px;margin:auto;padding:12px}.hero{background:linear-gradient(120deg,#16376e,#2765be);border-radius:18px;color:white;text-align:center;padding:16px}.logo{font-size:24px;font-weight:900}.logo b{color:#ff6666}h1{font-size:21px;margin:5px}h2{font-size:17px;text-align:center;color:#19447e;margin:1px 0 12px}.panel{background:white;border-radius:16px;margin:12px 0;padding:15px;border:1px solid #d9e5f6;box-shadow:0 2px 12px #172d5020}.upload{display:block;text-align:center;background:#f4f9ff;border:2px dashed #9ab9df;border-radius:13px;padding:20px 10px;cursor:pointer;font-weight:700;color:#174781}input[type=file]{display:none}#photo{display:none;max-height:320px;max-width:100%;object-fit:contain;margin:12px auto;border-radius:12px}.btn{width:100%;border:0;border-radius:12px;background:#16844e;color:white;font:700 16px system-ui;padding:15px;cursor:pointer}.btn:disabled{opacity:.55;cursor:default}.smallbtn{border:0;border-radius:10px;padding:10px 15px;font-weight:750;cursor:pointer;background:#245ca9;color:white}.actions{display:flex;gap:8px;flex-wrap:wrap}.actions button{flex:1}.yellow{background:#efc65e;color:#332705}.red{background:#d2454d}.note{font-size:13px;line-height:1.5;color:#5c6b81}.status{font-size:13px;text-align:center;color:#465b77;min-height:18px}.error{color:#bb2538}.step{border:1px solid #e1e9f5;border-radius:10px;margin:9px 0;padding:11px}.step strong{display:block;color:#1b4e94;margin-bottom:6px}.step .de{font-weight:650;line-height:1.55}.step .sr{color:#596d85;font-size:13px;margin-top:4px}textarea,input[type=url]{width:100%;font:15px system-ui;border:1px solid #b5c9e3;border-radius:10px;padding:11px;line-height:1.65}textarea{min-height:230px;resize:vertical}details{margin-top:13px;border-top:1px solid #dee7f4;padding-top:12px}summary{cursor:pointer;font-weight:700;color:#255a9d}label.setting{display:block;font-weight:700;font-size:13px;margin:9px 0 5px}footer{text-align:center;font-size:12px;color:#72809a;margin:18px 0}a{color:#235eaa}
+</style></head><body><main class="wrap">
+<header class="hero"><div class="logo"><b>DE</b>-MAX</div><h1>📷 AI opis slike · A1</h1><div>Ubaci svoju sliku · automatski opis · Moj opis</div></header>
+<section class="panel"><h2>1. Dodaj svoju sliku</h2><label class="upload">📸 Dodirni da izabereš sliku sa telefona ili računara<input id="upload" type="file" accept="image/jpeg,image/png,image/webp,image/*"></label><img id="photo" alt="Izabrana slika"><p class="note">Fotografija se šalje povezanom AI servisu tek kada klikneš „AI opiši sliku“. Ne šalji privatne ili osetljive fotografije bez dozvole.</p>
+<button id="analyze" class="btn" disabled>✨ AI opiši sliku</button><p class="status" id="status" aria-live="polite">Prvo izaberi fotografiju.</p></section>
+<section class="panel"><h2>2. AI opis prema DE-MAX šablonu</h2><div id="result" class="note" style="text-align:center">Ovde će se pojaviti rečenice po koracima.</div></section>
+<section class="panel"><h2>3. Moj opis</h2><textarea id="mine" placeholder="AI će ovde sastaviti A1 opis koji učenik može da dopuni i ispravi."></textarea><div class="actions" style="margin-top:10px"><button class="smallbtn" id="speak">🔊 Izgovor</button><button class="smallbtn yellow" id="copy">📋 Kopiraj</button><button class="smallbtn red" id="clear">↺ Očisti</button></div>
+<details><summary>⚙️ Podešavanje AI servisa (za profesora)</summary><label class="setting" for="endpoint">Cloudflare Worker URL</label><input type="url" id="endpoint" placeholder="https://de-max-opis-slike.tvoj-nalog.workers.dev"><p class="note">Unesi adresu objavljenog Cloudflare Worker-a, ne OpenAI API ključ. Adresa se čuva samo u ovom pregledaču. Za sve učenike bez podešavanja, upiši Worker URL u DEFAULT_WORKER_URL u kodu ove stranice.</p><button id="save" class="smallbtn">Sačuvaj adresu</button></details></section>
+<footer>DE-MAX · A1 opis slike · <a href="./1-opis-osoba.html">Velika baza rečenica</a></footer></main>
+<script>
+"use strict";
+const DEFAULT_WORKER_URL="";
+const $=id=>document.getElementById(id);
+let imageData="";
+const setStatus=(s,err=false)=>{$("status").textContent=s;$("status").className="status"+(err?" error":"")};
+$("endpoint").value=localStorage.getItem("demax_ai_worker")||DEFAULT_WORKER_URL;
+$("save").onclick=()=>{const s=$("endpoint").value.trim();if(s && !/^https:\/\//.test(s)){setStatus("Adresa mora početi sa https://",true);return}localStorage.setItem("demax_ai_worker",s);setStatus("Adresa je sačuvana na ovom uređaju.")};
+$("upload").onchange=async e=>{
+ const file=e.target.files[0];if(!file)return;
+ if(!file.type.startsWith("image/")){setStatus("Izaberi sliku.",true);return}
+ if(file.size>12*1024*1024){setStatus("Slika je prevelika (maksimalno 12 MB).",true);return}
+ try {const img=await createImageBitmap(file);const canvas=document.createElement("canvas");const factor=Math.min(1,1280/Math.max(img.width,img.height));canvas.width=Math.round(img.width*factor);canvas.height=Math.round(img.height*factor);canvas.getContext("2d").drawImage(img,0,0,canvas.width,canvas.height);imageData=canvas.toDataURL("image/jpeg",.82);img.close();$("photo").src=imageData;$("photo").style.display="block";$("analyze").disabled=false;setStatus("Slika je spremna za analizu.");}
+ catch(err){imageData="";setStatus("Fotografija nije podržana.",true)}
+};
+$("analyze").onclick=async()=>{
+ const endpoint=($("endpoint").value||DEFAULT_WORKER_URL).trim();
+ if(!imageData){setStatus("Prvo izaberi fotografiju.",true);return}
+ if(!/^https:\/\/.+/.test(endpoint)){setStatus("Potrebno je prvo povezati Cloudflare Worker URL u podešavanjima.",true);return}
+ $("analyze").disabled=true;setStatus("AI analizira sliku i sastavlja A1 rečenice…");
+ try{const res=await fetch(endpoint,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({image:imageData})});
+ const body=await res.json().catch(()=>({}));
+ if(!res.ok)throw Error(body.error||"AI servis nije odgovorio (HTTP "+res.status+").");
+ if(!Array.isArray(body.steps)||!body.steps.length)throw Error("AI servis nije vratio ispravan opis.");
+ const root=$("result");root.replaceChildren();
+ const headings=["Opis osoba","Razgovor i radnja","Mesto","Izgled osoba","Odeća","Kosa","Godine","Ostali detalji","Završne rečenice","Moj opis"];
+ body.steps.forEach((part,i)=>{const item=document.createElement("div");item.className="step";const h=document.createElement("strong");h.textContent=(i+1)+". "+(headings[i]||"Opis");item.append(h);const de=document.createElement("div");de.className="de";de.textContent=String(part.de||"");item.append(de);if(part.sr){const sr=document.createElement("div");sr.className="sr";sr.textContent=String(part.sr);item.append(sr)}root.append(item)});
+ $("mine").value=String(body.description||body.steps.map(s=>s.de).filter(Boolean).join(" "));setStatus("Opis je gotov! Pročitaj ga i ispravi ako treba.");
+ }catch(e){setStatus("Greška: "+e.message,true)}finally{$("analyze").disabled=false}
+};
+$("copy").onclick=async()=>{try{await navigator.clipboard.writeText($("mine").value);setStatus("Moj opis je kopiran.")}catch(e){$("mine").select();setStatus("Označen je tekst; možeš ga kopirati.")}};
+$("speak").onclick=()=>{if(!("speechSynthesis" in window)){setStatus("Ovaj pregledač nema izgovor.",true);return}speechSynthesis.cancel();const u=new SpeechSynthesisUtterance($("mine").value);u.lang="de-DE";u.rate=.85;speechSynthesis.speak(u)};
+$("clear").onclick=()=>{$("mine").value="";$("result").textContent="Ovde će se pojaviti rečenice po koracima.";setStatus("Opis je obrisan.")};
+</script></body></html>
