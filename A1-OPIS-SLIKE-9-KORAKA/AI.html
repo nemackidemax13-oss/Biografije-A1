@@ -1152,9 +1152,16 @@ function view(n){
 }
 function add(el,cls,txt){let d=document.createElement("div");d.className=cls;d.textContent=txt;el.append(d);return d}
 function norm(s){return String(s||"").toLocaleLowerCase("de").replace(/[^a-zäöüß0-9 ]/g,"").replace(/\s+/g," ").trim()}
-function sampleBank(){
- // Original DE-MAX opis slike: send every sentence and its category/situation metadata.
- return bank.map(x=>({cat:x.cat,de:x.de,sr:x.sr,personExample:!!x.personExample,
+function sampleBank(compact=false){
+ // Keep all teaching categories while limiting oversized Worker requests.
+ const caps=compact?{start:12,extra:32,places:24,mann:12,frau:12,kind:12,closing:30}
+                   :{start:35,extra:95,places:50,mann:28,frau:28,kind:28,closing:75};
+ const counts={};
+ return bank.filter(x=>{
+  const cat=String(x.cat||"extra");
+  if((counts[cat]||0)>=(caps[cat]||16))return false;
+  counts[cat]=(counts[cat]||0)+1;return true;
+ }).map(x=>({cat:x.cat,de:x.de,sr:x.sr,personExample:!!x.personExample,
   personGroup:x.personGroup||null,sceneDetailIds:x.sceneDetailIds||[],
   closingSceneIds:x.closingSceneIds||[],closingWeatherGroups:x.closingWeatherGroups||[],
   closingIndoor:!!x.closingIndoor,closingEnding:!!x.closingEnding}));
@@ -1258,25 +1265,50 @@ $("file").onchange=async e=>{
 $("analyze").onclick=async()=>{
  if(generatedLocked&&!reachedDialogue){setStatus("Novu sliku možeš generisati tek kada dođeš do dijaloga.",true);return}
  if(!imageData){setStatus("Izaberi sliku.",true);return}if(!bank.length){setStatus("Baza opisa slike se još učitava. Pokušaj ponovo.",true);return}let url=$("endpoint").value.trim();if(!/^https:\/\//.test(url)){setStatus("Podesi Cloudflare Worker adresu.",true);return}$("analyze").disabled=true;setStatus("AI analizira sliku i priprema opis i dijalog…");
-try{const requestBody=JSON.stringify({image:imageData,scenes:scenes.map(s=>({n:s.n,sr:s.sr,de:s.de,roles:s.roles||"",dialog:(Array.isArray(s.dialog)?s.dialog:[]).map(pair=>({de:String(pair[0]||""),sr:String(pair[1]||"")})),extra:(Array.isArray(s.extra)?s.extra:[]).map(pair=>({de:String(pair[0]||""),sr:String(pair[1]||"")}))})),bankExamples:sampleBank(),visualAccuracyInstructions:"Obavezno prouči ORIGINALNU fotografiju pre izbora situacije, opisa i dijaloga. Prepoznaj šta osobe zaista rade, koje predmete drže, pokazuju ili kupuju, i koja odeća ili roba je stvarno vidljiva. Ne zamenjuj haljinu jaknom, košuljom ili drugim artiklom. Ne izmišljaj sadržaj, mesto, radnje, boje ni namere koje se ne vide. Ako je predmet nejasan, napiši opštu tačnu rečenicu. Svi koraci opisa i dijalog moraju odgovarati ISTOJ fotografiji.",dialogueAccuracyInstructions:"Dijalog napravi specifično prema fotografiji, nikada generički po unapred izabranoj temi. Primer: ako u butiku žena bira ili kupuje HALJINU, prodavačica i kupac razgovaraju o HALJINI, njenoj boji, veličini, ceni ili isprobavanju samo kada takve okolnosti odgovaraju slici. Ne govori da kupuje JAKNU ako nije jakna. Isto važi za svaku drugu sliku: prepoznaj stvarne ljude, mesto, predmet, aktivnost i uloge i napiši prirodan A1 razgovor vezan za baš taj prizor. Ne dodaj nevidljive činjenice kao potvrđene. Svaka replika mora biti u skladu sa prepoznatom situacijom, a sceneNumber i sceneName takođe moraju odgovarati slici."});
-let data=null;
-for(let attempt=1;attempt<=2;attempt++){
- if(attempt===2)setStatus("AI nije poslao sve korake. Pokušavam ponovo (2/2)…");
- const res=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:requestBody});
- const candidate=await res.json().catch(()=>({}));
- if(!res.ok){if(attempt===2)throw Error(candidate.error||"HTTP "+res.status);continue}
- const steps=Array.isArray(candidate.steps)?candidate.steps:[];
- // Some Worker versions return nine numbered steps, with "Moj opis" as description.
+try{
+const baseRequest={image:imageData,scenes:scenes.map(s=>({n:s.n,sr:s.sr,de:s.de,roles:s.roles||"",dialog:(Array.isArray(s.dialog)?s.dialog:[]).map(pair=>({de:String(pair[0]||""),sr:String(pair[1]||"")})),extra:(Array.isArray(s.extra)?s.extra:[]).map(pair=>({de:String(pair[0]||""),sr:String(pair[1]||"")}))})),bankExamples:sampleBank(),visualAccuracyInstructions:"Obavezno prouči ORIGINALNU fotografiju pre izbora situacije, opisa i dijaloga. Prepoznaj šta osobe zaista rade, koje predmete drže, pokazuju ili kupuju, i koja odeća ili roba je stvarno vidljiva. Ne zamenjuj haljinu jaknom, košuljom ili drugim artiklom. Ne izmišljaj sadržaj, mesto, radnje, boje ni namere koje se ne vide. Ako je predmet nejasan, napiši opštu tačnu rečenicu. Svi koraci opisa i dijalog moraju odgovarati ISTOJ fotografiji.",dialogueAccuracyInstructions:"Dijalog napravi specifično prema fotografiji, nikada generički po unapred izabranoj temi. Primer: ako u butiku žena bira ili kupuje HALJINU, prodavačica i kupac razgovaraju o HALJINI, njenoj boji, veličini, ceni ili isprobavanju samo kada takve okolnosti odgovaraju slici. Ne govori da kupuje JAKNU ako nije jakna. Isto važi za svaku drugu sliku: prepoznaj stvarne ljude, mesto, predmet, aktivnost i uloge i napiši prirodan A1 razgovor vezan za baš taj prizor. Ne dodaj nevidljive činjenice kao potvrđene. Svaka replika mora biti u skladu sa prepoznatom situacijom, a sceneNumber i sceneName takođe moraju odgovarati slici."};
+const normalizeAIResponse=(raw)=>{
+ let d=raw;
+ if(typeof d==="string"){try{d=JSON.parse(d)}catch{return null}}
+ if(d&&typeof d.result==="object"&&!Array.isArray(d.steps))d=d.result;
+ if(d&&typeof d.data==="object"&&!Array.isArray(d.steps))d=d.data;
+ if(!d||typeof d!=="object")return null;
+ let steps=Array.isArray(d.steps)?d.steps.slice():[];
+ if(!steps.length&&Array.isArray(d.descriptionSteps))steps=d.descriptionSteps.slice();
+ if(!steps.length&&Array.isArray(d.sections))steps=d.sections.slice();
+ steps=steps.map(x=>typeof x==="string"?{de:x,sr:""}:x);
  if(steps.length===9){
-  const de=String(candidate.description||candidate.summaryDE||steps.map(x=>x.de||"").join(" ")).trim();
-  const sr=String(candidate.descriptionSR||candidate.summarySR||steps.map(x=>x.sr||"").join(" ")).trim();
+  const de=String(d.description||d.summaryDE||d.summary||steps.map(x=>x?.de||"").join(" ")).trim();
+  const sr=String(d.descriptionSR||d.summarySR||steps.map(x=>x?.sr||"").join(" ")).trim();
   if(de)steps.push({de,sr});
  }
- if(steps.length>=10&&steps.slice(0,10).every(x=>x&&typeof x.de==="string"&&x.de.trim())){
-  candidate.steps=steps.slice(0,10);data=candidate;break;
+ if(steps.length<10||steps.slice(0,9).some(x=>!x||typeof x.de!=="string"||!x.de.trim()))return null;
+ if(!steps[9]?.de?.trim())steps[9]={de:String(d.description||steps.slice(0,9).map(x=>x.de).join(" ")),sr:String(d.descriptionSR||steps.slice(0,9).map(x=>x.sr||"").join(" "))};
+ d.steps=steps.slice(0,10);return d;
+};
+let data=null,lastError="";
+for(let attempt=1;attempt<=3;attempt++){
+ if(attempt>1)setStatus("AI odgovor nije potpun. Ponavljam analizu ("+attempt+"/3)…");
+ const compact=attempt>1;
+ const body={...baseRequest,bankExamples:sampleBank(compact)};
+ if(attempt===3){
+  // Worker compatibility: keep the established request fields, shorten example content.
+  body.bankExamples=sampleBank(true).slice(0,90);
  }
+ try{
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),60000);
+  let res;
+  try{res=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body),signal:controller.signal})}
+  finally{clearTimeout(timeout)}
+  const raw=await res.json().catch(()=>null);
+  if(!res.ok){lastError=String(raw?.error||"HTTP "+res.status);if(res.status>=400&&res.status<500&&res.status!==408&&res.status!==429)break;continue}
+  const candidate=normalizeAIResponse(raw);
+  if(candidate){data=candidate;break}
+  lastError="AI nije poslao svih 10 koraka u ispravnom obliku.";
+ }catch(e){lastError=e?.name==="AbortError"?"AI servis nije odgovorio na vreme.":String(e?.message||e)}
 }
-if(!data)throw Error("AI nije vratio kompletnih 10 koraka ni nakon ponovnog pokušaja. Izaberi ponovo generisanje.");
+if(!data)throw Error(lastError+" Pokušaj ponovo ili proveri Cloudflare Worker.");
 $("dialogue").replaceChildren();dialogRows=[];
 $("dialogue").classList.add("hide-translation");
 $("translationDialogue").textContent="Prevod";$("translationDialogue").setAttribute("aria-pressed","false");
