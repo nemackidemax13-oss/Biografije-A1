@@ -1411,13 +1411,13 @@ body[data-step-page="9"] .wizard-footer .wizard-forward:active{
 }
 
 
-/* 10. Moj opis: sva četiri dugmeta u jednom redu, bez vertikalnog pomeranja. */
+/* 10. Moj opis: tri dugmeta potpuno jednake širine u jednom redu. */
 body.summary-mode .controls.centered-controls{
  height:46px!important;
  min-height:46px!important;
  flex:none!important;
  display:grid!important;
- grid-template-columns:minmax(0,1.35fr) minmax(0,.77fr) minmax(0,.67fr) minmax(0,1.46fr)!important;
+ grid-template-columns:repeat(3,minmax(0,1fr))!important;
  grid-template-rows:34px!important;
  gap:4px!important;
  align-items:center!important;
@@ -1452,8 +1452,7 @@ body.summary-mode .controls.centered-controls .ctrl.danger{
  font-size:clamp(9.4px,2.6vw,12px)!important;
 }
 body.summary-mode #playAll{background:#15904c!important;border-color:#0e7540!important;color:#fff!important}
-body.summary-mode #pauseAuto{background:#e3f0ff!important;border:1px solid #8bb8ec!important;color:#1458a2!important}
-body.summary-mode #stopAuto{background:#e03848!important;border:1px solid #b82134!important;color:#fff!important}
+body.summary-mode #stopAuto{background:#e11d3c!important;border:1px solid #aa1732!important;color:#fff!important;opacity:1!important}
 body.summary-mode #clear{background:#fff3f4!important;border:1px solid #ebc6ce!important;color:#a61e35!important}
 body.summary-mode .controls button:disabled,
 .auto-preview-controls button:disabled{opacity:.46!important;cursor:default!important}

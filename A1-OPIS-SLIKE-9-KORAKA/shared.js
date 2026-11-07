@@ -1104,22 +1104,21 @@ function showRoles(){
  renderModes();renderAge();renderHair();renderClothing();
 }
 function chooseStep(n){step=n;if(n===3){category=activeRole}else category=STEP_CATS[n];page=0;showRoles();renderSample();renderList()}
-/* Automatsko čitanje svih izabranih rečenica, pauza/nastavak/stop/ponovo.
+/* Automatsko čitanje: Poslušaj/Pauza/Nastavi na jednom dugmetu, uz Stop.
    Održava označavanje i redosled teksta na 10. koraku. */
 function updateAutoControls(){
  const phase=autoPlayback.mode,active=phase!=="idle",current=Math.min(autoPlayback.cursor+1,autoPlayback.queue.length),total=autoPlayback.queue.length;
  const summary=document.body.dataset.stepPage==="9";
  const main=$("#playAll");
  if(main){
-  const label=summary?(phase==="playing"?"🔊 Sluša...":phase==="paused"?"▶ Nastavi":"▶ Poslušaj"):phase==="playing"?"⏸ Pauza"+(total?" · "+current+"/"+total:""):phase==="paused"?"▶ Nastavi"+(total?" · "+current+"/"+total:""):"▶ Pusti sve";
+  const label=summary?(phase==="playing"?"⏸ Pauza":phase==="paused"?"▶ Nastavi":"▶ Poslušaj"):phase==="playing"?"⏸ Pauza"+(total?" · "+current+"/"+total:""):phase==="paused"?"▶ Nastavi"+(total?" · "+current+"/"+total:""):"▶ Pusti sve";
   main.textContent=label;
-  main.disabled=chosen.length===0||(summary&&phase==="playing");
-  main.setAttribute("aria-label",phase==="playing"?(summary?"Automatsko čitanje je u toku":"Pauziraj automatsko čitanje"):phase==="paused"?"Nastavi automatsko čitanje":"Automatski poslušaj sve izabrane rečenice");
+  main.disabled=chosen.length===0;
+  main.setAttribute("aria-label",phase==="playing"?"Pauziraj automatsko čitanje":phase==="paused"?"Nastavi automatsko čitanje":"Automatski poslušaj sve izabrane rečenice");
   main.setAttribute("aria-pressed",String(active));
  }
- const stopButton=$("#stopAuto"),pauseButton=$("#pauseAuto");
- if(stopButton)stopButton.disabled=!active;
- if(pauseButton)pauseButton.disabled=phase!=="playing";
+ const stopButton=$("#stopAuto");
+ if(stopButton)stopButton.disabled=false;
  document.querySelectorAll("[data-auto-describe]").forEach(button=>{
   button.textContent=phase==="playing"?"⏸ Pauza":phase==="paused"?"▶ Nastavi":"▶ Auto";
   button.title=phase==="playing"?"Pauziraj automatsko čitanje":phase==="paused"?"Nastavi automatsko čitanje":"Poslušaj svoj opis automatski";
@@ -1271,9 +1270,8 @@ $("#chosenPrev").addEventListener("click",()=>{chosenIndex=Math.max(0,(Math.floo
 $("#chosenNext").addEventListener("click",()=>{chosenIndex=Math.min(chosen.length-1,(Math.floor(chosenIndex/chosenPageSize())+1)*chosenPageSize());renderChosen()});
 $("#selectedArea").addEventListener("click",e=>{const sound=e.target.closest("[data-chosen-sound]");if(sound){listen(Number(sound.dataset.chosenSound));return}const remove=e.target.closest("[data-chosen-remove]");if(remove)addOrRemove(Number(remove.dataset.chosenRemove))});
 $("#playAll").addEventListener("click",playAll);
-const stopAutoButton=$("#stopAuto"),pauseAutoButton=$("#pauseAuto");
+const stopAutoButton=$("#stopAuto");
 if(stopAutoButton)stopAutoButton.addEventListener("click",stop);
-if(pauseAutoButton)pauseAutoButton.addEventListener("click",pauseAutoDescription);
 document.querySelectorAll("[data-auto-describe]").forEach(button=>button.addEventListener("click",playAll));
 document.querySelectorAll("[data-auto-stop]").forEach(button=>button.addEventListener("click",stop));
 $("#clear").addEventListener("click",()=>{stop();chosen=[];chosenIndex=0;renderChosen();renderList();persistDraft()});
