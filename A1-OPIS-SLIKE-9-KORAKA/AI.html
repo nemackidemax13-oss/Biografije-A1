@@ -627,9 +627,17 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
  background:#edf1f5!important;border-color:#aeb9c7!important;
 }
 #screen0 .upload.generation-locked .upload-title::after{content:" · zaključano";font-size:.75em}
+
+#screen0 #resumeAfterGeneration[hidden]{display:none!important}
+#screen0 #resumeAfterGeneration:not([hidden]){
+ display:block!important;flex:1 1 auto!important;
+ background:#1c64b0!important;color:#fff!important;
+ border:0!important;
+}
+#screen0:has(#resumeAfterGeneration:not([hidden])) #analyze{display:none!important}
 </style></head><body><main class="app">
 <header class="header"><h1>Opis slike</h1></header>
-<section class="screen active" id="screen0"><div class="scroll"><div class="panel"><h2 class="title" id="uploadHeading">Ubaci sliku za opis</h2><label class="upload"><span class="upload-icon">📷</span><span class="upload-title">Izaberi fotografiju</span><span class="upload-sub">Dodirni ovde za galeriju ili kameru</span><input id="file" type="file" accept="image/*"></label><div class="photo-reveal" id="photoReveal"><span class="photo-glow" aria-hidden="true"></span><img class="picture" id="photo0" alt="Izabrana slika"><span class="photo-success" aria-hidden="true">✓</span><span class="sparkle sp1" aria-hidden="true">✦</span><span class="sparkle sp2" aria-hidden="true">✧</span><span class="sparkle sp3" aria-hidden="true">✦</span></div><p class="status" id="status">Prvo izaberi sliku.</p></div><div class="demax-a1-brand" aria-label="De-Max A1"><span>De-Max</span> <strong>A1</strong></div><input id="endpoint" type="hidden" value="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev"></div><div class="footer upload-footer"><button class="action green" id="analyze" disabled>Automatski opiši sliku</button></div></section>
+<section class="screen active" id="screen0"><div class="scroll"><div class="panel"><h2 class="title" id="uploadHeading">Ubaci sliku za opis</h2><label class="upload"><span class="upload-icon">📷</span><span class="upload-title">Izaberi fotografiju</span><span class="upload-sub">Dodirni ovde za galeriju ili kameru</span><input id="file" type="file" accept="image/*"></label><div class="photo-reveal" id="photoReveal"><span class="photo-glow" aria-hidden="true"></span><img class="picture" id="photo0" alt="Izabrana slika"><span class="photo-success" aria-hidden="true">✓</span><span class="sparkle sp1" aria-hidden="true">✦</span><span class="sparkle sp2" aria-hidden="true">✧</span><span class="sparkle sp3" aria-hidden="true">✦</span></div><p class="status" id="status">Prvo izaberi sliku.</p></div><div class="demax-a1-brand" aria-label="De-Max A1"><span>De-Max</span> <strong>A1</strong></div><input id="endpoint" type="hidden" value="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev"></div><div class="footer upload-footer"><button class="action pale" id="resumeAfterGeneration" type="button" hidden>Nastavi opis ❯</button><button class="action green" id="analyze" disabled>Automatski opiši sliku</button></div></section>
 
 <section class="screen" id="screen1"><div class="scroll summary-scroll"><div class="panel summary-panel">
  <div class="summary-image-wrap"><img class="picture small" id="photo1" alt="Fotografija koju učenik opisuje"></div>
@@ -682,6 +690,7 @@ function syncGenerationGate(){
  $("file").disabled=locked;
  $("analyze").disabled=locked||!imageData;
  document.querySelector(".upload").classList.toggle("generation-locked",locked);
+ $("resumeAfterGeneration").hidden=!locked;
  if(locked&&currentPage===0)setStatus("Nova slika je dostupna tek kada dođeš do dijaloga.");
 }
 function view(n){
@@ -1118,6 +1127,7 @@ $("summaryGerman").addEventListener("input",()=>{
  if(readingMode==="summary")stopSpeech();
  $("summaryStatus").textContent="Tekst se može uređivati. Prevod odgovara originalnom tekstu.";
 });
+$("resumeAfterGeneration").onclick=()=>{if(generatedLocked&&!reachedDialogue)view(1)};
 $("summaryBack").onclick=()=>view(0);
 $("summaryDetail").onclick=()=>view(2);
 $("backFromFull").onclick=()=>view(1);
