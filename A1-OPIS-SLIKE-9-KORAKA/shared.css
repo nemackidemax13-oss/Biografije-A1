@@ -1520,9 +1520,15 @@ body[data-step-page="8"] .wizard-footer .wizard-forward:active{
  background:#0c713b!important;
  color:#fff!important;
 }
-/* Završni ekran zadržava zeleno dugme Početna stranica. */
+/* Samo "Dalje: 10. Moj opis slike" (9. korak) ostaje zeleno.
+   Na 10. koraku "Početna stranica" je žuto, bez promene zelene FINISH linije. */
 body[data-step-page="9"] .wizard-footer .wizard-forward{
- background:#15904c!important;
- border-color:#0e793f!important;
- color:#fff!important;
+ background:#ffcf24!important;
+ border-color:#d3a318!important;
+ color:#23334a!important;
+ box-shadow:0 3px 10px #ae851e35!important;
+}
+body[data-step-page="9"] .wizard-footer .wizard-forward:active{
+ background:#f3bd09!important;
+ color:#23334a!important;
 }
