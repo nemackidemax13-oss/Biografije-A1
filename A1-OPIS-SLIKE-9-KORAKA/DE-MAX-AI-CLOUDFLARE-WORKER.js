@@ -65,7 +65,7 @@ Odgovori SAMO JSON objektom {steps:[tačno 10 objekata {de,sr:""}],description:"
   const vi=await fetch("https://api.openai.com/v1/chat/completions",{
    method:"POST",headers:{"Authorization":"Bearer "+env.OPENAI_API_KEY,"Content-Type":"application/json"},
    body:JSON.stringify({
-    model:env.OPENAI_MODEL||"gpt-4.1-mini",temperature:0,max_tokens:1400,response_format:{type:"json_object"},
+    model:env.OPENAI_MODEL||"gpt-4.1-mini",temperature:0,max_tokens:2600,response_format:{type:"json_object"},
     messages:[{role:"system",content:visionSystem},{role:"user",content:[{type:"text",text:"Prepoznaj prizor. Katalog originalnih DE-MAX situacija (1-40): "+JSON.stringify(sceneLabels)},{type:"image_url",image_url:{url:image,detail:"high"}}]}]
    })
   });
@@ -352,19 +352,22 @@ Odgovori SAMO JSON objektom {steps:[tačno 10 objekata {de,sr:""}],description:"
    const colorItem=colors.find(x=>x.de===color);
    const adj=colorItem?(colorItem.invariable?color:color+suffix)+" ":"";
    const withColor=actor.de+" trägt "+prefix+adj+noun+".";
-   append(4,withColor)||append(4,actor.de+" trägt "+prefix+noun+".");
+   const alreadyDescribed=chosen[4].lines.some(x=>x.de.startsWith(actor.de+" trägt ")&&x.de.endsWith(" "+noun+"."));
+   if(!alreadyDescribed)append(4,withColor)||(!alreadyDescribed&&append(4,actor.de+" trägt "+prefix+noun+"."));
   }
   // Section 6: hair, in order man/woman/child, with visible length and color.
   const hair=info.hair&&typeof info.hair==="object"?info.hair:null;
   const form=String(hair?.length||"");
   const shade=String(hair?.color||"");
-  if(legalHairLength.has(form)&&legalHairColor.has(shade))
+  const hasHair=chosen[5].lines.some(x=>x.de.startsWith(actor.de+" hat ")&&x.de.includes(" Haare."));
+  if(!hasHair&&legalHairLength.has(form)&&legalHairColor.has(shade))
    append(5,actor.de+" hat "+form+" "+shade+" Haare.");
-  else if(legalHairLength.has(form))append(5,actor.de+" hat "+form+" Haare.");
-  else if(legalHairColor.has(shade))append(5,actor.de+" hat "+shade+" Haare.");
+  else if(!hasHair&&legalHairLength.has(form))append(5,actor.de+" hat "+form+" Haare.");
+  else if(!hasHair&&legalHairColor.has(shade))append(5,actor.de+" hat "+shade+" Haare.");
   // Section 7: approximate age, NEVER an exact biographical claim.
   const age=Number(info.ageApprox);
-  if(Number.isInteger(age)&&age>=2&&age<=90)
+  const hasAge=chosen[6].lines.some(x=>x.de.includes(actor.lo+" ist ungefähr "));
+  if(!hasAge&&Number.isInteger(age)&&age>=2&&age<=90)
    append(6,"Ich denke, "+actor.lo+" ist ungefähr "+age+" Jahre alt.");
   // Section 8: accessories and visible expressions.
   if(info.watch===true)append(7,actor.de+" trägt eine Armbanduhr.");
