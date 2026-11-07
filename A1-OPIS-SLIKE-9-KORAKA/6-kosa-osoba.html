@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#14366b">
 <title>DE-MAX A1 | Kosa osoba na slici — 10 koraka opisa slike</title>
-<link rel="stylesheet" href="./shared.css?v=20261107-veci-font-izbor-odeca-kosa-v31"><style>
+<link rel="stylesheet" href="./shared.css?v=20261107-kosa-odabir-klikom-na-recenicu-v33"><style>
 /* Plavi izbor osobe: koraci 4–7 */
 body .rolebar button,body .rolebar button:hover,body .rolebar button:focus{background:#e6f1ff!important;color:#174b91!important;border-color:#a4c6ec!important;box-shadow:none!important}
 body .rolebar button.active,body .rolebar button.active:hover,body .rolebar button.active:focus{background:#1962b7!important;color:#fff!important;border-color:#15549f!important;box-shadow:none!important}
@@ -19,6 +19,73 @@ body .rolebar button.active:focus{
  color:#fff!important;
  border:2px solid #d4af37!important;
  box-shadow:0 0 0 1px #f3d67a!important;
+}
+</style>
+<style>
+/* 6. Kosa: klikom na celu rečenicu izaberi ili ukloni, kao na koraku 5. */
+body[data-step-page="5"] #hairbar.is-selected{
+ background:#f8fbff!important;box-shadow:none!important;
+}
+body[data-step-page="5"] #hairbar .choicepreview{
+ display:flex!important;align-items:stretch!important;gap:4px!important;
+ flex:0 0 auto!important;min-height:66px!important;padding:4px!important;
+ border:1px solid #c9dbee!important;border-radius:9px!important;background:#fff!important;
+}
+body[data-step-page="5"] #hairbar .hair-select{
+ display:flex!important;align-items:center!important;gap:5px!important;
+ flex:1 1 auto!important;min-width:0!important;min-height:55px!important;
+ padding:4px!important;border:0!important;border-radius:7px!important;
+ background:transparent!important;color:#163a67!important;text-align:left!important;
+ font:inherit!important;cursor:pointer!important;-webkit-tap-highlight-color:transparent;
+}
+body[data-step-page="5"] #hairbar .hair-select-mark{
+ flex:0 0 25px!important;display:grid!important;place-items:center!important;
+ width:25px!important;height:25px!important;border-radius:7px!important;
+ background:#e4f1ff!important;color:#195a9a!important;font-size:17px!important;font-weight:950!important;
+}
+body[data-step-page="5"] #hairbar .hair-select .choicetext{
+ flex:1 1 auto!important;min-width:0!important;
+ display:flex!important;flex-direction:column!important;justify-content:center!important;
+}
+body[data-step-page="5"] #hairbar .hair-select .choicetext strong{
+ margin:0 0 3px!important;color:#163a67!important;
+ font-size:clamp(11px,3.2vw,13.5px)!important;line-height:1.15!important;
+ overflow-wrap:anywhere!important;
+}
+body[data-step-page="5"] #hairbar .hair-select .choicetext small{
+ margin:0!important;color:#566d87!important;
+ font-size:clamp(9.3px,2.6vw,11px)!important;line-height:1.13!important;
+ overflow-wrap:anywhere!important;
+}
+body[data-step-page="5"] #hairbar.is-selected .choicepreview{
+ border:2px solid #dd2540!important;background:#fff4f5!important;
+ box-shadow:inset 0 0 0 1px #ed163622!important;
+}
+body[data-step-page="5"] #hairbar.is-selected .hair-select-mark{
+ background:#e21d3c!important;color:#fff!important;
+}
+body[data-step-page="5"] #hairbar.is-selected .hair-select .choicetext strong{color:#b51b35!important}
+body[data-step-page="5"] #hairbar #hairSound{
+ align-self:center!important;display:grid!important;place-items:center!important;
+ flex:0 0 29px!important;width:29px!important;min-width:29px!important;
+ height:32px!important;min-height:32px!important;padding:0!important;
+ background:#eaf2fd!important;color:#195a9a!important;
+ border:1px solid #c7daf2!important;border-radius:8px!important;font-size:15px!important;
+}
+body[data-step-page="5"] #hairbar .hair-select:focus-visible{
+ outline:2px solid #d4af37!important;outline-offset:-2px!important;
+}
+@media(max-width:355px){
+ body[data-step-page="5"] #hairbar .choicepreview{gap:2px!important;padding:3px!important}
+ body[data-step-page="5"] #hairbar .hair-select{gap:3px!important;padding:2px!important}
+ body[data-step-page="5"] #hairbar .hair-select-mark{flex-basis:22px!important;width:22px!important;height:22px!important;font-size:15px!important}
+ body[data-step-page="5"] #hairbar #hairSound{flex-basis:26px!important;min-width:26px!important;width:26px!important;height:29px!important;min-height:29px!important}
+}
+@media(max-height:650px){
+ body[data-step-page="5"] #hairbar .choicepreview{min-height:52px!important;padding:3px!important}
+ body[data-step-page="5"] #hairbar .hair-select{min-height:45px!important}
+ body[data-step-page="5"] #hairbar .hair-select .choicetext strong{font-size:clamp(10.5px,3vw,12px)!important}
+ body[data-step-page="5"] #hairbar .hair-select .choicetext small{font-size:clamp(8.7px,2.45vw,10px)!important}
 }
 </style>
 </head>
@@ -72,7 +139,7 @@ body .rolebar button.active:focus{
   <div class="choicebar hairbar" id="hairbar" hidden aria-label="Izbor kose">
    <div class="optionline"><span class="optionlabel">Kosa</span><button class="optionarrow" data-hair-turn="style" data-delta="-1" aria-label="Prethodni oblik kose">‹</button><span class="optionvalue" id="hairStyle"></span><button class="optionarrow" data-hair-turn="style" data-delta="1" aria-label="Sledeći oblik kose">›</button></div>
    <div class="optionline"><span class="optionlabel">Boja</span><button class="optionarrow" data-hair-turn="color" data-delta="-1" aria-label="Prethodna boja kose">‹</button><span class="optionvalue" id="hairColor"></span><button class="optionarrow" data-hair-turn="color" data-delta="1" aria-label="Sledeća boja kose">›</button></div>
-   <div class="choicepreview"><div class="choicetext"><strong id="hairSentence"></strong><small id="hairTranslation"></small></div><button class="sound" id="hairSound" aria-label="Poslušaj opis kose">🔊</button><span class="auto-preview-controls"><button type="button" class="auto-preview-btn" data-auto-describe aria-label="Automatski poslušaj svoj opis">▶ Auto</button><button type="button" class="auto-preview-stop" data-auto-stop aria-label="Zaustavi automatsko čitanje">■</button></span><button class="choiceadd" id="hairAdd" aria-pressed="false">+ Dodaj</button></div>
+   <div class="choicepreview"><button type="button" class="hair-select" id="hairAdd" aria-pressed="false" aria-label="Dodaj rečenicu o kosi u opis"><span class="hair-select-mark" aria-hidden="true">❯</span><span class="choicetext"><strong id="hairSentence"></strong><small id="hairTranslation"></small></span></button><button type="button" class="sound" id="hairSound" aria-label="Poslušaj opis kose">🔊</button><span class="auto-preview-controls"><button type="button" class="auto-preview-btn" data-auto-describe aria-label="Automatski poslušaj svoj opis">▶ Auto</button><button type="button" class="auto-preview-stop" data-auto-stop aria-label="Zaustavi automatsko čitanje">■</button></span></div>
   </div>
   <div class="choicebar clothingbar" id="clothingbar" hidden aria-label="Izbor odevnih predmeta">
    <div class="optionline"><span class="optionlabel">Odeća</span><button class="optionarrow" data-clothing-turn="item" data-delta="-1" aria-label="Prethodni odevni predmet">‹</button><span class="optionvalue" id="clothingItem"></span><button class="optionarrow" data-clothing-turn="item" data-delta="1" aria-label="Sledeći odevni predmet">›</button></div>
@@ -95,5 +162,5 @@ body .rolebar button.active:focus{
   <button id="wizardForward" type="button" class="wizard-forward" aria-label="Dalje: 7. Godine osoba na slici"><span class="next-label">Dalje: 7. Godine osoba na slici</span><span class="next-arrow" aria-hidden="true">❯</span></button>
  </footer>
 </main>
-<script src="./shared.js?v=20261107-numerisane-41-situacije-centralna-pretraga-v30"></script>
+<script src="./shared.js?v=20261107-kosa-odabir-klikom-na-recenicu-v33"></script>
 </body></html>

@@ -665,14 +665,18 @@ function renderModes(){
 }
 function renderHair(){
  const show=step===3&&appearanceMode==="hair";$("#hairbar").hidden=!show;if(!show)return;
- const state=HAIR_STATES[category],row=BANK[HAIR_INDEX[category]],active=chosen.includes(HAIR_INDEX[category]);
+ const state=HAIR_STATES[category],row=BANK[HAIR_INDEX[category]],active=chosen.some(i=>BANK[i]?.cat==="custom-hair"&&BANK[i].role===category&&BANK[i].de===row.de);
  $("#hairStyle").textContent=HAIR_STYLE[state.style].label;
  $("#hairColor").textContent=(HAIR_STYLE[state.style].bald||HAIR_STYLE[state.style].colorless)?"nije važno":HAIR_COLORS[state.color].label;
  document.querySelectorAll('[data-hair-turn="color"]').forEach(b=>b.disabled=!!(HAIR_STYLE[state.style].bald||HAIR_STYLE[state.style].colorless));
  $("#hairSentence").textContent=row.de;$("#hairTranslation").textContent=row.sr;
  $("#hairbar").classList.toggle("is-selected",active);
- $("#hairAdd").textContent=active?"✓ Izabrano":"❯ Dodaj";
- $("#hairAdd").setAttribute("aria-pressed",String(active));
+ const hairSelect=$("#hairAdd"),hairMark=hairSelect.querySelector(".hair-select-mark");
+ if(hairMark){
+  hairMark.textContent=active?"✓":"❯";
+  hairSelect.setAttribute("aria-label",active?"Ukloni rečenicu o kosi iz opisa":"Dodaj rečenicu o kosi u opis");
+ }else hairSelect.textContent=active?"✓ Izabrano":"❯ Dodaj";
+ hairSelect.setAttribute("aria-pressed",String(active));
 }
 function renderClothing(){
  const show=step===4;$("#clothingbar").hidden=!show;if(!show)return;
@@ -697,12 +701,32 @@ function toggleClothing(){
  }
  renderClothing();
 }
+/* Izabrana frizura ostaje sačuvana kada se promene oblik ili boja. */
+function updateHairCurrent(role){
+ const placeholder=HAIR_INDEX[role];
+ if(chosen.includes(placeholder)){
+  const previous=BANK[placeholder];
+  let stable=BANK.findIndex((entry,i)=>i!==placeholder&&entry.cat==="custom-hair"&&entry.role===role&&entry.de===previous.de);
+  if(stable<0){stable=BANK.length;BANK.push({...previous})}
+  chosen=chosen.map(i=>i===placeholder?stable:i);
+ }
+ Object.assign(BANK[placeholder],makeHair(role));
+}
+function toggleHair(){
+ const hair=makeHair(category);
+ const existing=chosen.find(i=>BANK[i]?.cat==="custom-hair"&&BANK[i].role===category&&BANK[i].de===hair.de);
+ if(existing!==undefined)addOrRemove(existing);
+ else{
+  const i=BANK.length;BANK.push(hair);addOrRemove(i);
+ }
+ renderHair();
+}
 function turnHair(type,delta){
  const state=HAIR_STATES[category],options=type==="style"?HAIR_STYLE:HAIR_COLORS;
  if(type==="color"&&(HAIR_STYLE[state.style].bald||HAIR_STYLE[state.style].colorless))return;
  state[type]=(state[type]+delta+options.length)%options.length;
- stop();Object.assign(BANK[HAIR_INDEX[category]],makeHair(category));
- renderHair();renderSample();renderChosen();
+ stop();updateHairCurrent(category);
+ renderHair();renderSample();renderChosen();persistDraft();
 }
 function turnClothing(type,delta){
  const state=CLOTH_STATES[activeRole],options=type==="item"?CLOTH_ITEMS:CLOTH_COLORS;
@@ -748,7 +772,7 @@ function setupVocabularySearch(){
   state[entry.kind]=entry.index;
   stop();
   if(isClothing){Object.assign(BANK[CLOTH_INDEX[role]],makeClothing(role));renderClothing()}
-  else{Object.assign(BANK[HAIR_INDEX[role]],makeHair(role));renderHair()}
+  else{updateHairCurrent(role);renderHair()}
   renderSample();renderChosen();persistDraft();
   input.value="";update();input.blur();
  }
@@ -1251,7 +1275,7 @@ $("#ageSound").addEventListener("click",()=>listen(AGE_INDEX[category]));
 $("#ageAdd").addEventListener("click",()=>addOrRemove(AGE_INDEX[category]));
 $("#hairbar").addEventListener("click",e=>{const b=e.target.closest("[data-hair-turn]");if(b)turnHair(b.dataset.hairTurn,Number(b.dataset.delta))});
 $("#hairSound").addEventListener("click",()=>listen(HAIR_INDEX[category]));
-$("#hairAdd").addEventListener("click",()=>addOrRemove(HAIR_INDEX[category]));
+$("#hairAdd").addEventListener("click",toggleHair);
 $("#clothingbar").addEventListener("click",e=>{const b=e.target.closest("[data-clothing-turn]");if(b)turnClothing(b.dataset.clothingTurn,Number(b.dataset.delta))});
 $("#clothingSound").addEventListener("click",()=>listen(CLOTH_INDEX[activeRole]));
 $("#clothingAdd").addEventListener("click",toggleClothing);
