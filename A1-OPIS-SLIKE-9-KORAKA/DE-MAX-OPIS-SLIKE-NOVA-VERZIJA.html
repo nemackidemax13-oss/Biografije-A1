@@ -209,7 +209,43 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
 #screen1 .full-line-copy .full-step-sr{margin:1px 0 2px;color:#d02c40!important}
 #screen1 .full-legacy-translation{margin:2px 0 4px;padding-top:2px;border-top:1px dotted #e1bfc4}
 
-.full-step-empty{padding:4px 2px;font:italic 500 10px/1.3 system-ui,Arial;color:#7187a1}</style></head><body><main class="app">
+.full-step-empty{padding:4px 2px;font:italic 500 10px/1.3 system-ui,Arial;color:#7187a1}
+/* DE-MAX mobile v43 — slightly smaller picture and compact Auto/Prevod controls;
+   reclaimed photo height is available to the description, without cropping image. */
+#screen1 .full-photo-line{
+  height:clamp(105px,22dvh,190px)!important;
+}
+#screen1 .full-photo-line .picture{
+  height:100%!important;
+  width:100%!important;
+  max-height:100%!important;
+  object-fit:contain!important;
+}
+#screen1 .full-list-toolbar{gap:3px!important;min-height:23px!important}
+#screen1 .full-mini-auto,
+#screen1 .full-mini-translate{
+  min-height:22px!important;
+  height:22px!important;
+  padding:2px 5px!important;
+  font-size:9px!important;
+  line-height:17px!important;
+  border-radius:5px!important;
+}
+#screen1 .full-right-tools{gap:3px!important}
+#screen1 .full-font-btn{
+  min-width:23px!important;
+  height:23px!important;
+  line-height:21px!important;
+  font-size:13px!important;
+  padding:0 3px!important;
+}
+@media(max-height:650px){
+ #screen1 .full-photo-line{height:clamp(86px,18dvh,135px)!important}
+ #screen1 .full-mini-auto,#screen1 .full-mini-translate{
+  min-height:21px!important;height:21px!important;font-size:8.5px!important;padding:2px 4px!important
+ }
+}
+</style></head><body><main class="app">
 <header class="header"><h1>Opis slike</h1></header>
 <div class="top-progress"><div class="progress active" id="progress0">1 · Slika</div><div class="progress" id="progress1">2 · Moj opis</div><div class="progress" id="progress2">3 · Dijalog</div></div>
 <section class="screen active" id="screen0"><div class="scroll"><div class="panel"><h2 class="title" id="uploadHeading">Ubaci sliku za opis</h2><label class="upload"><span class="upload-icon">📷</span><span class="upload-title">Izaberi fotografiju</span><span class="upload-sub">Dodirni ovde za galeriju ili kameru</span><input id="file" type="file" accept="image/*"></label><div class="photo-reveal" id="photoReveal"><span class="photo-glow" aria-hidden="true"></span><img class="picture" id="photo0" alt="Izabrana slika"><span class="photo-success" aria-hidden="true">✓</span><span class="sparkle sp1" aria-hidden="true">✦</span><span class="sparkle sp2" aria-hidden="true">✧</span><span class="sparkle sp3" aria-hidden="true">✦</span></div><p class="status" id="status">Prvo izaberi sliku.</p></div><div class="demax-a1-brand" aria-label="De-Max A1"><span>De-Max</span> <strong>A1</strong></div><input id="endpoint" type="hidden" value="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev"></div><div class="footer upload-footer"><button class="action green" id="analyze" disabled>Automatski opiši sliku</button></div></section>
