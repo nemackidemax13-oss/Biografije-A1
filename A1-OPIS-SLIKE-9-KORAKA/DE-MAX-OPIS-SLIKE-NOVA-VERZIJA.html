@@ -123,7 +123,8 @@ $("steps").replaceChildren();descRows=[];data.steps.forEach((s,i)=>{if(i===9)ret
 $("dialogue").replaceChildren();dialogRows=[];
 (Array.isArray(data.dialogue)?data.dialogue:[]).forEach((l,i)=>{let el=document.createElement("article");el.className="sentence dialog";add(el,"speaker",String(l.speaker||((i%2)?"B":"A")));add(el,"de",String(l.de||""));add(el,"sr",String(l.sr||""));$("dialogue").append(el);if(l.de)dialogRows.push({de:String(l.de),element:el})});
 let scene=scenes.find(s=>s.n===Number(data.sceneNumber));$("scene").textContent=scene?"Situacija "+scene.n+": "+scene.sr:String(data.sceneName||"Dijalog prema slici");$("bankLink").replaceChildren();if(scene){let a=document.createElement("a");a.href="../DE_MAX_A1_40_SITUACIJA_10_DIJALOGA.html?s="+scene.n+"&d=1";a.target="_blank";a.rel="noopener";a.textContent="Otvori originalnih 10 dijaloga: "+scene.sr;$("bankLink").append(a)}
-$("fullDescription").value=String(data.description||data.steps.slice(0,9).map(s=>s.de).filter(Boolean).join(" "));setStatus("Opis slike i dijalog su spremni.");view(1);
+// Moj opis se sastavlja isključivo od istih nemačkih rečenica iz koraka 1–9, bez dodatnog AI teksta.
+$("fullDescription").value=data.steps.slice(0,9).map(step=>String(step.de||"").trim()).filter(Boolean).join("\n\n");setStatus("Opis slike i dijalog su spremni.");view(1);
 }catch(e){setStatus("Greška: "+e.message,true)}finally{$("analyze").disabled=false}};
 $("readDescription").onclick=()=>{if(readingMode==="desc"&&paused){synth.resume();paused=false;return}playRows("desc")};
 $("pauseDescription").onclick=()=>pauseMode("desc");
