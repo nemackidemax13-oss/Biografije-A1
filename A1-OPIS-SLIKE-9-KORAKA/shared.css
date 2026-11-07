@@ -1861,3 +1861,39 @@ body[data-step-page]:not(.summary-mode) .app>.panel{min-height:0!important}
   height:30px!important;min-height:30px!important;max-height:30px!important;
  }
 }
+
+/* v63: Deseti korak koristi summary-mode; folder centriran kao na ostalim koracima. */
+body[data-step-page="9"] .separate-header{
+ display:grid!important;position:relative!important;
+ grid-template-columns:minmax(0,1fr)!important;
+ grid-template-rows:18px 22px minmax(0,1fr)!important;
+ justify-items:stretch!important;align-items:center!important;
+ row-gap:0!important;padding:3px 7px!important;
+ overflow:hidden!important;
+}
+body[data-step-page="9"] .separate-header .separate-brand{
+ grid-column:1!important;grid-row:1!important;
+ justify-self:end!important;align-self:center!important;
+ width:auto!important;max-width:100%!important;
+ text-align:right!important;white-space:nowrap!important;
+}
+body[data-step-page="9"] .separate-header .demax-folder{
+ grid-column:1!important;grid-row:2!important;
+ position:static!important;top:auto!important;bottom:auto!important;
+ left:auto!important;right:auto!important;transform:none!important;
+ justify-self:center!important;align-self:center!important;
+ width:max-content!important;max-width:100%!important;min-width:0!important;
+}
+body[data-step-page="9"] .separate-header h1#wizardTitle{
+ grid-column:1!important;grid-row:3!important;
+ justify-self:center!important;align-self:center!important;
+ width:100%!important;max-width:100%!important;
+ margin:0!important;padding:0!important;text-align:center!important;
+ font-size:clamp(11px,3.3vw,15px)!important;
+ line-height:1.05!important;white-space:nowrap!important;
+}
+@media(max-height:670px){
+ body[data-step-page="9"] .separate-header{
+  grid-template-rows:17px 20px minmax(0,1fr)!important;
+ }
+}
