@@ -37,7 +37,66 @@ export default {async fetch(request,env){
  const data=await api.json();
  if(!api.ok)return respond({error:"AI servis: "+(data.error?.message||"greška "+api.status)},502);
  const result=JSON.parse(data.choices?.[0]?.message?.content||"{}");
- if(!Array.isArray(result.steps)||result.steps.length!==10||typeof result.description!=="string")return respond({error:"AI nije vratio očekivani format. Pokušaj ponovo."},502);
- return respond({steps:result.steps.slice(0,10),description:result.description,sceneNumber:Number.isInteger(Number(result.sceneNumber))&&Number(result.sceneNumber)>0?Number(result.sceneNumber):null,sceneName:String(result.sceneName||""),dialogue:Array.isArray(result.dialogue)?result.dialogue.slice(0,12):[]});
+ if(!Array.isArray(result.steps)||result.steps.length!==10||typeof result.description!=="string")return respond({error:"AI nije vratio očekivani format opisa. Pokušaj ponovo."},502);
+
+ // Always translate the FINAL German sentences, rather than trusting a loosely
+ // aligned paragraph translation from the picture-description model.
+ const splitGerman=value=>{
+  const s=String(value||"").trim();
+  if(!s)return [];
+  return s.split(/(?<=[.!?])\s+(?=[A-ZÄÖÜ„"0-9])/u).map(x=>x.trim()).filter(Boolean);
+ };
+ const rawSteps=result.steps.slice(0,10);
+ const rawDialogue=Array.isArray(result.dialogue)?result.dialogue.slice(0,12):[];
+ const germanSteps=rawSteps.map((s,i)=>({
+  index:i,lines:splitGerman(s.de).map((de,j)=>({key:"s"+i+"-"+j,de}))
+ }));
+ const germanDialogue=rawDialogue.map((s,i)=>({key:"d"+i,de:String(s.de||"").trim()})).filter(x=>x.de);
+ const originals=[...germanSteps.flatMap(x=>x.lines),...germanDialogue];
+ if(!originals.length)return respond({error:"AI nije napisao nemačke rečenice za prevod."},502);
+
+ const translateInstructions="Ti si iskusan profesionalni prevodilac nemački → srpski (latinica). Ovo je drugi, nezavisan prolaz za tačnost prevoda DE-MAX A1. PREVEDI ISKLJUČIVO NEMAČKI TEKST IZ SVAKOG POLJA de, doslovno i gramatički prirodno, NA SRPSKI LATINICOM. Ne oslanjaj se na pretpostavke o slici, nemoj dodavati ili izostavljati imena osoba, brojeve, boje, odeću, mesta, negaciju ili radnje. Naročito razlikuj Mann=muškarac/čovek, Frau=žena, Kind=dete, trägt=nosi, hat=ima, ungefähr=otprilike, vielleicht=možda, ich denke=mislim. Svaku ulaznu rečenicu prevedi JEDNOM i sačuvaj identični key. Ne spajaj, ne menjaj redosled, ne prepisuj nemački u prevod. Odgovori ISKLJUČIVO validnim JSON objektom sa poljem translations: niz objekata {key,sr}. Jedan prevod za svaki ulazni key, ni manje ni više.";
+ const translationResponse=await fetch("https://api.openai.com/v1/chat/completions",{
+  method:"POST",
+  headers:{"Authorization":"Bearer "+env.OPENAI_API_KEY,"Content-Type":"application/json"},
+  body:JSON.stringify({
+   model:env.OPENAI_TRANSLATION_MODEL||env.OPENAI_MODEL||"gpt-4.1-mini",
+   temperature:0,
+   response_format:{type:"json_object"},
+   max_tokens:4500,
+   messages:[
+    {role:"system",content:translateInstructions},
+    {role:"user",content:JSON.stringify({sentences:originals})}
+   ]
+  })
+ });
+ const translationData=await translationResponse.json();
+ if(!translationResponse.ok)return respond({error:"AI prevod nije uspeo: "+(translationData.error?.message||translationResponse.status)},502);
+ let translationResult;
+ try{translationResult=JSON.parse(translationData.choices?.[0]?.message?.content||"{}")}
+ catch(_){return respond({error:"Prevod nije vraćen kao ispravan JSON. Pokušaj ponovo."},502)}
+ const translations=Array.isArray(translationResult.translations)?translationResult.translations:[];
+ const translationMap=new Map(translations.map(x=>[String(x.key||""),String(x.sr||"").trim()]));
+ if(translations.length!==originals.length||translationMap.size!==originals.length||
+    originals.some(x=>!translationMap.get(x.key))){
+  return respond({error:"Prevod nije usklađen sa svim nemačkim rečenicama. Pokušaj ponovo."},502);
+ }
+ const translatedSteps=germanSteps.map((step,i)=>{
+  const lines=step.lines.map(line=>({de:line.de,sr:translationMap.get(line.key)}));
+  return {de:lines.map(x=>x.de).join(" "),sr:lines.map(x=>x.sr).join(" "),lines};
+ });
+ const translatedDialogue=rawDialogue.map((line,i)=>({
+  speaker:String(line.speaker||(i%2?"B":"A")),
+  de:String(line.de||"").trim(),
+  sr:translationMap.get("d"+i)||String(line.sr||"").trim()
+ }));
+ return respond({
+  steps:translatedSteps,
+  description:translatedSteps.slice(0,9).flatMap(x=>x.lines.map(l=>l.de)).join(" "),
+  sceneNumber:Number.isInteger(Number(result.sceneNumber))&&Number(result.sceneNumber)>0?Number(result.sceneNumber):null,
+  sceneName:String(result.sceneName||""),
+  dialogue:translatedDialogue
+ });
+
  }catch(e){return respond({error:"Greška u obradi zahteva: "+e.message},500)}
 }};
