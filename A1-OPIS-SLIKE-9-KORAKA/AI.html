@@ -1005,6 +1005,43 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
  #screen0.photo-added .demax-text-brand strong{font-size:19px!important}
  #screen0.photo-added #status{font-size:9px!important}
 }
+
+/* DE-MAX V71 — wider selected image and refined photo selection effect. */
+#screen0.photo-added .panel{padding-left:1px!important;padding-right:1px!important}
+#screen0.photo-added .photo-reveal{
+ width:100%!important;max-width:100%!important;
+ padding:2px!important;margin:2px 0!important;
+ border-radius:12px!important;
+ background:linear-gradient(125deg,#b4d9ff,#f6fbff,#92c5ff)!important;
+ box-shadow:0 3px 14px #1267b52b!important;
+}
+#screen0.photo-added .photo-reveal .picture,
+#screen0.photo-added #photo0{
+ display:block!important;width:100%!important;max-width:100%!important;
+ height:100%!important;max-height:100%!important;
+ object-fit:contain!important;object-position:center!important;
+ border-radius:9px!important;
+}
+#screen0.photo-added .photo-reveal.ready{
+ animation:demax-photo-enter71 .8s cubic-bezier(.19,1,.27,1) both!important;
+}
+#screen0.photo-added .photo-reveal.ready .photo-glow{
+ animation:photo-shine 1.25s ease .22s 1!important;
+}
+#screen0.photo-added .photo-reveal.ready .photo-success{
+ animation:success-pop .55s cubic-bezier(.2,1.6,.4,1) .38s both!important;
+}
+@keyframes demax-photo-enter71{
+ 0%{opacity:0;transform:translateY(20px) scale(.94);filter:brightness(1.15)}
+ 55%{opacity:1;transform:translateY(-3px) scale(1.012);filter:brightness(1.04)}
+ 100%{opacity:1;transform:translateY(0) scale(1);filter:brightness(1)}
+}
+@media(prefers-reduced-motion:reduce){
+ #screen0.photo-added .photo-reveal.ready,
+ #screen0.photo-added .photo-reveal.ready .photo-glow,
+ #screen0.photo-added .photo-reveal.ready .photo-success{animation:none!important;filter:none!important}
+ #screen0.photo-added .photo-reveal.ready .photo-success{transform:scale(1)!important}
+}
 </style></head><body><main class="app">
 <header class="header"><h1>Opis slike</h1></header>
 <section class="screen active" id="screen0"><div class="scroll"><div class="panel"><h2 class="title" id="uploadHeading">Ubaci sliku za opis</h2><label class="upload"><span class="upload-icon">📷</span><span class="upload-title">Izaberi fotografiju</span><span class="upload-sub">Dodirni ovde za galeriju ili kameru</span><input id="file" type="file" accept="image/*"></label><div class="photo-reveal" id="photoReveal"><span class="photo-glow" aria-hidden="true"></span><img class="picture" id="photo0" alt="Izabrana slika"><span class="photo-success" aria-hidden="true">✓</span><span class="sparkle sp1" aria-hidden="true">✦</span><span class="sparkle sp2" aria-hidden="true">✧</span><span class="sparkle sp3" aria-hidden="true">✦</span></div><p class="status" id="status">Prvo izaberi sliku.</p></div><div class="demax-text-brand" aria-label="De-Max A1"><span>De-Max</span><strong>A1</strong></div><input id="endpoint" type="hidden" value="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev"></div><div class="footer upload-footer"><button class="action pale" id="resumeAfterGeneration" type="button" hidden>Nastavi opis ❯</button><button class="action green" id="analyze" disabled>Automatski opiši sliku</button></div></section>
