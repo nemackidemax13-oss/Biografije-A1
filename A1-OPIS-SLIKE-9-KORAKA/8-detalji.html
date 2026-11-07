@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#14366b">
 <title>DE-MAX A1 | Detalji na slici — 10 koraka opisa slike</title>
-<link rel="stylesheet" href="./shared.css?v=20261107-covek-bez-ogrlice-brosa-v16"><style>
+<link rel="stylesheet" href="./shared.css?v=20261107-detalji-41-situacija-predmeti-v18"><style>
 body[data-step-page="7"] #sceneFilters,body[data-step-page="7"] #sceneAll,body[data-step-page="7"] #categoryCount,body[data-step-page="7"] #phrases,body[data-step-page="7"] .pagination,body[data-step-page="7"] #openSearch{display:none!important}
 #detailPicker{padding:6px 0 12px}#detailPicker .dp-roles,#detailPicker .dp-groups{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0}#detailPicker button{cursor:pointer}#detailPicker .dp-tab{padding:9px 12px;border-radius:11px;border:1px solid #bbd2ef;background:#eef5ff;color:#194d8d;font-weight:700}#detailPicker .dp-tab.active{background:#2364b5;color:white;border-color:#2364b5}#detailPicker .dp-line{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 8px;background:#f5f8ff;border-radius:12px;margin:8px 0}#detailPicker .dp-value{flex:1;min-width:0;text-align:center;font-weight:750;color:#15396a}#detailPicker .dp-arrow{border:0;border-radius:9px;padding:9px 13px;background:#c51e37;color:white;font-size:21px}#detailPicker .dp-preview{border:1px solid #c9dbee;border-radius:14px;padding:12px;margin-top:12px}#detailPicker .dp-preview strong,#detailPicker .dp-preview small{display:block;margin-bottom:5px}#detailPicker .dp-preview small{color:#526887}#detailPicker .dp-actions{display:flex;gap:8px;justify-content:flex-end}#detailPicker .dp-actions button{padding:10px 13px;border:0;border-radius:10px;font-weight:750}#dpListen{background:#eaf2fd}#dpAdd{background:#17874c;color:white}#dpAdd.selected{background:#d72641!important;color:#fff!important;border:1px solid #bd1935!important}#detailPicker .dp-preview.dp-selected{background:#fff3f5!important;box-shadow:inset 0 0 0 2px #ed1636!important;border-color:#ed1636!important}#detailPicker .dp-preview.dp-selected strong{color:#b51b35!important}#detailPicker h2{font-size:19px;color:#15569c;margin:4px 0}
 
@@ -50,6 +50,28 @@ body[data-step-page="7"] #sceneFilters,body[data-step-page="7"] #sceneAll,body[d
 #detailPicker #dpListen{align-self:center!important;flex:0 0 34px!important;display:grid!important;place-items:center!important;width:34px!important;height:34px!important;min-width:34px!important;padding:0!important;background:#eaf2fd!important;color:#195a9a!important;border:1px solid #c7daf2!important;border-radius:8px!important;font-size:16px!important}
 #detailPicker .dp-select:focus-visible{outline:2px solid #d4af37!important;outline-offset:-2px!important}
 @media(max-height:650px){#detailPicker .dp-preview{padding:3px!important;min-height:49px!important;margin-top:4px!important}#detailPicker .dp-select{min-height:43px!important;padding:3px!important}#detailPicker .dp-text strong{font-size:clamp(11px,3.1vw,12.5px)!important}#detailPicker .dp-text small{font-size:clamp(9px,2.5vw,10px)!important}}
+
+/* Pet kompaktnih kategorija i lista 41 situacije u A1 detaljima. */
+#detailPicker{padding:3px 3px 5px!important}
+#detailPicker h2{font-size:clamp(12px,3.2vw,15px)!important;margin:1px 0 3px!important}
+#detailPicker .dp-roles{margin:3px 0 5px!important;gap:3px!important}
+#detailPicker .dp-roles .dp-tab{min-height:33px!important}
+#detailPicker .dp-groups{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;margin:3px 0 5px!important;gap:3px!important;width:100%!important}
+#detailPicker .dp-groups .dp-tab{min-width:0!important;min-height:34px!important;padding:3px 1px!important;font-size:clamp(8px,2.35vw,11px)!important;line-height:1.08!important;white-space:normal!important}
+#detailPicker .dp-line{padding:4px 5px!important;margin:4px 0!important;min-height:39px!important}
+#detailPicker .dp-scene{display:flex!important;align-items:center!important;gap:5px!important;margin:3px 1px 5px!important;padding:3px 4px!important;min-height:32px!important;background:#fff7e7!important;border:1px solid #f1d29a!important;border-radius:8px!important}
+#detailPicker .dp-scene[hidden]{display:none!important}
+#detailPicker .dp-scene button{flex:0 0 29px!important;width:29px!important;height:27px!important;padding:0!important;border:1px solid #d41d3e!important;border-radius:6px!important;background:#e11d3c!important;color:#fff!important;font-size:16px!important;font-weight:950!important}
+#detailPicker .dp-scene select{flex:1 1 auto!important;min-width:0!important;height:28px!important;padding:2px 4px!important;border:1px solid #e3c27a!important;border-radius:6px!important;background:#fff!important;color:#174b88!important;font:800 clamp(11px,3vw,13px) system-ui,sans-serif!important;text-align:center!important}
+#detailPicker .dp-preview{margin-top:5px!important}
+@media(max-height:650px){
+ #detailPicker{padding:2px 2px 3px!important}
+ #detailPicker .dp-roles .dp-tab,#detailPicker .dp-groups .dp-tab{min-height:29px!important}
+ #detailPicker .dp-scene{min-height:28px!important;margin:2px 1px 3px!important;padding:1px 3px!important}
+ #detailPicker .dp-scene button{height:25px!important}
+ #detailPicker .dp-line{min-height:33px!important;padding:3px!important;margin:2px 0!important}
+ #detailPicker .dp-preview{margin-top:3px!important}
+}
 </style></head>
 <body data-step-page="7" data-scene-selector="true">
 <main class="app" id="app" aria-label="A1 opis slike — mustra za učenike">
@@ -109,7 +131,7 @@ body[data-step-page="7"] #sceneFilters,body[data-step-page="7"] #sceneAll,body[d
    <div class="optionline"><span class="optionlabel">Boja</span><button class="optionarrow" data-clothing-turn="color" data-delta="-1" aria-label="Prethodna boja odeće">‹</button><span class="optionvalue" id="clothingColor"></span><button class="optionarrow" data-clothing-turn="color" data-delta="1" aria-label="Sledeća boja odeće">›</button></div>
    <div class="choicepreview"><div class="choicetext"><strong id="clothingSentence"></strong><small id="clothingTranslation"></small></div><button class="sound" id="clothingSound" aria-label="Poslušaj opis odeće">🔊</button><button class="choiceadd" id="clothingAdd" aria-pressed="false">+ Dodaj</button></div>
   </div>
-  <section id="detailPicker" aria-label="Modni detalji i nakit"><h2>Izaberi nakit i detalje osobe</h2><div class="dp-roles" id="dpRoles"></div><div class="dp-groups" id="dpGroups"></div><div class="dp-line"><button class="dp-arrow" id="dpPrev" aria-label="Prethodni detalj">❮</button><span class="dp-value" id="dpValue"></span><button class="dp-arrow" id="dpNext" aria-label="Sledeći detalj">❯</button></div><div class="dp-preview"><button id="dpSelect" class="dp-select" type="button" aria-pressed="false" aria-label="Dodaj rečenicu u opis"><span id="dpCheck" class="dp-check" aria-hidden="true">❯</span><span class="dp-text"><strong id="dpGerman"></strong><small id="dpSerbian"></small></span></button><button id="dpListen" type="button" aria-label="Poslušaj rečenicu">🔊</button></div></section><div class="phrases" id="phrases" aria-live="polite"></div>
+  <section id="detailPicker" aria-label="Modni detalji i nakit"><h2>Izaberi detalj osobe</h2><div class="dp-roles" id="dpRoles"></div><div class="dp-groups" id="dpGroups"></div><div class="dp-scene" id="dpSceneBar" hidden aria-label="Izbor situacije"><button type="button" id="dpScenePrev" aria-label="Prethodna situacija">❮</button><select id="dpSceneSelect" aria-label="Izaberi situaciju za predmete u rukama"></select><button type="button" id="dpSceneNext" aria-label="Sledeća situacija">❯</button></div><div class="dp-line"><button class="dp-arrow" id="dpPrev" aria-label="Prethodni detalj">❮</button><span class="dp-value" id="dpValue"></span><button class="dp-arrow" id="dpNext" aria-label="Sledeći detalj">❯</button></div><div class="dp-preview"><button id="dpSelect" class="dp-select" type="button" aria-pressed="false" aria-label="Dodaj rečenicu u opis"><span id="dpCheck" class="dp-check" aria-hidden="true">❯</span><span class="dp-text"><strong id="dpGerman"></strong><small id="dpSerbian"></small></span></button><button id="dpListen" type="button" aria-label="Poslušaj rečenicu">🔊</button></div></section><div class="phrases" id="phrases" aria-live="polite"></div>
   <div class="pagination"><button id="prev" class="nav" aria-label="Prethodna stranica">‹</button><span class="pagecount" id="pageCount">Strana 1 od 4</span><button id="next" class="nav" aria-label="Sledeća stranica">›</button></div>
  </section>
  <section class="panel compose" aria-label="Sastavljeni opis">
@@ -126,6 +148,7 @@ body[data-step-page="7"] #sceneFilters,body[data-step-page="7"] #sceneAll,body[d
  </footer>
 </main>
 <script src="./shared.js?v=20261107-covek-mali-v10"></script>
+<script src="./8-predmeti-41-situacija.js?v=20261107-detalji-41-situacija-predmeti-v18"></script>
 <script>
 (function(){
 const people=[{key:"mann",label:"Čovek",de:"Er",sr:"On"},{key:"frau",label:"Žena",de:"Sie",sr:"Ona"},{key:"kind",label:"Dete",de:"Es",sr:"Ono"}];
@@ -137,21 +160,33 @@ const groups=[
 {label:"Ostali dodaci",items:[
 ["möchte mit Karte bezahlen","želi da plati karticom"],["möchte mit Bargeld bezahlen","želi da plati gotovinom"],["möchte bar bezahlen","želi da plati kešom"],["bezahlt mit Karte","plaća karticom"],["bezahlt bar","plaća gotovinom"],["hat Geld in der Hand","drži novac u ruci"],["hat eine Einkaufstüte in der Hand","drži kesu za kupovinu u ruci"],["trägt eine Einkaufstüte","nosi kesu za kupovinu"],["hat zwei Einkaufstüten","ima dve kese za kupovinu"],["möchte eine Tüte haben","želi da dobije kesu"],["fragt vielleicht nach einer Tüte","možda traži kesu"],["möchte vielleicht eine Quittung haben","možda želi račun"],["fragt vielleicht nach der Rechnung","možda traži račun"],["möchte die Rechnung bezahlen","želi da plati račun"],["wartet auf die Rechnung","čeka račun"],["hat die Rechnung in der Hand","drži račun u ruci"],["hält eine Tasche in der Hand","drži torbu u ruci"],["hat ein Handy in der Hand","drži mobilni telefon u ruci"],["hat einen Schlüssel in der Hand","drži ključ u ruci"],["kauft vielleicht etwas ein","možda nešto kupuje"],["möchte etwas kaufen","želi nešto da kupi"],["schaut sich die Waren an","razgleda robu"],["spricht vielleicht mit dem Verkäufer","možda razgovara s prodavcem"],["spricht vielleicht mit der Verkäuferin","možda razgovara s prodavačicom"]]}
 ];
-let role=0,group=0,item=0;const $d=id=>document.getElementById(id);
+/* Dodatnih 20 A1 rečenica: izgled, radnje, predmeti, nakit i plaćanje. */
+groups[0].items.push(["trägt eine Perlenkette","nosi bisernu ogrlicu"]);
+groups[1].items.push(["hat graue Augen","ima sive oči"],["hat dunkle Augen","ima tamne oči"],["hat ein rundes Gesicht","ima okruglo lice"],["hat Sommersprossen","ima pege"],["sieht müde aus","izgleda umorno"],["sieht traurig aus","izgleda tužno"],["sieht überrascht aus","izgleda iznenađeno"]);
+groups[2].items.push(["bezahlt mit dem Handy","plaća mobilnim telefonom"]);
+groups.push({label:"Predmeti",items:[["hält ein Buch in der Hand","drži knjigu u ruci"],["hält einen Stift in der Hand","drži olovku u ruci"],["hält eine Flasche Wasser in der Hand","drži flašu vode u ruci"],["hält einen Regenschirm","drži kišobran"],["hält eine Blume in der Hand","drži cvet u ruci"],["trägt einen Rucksack","nosi ranac"]]});
+groups.push({label:"Radnje",items:[["schaut nach links","gleda ulevo"],["schaut nach rechts","gleda udesno"],["zeigt auf etwas","pokazuje na nešto"],["telefoniert","telefonira"],["schreibt eine Nachricht","piše poruku"]]});
+/* Izabrati samo ono što zaista odgovara slici. */
+let role=0,group=0,item=0,sceneIndex=0;const $d=id=>document.getElementById(id);
 const beardTerms=new Set(["hat einen Bart","hat einen Schnurrbart","hat einen kurzen Bart","hat einen langen Bart"]);
 /* Za "Čovek" bez ogrlice i broša (uključujući zlatni/srebrni lančić).
    Za "Žena" svi ti detalji ostaju. */
-const manExcludedDetails=new Set(["trägt eine Halskette","trägt eine goldene Kette","trägt eine silberne Kette","trägt eine Brosche"]);
+const manExcludedDetails=new Set(["trägt eine Halskette","trägt eine goldene Kette","trägt eine silberne Kette","trägt eine Brosche","trägt eine Perlenkette"]);
+const childExcludedDetails=new Set(["trägt einen Ehering","trägt Make-up","möchte mit Karte bezahlen","möchte mit Bargeld bezahlen","möchte bar bezahlen","bezahlt mit Karte","bezahlt bar","möchte vielleicht eine Quittung haben","fragt vielleicht nach der Rechnung","möchte die Rechnung bezahlen","wartet auf die Rechnung","hat die Rechnung in der Hand","bezahlt mit dem Handy","hält eine Bankkarte in der Hand","hält einen Lebenslauf in der Hand","hält eine Bewerbung in der Hand","hält eine Buchungsbestätigung in der Hand","hält einen Autoschlüssel in der Hand","hält das Lenkrad fest"]);
 function allowedDetail(de){
  if(role===0&&manExcludedDetails.has(de))return false;
  if(role!==0&&beardTerms.has(de))return false;
+ if(role===2&&childExcludedDetails.has(de))return false;
  return true;
 }
 
 /* Brza pretraga detalja; identično vizuelno polju u 6. koraku. */
 const detailSearchRoot=$d("detailVocabSearch"),detailSearchInput=$d("detailVocabSearchInput");
 const detailSearchList=$d("detailVocabSearchResults"),detailSearchClear=$d("detailVocabSearchClear");
-const detailSearchEntries=groups.flatMap((g,groupIndex)=>g.items.map(([de,sr])=>({groupIndex,group:g.label,de,sr,search:sr+" "+de+" "+g.label})));
+const detailSearchEntries=groups.flatMap((g,groupIndex)=>g.items.map(([de,sr])=>({groupIndex,group:g.label,de,sr,search:sr+" "+de+" "+g.label})))
+ .concat(SCENE_DATA.flatMap((scene,sceneIndex)=>(SCENE_HOLDINGS[scene.id]||[]).map(key=>{
+  const [de,sr]=HOLD_CATALOG[key];return {groupIndex:3,sceneIndex,group:scene.label,de,sr,search:sr+" "+de+" "+scene.label+" predmeti"};
+ })));
 let matchingDetails=[];
 function updateDetailSearch(){
  const q=searchNormalize(detailSearchInput.value);
@@ -161,13 +196,14 @@ function updateDetailSearch(){
  matchingDetails=detailSearchEntries.filter(e=>allowedDetail(e.de)&&words.every(w=>searchNormalize(e.search).includes(w)));
  detailSearchList.hidden=false;detailSearchInput.setAttribute("aria-expanded","true");
  detailSearchList.innerHTML=matchingDetails.length
-  ?matchingDetails.map((entry,index)=>'<button class="vocab-search-result" type="button" data-detail-match="'+index+'"><span class="vocab-result-group">'+escapeHTML(entry.group)+'</span><span class="vocab-result-name">'+escapeHTML(entry.sr)+'</span><small lang="de">'+escapeHTML(entry.de)+'</small><span class="vocab-result-arrow" aria-hidden="true">❯</span></button>').join("")
+  ?matchingDetails.slice(0,60).map((entry,index)=>'<button class="vocab-search-result" type="button" data-detail-match="'+index+'"><span class="vocab-result-group">'+escapeHTML(entry.group)+'</span><span class="vocab-result-name">'+escapeHTML(entry.sr)+'</span><small lang="de">'+escapeHTML(entry.de)+'</small><span class="vocab-result-arrow" aria-hidden="true">❯</span></button>').join("")
   :'<p class="vocab-search-empty">Nema rezultata. Probaj drugu reč.</p>';
 }
 function pickDetailSearch(index){
  const match=matchingDetails[index];if(!match||role===0&&manExcludedDetails.has(match.de))return;
  if(beardTerms.has(match.de)&&role!==0)role=0;
  group=match.groupIndex;
+ if(Number.isInteger(match.sceneIndex))sceneIndex=match.sceneIndex;
  item=visibleItems().findIndex(v=>v[0]===match.de);
  if(item<0)item=0;
  render();
@@ -182,21 +218,33 @@ detailSearchInput.addEventListener("keydown",e=>{
 detailSearchList.addEventListener("click",e=>{const b=e.target.closest("[data-detail-match]");if(b)pickDetailSearch(Number(b.dataset.detailMatch))});
 detailSearchClear.addEventListener("click",()=>{detailSearchInput.value="";updateDetailSearch();detailSearchInput.focus({preventScroll:true})});
 document.addEventListener("pointerdown",e=>{if(!detailSearchRoot.contains(e.target)){detailSearchList.hidden=true;detailSearchInput.setAttribute("aria-expanded","false")}});
-function visibleItems(){return groups[group].items.filter(v=>allowedDetail(v[0]))}
+function visibleItems(){
+ const options=group===3?groups[3].items.concat((SCENE_HOLDINGS[SCENE_DATA[sceneIndex].id]||[]).map(key=>HOLD_CATALOG[key])):groups[group].items;
+ const used=new Set();
+ return options.filter(v=>{if(!v||!allowedDetail(v[0])||used.has(v[0]))return false;used.add(v[0]);return true});
+}
 function current(){const p=people[role],v=visibleItems()[item];return {cat:"custom-detail",role:p.key,de:p.de+" "+v[0]+".",sr:p.sr+" "+v[1]+".",step:5}}
 function render(){
  $d("dpRoles").innerHTML=people.map((p,i)=>'<button class="dp-tab '+(role===i?'active':'')+'" data-roleidx="'+i+'">'+p.label+'</button>').join("");
  $d("dpGroups").innerHTML=groups.map((g,i)=>'<button class="dp-tab '+(group===i?'active':'')+'" data-groupidx="'+i+'">'+g.label+'</button>').join("");
- const v=current();$d("dpValue").textContent=visibleItems()[item][1];$d("dpGerman").textContent=v.de;$d("dpSerbian").textContent=v.sr;
+ $d("dpSceneBar").hidden=group!==3;
+ $d("dpSceneSelect").value=String(sceneIndex);
+ const options=visibleItems();item=Math.max(0,Math.min(item,options.length-1));
+ const v=current();$d("dpValue").textContent=options[item][1];$d("dpGerman").textContent=v.de;$d("dpSerbian").textContent=v.sr;
  const active=chosen.some(k=>BANK[k]?.cat==="custom-detail"&&BANK[k]?.de===v.de);
  $d("dpSelect").setAttribute("aria-pressed",String(active));$d("dpSelect").setAttribute("aria-label",active?"Ukloni rečenicu iz opisa":"Dodaj rečenicu u opis");$d("dpCheck").textContent=active?"✓":"❯";$d("dpGerman").closest(".dp-preview").classList.toggle("dp-selected",active);
 }
 $d("dpRoles").onclick=e=>{const b=e.target.closest("[data-roleidx]");if(b){role=Number(b.dataset.roleidx);item=0;render();updateDetailSearch()}};
-$d("dpGroups").onclick=e=>{const b=e.target.closest("[data-groupidx]");if(b){group=Number(b.dataset.groupidx);item=0;render()}};
+$d("dpGroups").onclick=e=>{const b=e.target.closest("[data-groupidx]");if(b){group=Number(b.dataset.groupidx);item=group===3?6:0;render()}};
 $d("dpPrev").onclick=()=>{item=(item-1+visibleItems().length)%visibleItems().length;render()};
 $d("dpNext").onclick=()=>{item=(item+1)%visibleItems().length;render()};
 $d("dpListen").onclick=()=>{stop();utter(current().de)};
 $d("dpSelect").onclick=()=>{const v=current(),existing=chosen.find(k=>BANK[k]?.cat==="custom-detail"&&BANK[k]?.de===v.de);if(existing!==undefined)addOrRemove(existing);else{const i=BANK.length;BANK.push(v);addOrRemove(i)}render()};
+$d("dpSceneSelect").innerHTML=SCENE_DATA.map((s,i)=>'<option value="'+i+'">'+escapeHTML(s.label)+'</option>').join("");
+function changeScene(delta){sceneIndex=(sceneIndex+delta+SCENE_DATA.length)%SCENE_DATA.length;item=6;render()}
+$d("dpScenePrev").onclick=()=>changeScene(-1);
+$d("dpSceneNext").onclick=()=>changeScene(1);
+$d("dpSceneSelect").onchange=e=>{sceneIndex=Math.max(0,Math.min(SCENE_DATA.length-1,Number(e.target.value)||0));item=6;render()};
 render();
 const title=document.getElementById("wizardTitle");if(title)title.textContent="8. Detalji osobe";
 })();
