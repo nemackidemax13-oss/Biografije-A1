@@ -327,8 +327,8 @@ Odgovori SAMO JSON objektom {steps:[tačno 10 objekata {de,sr:""}],description:"
   ];
   for(const phrase of candidates){
    // A smile is not laughter. Preserve photographic accuracy while using easier A1 words.
-   if(/\\blächel(?:t|n)\\b/i.test(phrase)){rejected++;continue;}
-   if(/\\bla(?:cht|chen)\\b/i.test(phrase)){
+   if(/\blächel(?:t|n)\b/i.test(phrase)){rejected++;continue;}
+   if(/\bla(?:cht|chen)\b/i.test(phrase)){
     const who=phrase.startsWith("Der Mann")?"Mann":phrase.startsWith("Die Frau")?"Frau":phrase.startsWith("Das Kind")?"Kind":null;
     const visible=Array.isArray(observation.people)?observation.people:[];
     if(who&&!visible.some(o=>o.kind===who&&o.expression==="lacht")){rejected++;continue;}
