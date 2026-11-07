@@ -5,11 +5,14 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#14366b">
 <script>
-/* Svako novo otvaranje stranice počinje od vrha, uključujući povratak iz istorije. */
+/* Pri otvaranju odmah prikazati odeljak A1 – Opis cele slike. */
 if ("scrollRestoration" in history) history.scrollRestoration = "manual";
-function demaxStartAtTop(){ window.scrollTo({top:0,left:0,behavior:"instant"}); document.documentElement.scrollTop=0; document.body.scrollTop=0; }
-window.addEventListener("pageshow",()=>{demaxStartAtTop();requestAnimationFrame(demaxStartAtTop);});
-window.addEventListener("load",demaxStartAtTop);
+function demaxOpenOpisCeleSlike(){
+ const target=document.getElementById("opisCeleSlikeStart");
+ if(target)target.scrollIntoView({block:"start",behavior:"instant"});
+}
+window.addEventListener("pageshow",()=>{demaxOpenOpisCeleSlike();requestAnimationFrame(demaxOpenOpisCeleSlike);});
+window.addEventListener("load",demaxOpenOpisCeleSlike);
 </script>
 <title>DE-MAX A1 | Detalji na slici — 10 koraka opisa slike</title>
 <link rel="stylesheet" href="./shared.css?v=20261107-lepa-armbanduhr-tri-roda-v40"><style>
@@ -119,6 +122,7 @@ body[data-step-page="7"] #sceneFilters,body[data-step-page="7"] #sceneAll,body[d
   <button class="step" data-step="4"><span class="num">5</span><span>Odeća</span></button>
   <button class="step" data-step="5"><span class="num">6</span><span>Detalji</span></button>
  </nav>
+ <h2 id="opisCeleSlikeStart" style="font-size:16px;margin:8px 0 5px;color:#174b88;scroll-margin-top:8px">A1 – Opis cele slike</h2>
  <section class="example" aria-label="Ispitno pitanje i prevod">
   <div class="sample-content"><span class="sample-number" id="sampleNumber">8.</span><div class="samplehead" id="samplehead">Was sehen Sie noch?</div><div class="samplesr" id="samplesr">Šta još vidiš na slici?</div></div>
   <button type="button" id="openSearch" class="search-launch" aria-label="Pretraži rečenice" aria-controls="searchDialog" aria-expanded="false" title="Pretraga rečenica"><svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.2" fill="none" stroke="currentColor" stroke-width="2.3"/><path d="m15.2 15.2 5 5" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/></svg></button>
