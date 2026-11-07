@@ -69,8 +69,8 @@ const HAIR_COLORS=[
 ];
 const HAIR_STATES={mann:{style:0,color:0},frau:{style:1,color:1},kind:{style:0,color:2}};
 const HAIR_INDEX={};
-function makeHair(role){
- const roleData=AGE_ROLES[role],state=HAIR_STATES[role],style=HAIR_STYLE[state.style],color=HAIR_COLORS[state.color],who=roleData.de,ime=roleData.sr;
+function makeHair(role,styleIndex=HAIR_STATES[role].style,colorIndex=HAIR_STATES[role].color){
+ const roleData=AGE_ROLES[role],state={style:styleIndex,color:colorIndex},style=HAIR_STYLE[state.style],color=HAIR_COLORS[state.color],who=roleData.de,ime=roleData.sr;
  const result=(de,sr)=>({cat:"custom-hair",role,de,sr});
  if(style.glatze)return result(who+" hat eine Glatze.",{mann:"On je ćelav.",frau:"Ona je ćelava.",kind:"Dete je ćelavo."}[role]);
  if(style.bald)return result(who+" hat keine Haare.",ime+" nema kosu.");
@@ -648,8 +648,8 @@ const CLOTH_COLORS=[
 ];
 const CLOTH_STATES={mann:{item:0,color:0},frau:{item:1,color:1},kind:{item:2,color:2}};
 const CLOTH_INDEX={};
-function makeClothing(role){
- const item=CLOTH_ITEMS[CLOTH_STATES[role].item],color=CLOTH_COLORS[CLOTH_STATES[role].color];
+function makeClothing(role,itemIndex=CLOTH_STATES[role].item,colorIndex=CLOTH_STATES[role].color){
+ const item=CLOTH_ITEMS[itemIndex],color=CLOTH_COLORS[colorIndex];
  const suffix=item.article==="m"?"en":item.article==="f"?"e":item.article==="n"?"es":"e";
  const adjective=color.de+(color.fixed?"":suffix);
  const article=item.article==="m"?"einen ":item.article==="f"?"eine ":item.article==="n"?"ein ":"";
@@ -692,6 +692,16 @@ function renderClothing(){
   clothingSelect.setAttribute("aria-label",active?"Ukloni rečenicu o odeći iz opisa":"Dodaj rečenicu o odeći u opis");
  }else clothingSelect.textContent=active?"✓ Izabrano":"❯ Dodaj";
  clothingSelect.setAttribute("aria-pressed",String(active));
+}
+function updateClothingCurrent(role){
+ const id=CLOTH_INDEX[role];
+ if(chosen.includes(id)){
+  const old=BANK[id];
+  let permanent=BANK.findIndex((x,i)=>i!==id&&x.cat==="custom-clothing"&&x.role===role&&x.de===old.de);
+  if(permanent<0){permanent=BANK.length;BANK.push({...old})}
+  chosen=chosen.map(i=>i===id?permanent:i);
+ }
+ Object.assign(BANK[id],makeClothing(role));
 }
 function toggleClothing(){
  const item=makeClothing(activeRole);
@@ -738,58 +748,66 @@ function turnClothing(type,delta){
 /* Koraci 5 i 6: brzo pretraživanje odevnih predmeta, oblika i boja kose.
    Izbor koristi postojeći generator rečenica i čuva sve ranije opcije. */
 function setupVocabularySearch(){
- const root=$("#vocabSearch");
- if(!root)return;
+ const root=$("#vocabSearch");if(!root)return;
  const input=$("#vocabSearchInput"),list=$("#vocabSearchResults"),clear=$("#vocabSearchClear");
- const isClothing=document.body.dataset.stepPage==="4";
- $("#vocabSearchHeading").textContent=isClothing?"PRETRAGA ODEĆE":"PRETRAGA KOSE";
- const articles={m:"der",f:"die",n:"das",p:"die"};
- const entries=isClothing
-  ?CLOTH_ITEMS.map((item,index)=>({kind:"item",index,label:item.label,de:articles[item.article]+" "+item.de,group:"Odeća",search:item.label+" "+item.sr+" "+item.de}))
-   .concat(CLOTH_COLORS.map((item,index)=>({kind:"color",index,label:item.label,de:item.de,group:"Boja",search:item.label+" "+item.de+" "+item.sr.join(" ")})))
-  :HAIR_STYLE.map((item,index)=>({kind:"style",index,label:item.label,de:item.displayDe||(item.glatze?"eine Glatze":item.bald?"keine Haare":item.de+" Haare"),group:"Oblik kose",search:item.label+" "+item.sr+" "+item.de+" "+(item.displayDe||"")+" "+(item.keywords||"")+" "+(item.glatze?"Glatze":"")+" Haare Kosa"}))
-   .concat(HAIR_COLORS.map((item,index)=>({kind:"color",index,label:item.label,de:item.de+" Haare",group:"Boja kose",search:item.label+" "+item.sr+" "+item.de+" Haare"})));
+ const clothes=document.body.dataset.stepPage==="4";
+ $("#vocabSearchHeading").textContent=clothes?"PRETRAGA ODEĆE":"PRETRAGA KOSE";
+ input.placeholder=clothes?"Npr. On nosi plavu jaknu, Ona nosi...":"Npr. kratka plava / plava kratka / kurze blonde";
+ const roles=["mann","frau","kind"];
+ const labels={mann:"Čovek",frau:"Žena",kind:"Dete"};
+ const aliases={mann:"On Er Der Mann čovek muškarac",frau:"Ona Sie Die Frau žena",kind:"Ono Es Das Kind dete"};
+ const all=[];
+ for(const role of roles){
+  if(clothes){
+   for(let item=0;item<CLOTH_ITEMS.length;item++)for(let color=0;color<CLOTH_COLORS.length;color++){
+    const t=CLOTH_ITEMS[item],c=CLOTH_COLORS[color],line=makeClothing(role,item,color);
+    const searchable=[line.de,line.sr,aliases[role],t.label,t.de,t.sr,c.label,c.de,...c.sr,"odeća nosi trägt"];
+    all.push({role,item,color,line,search:searchNormalize(searchable.join(" "))});
+   }
+  }else{
+   for(let style=0;style<HAIR_STYLE.length;style++){
+    const t=HAIR_STYLE[style],n=t.bald||t.colorless?1:HAIR_COLORS.length;
+    for(let color=0;color<n;color++){
+     const c=HAIR_COLORS[color],line=makeHair(role,style,color);
+     const searchable=[line.de,line.sr,aliases[role],t.label,t.de,t.sr,t.displayDe||"",t.keywords||"","kosa Haare"];
+     if(n>1)searchable.push(c.label,c.de,c.sr);
+     all.push({role,style,color,line,search:searchNormalize(searchable.join(" "))});
+    }
+   }
+  }
+ }
  let matching=[];
  function update(){
-  const q=searchNormalize(input.value);
-  clear.hidden=!q;
-  if(!q){
-   matching=[];list.hidden=true;list.innerHTML="";input.setAttribute("aria-expanded","false");
-   return;
-  }
+  const q=searchNormalize(input.value);clear.hidden=!q;
+  if(!q){matching=[];list.hidden=true;list.innerHTML="";input.setAttribute("aria-expanded","false");return}
   const words=q.split(/\s+/).filter(Boolean);
-  matching=entries.filter(entry=>words.every(word=>searchNormalize(entry.search).includes(word)));
+  const subject=words.includes("ona")||words.includes("frau")||words.includes("zena")?"frau":
+    words.includes("ono")||words.includes("kind")||words.includes("dete")?"kind":
+    words.includes("on")||words.includes("mann")||words.includes("covek")||words.includes("muskarac")?"mann":null;
+  const matches=all.filter(e=>(!subject||subject===e.role)&&words.every(word=>e.search.includes(word)));
+  const ordered=subject?[subject]:[activeRole,...roles.filter(role=>role!==activeRole)];
+  const groups=ordered.map(role=>matches.filter(e=>e.role===role));
+  matching=[];
+  for(let i=0;matching.length<60&&groups.some(g=>i<g.length);i++)for(const g of groups)if(i<g.length&&matching.length<60)matching.push(g[i]);
   list.hidden=false;input.setAttribute("aria-expanded","true");
-  list.innerHTML=matching.length
-   ?matching.map((entry,n)=>'<button class="vocab-search-result" type="button" data-vocab-index="'+n+'"><span class="vocab-result-group">'+escapeHTML(entry.group)+'</span><span class="vocab-result-name">'+escapeHTML(entry.label)+'</span><small lang="de">'+escapeHTML(entry.de)+'</small><span class="vocab-result-arrow" aria-hidden="true">❯</span></button>').join("")
-   :'<p class="vocab-search-empty">Nema rezultata. Probaj drugu reč.</p>';
+  list.innerHTML=matching.length?matching.map((e,i)=>'<button class="vocab-search-result" type="button" data-vocab-index="'+i+'"><span class="vocab-result-group">'+escapeHTML(labels[e.role]+(clothes?" · odeća":" · kosa"))+'</span><span class="vocab-result-name">'+escapeHTML(e.line.sr)+'</span><small lang="de">'+escapeHTML(e.line.de)+'</small><span class="vocab-result-arrow" aria-hidden="true">❯</span></button>').join("")
+   :'<p class="vocab-search-empty">Nema rezultata. Probaj drugačiji redosled ili oblik reči.</p>';
  }
- function select(index){
-  const entry=matching[index];if(!entry)return;
-  const role=isClothing?activeRole:category;
-  const state=isClothing?CLOTH_STATES[role]:HAIR_STATES[role];
-  if(!state)return;
-  state[entry.kind]=entry.index;
+ function choose(i){
+  const e=matching[i];if(!e)return;
+  activeRole=e.role;if(!clothes)category=e.role;
   stop();
-  if(isClothing){Object.assign(BANK[CLOTH_INDEX[role]],makeClothing(role));renderClothing()}
-  else{updateHairCurrent(role);renderHair()}
-  renderSample();renderChosen();persistDraft();
+  if(clothes){CLOTH_STATES[e.role].item=e.item;CLOTH_STATES[e.role].color=e.color;updateClothingCurrent(e.role)}
+  else{HAIR_STATES[e.role].style=e.style;HAIR_STATES[e.role].color=e.color;updateHairCurrent(e.role)}
+  showRoles();renderSample();renderChosen();persistDraft();
   input.value="";update();input.blur();
  }
  input.addEventListener("input",update);
  input.addEventListener("focus",()=>{if(input.value.trim())update()});
- input.addEventListener("keydown",e=>{
-  if(e.key==="Escape"){input.value="";update();input.blur()}
-  if(e.key==="Enter"&&matching.length){e.preventDefault();select(0)}
- });
- list.addEventListener("click",e=>{
-  const button=e.target.closest("[data-vocab-index]");
-  if(button)select(Number(button.dataset.vocabIndex));
- });
+ input.addEventListener("keydown",e=>{if(e.key==="Escape"){input.value="";update();input.blur()}if(e.key==="Enter"&&matching.length){e.preventDefault();choose(0)}});
+ list.addEventListener("click",e=>{const button=e.target.closest("[data-vocab-index]");if(button)choose(Number(button.dataset.vocabIndex))});
  clear.addEventListener("click",()=>{input.value="";update();input.focus({preventScroll:true})});
- document.addEventListener("pointerdown",e=>{
-  if(!root.contains(e.target)){list.hidden=true;input.setAttribute("aria-expanded","false")}
- });
+ document.addEventListener("pointerdown",e=>{if(!root.contains(e.target)){list.hidden=true;input.setAttribute("aria-expanded","false")}});
 }
 setupVocabularySearch();
 function escapeHTML(t){return String(t).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"','&quot;')}
@@ -964,7 +982,7 @@ function source(){
 /* Pretraga po delu aplikacije koji je učenik otvorio.
    Korak 9 pretražuje i rečenice dodate nakon učitavanja shared.js. */
 function searchNormalize(text){
- return String(text).toLowerCase().replace(/ß/g,"ss").normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim();
+ return String(text).toLowerCase().replace(/đ/g,"dj").replace(/ß/g,"ss").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[.,!?;:()[\]{}]/g," ").replace(/\s+/g," ").trim();
 }
 function pageSearchIndex(){
  const currentPage=Number(document.body.dataset.stepPage),ids=[];
