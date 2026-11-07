@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#14366b">
 <title>DE-MAX A1 | Moj opis slike — 10 koraka opisa slike</title>
-<link rel="stylesheet" href="./shared.css?v=20261107-strelica-od-P-do-a-v24">
+<link rel="stylesheet" href="./shared.css?v=20261107-isti-razmak-izabranih-recenica-v25">
 <style>
 /* Završni korak: opis je završen; mali povratak gore, bez dugmeta Dalje na dnu. */
 body[data-step-page="9"] .separate-header{position:relative!important}
@@ -112,6 +112,38 @@ body[data-step-page="9"].summary-mode .controls.centered-controls #summaryHomeBo
  }
  body[data-step-page="9"].summary-mode .controls.centered-controls #summaryHomeBottom{
   font-size:8.7px!important;padding:2px 1px!important;
+ }
+}
+
+/* 8. Detalji -> 10. Moj opis: isti uski razmak od 5 px i kompaktne kartice.
+   Rečenice se slažu odozgo, bez razvlačenja kada ih je malo. */
+body[data-step-page="9"].summary-mode #selectedArea .chosen-grid{
+ display:grid!important;
+ grid-template-rows:none!important;
+ grid-auto-flow:row!important;
+ grid-auto-rows:max-content!important;
+ align-content:start!important;
+ row-gap:5px!important;
+ column-gap:0!important;
+ padding:0!important;
+}
+body[data-step-page="9"].summary-mode #selectedArea .chosen-grid .current{
+ box-sizing:border-box!important;
+ min-height:53px!important;
+ height:auto!important;
+ max-height:none!important;
+ margin:0!important;
+ padding:5px 6px!important;
+ gap:5px!important;
+ border-radius:9px!important;
+}
+@media(max-height:630px){
+ body[data-step-page="9"].summary-mode #selectedArea .chosen-grid{
+  row-gap:4px!important;
+ }
+ body[data-step-page="9"].summary-mode #selectedArea .chosen-grid .current{
+  min-height:48px!important;
+  padding:3px 4px!important;
  }
 }
 </style>
