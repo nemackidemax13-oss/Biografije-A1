@@ -236,25 +236,23 @@ function sampleBank(){
  if(!bank.length)return [];
  const out=[],seen=new Set();
  const add=x=>{if(!x?.de||!x?.sr||seen.has(x.de))return;seen.add(x.de);out.push({cat:x.cat,de:x.de,sr:x.sr})};
- const spread=(rows,n)=>{
-  if(!rows.length||n<=0)return;
-  const first=out.length;
-  for(let i=0;i<n;i++)add(rows[Math.min(rows.length-1,Math.floor((i+.5)*rows.length/n))]);
-  if(out.length-first<n)for(const x of rows){if(out.length-first>=n)break;add(x)}
- };
- const start=bank.filter(x=>x.cat==="start");
- spread(start.filter(x=>/^Auf dem Bild sehe ich/.test(x.de)),12);
- spread(start.filter(x=>/Die Personen sprechen über/.test(x.de)),28);
- spread(start.filter(x=>!/Die Personen sprechen über/.test(x.de)&&!/^Auf dem Bild sehe ich/.test(x.de)),2);
- spread(bank.filter(x=>x.cat==="places"),35);
- spread(bank.filter(x=>x.cat==="extra"),27);
- for(const cat of ["mann","frau","kind"]){
+ const takeAll=cat=>bank.filter(x=>x.cat===cat).forEach(add);
+ const spread=(cat,n)=>{
   const rows=bank.filter(x=>x.cat===cat);
-  spread(rows.filter(x=>/Haare|Bart|Schnurrbart|Armbanduhr|Gesicht|lacht|lächelt|Brille|trägt/.test(x.de)),13);
-  spread(rows.filter(x=>!/Haare|Bart|Schnurrbart|Armbanduhr|Gesicht|lacht|lächelt|Brille|trägt/.test(x.de)),8);
- }
- spread(bank.filter(x=>x.cat==="closing"),13);
- return out.slice(0,180);
+  if(rows.length<=n){rows.forEach(add);return}
+  for(let i=0;i<n;i++)add(rows[Math.min(rows.length-1,Math.floor((i+.5)*rows.length/n))]);
+ };
+ // Full DE-MAX visual vocabulary for people, places and conversation,
+ // plus a balanced selection of observations and closing statements.
+ takeAll("start");takeAll("places");
+ takeAll("mann");takeAll("frau");takeAll("kind");
+ const extra=bank.filter(x=>x.cat==="extra");
+ extra.filter(x=>/Im Hintergrund|Auf dem Tisch|Links |Rechts |hinter|vor |steht |sitzt |hält |kauft |liest |arbeitet |lächelt/i.test(x.de)).slice(0,65).forEach(add);
+ spread("extra",85);
+ const closing=bank.filter(x=>x.cat==="closing");
+ closing.filter(x=>/Wetter|Sonne|Sommer|Winter|Herbst|Frühling|Bildbeschreibung|im Hintergrund|schön|drinnen|draußen/i.test(x.de)).forEach(add);
+ spread("closing",65);
+ return out.slice(0,650);
 }
 
 function pageRows(mode){return mode==="desc"?descRows:mode==="dialog"?dialogRows:[]}
@@ -266,7 +264,7 @@ function toggleTranslation(area,button){let hidden=area.classList.toggle("hide-t
 $("translationDialogue").onclick=()=>toggleTranslation($("screen2"),$("translationDialogue"));
 $("file").onchange=async e=>{let f=e.target.files[0];if(!f)return;if(!f.type.startsWith("image/")||f.size>12e6){setStatus("Izaberi JPG/PNG/WebP sliku manju od 12 MB.",true);return}try{const bmp=await createImageBitmap(f),cv=document.createElement("canvas"),scale=Math.min(1,1280/Math.max(bmp.width,bmp.height));cv.width=Math.round(bmp.width*scale);cv.height=Math.round(bmp.height*scale);cv.getContext("2d").drawImage(bmp,0,0,cv.width,cv.height);bmp.close();imageData=cv.toDataURL("image/jpeg",.8);for(let i=0;i<3;i++){let img=$("photo"+i);img.src=imageData;img.style.display="block"}const reveal=$("photoReveal");reveal.classList.remove("ready");void reveal.offsetWidth;reveal.classList.add("ready");document.querySelector(".upload").classList.add("has-photo");document.querySelector(".upload-title").textContent="✓ Fotografija dodata";$("uploadHeading").textContent="Dodata slika za opis";$("analyze").disabled=false;setStatus("✓ Fotografija je uspešno dodata.")}catch(err){setStatus("Nije moguće otvoriti sliku.",true)}};
 $("analyze").onclick=async()=>{if(!imageData){setStatus("Izaberi sliku.",true);return}let url=$("endpoint").value.trim();if(!/^https:\/\//.test(url)){setStatus("Podesi Cloudflare Worker adresu.",true);return}$("analyze").disabled=true;setStatus("AI analizira sliku i priprema opis i dijalog…");
-try{let res=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({image:imageData,scenes:scenes.map(s=>({n:s.n,sr:s.sr,de:s.de,roles:s.roles||"",dialog:(Array.isArray(s.dialog)?[...s.dialog.slice(0,3),...s.dialog.slice(-3)]:[]).map(pair=>({de:String(pair[0]||""),sr:String(pair[1]||"")})),extra:(Array.isArray(s.extra)?s.extra.slice(0,3):[]).map(pair=>({de:String(pair[0]||""),sr:String(pair[1]||"")}))})),bankExamples:sampleBank()})});let data=await res.json().catch(()=>({}));if(!res.ok)throw Error(data.error||"HTTP "+res.status);if(!Array.isArray(data.steps)||data.steps.length!==10)throw Error("Nema 10 koraka opisa.");
+try{let res=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({image:imageData,scenes:scenes.map(s=>({n:s.n,sr:s.sr,de:s.de,roles:s.roles||"",dialog:(Array.isArray(s.dialog)&&s.dialog.length?s.dialog.slice(0,30):Array.isArray(window.DEMAX_NEW_DIALOGUE_TOPICS?.[s.n])?window.DEMAX_NEW_DIALOGUE_TOPICS[s.n].slice(0,5).flat().slice(0,30):[]).map(pair=>({de:String(pair[0]||""),sr:String(pair[1]||"")})),extra:(Array.isArray(s.extra)?s.extra.slice(0,8):[]).map(pair=>({de:String(pair[0]||""),sr:String(pair[1]||"")}))})),bankExamples:sampleBank()})});let data=await res.json().catch(()=>({}));if(!res.ok)throw Error(data.error||"HTTP "+res.status);if(!Array.isArray(data.steps)||data.steps.length!==10)throw Error("Nema 10 koraka opisa.");
 $("dialogue").replaceChildren();dialogRows=[];
 (Array.isArray(data.dialogue)?data.dialogue:[]).forEach((l,i)=>{let el=document.createElement("article");el.className="sentence dialog";add(el,"speaker",String(l.speaker||((i%2)?"B":"A")));add(el,"de",String(l.de||""));add(el,"sr",String(l.sr||""));$("dialogue").append(el);if(l.de)dialogRows.push({de:String(l.de),element:el})});
 let scene=scenes.find(s=>s.n===Number(data.sceneNumber));$("scene").textContent=scene?"Situacija "+scene.n+": "+scene.sr:String(data.sceneName||"Dijalog prema slici");$("bankLink").replaceChildren();if(scene){let a=document.createElement("a");a.href="../DE_MAX_A1_40_SITUACIJA_10_DIJALOGA.html?s="+scene.n+"&d=1";a.target="_blank";a.rel="noopener";a.textContent="Otvori originalnih 10 dijaloga: "+scene.sr;$("bankLink").append(a)}
