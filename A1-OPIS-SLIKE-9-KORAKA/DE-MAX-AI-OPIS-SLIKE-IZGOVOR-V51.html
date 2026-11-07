@@ -635,9 +635,36 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
  border:0!important;
 }
 #screen0:has(#resumeAfterGeneration:not([hidden])) #analyze{display:none!important}
+
+/* DE-MAX V55: upload brand stacked under A1; red header and strong blue Back. */
+.app .header h1{color:#d12645!important}
+#screen0 .demax-a1-brand{
+ display:flex!important;flex-direction:column!important;gap:3px!important;
+ align-items:center!important;justify-content:center!important;
+ line-height:1.03!important;padding:8px 4px 12px!important;
+}
+#screen0 .demax-a1-brand strong{
+ display:block;font:italic 950 clamp(37px,10vw,53px)/1.02 Georgia,"Times New Roman",serif;
+ color:#d12645;letter-spacing:-1px;text-shadow:0 2px 6px #d1264522;
+}
+#screen0 .demax-a1-brand span{
+ display:block;font:italic 850 clamp(22px,6vw,30px)/1.05 Georgia,"Times New Roman",serif;
+ color:#d12645;letter-spacing:-.4px;
+}
+#screen1 .footer #summaryBack,
+#screen2 .footer #backFromFull,
+#screen3 .footer #backToDescription{
+ background:#1d66b4!important;color:#fff!important;border:1px solid #14508e!important;
+ box-shadow:0 1px 3px #18518b33!important;
+}
+@media(max-height:620px){
+ #screen0 .demax-a1-brand{gap:2px!important;padding:4px!important;min-height:40px!important}
+ #screen0 .demax-a1-brand strong{font-size:32px!important}
+ #screen0 .demax-a1-brand span{font-size:20px!important}
+}
 </style></head><body><main class="app">
 <header class="header"><h1>Opis slike</h1></header>
-<section class="screen active" id="screen0"><div class="scroll"><div class="panel"><h2 class="title" id="uploadHeading">Ubaci sliku za opis</h2><label class="upload"><span class="upload-icon">📷</span><span class="upload-title">Izaberi fotografiju</span><span class="upload-sub">Dodirni ovde za galeriju ili kameru</span><input id="file" type="file" accept="image/*"></label><div class="photo-reveal" id="photoReveal"><span class="photo-glow" aria-hidden="true"></span><img class="picture" id="photo0" alt="Izabrana slika"><span class="photo-success" aria-hidden="true">✓</span><span class="sparkle sp1" aria-hidden="true">✦</span><span class="sparkle sp2" aria-hidden="true">✧</span><span class="sparkle sp3" aria-hidden="true">✦</span></div><p class="status" id="status">Prvo izaberi sliku.</p></div><div class="demax-a1-brand" aria-label="De-Max A1"><span>De-Max</span> <strong>A1</strong></div><input id="endpoint" type="hidden" value="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev"></div><div class="footer upload-footer"><button class="action pale" id="resumeAfterGeneration" type="button" hidden>Nastavi opis ❯</button><button class="action green" id="analyze" disabled>Automatski opiši sliku</button></div></section>
+<section class="screen active" id="screen0"><div class="scroll"><div class="panel"><h2 class="title" id="uploadHeading">Ubaci sliku za opis</h2><label class="upload"><span class="upload-icon">📷</span><span class="upload-title">Izaberi fotografiju</span><span class="upload-sub">Dodirni ovde za galeriju ili kameru</span><input id="file" type="file" accept="image/*"></label><div class="photo-reveal" id="photoReveal"><span class="photo-glow" aria-hidden="true"></span><img class="picture" id="photo0" alt="Izabrana slika"><span class="photo-success" aria-hidden="true">✓</span><span class="sparkle sp1" aria-hidden="true">✦</span><span class="sparkle sp2" aria-hidden="true">✧</span><span class="sparkle sp3" aria-hidden="true">✦</span></div><p class="status" id="status">Prvo izaberi sliku.</p></div><div class="demax-a1-brand" aria-label="A1 – De-Max A1"><strong>A1</strong><span>De-Max A1</span></div><input id="endpoint" type="hidden" value="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev"></div><div class="footer upload-footer"><button class="action pale" id="resumeAfterGeneration" type="button" hidden>Nastavi opis ❯</button><button class="action green" id="analyze" disabled>Automatski opiši sliku</button></div></section>
 
 <section class="screen" id="screen1"><div class="scroll summary-scroll"><div class="panel summary-panel">
  <div class="summary-image-wrap"><img class="picture small" id="photo1" alt="Fotografija koju učenik opisuje"></div>
