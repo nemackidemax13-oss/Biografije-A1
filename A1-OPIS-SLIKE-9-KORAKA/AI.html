@@ -1058,6 +1058,31 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
 #screen2 .full-description-scroll{padding-left:2px!important;padding-right:2px!important}
 #screen2 .full-description-panel{padding-left:2px!important;padding-right:2px!important}
 #screen2 .full-structured-description{width:100%!important;max-width:100%!important;margin-left:0!important;margin-right:0!important}
+
+/* DE-MAX V74: photos occupy the full available frame on all three study pages. */
+#screen1 .summary-image-wrap,
+#screen2 .full-photo-line,
+#screen3 .dialogue-wide-photo{
+ width:100%!important;max-width:100%!important;min-width:0!important;
+ margin-left:0!important;margin-right:0!important;
+ padding-left:0!important;padding-right:0!important;
+ overflow:hidden!important;box-sizing:border-box!important;
+ border-radius:7px!important;
+}
+#screen1 .summary-image-wrap #photo1,
+#screen2 .full-photo-line #photo2,
+#screen3 .dialogue-wide-photo #photo3{
+ display:block!important;width:100%!important;max-width:100%!important;
+ height:100%!important;max-height:100%!important;
+ object-fit:cover!important;object-position:center center!important;
+ border-radius:7px!important;
+}
+#screen1 .summary-panel,
+#screen2 .full-description-panel,
+#screen3 .dialogue-top{
+ padding-left:2px!important;padding-right:2px!important;
+}
+#screen3 #dialogueScroll{padding-left:2px!important;padding-right:2px!important}
 </style></head><body><main class="app">
 <header class="header"><h1>Opis slike</h1></header>
 <section class="screen active" id="screen0"><div class="scroll"><div class="panel"><h2 class="title" id="uploadHeading">Ubaci sliku za opis</h2><label class="upload"><span class="upload-icon">📷</span><span class="upload-title">Izaberi fotografiju</span><span class="upload-sub">Dodirni ovde za galeriju ili kameru</span><input id="file" type="file" accept="image/*"></label><div class="photo-reveal" id="photoReveal"><span class="photo-glow" aria-hidden="true"></span><img class="picture" id="photo0" alt="Izabrana slika"><span class="photo-success" aria-hidden="true">✓</span><span class="sparkle sp1" aria-hidden="true">✦</span><span class="sparkle sp2" aria-hidden="true">✧</span><span class="sparkle sp3" aria-hidden="true">✦</span></div><p class="status" id="status">Prvo izaberi sliku.</p></div><div class="demax-text-brand" aria-label="De-Max A1"><span>De-Max</span><strong>A1</strong></div><input id="endpoint" type="hidden" value="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev"></div><div class="footer upload-footer"><button class="action pale" id="resumeAfterGeneration" type="button" hidden>Nastavi opis ❯</button><button class="action green" id="analyze" disabled>Automatski opiši sliku</button></div></section>
@@ -1233,7 +1258,7 @@ $("file").onchange=async e=>{
 $("analyze").onclick=async()=>{
  if(generatedLocked&&!reachedDialogue){setStatus("Novu sliku možeš generisati tek kada dođeš do dijaloga.",true);return}
  if(!imageData){setStatus("Izaberi sliku.",true);return}if(!bank.length){setStatus("Baza opisa slike se još učitava. Pokušaj ponovo.",true);return}let url=$("endpoint").value.trim();if(!/^https:\/\//.test(url)){setStatus("Podesi Cloudflare Worker adresu.",true);return}$("analyze").disabled=true;setStatus("AI analizira sliku i priprema opis i dijalog…");
-try{let res=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({image:imageData,scenes:scenes.map(s=>({n:s.n,sr:s.sr,de:s.de,roles:s.roles||"",dialog:(Array.isArray(s.dialog)?s.dialog:[]).map(pair=>({de:String(pair[0]||""),sr:String(pair[1]||"")})),extra:(Array.isArray(s.extra)?s.extra:[]).map(pair=>({de:String(pair[0]||""),sr:String(pair[1]||"")}))})),bankExamples:sampleBank(),visualAccuracyInstructions:"Opisuj SAMO ono što je vidljivo na poslatoj slici. Prvo pažljivo prepoznaj tačan predmet, odeću, boju i radnju. Ako žena kupuje haljinu u butiku, napiši da kupuje haljinu (ein Kleid) a NE jaknu (eine Jacke). Ne izmišljaj druge artikle, radnje ili detalje. Kada nešto nije jasno vidljivo, koristi neutralnu rečenicu bez nagađanja. Uskladi svih 10 koraka i dijalog sa stvarnom slikom."})});let data=await res.json().catch(()=>({}));if(!res.ok)throw Error(data.error||"HTTP "+res.status);if(!Array.isArray(data.steps)||data.steps.length!==10)throw Error("Nema 10 koraka opisa.");
+try{let res=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({image:imageData,scenes:scenes.map(s=>({n:s.n,sr:s.sr,de:s.de,roles:s.roles||"",dialog:(Array.isArray(s.dialog)?s.dialog:[]).map(pair=>({de:String(pair[0]||""),sr:String(pair[1]||"")})),extra:(Array.isArray(s.extra)?s.extra:[]).map(pair=>({de:String(pair[0]||""),sr:String(pair[1]||"")}))})),bankExamples:sampleBank(),visualAccuracyInstructions:"Obavezno prouči ORIGINALNU fotografiju pre izbora situacije, opisa i dijaloga. Prepoznaj šta osobe zaista rade, koje predmete drže, pokazuju ili kupuju, i koja odeća ili roba je stvarno vidljiva. Ne zamenjuj haljinu jaknom, košuljom ili drugim artiklom. Ne izmišljaj sadržaj, mesto, radnje, boje ni namere koje se ne vide. Ako je predmet nejasan, napiši opštu tačnu rečenicu. Svi koraci opisa i dijalog moraju odgovarati ISTOJ fotografiji.",dialogueAccuracyInstructions:"Dijalog napravi specifično prema fotografiji, nikada generički po unapred izabranoj temi. Primer: ako u butiku žena bira ili kupuje HALJINU, prodavačica i kupac razgovaraju o HALJINI, njenoj boji, veličini, ceni ili isprobavanju samo kada takve okolnosti odgovaraju slici. Ne govori da kupuje JAKNU ako nije jakna. Isto važi za svaku drugu sliku: prepoznaj stvarne ljude, mesto, predmet, aktivnost i uloge i napiši prirodan A1 razgovor vezan za baš taj prizor. Ne dodaj nevidljive činjenice kao potvrđene. Svaka replika mora biti u skladu sa prepoznatom situacijom, a sceneNumber i sceneName takođe moraju odgovarati slici."})});let data=await res.json().catch(()=>({}));if(!res.ok)throw Error(data.error||"HTTP "+res.status);if(!Array.isArray(data.steps)||data.steps.length!==10)throw Error("Nema 10 koraka opisa.");
 $("dialogue").replaceChildren();dialogRows=[];
 $("dialogue").classList.add("hide-translation");
 $("translationDialogue").textContent="Prevod";$("translationDialogue").setAttribute("aria-pressed","false");
