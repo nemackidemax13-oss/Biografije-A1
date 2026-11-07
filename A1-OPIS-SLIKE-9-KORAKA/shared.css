@@ -1681,3 +1681,38 @@ html,body{height:100dvh;max-height:100dvh;overflow:hidden!important}
 .separate-header .separate-brand{max-width:100%!important;overflow:visible!important}
 .separate-header h1#wizardTitle{box-sizing:border-box!important;padding-right:116px!important;text-align:left!important;padding-left:7px!important;font-size:clamp(12px,3.2vw,15px)!important}
 @media(max-width:350px){.separate-header h1#wizardTitle{padding-right:105px!important;font-size:12px!important}.separate-header .demax-folder .demax-folder-label{font-size:9px!important}}
+
+/* v53: Svi naslovi 1–10 u sredini, folder desno u prvom redu, bez prekrivanja. */
+.separate-header{
+ position:relative!important;
+ grid-template-columns:minmax(0,1fr)!important;
+ grid-template-rows:22px minmax(0,1fr)!important;
+ justify-items:stretch!important;
+ align-items:center!important;
+}
+.separate-header .separate-brand{
+ grid-row:1!important;grid-column:1!important;
+ justify-self:start!important;align-self:center!important;
+ max-width:calc(100% - 122px)!important;
+ overflow:visible!important;white-space:nowrap!important;
+}
+.separate-header .demax-folder{
+ position:absolute!important;top:2px!important;bottom:auto!important;right:5px!important;
+ max-width:116px!important;z-index:8!important;
+ min-height:20px!important;
+}
+.separate-header h1#wizardTitle{
+ grid-row:2!important;grid-column:1!important;
+ justify-self:center!important;align-self:center!important;
+ display:block!important;box-sizing:border-box!important;
+ width:100%!important;max-width:100%!important;
+ margin:0!important;padding:0 4px!important;
+ text-align:center!important;font-size:clamp(12px,3.5vw,16px)!important;
+ line-height:1.08!important;white-space:normal!important;
+ overflow:visible!important;overflow-wrap:normal!important;
+}
+@media(max-width:355px){
+ .separate-header h1#wizardTitle{font-size:clamp(11px,3.2vw,14px)!important}
+ .separate-header .demax-folder{right:3px!important;max-width:107px!important}
+ .separate-header .separate-brand{max-width:calc(100% - 113px)!important}
+}
