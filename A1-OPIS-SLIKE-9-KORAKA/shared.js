@@ -20,8 +20,14 @@ function renderAge(){const shown=step===3&&appearanceMode==="age";$("#agebar").h
  $("#ageSentence").textContent=item.de;$("#ageTranslation").textContent=item.sr;
  $("#ageMinus").disabled=n<=1;$("#agePlus").disabled=n>=100;
  $("#agebar").classList.toggle("age-selected",selected);
- $("#ageAdd").textContent=selected?"✓ Izabrano":"❯ Dodaj";
- $("#ageAdd").setAttribute("aria-pressed",String(selected));
+ // Na 7. koraku cela rečenica služi za izbor, a ostale stranice zadržavaju staro dugme.
+ const ageAdd=$("#ageAdd");
+ if(document.body.dataset.stepPage==="6"){
+  const mark=ageAdd.querySelector(".age-select-mark");
+  if(mark)mark.textContent=selected?"✓":"❯";
+  ageAdd.setAttribute("aria-label",selected?"Ukloni rečenicu o godinama iz opisa":"Dodaj rečenicu o godinama u opis");
+ }else ageAdd.textContent=selected?"✓ Izabrano":"❯ Dodaj";
+ ageAdd.setAttribute("aria-pressed",String(selected));
 }
 function adjustAge(delta){if(step!==3)return;const current=AGES[category],updated=Math.max(1,Math.min(100,current+delta));if(updated===current)return;
  stop();AGES[category]=updated;Object.assign(BANK[AGE_INDEX[category]],createAge(category));
