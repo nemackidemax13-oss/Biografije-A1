@@ -213,10 +213,16 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
 .worker-warning{display:flex;flex-direction:column;gap:4px;margin:5px 0;padding:8px;border:1px solid #e2a2a2;background:#fff5f3;border-radius:9px;color:#9b3030;font:600 11px/1.3 system-ui,Arial}
 .worker-warning[hidden]{display:none!important}
 .worker-warning a{color:#175eb3;text-decoration:underline;font-weight:800}
+
+/* Live GitHub Pages <-> Cloudflare Worker connection indicator (no false green status). */
+.worker-link-status{font:700 11px/1.35 system-ui,Arial;margin:5px 0 2px;color:#64748b}
+.worker-link-status[data-state="connected"]{color:#08783d}
+.worker-link-status[data-state="outdated"]{color:#bd3434}
+.worker-link-status[data-state="unknown"]{color:#8b6b18}
 </style></head><body><main class="app">
 <header class="header"><h1>Opis slike</h1></header>
 <div class="top-progress"><div class="progress active" id="progress0">1 · Slika</div><div class="progress" id="progress1">2 · Moj opis</div><div class="progress" id="progress2">3 · Dijalog</div></div>
-<section class="screen active" id="screen0"><div class="scroll"><div class="panel"><h2 class="title" id="uploadHeading">Ubaci sliku za opis</h2><label class="upload"><span class="upload-icon">📷</span><span class="upload-title">Izaberi fotografiju</span><span class="upload-sub">Dodirni ovde za galeriju ili kameru</span><input id="file" type="file" accept="image/*"></label><div class="photo-reveal" id="photoReveal"><span class="photo-glow" aria-hidden="true"></span><img class="picture" id="photo0" alt="Izabrana slika"><span class="photo-success" aria-hidden="true">✓</span><span class="sparkle sp1" aria-hidden="true">✦</span><span class="sparkle sp2" aria-hidden="true">✧</span><span class="sparkle sp3" aria-hidden="true">✦</span></div><p class="status" id="status">Prvo izaberi sliku.</p><div class="worker-warning" id="workerWarning" hidden><strong>Cloudflare Worker nije ažuriran.</strong><span>Stara AI verzija ne podržava ispravljen DE-MAX šablon. Otvori TXT, nalepi kod u Cloudflare Worker i klikni Deploy.</span><a href="https://raw.githubusercontent.com/nemackidemax13-oss/Biografije-A1/main/A1-OPIS-SLIKE-9-KORAKA/DE-MAX-CLOUDFLARE-OPIS-PO-PRAVILIMA.txt" target="_blank" rel="noopener">Otvori ispravljeni Cloudflare TXT</a></div></div><div class="demax-a1-brand" aria-label="De-Max A1"><span>De-Max</span> <strong>A1</strong></div><input id="endpoint" type="hidden" value="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev"></div><div class="footer upload-footer"><button class="action green" id="analyze" disabled>Automatski opiši sliku</button></div></section>
+<section class="screen active" id="screen0"><div class="scroll"><div class="panel"><h2 class="title" id="uploadHeading">Ubaci sliku za opis</h2><label class="upload"><span class="upload-icon">📷</span><span class="upload-title">Izaberi fotografiju</span><span class="upload-sub">Dodirni ovde za galeriju ili kameru</span><input id="file" type="file" accept="image/*"></label><div class="photo-reveal" id="photoReveal"><span class="photo-glow" aria-hidden="true"></span><img class="picture" id="photo0" alt="Izabrana slika"><span class="photo-success" aria-hidden="true">✓</span><span class="sparkle sp1" aria-hidden="true">✦</span><span class="sparkle sp2" aria-hidden="true">✧</span><span class="sparkle sp3" aria-hidden="true">✦</span></div><p class="status" id="status">Prvo izaberi sliku.</p><p class="worker-link-status" id="workerLinkStatus" aria-live="polite">AI konekcija: proveravam GitHub ↔ Cloudflare V38…</p><div class="worker-warning" id="workerWarning" hidden><strong>Cloudflare Worker nije ažuriran.</strong><span>Stara AI verzija ne podržava ispravljen DE-MAX šablon. Otvori TXT, nalepi kod u Cloudflare Worker i klikni Deploy.</span><a href="https://raw.githubusercontent.com/nemackidemax13-oss/Biografije-A1/main/A1-OPIS-SLIKE-9-KORAKA/DE-MAX-CLOUDFLARE-OPIS-PO-PRAVILIMA.txt" target="_blank" rel="noopener">Otvori ispravljeni Cloudflare TXT</a></div></div><div class="demax-a1-brand" aria-label="De-Max A1"><span>De-Max</span> <strong>A1</strong></div><input id="endpoint" type="hidden" value="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev"></div><div class="footer upload-footer"><button class="action green" id="analyze" disabled>Automatski opiši sliku</button></div></section>
 <section class="screen" id="screen1"><div class="scroll full-description-scroll"><div class="panel full-description-panel"><div class="full-photo-line"><img class="picture small" id="photo1" alt="Slika za kompletan opis"></div><div class="full-list-toolbar"><button class="full-mini-auto" id="autoFull" type="button" aria-pressed="false">▶ Auto slušanje</button><div class="full-right-tools"><button class="full-mini-translate" id="translateFull" type="button" aria-pressed="false">Prevod</button><button class="full-font-btn" id="fontPlus" type="button" aria-label="Uvećaj tekst" title="Uvećaj tekst">+</button><button class="full-font-btn" id="fontMinus" type="button" aria-label="Smanji tekst" title="Smanji tekst">−</button></div></div><div id="fullDescription" class="full-description-text full-structured-description" role="region" aria-label="Moj opis slike na nemačkom, po devet koraka"></div><p class="muted" id="fullStatus">Kompletan tekst na nemačkom.</p></div></div><div class="footer"><button class="action pale" id="backFromFull">❮ Slika</button><button class="action green" id="goDialogue">Dijalog ❯</button></div></section>
 <section class="screen" id="screen2"><div class="scroll" id="dialogueScroll"><div class="panel"><h2 class="title">🗣 Dijalog prema slici</h2><img class="picture small" id="photo2" alt="Slika za dijalog"><div id="scene" class="pill">Situacija prema slici</div><div class="controls"><button class="action green" id="readDialogue">▶ Kreni</button><button class="action gold" id="pauseDialogue">⏸ Pauza</button><button class="action red" id="stopDialogue">■ Stop</button><button class="toggle on" id="translationDialogue">Prevod: ON</button></div><p class="muted" id="dialogueStatus" style="text-align:center">Čitanje uloga A i B.</p></div><div id="dialogue"></div><div class="panel"><h2 class="title">📚 Originalni DE-MAX dijalozi</h2><div id="bankLink" class="links"></div><p class="muted">Dijalog je zamišljen kao vežba za situaciju na slici, ne kao doslovan razgovor fotografisanih osoba.</p></div></div><div class="footer"><button class="action pale" id="backToDescription">❮ Moj opis</button><button class="action green" id="restart">Nova slika ↻</button></div></section>
 <div class="powered">Powered By De-Max</div></main>
@@ -229,17 +235,22 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
 const DEFAULT_WORKER_URL="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev";
 const EXPECTED_DEMAX_WORKER_VERSION="20261107-prava-baza-40-situacija-v38";
 async function checkDemaxWorkerVersion(){
- const box=$("workerWarning");
+ const box=$("workerWarning"),indicator=$("workerLinkStatus");
+ indicator.textContent="AI konekcija: proveravam Cloudflare V38…";
+ indicator.dataset.state="checking";
  try{
   const url=DEFAULT_WORKER_URL+"?check=1&v="+Date.now();
   const res=await fetch(url,{method:"GET",cache:"no-store"});
   const data=await res.json().catch(()=>({}));
   const current=res.ok&&data.version===EXPECTED_DEMAX_WORKER_VERSION;
   box.hidden=current;
+  indicator.textContent=current?"✓ GitHub i Cloudflare AI V38 su povezani.":"Cloudflare još nema ispravnu V38 verziju. Potreban je Deploy novog TXT koda.";
+  indicator.dataset.state=current?"connected":"outdated";
   return current;
  }catch(error){
-  // Offline/temporary network failure is not proof of an old worker.
   box.hidden=true;
+  indicator.textContent="Veza nije potvrđena (mreža ili Cloudflare nedostupni).";
+  indicator.dataset.state="unknown";
   return null;
  }
 }
