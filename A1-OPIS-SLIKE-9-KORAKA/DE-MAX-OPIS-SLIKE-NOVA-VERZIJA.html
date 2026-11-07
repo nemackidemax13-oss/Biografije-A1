@@ -260,7 +260,7 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
 "use strict";
 const DEFAULT_WORKER_URL="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev";
 const $=id=>document.getElementById(id);
-const labels=["Opis osoba na slici","Razgovor osoba","Mesto osoba na slici","Izgled osoba na slici","Odeća osoba na slici","Kosa osoba na slici","Godine osoba na slici","Detalji na slici","Završne rečenice","Moj opis slike"];
+const labels=["Opis osoba na slici","Razgovor osoba","Mesto osoba na slici","Izgled osoba na slici","Odeća osoba na slici","Kosa osoba na slici","Godine osoba na slici","Detalji na slici","Završni deo","Moj opis slike"];
 const scenes=[...(window.DEMAX_SCENES||[]),...(window.DEMAX_NEW_SCENES||[])].sort((a,b)=>a.n-b.n);
 let fullFontScale=1,fullSteps=[],fullTranslated=false,fullAudioIndex=-1,fullAudioAuto=false,fullAudioLines=[];let imageData="",bank=[],descRows=[],dialogRows=[],currentPage=0,voiceToken=0,paused=false,readingMode="",readingIndex=0;
 const synth=window.speechSynthesis;
