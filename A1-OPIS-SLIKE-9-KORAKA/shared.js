@@ -1607,6 +1607,8 @@ function demaxFlyToFolder(line){
 }
 const demaxOriginalRenderChosen=renderChosen;
 renderChosen=function(){demaxOriginalRenderChosen();demaxSyncFolder();};
+// Prikaži folder odmah pri prvom otvaranju, pre bilo kakvog klika.
+demaxSyncFolder();
 window.addEventListener("pagehide",()=>{stop();persistDraft()});
 restoreDraft();
 showWizard(PAGE_INDEX);
