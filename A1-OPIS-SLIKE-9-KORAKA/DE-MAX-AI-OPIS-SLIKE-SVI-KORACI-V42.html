@@ -245,12 +245,42 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
   min-height:21px!important;height:21px!important;font-size:8.5px!important;padding:2px 4px!important
  }
 }
+
+/* DE-MAX mobile dialogue page: framed illustrated speaker portraits and compact playback. */
+#screen2 .dialogue-top{padding:6px 8px 4px;margin:0 0 4px}
+#screen2 .dialogue-top .title{font-size:14px;margin:0 0 3px;text-align:center}
+#screen2 .dialogue-top .picture.small{max-height:12dvh;margin:2px auto 4px;object-fit:contain}
+#screen2 .dialogue-top .pill{font-size:11px;padding:4px 6px;margin:3px 0}
+#screen2 .dialogue-top #dialogueStatus{margin:3px 0 0;font-size:10px;min-height:0}
+#screen2 .dialogue-toolbar{display:flex;gap:3px;align-items:center;justify-content:center;flex-wrap:nowrap;min-width:0}
+#screen2 .dialogue-toolbar button{border:0;border-radius:6px;padding:2px 4px;min-height:25px;font:800 clamp(9px,2.4vw,11px)/1.25 system-ui,Arial;white-space:nowrap;cursor:pointer}
+#screen2 .dialogue-auto{flex:1 1 auto;background:#168447;color:#fff}
+#screen2 .dialogue-pause{flex:1 1 auto;background:#e9effa;color:#215e9b}
+#screen2 .dialogue-stop{flex:1 1 auto;background:#d83049;color:#fff}
+#screen2 .dialogue-translate{flex:1 1 auto;background:#efb334;color:#3b280a}
+#screen2 .dialogue-translate[aria-pressed="true"]{background:#e2a42c;color:#33210b}
+#screen2 .dialogue-size{flex:0 0 24px;max-width:24px;background:#e4effd;color:#225f9b;border:1px solid #b9d2f0!important;font-size:16px!important}
+#screen2 #dialogue{padding:0 6px 7px;--dialogue-font-scale:1}
+#screen2 .dialogue-card{display:flex;align-items:center;gap:7px;padding:6px 7px;margin:5px 0;border:1px solid #d6e4f4;border-left:3px solid #3c83c6;background:#fafdff;border-radius:9px;min-width:0}
+#screen2 .dialogue-card:nth-child(even){border-left-color:#e6a948;background:#fffdf9}
+#screen2 .dialogue-card.playing{border-color:#e23654;background:#fff2f4}
+#screen2 .dialogue-portrait{flex:0 0 46px;width:46px;height:52px;border:2px solid #a1c3e5;border-radius:10px;background:#eaf2fc;overflow:hidden;display:flex;align-items:center;justify-content:center}
+#screen2 .dialogue-card:nth-child(even) .dialogue-portrait{border-color:#e9bf78;background:#fff0dc}
+#screen2 .dialogue-portrait svg{display:block;width:100%;height:100%;object-fit:contain}
+#screen2 .dialogue-copy{flex:1 1 auto;min-width:0;overflow-wrap:anywhere}
+#screen2 .dialogue-speaker{font:800 calc(9px * var(--dialogue-font-scale)) system-ui,Arial;color:#a36820;margin-bottom:2px}
+#screen2 .dialogue-copy .de{color:#168447;font:650 calc(12px * var(--dialogue-font-scale))/1.27 system-ui,Arial}
+#screen2 .dialogue-copy .sr{color:#d03749;font:500 calc(10.5px * var(--dialogue-font-scale))/1.25 system-ui,Arial;margin-top:2px}
+#screen2 #dialogue.hide-translation .sr{display:none!important}
+#screen2 .dialogue-play{flex:0 0 27px;width:27px;height:29px;border:1px solid #a6d1b8;border-radius:7px;background:#e1f5e9;color:#168447;font:900 14px system-ui,Arial;cursor:pointer}
+#screen2 .dialogue-play[aria-pressed="true"]{background:#168447;color:white}
+@media(max-width:350px){#screen2 .dialogue-card{gap:4px;padding:5px 4px}#screen2 .dialogue-portrait{width:38px;flex-basis:38px;height:45px}#screen2 .dialogue-toolbar button{padding:2px 3px;font-size:9px}#screen2 .dialogue-size{flex-basis:21px;max-width:21px}}
 </style></head><body><main class="app">
 <header class="header"><h1>Opis slike</h1></header>
 <div class="top-progress"><div class="progress active" id="progress0">1 · Slika</div><div class="progress" id="progress1">2 · Moj opis</div><div class="progress" id="progress2">3 · Dijalog</div></div>
 <section class="screen active" id="screen0"><div class="scroll"><div class="panel"><h2 class="title" id="uploadHeading">Ubaci sliku za opis</h2><label class="upload"><span class="upload-icon">📷</span><span class="upload-title">Izaberi fotografiju</span><span class="upload-sub">Dodirni ovde za galeriju ili kameru</span><input id="file" type="file" accept="image/*"></label><div class="photo-reveal" id="photoReveal"><span class="photo-glow" aria-hidden="true"></span><img class="picture" id="photo0" alt="Izabrana slika"><span class="photo-success" aria-hidden="true">✓</span><span class="sparkle sp1" aria-hidden="true">✦</span><span class="sparkle sp2" aria-hidden="true">✧</span><span class="sparkle sp3" aria-hidden="true">✦</span></div><p class="status" id="status">Prvo izaberi sliku.</p></div><div class="demax-a1-brand" aria-label="De-Max A1"><span>De-Max</span> <strong>A1</strong></div><input id="endpoint" type="hidden" value="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev"></div><div class="footer upload-footer"><button class="action green" id="analyze" disabled>Automatski opiši sliku</button></div></section>
 <section class="screen" id="screen1"><div class="scroll full-description-scroll"><div class="panel full-description-panel"><div class="full-photo-line"><img class="picture small" id="photo1" alt="Slika za kompletan opis"></div><div class="full-list-toolbar"><button class="full-mini-auto" id="autoFull" type="button" aria-pressed="false">▶ Auto slušanje</button><div class="full-right-tools"><button class="full-mini-translate" id="translateFull" type="button" aria-pressed="false">Prevod</button><button class="full-font-btn" id="fontPlus" type="button" aria-label="Uvećaj tekst" title="Uvećaj tekst">+</button><button class="full-font-btn" id="fontMinus" type="button" aria-label="Smanji tekst" title="Smanji tekst">−</button></div></div><div id="fullDescription" class="full-description-text full-structured-description" role="region" aria-label="Moj opis slike na nemačkom, po devet koraka"></div><p class="muted" id="fullStatus">Kompletan tekst na nemačkom.</p></div></div><div class="footer"><button class="action pale" id="backFromFull">❮ Slika</button><button class="action green" id="goDialogue">Dijalog ❯</button></div></section>
-<section class="screen" id="screen2"><div class="scroll" id="dialogueScroll"><div class="panel"><h2 class="title">🗣 Dijalog prema slici</h2><img class="picture small" id="photo2" alt="Slika za dijalog"><div id="scene" class="pill">Situacija prema slici</div><div class="controls"><button class="action green" id="readDialogue">▶ Kreni</button><button class="action gold" id="pauseDialogue">⏸ Pauza</button><button class="action red" id="stopDialogue">■ Stop</button><button class="toggle on" id="translationDialogue">Prevod: ON</button></div><p class="muted" id="dialogueStatus" style="text-align:center">Čitanje uloga A i B.</p></div><div id="dialogue"></div><div class="panel"><h2 class="title">📚 Originalni DE-MAX dijalozi</h2><div id="bankLink" class="links"></div><p class="muted">Dijalog je zamišljen kao vežba za situaciju na slici, ne kao doslovan razgovor fotografisanih osoba.</p></div></div><div class="footer"><button class="action pale" id="backToDescription">❮ Moj opis</button><button class="action green" id="restart">Nova slika ↻</button></div></section>
+<section class="screen" id="screen2"><div class="scroll" id="dialogueScroll"><div class="panel dialogue-top"><h2 class="title">🗣 Dijalog prema slici</h2><img class="picture small" id="photo2" alt="Slika za dijalog"><div id="scene" class="pill">Situacija prema slici</div><div class="dialogue-toolbar" role="group" aria-label="Slušanje, prevod i veličina teksta"><button class="dialogue-auto" id="readDialogue" type="button" aria-pressed="false">▶ Auto</button><button class="dialogue-pause" id="pauseDialogue" type="button">⏸ Pauza</button><button class="dialogue-stop" id="stopDialogue" type="button">■ Stop</button><button class="dialogue-translate" id="translationDialogue" type="button" aria-pressed="false">Prevod</button><button class="dialogue-size" id="dialogueFontMinus" type="button" aria-label="Smanji tekst dijaloga">−</button><button class="dialogue-size" id="dialogueFontPlus" type="button" aria-label="Uvećaj tekst dijaloga">+</button></div><p class="muted" id="dialogueStatus" style="text-align:center">Dodirni ▶ uz rečenicu ili uključi Auto.</p></div><div id="dialogue" class="hide-translation" aria-label="Dijalog na nemačkom jeziku sa portretima govornika i prevodom"></div></div><div class="footer"><button class="action pale" id="backToDescription">❮ Moj opis</button><button class="action green" id="restart">Nova slika ↻</button></div></section>
 <div class="powered">Powered By De-Max</div></main>
 <script src="../DE_MAX_A1_DIJALOZI_40_DATA_01.js?v=20261018"></script>
 <script src="../DE_MAX_A1_DIJALOZI_40_DATA_02.js?v=recepcija-39-v2"></script>
@@ -262,7 +292,7 @@ const DEFAULT_WORKER_URL="https://automatskiopisslikeidijalozi.nemackidemax13.wo
 const $=id=>document.getElementById(id);
 const labels=["Opis osoba na slici","Razgovor osoba","Mesto osoba na slici","Izgled osoba na slici","Odeća osoba na slici","Kosa osoba na slici","Godine osoba na slici","Detalji na slici","Završni deo","Moj opis slike"];
 const scenes=[...(window.DEMAX_SCENES||[]),...(window.DEMAX_NEW_SCENES||[])].sort((a,b)=>a.n-b.n);
-let fullFontScale=1,fullSteps=[],fullTranslated=false,fullAudioIndex=-1,fullAudioAuto=false,fullAudioLines=[];let imageData="",bank=[],descRows=[],dialogRows=[],currentPage=0,voiceToken=0,paused=false,readingMode="",readingIndex=0;
+let fullFontScale=1,fullSteps=[],fullTranslated=false,fullAudioIndex=-1,fullAudioAuto=false,fullAudioLines=[],dialogueFontScale=1,dialogueAuto=false;let imageData="",bank=[],descRows=[],dialogRows=[],currentPage=0,voiceToken=0,paused=false,readingMode="",readingIndex=0;
 const synth=window.speechSynthesis;
 $("endpoint").value=DEFAULT_WORKER_URL;
 fetch("./shared.js").then(r=>r.text()).then(t=>{let p=t.indexOf("const BANK=");if(p<0)return;let a=p+11,b=t.indexOf("];",a);if(b<0)return;let data=JSON.parse(t.slice(a,b+1));if(Array.isArray(data))bank=data.filter(x=>x?.de&&x?.sr)}).catch(()=>{});
@@ -278,25 +308,112 @@ function sampleBank(){
   closingIndoor:!!x.closingIndoor,closingEnding:!!x.closingEnding}));
 }
 
+function determineDialogueSpeakers(steps){
+ const intro=String(steps?.[0]?.de||"").toLowerCase();
+ const other=String(steps?.[3]?.de||"").toLowerCase();
+ const known=(kind)=>({kind,label:kind==="man"?"Muškarac":kind==="woman"?"Žena":kind==="child"?"Dete":"Osoba"});
+ if(/zwei männer|zwei maenner/.test(intro))return [known("man"),known("man")];
+ if(/zwei frauen/.test(intro))return [known("woman"),known("woman")];
+ if(/zwei kinder/.test(intro))return [known("child"),known("child")];
+ if(/(?:mann|männer).*(?:frau|frauen)|(?:frau|frauen).*(?:mann|männer)/.test(intro))return [known("man"),known("woman")];
+ if(/mann.*kind|kind.*mann/.test(intro))return [known("man"),known("child")];
+ if(/frau.*kind|kind.*frau/.test(intro))return [known("woman"),known("child")];
+ if(/der mann/.test(other)&&/die frau/.test(other))return [known("man"),known("woman")];
+ if(/der mann/.test(other)&&/das kind/.test(other))return [known("man"),known("child")];
+ if(/die frau/.test(other)&&/das kind/.test(other))return [known("woman"),known("child")];
+ return [known("person"),known("person")];
+}
+function dialogueAvatarSvg(kind){
+ const person=kind==="woman"?"woman":kind==="man"?"man":kind==="child"?"child":"person";
+ const hair=person==="woman"?"#613f3b":person==="man"?"#473b34":person==="child"?"#694b33":"#64748b";
+ const body=person==="woman"?"#c36b84":person==="man"?"#487cad":person==="child"?"#e5a84f":"#7f93ad";
+ const skin=person==="child"?"#ecc49d":"#ecc5a8";
+ const longHair=person==="woman"?'<path d="M13 26 Q12 6 32 7 Q52 6 51 26 L53 53 Q42 57 37 44 L27 44 Q22 57 11 53Z" fill="#613f3b"/>':"";
+ const hairFront=person==="woman"?'<path d="M16 25 Q13 9 31 9 Q47 9 48 24 Q40 22 37 16 Q29 25 16 25Z" fill="#613f3b"/>':person==="child"?'<path d="M18 26 Q12 10 29 10 Q49 9 46 26 L42 20 L36 23 L28 19 L21 25Z" fill="#694b33"/>':person==="man"?'<path d="M17 24 Q15 8 32 8 Q49 9 47 24 L42 19 L34 21 L25 18 L18 25Z" fill="#473b34"/>':'<path d="M18 23 Q19 12 32 12 Q44 12 45 23 Q33 19 18 23Z" fill="#64748b"/>';
+ return '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><rect width="64" height="64" rx="12" fill="#edf4fc"/><ellipse cx="32" cy="65" rx="27" ry="22" fill="'+body+'"/>'+longHair+'<rect x="27" y="40" width="10" height="12" rx="5" fill="'+skin+'"/><ellipse cx="32" cy="30" rx="'+(person==="child"?"15":"14")+'" ry="'+(person==="child"?"17":"19")+'" fill="'+skin+'"/>'+hairFront+'<ellipse cx="27" cy="31" rx="1.6" ry="1.8" fill="#3b3642"/><ellipse cx="37" cy="31" rx="1.6" ry="1.8" fill="#3b3642"/><path d="M28 39 Q32 42 36 39" stroke="#a56d62" stroke-width="1.5" stroke-linecap="round" fill="none"/><path d="M23 45 Q32 54 41 45" fill="none" stroke="#ffffff" stroke-width="1.6" opacity=".5"/></svg>';
+}
 function pageRows(mode){return mode==="desc"?descRows:mode==="dialog"?dialogRows:[]}
 function cleanHighlight(){document.querySelectorAll(".sentence.playing").forEach(el=>el.classList.remove("playing"))}
-function stopSpeech(){voiceToken++;paused=false;readingMode="";readingIndex=0;fullAudioIndex=-1;fullAudioAuto=false;if(synth)synth.cancel();cleanHighlight();updateFullAudioUI()}
-function playRows(mode,index=0){if(!synth){alert("Ovaj pregledač ne podržava izgovor.");return}stopSpeech();readingMode=mode;readingIndex=index;const token=voiceToken;const rows=pageRows(mode);function next(){if(token!==voiceToken||paused)return;if(readingIndex>=rows.length){cleanHighlight();readingMode="";return}const r=rows[readingIndex];cleanHighlight();if(r.element)r.element.classList.add("playing");let u=new SpeechSynthesisUtterance(r.de);u.lang="de-DE";u.rate=.83;u.pitch=1;u.onend=()=>{if(token!==voiceToken)return;readingIndex++;next()};u.onerror=e=>{if(token!==voiceToken)return;if(e.error==="canceled"||e.error==="interrupted")return;readingIndex++;next()};synth.speak(u)}next()}
+function stopSpeech(){voiceToken++;paused=false;readingMode="";readingIndex=0;fullAudioIndex=-1;fullAudioAuto=false;dialogueAuto=false;if(synth)synth.cancel();cleanHighlight();updateFullAudioUI();updateDialogueAudioUI()}
+function playRows(mode,index=0,auto=true){
+ if(!synth){alert("Ovaj pregledač ne podržava izgovor.");return}
+ stopSpeech();readingMode=mode;readingIndex=index;dialogueAuto=mode==="dialog"&&auto;
+ const token=voiceToken,rows=pageRows(mode);
+ function next(){
+  if(token!==voiceToken||paused)return;
+  if(readingIndex>=rows.length||(!auto&&readingIndex>index)){
+   cleanHighlight();readingMode="";dialogueAuto=false;updateDialogueAudioUI();return
+  }
+  const r=rows[readingIndex];cleanHighlight();
+  if(r.element)r.element.classList.add("playing");
+  updateDialogueAudioUI();
+  let u=new SpeechSynthesisUtterance(r.de);u.lang="de-DE";u.rate=.83;u.pitch=1;
+  u.onend=()=>{if(token!==voiceToken)return;readingIndex++;next()};
+  u.onerror=e=>{if(token!==voiceToken)return;if(e.error==="canceled"||e.error==="interrupted")return;readingIndex++;next()};
+  synth.speak(u)
+ }
+ next()
+}
+function updateDialogueAudioUI(){
+ for(let i=0;i<dialogRows.length;i++){
+  const b=dialogRows[i].listen;if(!b)continue;
+  const active=readingMode==="dialog"&&readingIndex===i;
+  b.textContent=active?"■":"▶";b.setAttribute("aria-pressed",String(active));
+ }
+ const auto=$("readDialogue");
+ if(auto){const playing=readingMode==="dialog"&&dialogueAuto;auto.textContent=playing?"■ Auto STOP":"▶ Auto";auto.setAttribute("aria-pressed",String(playing))}
+}
+
 function pauseMode(mode){if(!synth)return;if(readingMode!==mode)return;if(!paused){synth.pause();paused=true;$((mode==="desc"?"descriptionStatus":"dialogueStatus")).textContent="Čitanje pauzirano."}else{synth.resume();paused=false;$((mode==="desc"?"descriptionStatus":"dialogueStatus")).textContent="Čitanje nastavljeno."}}
-function toggleTranslation(area,button){let hidden=area.classList.toggle("hide-translation");button.textContent="Prevod: "+(hidden?"OFF":"ON");button.classList.toggle("on",!hidden)}
-$("translationDialogue").onclick=()=>toggleTranslation($("screen2"),$("translationDialogue"));
+function toggleDialogueTranslation(){
+ const area=$("dialogue"),button=$("translationDialogue");
+ const showing=area.classList.toggle("hide-translation")===false;
+ button.textContent=showing?"Sakrij prevod":"Prevod";button.setAttribute("aria-pressed",String(showing));
+}
+$("translationDialogue").onclick=toggleDialogueTranslation;
+function changeDialogueFont(delta){
+ dialogueFontScale=Math.min(1.5,Math.max(.8,Math.round((dialogueFontScale+delta)*10)/10));
+ $("dialogue").style.setProperty("--dialogue-font-scale",String(dialogueFontScale));
+}
+$("dialogueFontPlus").onclick=()=>changeDialogueFont(.1);
+$("dialogueFontMinus").onclick=()=>changeDialogueFont(-.1);
 $("file").onchange=async e=>{let f=e.target.files[0];if(!f)return;if(!f.type.startsWith("image/")||f.size>12e6){setStatus("Izaberi JPG/PNG/WebP sliku manju od 12 MB.",true);return}try{const bmp=await createImageBitmap(f),cv=document.createElement("canvas"),scale=Math.min(1,1280/Math.max(bmp.width,bmp.height));cv.width=Math.round(bmp.width*scale);cv.height=Math.round(bmp.height*scale);cv.getContext("2d").drawImage(bmp,0,0,cv.width,cv.height);bmp.close();imageData=cv.toDataURL("image/jpeg",.8);for(let i=0;i<3;i++){let img=$("photo"+i);img.src=imageData;img.style.display="block"}const reveal=$("photoReveal");reveal.classList.remove("ready");void reveal.offsetWidth;reveal.classList.add("ready");document.querySelector(".upload").classList.add("has-photo");document.querySelector(".upload-title").textContent="✓ Fotografija dodata";$("uploadHeading").textContent="Dodata slika za opis";$("analyze").disabled=false;setStatus("✓ Fotografija je uspešno dodata.")}catch(err){setStatus("Nije moguće otvoriti sliku.",true)}};
 $("analyze").onclick=async()=>{if(!imageData){setStatus("Izaberi sliku.",true);return}if(!bank.length){setStatus("Baza opisa slike se još učitava. Pokušaj ponovo.",true);return}let url=$("endpoint").value.trim();if(!/^https:\/\//.test(url)){setStatus("Podesi Cloudflare Worker adresu.",true);return}$("analyze").disabled=true;setStatus("AI analizira sliku i priprema opis i dijalog…");
 try{let res=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({image:imageData,scenes:scenes.map(s=>({n:s.n,sr:s.sr,de:s.de,roles:s.roles||"",dialog:(Array.isArray(s.dialog)?s.dialog:[]).map(pair=>({de:String(pair[0]||""),sr:String(pair[1]||"")})),extra:(Array.isArray(s.extra)?s.extra:[]).map(pair=>({de:String(pair[0]||""),sr:String(pair[1]||"")}))})),bankExamples:sampleBank()})});let data=await res.json().catch(()=>({}));if(!res.ok)throw Error(data.error||"HTTP "+res.status);if(!Array.isArray(data.steps)||data.steps.length!==10)throw Error("Nema 10 koraka opisa.");
 $("dialogue").replaceChildren();dialogRows=[];
-(Array.isArray(data.dialogue)?data.dialogue:[]).forEach((l,i)=>{let el=document.createElement("article");el.className="sentence dialog";add(el,"speaker",String(l.speaker||((i%2)?"B":"A")));add(el,"de",String(l.de||""));add(el,"sr",String(l.sr||""));$("dialogue").append(el);if(l.de)dialogRows.push({de:String(l.de),element:el})});
-let scene=scenes.find(s=>s.n===Number(data.sceneNumber));$("scene").textContent=scene?"Situacija "+scene.n+": "+scene.sr:String(data.sceneName||"Dijalog prema slici");$("bankLink").replaceChildren();if(scene){let a=document.createElement("a");a.href="../DE_MAX_A1_40_SITUACIJA_10_DIJALOGA.html?s="+scene.n+"&d=1";a.target="_blank";a.rel="noopener";a.textContent="Otvori originalnih 10 dijaloga: "+scene.sr;$("bankLink").append(a)}
+$("dialogue").classList.add("hide-translation");
+$("translationDialogue").textContent="Prevod";$("translationDialogue").setAttribute("aria-pressed","false");
+dialogueFontScale=1;$("dialogue").style.setProperty("--dialogue-font-scale","1");
+const speakers=determineDialogueSpeakers(data.steps);
+(Array.isArray(data.dialogue)?data.dialogue:[]).forEach((l,i)=>{
+ const de=String(l.de||"").trim(),sr=String(l.sr||"").trim();
+ if(!de)return;
+ const role=String(l.speaker||((i%2)?"B":"A")).toUpperCase()==="B"?"B":"A";
+ const identity=speakers[role==="A"?0:1];
+ const el=document.createElement("article");el.className="sentence dialog dialogue-card";
+ const portrait=document.createElement("div");portrait.className="dialogue-portrait";
+ portrait.setAttribute("role","img");portrait.setAttribute("aria-label","Ilustracija glave: "+identity.label);
+ portrait.innerHTML=dialogueAvatarSvg(identity.kind);el.append(portrait);
+ const content=document.createElement("div");content.className="dialogue-copy";
+ const speaker=document.createElement("div");speaker.className="dialogue-speaker";speaker.textContent="Govornik "+role+" · "+identity.label;content.append(speaker);
+ add(content,"de",de);if(sr)add(content,"sr",sr);el.append(content);
+ const listen=document.createElement("button");listen.type="button";listen.className="dialogue-play";listen.textContent="▶";
+ listen.setAttribute("aria-pressed","false");listen.setAttribute("aria-label","Poslušaj nemačku repliku "+(i+1));
+ listen.onclick=()=>{
+  if(readingMode==="dialog"&&readingIndex===i&&!dialogueAuto)stopSpeech();
+  else playRows("dialog",i,false)
+ };
+ el.append(listen);$("dialogue").append(el);
+ dialogRows.push({de,element:el,listen})
+});
+let scene=scenes.find(s=>s.n===Number(data.sceneNumber));
+$("scene").textContent=scene?"Situacija "+scene.n+": "+scene.sr:String(data.sceneName||"Dijalog prema slici");
 // Druga stranica uvek koristi iste AI recenice kao koraci 1–9.
 fullSteps=data.steps.slice(0,9).map((step,i)=>({title:(i+1)+". "+labels[i],de:String(step.de||"").trim(),sr:String(step.sr||"").trim(),lines:normalizeStepLines(step)}));
 fullTranslated=false;renderFullDescription();$("translateFull").textContent="Prevod";$("translateFull").setAttribute("aria-pressed","false");
 setStatus("Opis slike i dijalog su spremni.");view(1);requestAnimationFrame(fitFullDescription);
 }catch(e){setStatus("Greška: "+e.message,true)}finally{$("analyze").disabled=false}};
-$("readDialogue").onclick=()=>{if(readingMode==="dialog"&&paused){synth.resume();paused=false;return}playRows("dialog")};
+$("readDialogue").onclick=()=>{if(readingMode==="dialog"&&dialogueAuto&&!paused){stopSpeech();return}if(readingMode==="dialog"&&paused){synth.resume();paused=false;updateDialogueAudioUI();return}playRows("dialog",0,true)};
 $("pauseDialogue").onclick=()=>pauseMode("dialog");
 $("stopDialogue").onclick=()=>stopSpeech();
 
