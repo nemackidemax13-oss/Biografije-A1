@@ -185,11 +185,11 @@ const groups=[
 /* Dodatnih 20 A1 rečenica: izgled, radnje, predmeti, nakit i plaćanje. */
 groups[0].items.push(["trägt eine Perlenkette","nosi bisernu ogrlicu"]);
 groups[1].items.push(["hat ein schönes Gesicht","ima lepo lice"],["ist geschminkt","je našminkana"]);
-groups[4].items.push(["möchte das Auto reparieren","želi da popravi auto"]);
 groups[1].items.push(["hat graue Augen","ima sive oči"],["hat dunkle Augen","ima tamne oči"],["hat ein rundes Gesicht","ima okruglo lice"],["hat Sommersprossen","ima pege"],["sieht müde aus","izgleda umorno"],["sieht traurig aus","izgleda tužno"],["sieht überrascht aus","izgleda iznenađeno"]);
 groups[2].items.push(["bezahlt mit dem Handy","plaća mobilnim telefonom"]);
 groups.push({label:"Predmeti",items:[["hält ein Buch in der Hand","drži knjigu u ruci"],["hält einen Stift in der Hand","drži olovku u ruci"],["hält eine Flasche Wasser in der Hand","drži flašu vode u ruci"],["hält einen Regenschirm","drži kišobran"],["hält eine Blume in der Hand","drži cvet u ruci"],["trägt einen Rucksack","nosi ranac"]]});
 groups.push({label:"Radnje",items:[["schaut nach links","gleda ulevo"],["schaut nach rechts","gleda udesno"],["zeigt auf etwas","pokazuje na nešto"],["telefoniert","telefonira"],["schreibt eine Nachricht","piše poruku"]]});
+groups[4].items.push(["möchte das Auto reparieren","želi da popravi auto"]);
 /* Izabrati samo ono što zaista odgovara slici. */
 let role=0,group=0,item=0,sceneIndex=0;const $d=id=>document.getElementById(id);
 const beardTerms=new Set(["hat einen Bart","hat einen Schnurrbart","hat einen kurzen Bart","hat einen langen Bart"]);
