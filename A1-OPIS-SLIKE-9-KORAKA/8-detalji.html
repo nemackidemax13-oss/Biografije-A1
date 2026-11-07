@@ -4,6 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#14366b">
+<script>
+/* Svako novo otvaranje stranice počinje od vrha, uključujući povratak iz istorije. */
+if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+function demaxStartAtTop(){ window.scrollTo({top:0,left:0,behavior:"instant"}); document.documentElement.scrollTop=0; document.body.scrollTop=0; }
+window.addEventListener("pageshow",()=>{demaxStartAtTop();requestAnimationFrame(demaxStartAtTop);});
+window.addEventListener("load",demaxStartAtTop);
+</script>
 <title>DE-MAX A1 | Detalji na slici — 10 koraka opisa slike</title>
 <link rel="stylesheet" href="./shared.css?v=20261107-lepa-armbanduhr-tri-roda-v40"><style>
 body[data-step-page="7"] #sceneFilters,body[data-step-page="7"] #sceneAll,body[data-step-page="7"] #categoryCount,body[data-step-page="7"] #phrases,body[data-step-page="7"] .pagination{display:none!important}
