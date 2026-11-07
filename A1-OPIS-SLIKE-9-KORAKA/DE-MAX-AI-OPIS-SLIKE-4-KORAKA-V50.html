@@ -511,6 +511,45 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
  #screen2 .full-photo-line{flex-basis:clamp(60px,12dvh,95px)!important;height:clamp(60px,12dvh,95px)!important}
 }
 @media(prefers-reduced-motion:reduce){#screen1 .summary-reading .speech-word{transition:none}}
+
+/* DE-MAX A1 V52 - reclaim vertical space on Moj opis and learning pages. */
+#screen1 .summary-status{
+ position:absolute!important;width:1px!important;height:1px!important;
+ padding:0!important;margin:-1px!important;overflow:hidden!important;
+ clip:rect(0,0,0,0)!important;clip-path:inset(50%)!important;
+ white-space:nowrap!important;border:0!important;
+}
+#screen1 .summary-panel{gap:2px!important;padding:3px 4px!important}
+#screen1 .summary-title{font-size:11px!important;line-height:1.1!important;margin:0!important}
+#screen1 .summary-label{font-size:9px!important;line-height:1.1!important;margin:0!important}
+#screen1 .summary-controls{gap:2px!important}
+#screen1 .summary-controls button{
+ min-height:19px!important;height:19px!important;
+ padding:1px 3px!important;border-radius:4px!important;
+ font-size:8px!important;line-height:16px!important;
+}
+#screen1 .summary-controls .summary-pause{
+ flex:0 0 22px!important;max-width:22px!important;
+}
+#screen1 .summary-controls .summary-size{
+ flex:0 0 21px!important;max-width:21px!important;
+ font-size:12px!important;
+}
+#screen1 .summary-editor-wrap{flex:1 1 auto!important;min-height:0!important}
+#screen1 .footer,#screen2 .footer,#screen3 .footer{
+ padding:3px 6px calc(3px + env(safe-area-inset-bottom))!important;gap:5px!important;
+}
+#screen1 .footer .action,#screen2 .footer .action,#screen3 .footer .action{
+ min-height:29px!important;height:29px!important;
+ padding:3px 5px!important;border-radius:6px!important;
+ font-size:10px!important;line-height:1.15!important;
+}
+@media(max-height:650px){
+ #screen1 .summary-controls button{height:18px!important;min-height:18px!important;font-size:7.5px!important}
+ #screen1 .footer .action,#screen2 .footer .action,#screen3 .footer .action{
+  min-height:27px!important;height:27px!important
+ }
+}
 </style></head><body><main class="app">
 <header class="header"><h1>Opis slike</h1></header>
 <section class="screen active" id="screen0"><div class="scroll"><div class="panel"><h2 class="title" id="uploadHeading">Ubaci sliku za opis</h2><label class="upload"><span class="upload-icon">📷</span><span class="upload-title">Izaberi fotografiju</span><span class="upload-sub">Dodirni ovde za galeriju ili kameru</span><input id="file" type="file" accept="image/*"></label><div class="photo-reveal" id="photoReveal"><span class="photo-glow" aria-hidden="true"></span><img class="picture" id="photo0" alt="Izabrana slika"><span class="photo-success" aria-hidden="true">✓</span><span class="sparkle sp1" aria-hidden="true">✦</span><span class="sparkle sp2" aria-hidden="true">✧</span><span class="sparkle sp3" aria-hidden="true">✦</span></div><p class="status" id="status">Prvo izaberi sliku.</p></div><div class="demax-a1-brand" aria-label="De-Max A1"><span>De-Max</span> <strong>A1</strong></div><input id="endpoint" type="hidden" value="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev"></div><div class="footer upload-footer"><button class="action green" id="analyze" disabled>Automatski opiši sliku</button></div></section>
@@ -529,7 +568,7 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
  <label class="summary-label" for="summaryGerman">Moj kompletan opis na nemačkom</label>
  <div class="summary-editor-wrap"><textarea id="summaryGerman" class="summary-editor" lang="de" spellcheck="false" aria-label="Kompletan opis slike na nemačkom koji možeš uređivati"></textarea><div id="summaryReading" class="summary-reading" lang="de" role="status" aria-label="Označavanje nemačkog teksta tokom izgovora" hidden></div></div>
  <div id="summarySerbian" class="summary-serbian" lang="sr" hidden aria-label="Srpski prevod kompletnog opisa"></div>
- <p id="summaryStatus" class="summary-status" role="status" aria-live="polite">▶ Auto čita ceo tekst na nemačkom.</p>
+ <p id="summaryStatus" class="summary-status" role="status" aria-live="polite" aria-atomic="true"></p>
 </div></div><div class="footer"><button class="action pale" type="button" id="summaryBack">❮ Slika</button><button class="action green" type="button" id="summaryDetail">Detaljan opis ❯</button></div></section>
 <section class="screen" id="screen2"><div class="scroll full-description-scroll"><div class="panel full-description-panel">
  <div class="full-photo-line"><img class="picture small" id="photo2" alt="Slika za detaljan opis"></div><h2 class="detail-title">3. Detaljan opis slike</h2>
@@ -712,7 +751,7 @@ $("summarySerbian").textContent=summarySR||"Prevod trenutno nije dostupan.";
 $("summarySerbian").hidden=true;
 $("summaryTranslate").textContent="Prevod";
 $("summaryTranslate").setAttribute("aria-pressed","false");
-$("summaryStatus").textContent="▶ Auto čita ceo tekst na nemačkom.";
+$("summaryStatus").textContent="";
 summaryFontScale=1;summaryEdited=false;updateSummaryFont();
 fullTranslated=false;renderFullDescription();$("translateFull").textContent="Prevod";$("translateFull").setAttribute("aria-pressed","false");
 setStatus("Moj opis, detaljan opis i dijalog su spremni.");view(1);
