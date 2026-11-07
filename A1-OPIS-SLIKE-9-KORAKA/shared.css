@@ -1620,3 +1620,8 @@ body[data-step-page="8"] #endChoices .phrase .sound{
  body[data-step-page="3"] #phrases .phrase .plus,
  body[data-step-page="8"] #endChoices .phrase .plus{min-width:24px!important;width:24px!important;height:24px!important}
 }
+
+/* Lupa se ne prikazuje na 5. odeći, 6. kosi i 7. godinama; njihovi izbori i polja ostaju. */
+body[data-step-page="4"] #openSearch,
+body[data-step-page="5"] #openSearch,
+body[data-step-page="6"] #openSearch{display:none!important}

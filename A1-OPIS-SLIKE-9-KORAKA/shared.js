@@ -937,26 +937,60 @@ function source(){
  return ids;
 }
 
-/* Pretraga statičkih rečenica po nemačkom i srpskom; ostaje lokalna i radi i u iframe-u. */
-const SEARCHABLE_CATEGORIES=new Set(["start","extra","places","mann","frau","kind"]);
-const SEARCH_INDEX=BANK.map((entry,i)=>({entry,i})).filter(({entry})=>SEARCHABLE_CATEGORIES.has(entry.cat));
+/* Pretraga po delu aplikacije koji je učenik otvorio.
+   Korak 9 pretražuje i rečenice dodate nakon učitavanja shared.js. */
 function searchNormalize(text){
  return String(text).toLowerCase().replace(/ß/g,"ss").normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim();
 }
+function pageSearchIndex(){
+ const currentPage=Number(document.body.dataset.stepPage),ids=[];
+ if(currentPage===0){
+  ids.push(...personDescriptionIds());
+ }else if(currentPage===1){
+  for(let i=0;i<BANK.length;i++){const e=BANK[i];if(e.cat==="start"&&i>=6&&!e.personExample&&!CLOSING_SENTENCES.includes(e.de))ids.push(i)}
+ }else if(currentPage===2){
+  for(let i=0;i<BANK.length;i++)if(BANK[i].cat==="places")ids.push(i);
+ }else if(currentPage===3){
+  for(let i=0;i<BANK.length;i++){
+   const e=BANK[i];
+   if(["mann","frau","kind"].includes(e.cat)&&!isTransferredPersonDetail(e)&&!isHairOnlyPersonSentence(e))ids.push(i);
+  }
+ }else if(currentPage===7){
+  for(let i=0;i<BANK.length;i++){const e=BANK[i];if(e.cat==="extra"||isTransferredPersonDetail(e))ids.push(i)}
+ }else if(currentPage===8){
+  for(let i=0;i<BANK.length;i++){
+   const e=BANK[i];
+   if((e.cat==="closing"||(e.cat==="extra"&&Array.isArray(e.sceneDetailIds)&&e.sceneDetailIds.length))
+      &&e.de!=="Die Personen sprechen miteinander."&&e.de!=="Das Foto wurde drinnen aufgenommen.")ids.push(i);
+  }
+ }else if(currentPage===9){
+  ids.push(...orderedChosen());
+ }else{
+  for(let i=0;i<BANK.length;i++)if(["start","extra","places","mann","frau","kind"].includes(BANK[i].cat))ids.push(i);
+ }
+ const seen=new Set();
+ return ids.filter(i=>{const e=BANK[i];if(!e||!e.de||seen.has(e.de))return false;seen.add(e.de);return true})
+  .map(i=>({entry:BANK[i],i}));
+}
 function renderSearchResults(){
  const input=$("#searchInput"),q=searchNormalize(input.value),target=$("#searchResults"),count=$("#searchCount");
- if(!q){count.textContent="Unesi reč";target.innerHTML='<p class="search-empty">Upiši reč na nemačkom ili srpskom da pronađeš rečenicu.</p>';return}
+ if(!q){count.textContent="Unesi reč";target.innerHTML='<p class="search-empty">Upiši reč na nemačkom ili srpskom da pronađeš rečenicu ovog koraka.</p>';return}
  const words=q.split(/\s+/).filter(Boolean);
- const results=SEARCH_INDEX.filter(({entry})=>{const content=searchNormalize(entry.de+" "+entry.sr);return words.every(w=>content.includes(w))});
+ const results=pageSearchIndex().filter(({entry})=>{const content=searchNormalize(entry.de+" "+entry.sr);return words.every(w=>content.includes(w))});
  const visible=results.slice(0,60);
  count.textContent=results.length+" pronađeno";
  target.innerHTML=visible.length?visible.map(({entry,i})=>{
   const isSelected=chosen.includes(i);
   return '<div class="search-result '+(isSelected?'selected':'')+'"><button type="button" class="search-result-add" data-search-add="'+i+'" aria-pressed="'+isSelected+'"><span class="search-plus">'+(isSelected?'✓':'❯')+'</span><span class="search-result-text"><strong>'+escapeHTML(entry.de)+'</strong><small>'+escapeHTML(entry.sr)+'</small></span></button><button type="button" class="search-result-sound" data-search-sound="'+i+'" aria-label="Poslušaj rečenicu">🔊</button></div>'
- }).join(""):'<p class="search-empty">Nema pronađenih rečenica. Probaj drugu reč.</p>';
+ }).join(""):'<p class="search-empty">Nema pronađenih rečenica u ovom koraku. Probaj drugu reč.</p>';
  if(results.length>visible.length)count.textContent=results.length+" (prvih "+visible.length+")";
 }
 function openSentenceSearch(){
+ // Na 8. koraku veća baza detalja i 41 situacija već imaju namensku pretragu.
+ if(document.body.dataset.stepPage==="7"){
+  const input=$("#detailVocabSearchInput");
+  if(input){input.focus({preventScroll:false});return}
+ }
  $("#searchDialog").hidden=false;
  $("#openSearch").setAttribute("aria-expanded","true");
  renderSearchResults();
@@ -966,6 +1000,7 @@ function closeSentenceSearch(){
  $("#searchDialog").hidden=true;
  $("#openSearch").setAttribute("aria-expanded","false");
  $("#openSearch").focus({preventScroll:true});
+ if(document.body.dataset.stepPage==="8"&&typeof window.dmxRefreshEndingChoices==="function")window.dmxRefreshEndingChoices();
 }
 
 function renderSample(){
