@@ -458,6 +458,28 @@ Odgovori SAMO JSON objektom {steps:[tačno 10 objekata {de,sr:""}],description:"
   chosen[i].sr=chosen[i].lines.map(x=>x.sr).join(" ");
   for(const x of moved)if(!finalStep.lines.some(y=>y.de===x.de))finalStep.lines.push(x);
  }
+ // Reject any ready-made weather/purchase statement that contradicts or
+ // exceeds what the independent vision pass actually established.
+ const confirmedOutside=observation.indoor===false;
+ const confirmedWeather=String(observation.weather||"");
+ const weatherMatches=de=>confirmedOutside&&(
+  confirmedWeather==="sunny"&&/^(?:Das Wetter ist sonnig\.|Das Wetter ist schön\.|Es ist sonnig\.)$/.test(de)||
+  confirmedWeather==="rainy"&&/^Es regnet\.$/.test(de)||
+  confirmedWeather==="cloudy"&&/^Es ist bewölkt\.$/.test(de)
+ );
+ const observedShopping=observation.shopping&&typeof observation.shopping==="object"?observation.shopping:null;
+ const confirmedBuy=observedShopping?.visible===true?
+  (shoppingActors.find(x=>x[0]===observedShopping.subject)&&shoppingNouns.find(x=>x[0]===observedShopping.item)):false;
+ const verifiedPurchase=confirmedBuy?
+  "Ich denke, "+shoppingActors.find(x=>x[0]===observedShopping.subject)[1]+" "+
+  shoppingActors.find(x=>x[0]===observedShopping.subject)[2]+" "+
+  shoppingNouns.find(x=>x[0]===observedShopping.item)[1]+".":"";
+ finalStep.lines=finalStep.lines.filter(x=>
+  (!weatherPhrases.test(x.de)||weatherMatches(x.de))&&
+  (!/^Ich denke, (?:die Personen|der Mann|die Frau|das Kind) kauf(?:en|t) /.test(x.de)||x.de===verifiedPurchase)
+ );
+ finalStep.de=finalStep.lines.map(x=>x.de).join(" ");
+ finalStep.sr=finalStep.lines.map(x=>x.sr).join(" ");
  const observedBackground=new Set(Array.isArray(observation.backgroundObjects)?observation.backgroundObjects:[]);
  let backgroundAdds=0;
  for(const [name,noun] of backgroundClosing){
