@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#14366b">
 <title>DE-MAX A1 | Detalji na slici — 10 koraka opisa slike</title>
-<link rel="stylesheet" href="./shared.css?v=20261107-predmeti-uvek-vidljivi-brojevi-v32"><style>
+<link rel="stylesheet" href="./shared.css?v=20261107-predmeti-41-situacija-a1-radnje-v34"><style>
 body[data-step-page="7"] #sceneFilters,body[data-step-page="7"] #sceneAll,body[data-step-page="7"] #categoryCount,body[data-step-page="7"] #phrases,body[data-step-page="7"] .pagination{display:none!important}
 #detailPicker{padding:6px 0 12px}#detailPicker .dp-roles,#detailPicker .dp-groups{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0}#detailPicker button{cursor:pointer}#detailPicker .dp-tab{padding:9px 12px;border-radius:11px;border:1px solid #bbd2ef;background:#eef5ff;color:#194d8d;font-weight:700}#detailPicker .dp-tab.active{background:#2364b5;color:white;border-color:#2364b5}#detailPicker .dp-line{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 8px;background:#f5f8ff;border-radius:12px;margin:8px 0}#detailPicker .dp-value{flex:1;min-width:0;text-align:center;font-weight:750;color:#15396a}#detailPicker .dp-arrow{border:0;border-radius:9px;padding:9px 13px;background:#c51e37;color:white;font-size:21px}#detailPicker .dp-preview{border:1px solid #c9dbee;border-radius:14px;padding:12px;margin-top:12px}#detailPicker .dp-preview strong,#detailPicker .dp-preview small{display:block;margin-bottom:5px}#detailPicker .dp-preview small{color:#526887}#detailPicker .dp-actions{display:flex;gap:8px;justify-content:flex-end}#detailPicker .dp-actions button{padding:10px 13px;border:0;border-radius:10px;font-weight:750}#dpListen{background:#eaf2fd}#dpAdd{background:#17874c;color:white}#dpAdd.selected{background:#d72641!important;color:#fff!important;border:1px solid #bd1935!important}#detailPicker .dp-preview.dp-selected{background:#fff3f5!important;box-shadow:inset 0 0 0 2px #ed1636!important;border-color:#ed1636!important}#detailPicker .dp-preview.dp-selected strong{color:#b51b35!important}#detailPicker h2{font-size:19px;color:#15569c;margin:4px 0}
 
@@ -169,8 +169,8 @@ body[data-step-page="7"] #sceneFilters,body[data-step-page="7"] #sceneAll,body[d
   <button id="wizardForward" type="button" class="wizard-forward" aria-label="Dalje: 9. Završne rečenice"><span class="next-label">Dalje: 9. Završne rečenice</span><span class="next-arrow" aria-hidden="true">❯</span></button>
  </footer>
 </main>
-<script src="./shared.js?v=20261107-numerisane-41-situacije-centralna-pretraga-v30"></script>
-<script src="./8-predmeti-41-situacija.js?v=20261107-detalji-41-situacija-predmeti-v18"></script>
+<script src="./shared.js?v=20261107-predmeti-41-situacija-a1-radnje-v34"></script>
+<script src="./8-predmeti-41-situacija.js?v=20261107-predmeti-41-situacija-a1-radnje-v34"></script>
 <script>
 (function(){
 const people=[{key:"mann",label:"Čovek",de:"Er",sr:"On"},{key:"frau",label:"Žena",de:"Sie",sr:"Ona"},{key:"kind",label:"Dete",de:"Es",sr:"Ono"}];
@@ -205,10 +205,13 @@ function allowedDetail(de){
 /* Brza pretraga detalja; identično vizuelno polju u 6. koraku. */
 const detailSearchRoot=$d("detailVocabSearch"),detailSearchInput=$d("detailVocabSearchInput");
 const detailSearchList=$d("detailVocabSearchResults"),detailSearchClear=$d("detailVocabSearchClear");
-const detailSearchEntries=groups.flatMap((g,groupIndex)=>g.items.map(([de,sr])=>({groupIndex,group:g.label,de,sr,search:sr+" "+de+" "+g.label})))
- .concat(SCENE_DATA.flatMap((scene,sceneIndex)=>(SCENE_HOLDINGS[scene.id]||[]).map(key=>{
-  const [de,sr]=HOLD_CATALOG[key];return {groupIndex:3,sceneIndex,group:scene.label,de,sr,search:sr+" "+de+" "+scene.label+" predmeti"};
- })));
+const detailSearchEntries=groups.flatMap((g,groupIndex)=>groupIndex===3?[]:g.items.map(([de,sr])=>({groupIndex,group:g.label,de,sr,search:sr+" "+de+" "+g.label})))
+ .concat(SCENE_DATA.flatMap((scene,sceneIndex)=>{
+  const rows=[...(SCENE_ACTIONS[scene.id]||[]),...(SCENE_HOLDINGS[scene.id]||[]).map(key=>HOLD_CATALOG[key])];
+  const seen=new Set();
+  return rows.filter(([de])=>{if(seen.has(de))return false;seen.add(de);return true})
+   .map(([de,sr])=>({groupIndex:3,sceneIndex,group:scene.label,de,sr,search:sr+" "+de+" "+scene.label+" predmeti radnje"}));
+ }));
 let matchingDetails=[];
 function updateDetailSearch(){
  const q=searchNormalize(detailSearchInput.value);
@@ -241,7 +244,8 @@ detailSearchList.addEventListener("click",e=>{const b=e.target.closest("[data-de
 detailSearchClear.addEventListener("click",()=>{detailSearchInput.value="";updateDetailSearch();detailSearchInput.focus({preventScroll:true})});
 document.addEventListener("pointerdown",e=>{if(!detailSearchRoot.contains(e.target)){detailSearchList.hidden=true;detailSearchInput.setAttribute("aria-expanded","false")}});
 function visibleItems(){
- const options=group===3?groups[3].items.concat((SCENE_HOLDINGS[SCENE_DATA[sceneIndex].id]||[]).map(key=>HOLD_CATALOG[key])):groups[group].items;
+ const sceneId=SCENE_DATA[sceneIndex].id;
+ const options=group===3?[...(SCENE_ACTIONS[sceneId]||[]),...(SCENE_HOLDINGS[sceneId]||[]).map(key=>HOLD_CATALOG[key])]:groups[group].items;
  const used=new Set();
  return options.filter(v=>{if(!v||!allowedDetail(v[0])||used.has(v[0]))return false;used.add(v[0]);return true});
 }
@@ -258,16 +262,16 @@ function render(){
  $d("dpSelect").setAttribute("aria-pressed",String(active));$d("dpSelect").setAttribute("aria-label",active?"Ukloni rečenicu iz opisa":"Dodaj rečenicu u opis");$d("dpCheck").textContent=active?"✓":"❯";$d("dpGerman").closest(".dp-preview").classList.toggle("dp-selected",active);
 }
 $d("dpRoles").onclick=e=>{const b=e.target.closest("[data-roleidx]");if(b){role=Number(b.dataset.roleidx);item=0;render();updateDetailSearch()}};
-$d("dpGroups").onclick=e=>{const b=e.target.closest("[data-groupidx]");if(b){group=Number(b.dataset.groupidx);item=group===3?6:0;render()}};
+$d("dpGroups").onclick=e=>{const b=e.target.closest("[data-groupidx]");if(b){group=Number(b.dataset.groupidx);item=0;render()}};
 $d("dpPrev").onclick=()=>{item=(item-1+visibleItems().length)%visibleItems().length;render()};
 $d("dpNext").onclick=()=>{item=(item+1)%visibleItems().length;render()};
 $d("dpListen").onclick=()=>{stop();utter(current().de)};
 $d("dpSelect").onclick=()=>{const v=current(),existing=chosen.find(k=>BANK[k]?.cat==="custom-detail"&&BANK[k]?.de===v.de);if(existing!==undefined)addOrRemove(existing);else{const i=BANK.length;BANK.push(v);addOrRemove(i)}render()};
 $d("dpSceneSelect").innerHTML=SCENE_DATA.map((s,i)=>'<option value="'+i+'">'+(i+1)+". "+escapeHTML(s.label)+'</option>').join("");
-function changeScene(delta){sceneIndex=(sceneIndex+delta+SCENE_DATA.length)%SCENE_DATA.length;item=6;render()}
+function changeScene(delta){sceneIndex=(sceneIndex+delta+SCENE_DATA.length)%SCENE_DATA.length;item=0;render()}
 $d("dpScenePrev").onclick=()=>changeScene(-1);
 $d("dpSceneNext").onclick=()=>changeScene(1);
-$d("dpSceneSelect").onchange=e=>{sceneIndex=Math.max(0,Math.min(SCENE_DATA.length-1,Number(e.target.value)||0));item=6;render()};
+$d("dpSceneSelect").onchange=e=>{sceneIndex=Math.max(0,Math.min(SCENE_DATA.length-1,Number(e.target.value)||0));item=0;render()};
 render();
 const title=document.getElementById("wizardTitle");if(title)title.textContent="8. Detalji osobe";
 })();
