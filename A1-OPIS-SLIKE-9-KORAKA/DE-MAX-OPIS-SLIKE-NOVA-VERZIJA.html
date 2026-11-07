@@ -172,6 +172,37 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
   font-weight:650!important;
   letter-spacing:.02px;
 }
+
+/* Wider and lower full-description photo, reaching the bottom separator. */
+#screen1 .full-description-panel{padding:3px 2px!important;gap:2px!important}
+#screen1 .full-photo-line{
+  display:flex!important;
+  align-items:flex-end!important;
+  justify-content:center!important;
+  width:100%!important;
+  height:clamp(130px,27dvh,245px)!important;
+  min-height:0!important;
+  flex:none!important;
+  margin:0!important;
+  padding:0 0 1px!important;
+  border-bottom:1px solid #d7e3f0;
+  overflow:hidden;
+}
+#screen1 .full-photo-line .picture{
+  display:block!important;
+  width:100%!important;
+  max-width:100%!important;
+  height:100%!important;
+  max-height:none!important;
+  object-fit:contain!important;
+  object-position:center bottom!important;
+  margin:0!important;
+  border-radius:6px 6px 0 0!important;
+}
+@media(max-height:650px){
+ #screen1 .full-photo-line{height:clamp(100px,22dvh,160px)!important}
+ #screen1 .full-photo-line .picture{max-height:none!important}
+}
 </style></head><body><main class="app">
 <header class="header"><h1>Opis slike</h1></header>
 <div class="top-progress"><div class="progress active" id="progress0">1 · Slika</div><div class="progress" id="progress1">2 · Moj opis</div><div class="progress" id="progress2">3 · Dijalog</div></div>
