@@ -249,22 +249,134 @@ Odgovori SAMO JSON objektom {steps:[tačno 10 objekata {de,sr:""}],description:"
  }
  put("Das war meine Bildbeschreibung.","To je bio moj opis slike.");
 
+ // Common A1 visual objects: permitted fixed sentence patterns; only selected
+ // after the vision model explicitly confirms each object is visible.
+ const backgroundTemplates=[
+  ["Tisch","Auf dem Bild sehe ich einen Tisch.","Na slici vidim sto."],
+  ["Stuhl","Auf dem Bild sehe ich einen Stuhl.","Na slici vidim stolicu."],
+  ["Fenster","Auf dem Bild sehe ich ein Fenster.","Na slici vidim prozor."],
+  ["Baum","Auf dem Bild sehe ich einen Baum.","Na slici vidim drvo."],
+  ["Bäume","Auf dem Bild sehe ich Bäume.","Na slici vidim drveće."],
+  ["Blumen","Auf dem Bild sehe ich Blumen.","Na slici vidim cveće."],
+  ["Auto","Auf dem Bild sehe ich ein Auto.","Na slici vidim automobil."],
+  ["Brot","Auf dem Bild sehe ich Brot.","Na slici vidim hleb."],
+  ["Regal","Auf dem Bild sehe ich ein Regal.","Na slici vidim policu."],
+  ["Tür","Auf dem Bild sehe ich eine Tür.","Na slici vidim vrata."],
+  ["Straße","Auf dem Bild sehe ich eine Straße.","Na slici vidim ulicu."],
+  ["Sonne","Auf dem Bild sehe ich die Sonne.","Na slici vidim sunce."],
+  ["Buch","Auf dem Bild sehe ich ein Buch.","Na slici vidim knjigu."],
+  ["Hund","Auf dem Bild sehe ich einen Hund.","Na slici vidim psa."],
+  ["Katze","Auf dem Bild sehe ich eine Katze.","Na slici vidim mačku."],
+  ["Wasser","Auf dem Bild sehe ich Wasser.","Na slici vidim vodu."]
+ ];
+ for(const [,de,sr] of backgroundTemplates)put(de,sr);
+ // Hair without a reliably visible color/length remains an allowed A1 sentence.
+ for(const actor of actors){
+  for(const [dLength,sLength] of [["kurze","kratku"],["lange","dugu"],["mittellange","srednje dugu"],["lockige","kovrdžavu"],["glatte","ravnu"]])
+   put(actor.de+" hat "+dLength+" Haare.",actor.sr+" ima "+sLength+" kosu.");
+  for(const [dColor,sColor] of hairColors)
+   put(actor.de+" hat "+dColor+" Haare.",actor.sr+" ima "+sColor+" kosu.");
+ }
+
  const segment=value=>{
   const s=norm(value);
   if(!s)return [];
   return s.split(/(?<=[.!?])\s+(?=[A-ZÄÖÜ„"0-9])/u).map(x=>norm(x)).filter(Boolean);
  };
  const seen=new Set();let rejected=0;
+ const selectedIds=result.stepSentenceIds||{};
  const chosen=result.steps.map((raw,i)=>{
   const lines=[];
-  for(const s of segment(raw?.de)){
-   const exact=allowed.get(s);
+  const ids=Array.isArray(selectedIds)?selectedIds[i]:selectedIds[String(i)];
+  const validIds=(Array.isArray(ids)?ids:[]).filter(x=>Number.isInteger(x)&&x>=0&&x<shortlist.length);
+  const candidates=[
+   ...segment(raw?.de),
+   ...validIds.map(id=>shortlist[id]?.de).filter(Boolean)
+  ];
+  for(const phrase of candidates){
+   const exact=allowed.get(norm(phrase));
    if(!exact){rejected++;continue;}
-   if(seen.has(exact.de)){continue;}
+   if(seen.has(exact.de))continue;
    seen.add(exact.de);lines.push({...exact});
   }
   return {de:lines.map(x=>x.de).join(" "),sr:lines.map(x=>x.sr).join(" "),lines};
  });
+ // Deterministic rescue for sections 4-8: extract ONLY photographed details
+ // already listed by the independent vision pass, never invent facts.
+ const append=(stepIndex,de)=>{
+  const exact=allowed.get(norm(de));
+  if(!exact||seen.has(exact.de))return false;
+  const step=chosen[stepIndex];
+  step.lines.push({...exact});seen.add(exact.de);
+  step.de=step.lines.map(x=>x.de).join(" ");
+  step.sr=step.lines.map(x=>x.sr).join(" ");
+  return true;
+ };
+ const peopleObserved=Array.isArray(observation.people)?observation.people.slice(0,8):[];
+ const legalColor=new Set(colors.map(x=>x.de));
+ const legalGarment=new Map(garments.map(x=>[x[0],x[1]]));
+ const legalHairColor=new Set(hairColors.map(x=>x[0]));
+ const legalHairLength=new Set(hairForms.map(x=>x[0]));
+ const legalEyes=new Set(eyes.map(x=>x[0]));
+ const observedActors=peopleObserved.map(o=>({
+  info:o,
+  actor:actors.find(a=>a.de===(o?.kind==="Mann"?"Der Mann":o?.kind==="Frau"?"Die Frau":o?.kind==="Kind"?"Das Kind":""))
+ })).filter(x=>x.actor);
+ for(const {info,actor} of observedActors){
+  // Section 4: appearance — include BOTH people if visible.
+  const stature=String(info.stature||"");
+  if(["groß","klein","schlank","sportlich"].includes(stature))
+   append(3,actor.de+" ist "+stature+".");
+  if(info.glasses===true)append(3,actor.de+" trägt eine Brille.");
+  const face=String(info.faceShape||"");
+  if(face==="oval"||face==="rund")
+   append(3,actor.de+" hat ein "+(face==="oval"?"ovales":"rundes")+" Gesicht.");
+  const eye=String(info.eyeColor||"");
+  if(["blau","braun","grün","grau"].includes(eye))
+   append(3,actor.de+" hat "+({blau:"blaue",braun:"braune",grün:"grüne",grau:"graue"})[eye]+" Augen.");
+  if(actor.de==="Der Mann"){
+   if(info.moustache===true)append(3,"Der Mann hat einen Schnurrbart.");
+   if(["kurzen","langen","grauen","schwarzen","braunen"].includes(info.beard))
+    append(3,"Der Mann hat einen "+info.beard+" Bart.");
+  }
+  if(["steht","sitzt"].includes(info.posture)&&["links","rechts","Mitte"].includes(info.position))
+   append(3,actor.de+" "+info.posture+" "+(info.position==="Mitte"?"in der Mitte":info.position)+".");
+  // Section 5: clothing — each visible garment, its color if confidently known.
+  for(const garment of (Array.isArray(info.clothes)?info.clothes.slice(0,6):[])){
+   const noun=String(garment?.item||"");
+   if(!legalGarment.has(noun))continue;
+   const gen=legalGarment.get(noun),color=String(garment.color||"");
+   const art={m:"einen",f:"eine",n:"ein",p:""}[gen];
+   const prefix=art?art+" ":"";
+   const suffix={m:"en",f:"e",n:"es",p:"e"}[gen];
+   const colorItem=colors.find(x=>x.de===color);
+   const adj=colorItem?(colorItem.invariable?color:color+suffix)+" ":"";
+   const withColor=actor.de+" trägt "+prefix+adj+noun+".";
+   append(4,withColor)||append(4,actor.de+" trägt "+prefix+noun+".");
+  }
+  // Section 6: hair, in order man/woman/child, with visible length and color.
+  const hair=info.hair&&typeof info.hair==="object"?info.hair:null;
+  const form=String(hair?.length||"");
+  const shade=String(hair?.color||"");
+  if(legalHairLength.has(form)&&legalHairColor.has(shade))
+   append(5,actor.de+" hat "+form+" "+shade+" Haare.");
+  else if(legalHairLength.has(form))append(5,actor.de+" hat "+form+" Haare.");
+  else if(legalHairColor.has(shade))append(5,actor.de+" hat "+shade+" Haare.");
+  // Section 7: approximate age, NEVER an exact biographical claim.
+  const age=Number(info.ageApprox);
+  if(Number.isInteger(age)&&age>=2&&age<=90)
+   append(6,"Ich denke, "+actor.lo+" ist ungefähr "+age+" Jahre alt.");
+  // Section 8: accessories and visible expressions.
+  if(info.watch===true)append(7,actor.de+" trägt eine Armbanduhr.");
+  if(info.earrings===true&&actor.de==="Die Frau")append(7,"Die Frau trägt Ohrringe.");
+  if(info.necklace===true&&actor.de==="Die Frau")append(7,"Die Frau trägt eine Halskette.");
+  if(info.expression==="lächelt")append(7,actor.de+" lächelt.");
+  if(info.expression==="lacht")append(7,actor.de+" lacht.");
+ }
+ // Environment in section 8, but ONLY when confirmed by photo recognition.
+ const visibleObjs=new Set(Array.isArray(observation.backgroundObjects)?observation.backgroundObjects:[]);
+ for(const [word,de] of backgroundTemplates)
+  if(visibleObjs.has(word))append(7,de);
  // DE-MAX bank normally starts "Auf dem Bild sehe ich ...",
  // while the classroom template uses "Auf diesem Bild sehe ich ...".
  // Convert a recognized equivalent rather than rejecting a correct picture description.
