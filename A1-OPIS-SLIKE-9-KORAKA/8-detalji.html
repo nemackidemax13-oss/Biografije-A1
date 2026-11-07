@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#14366b">
 <title>DE-MAX A1 | Detalji na slici — 10 koraka opisa slike</title>
-<link rel="stylesheet" href="./shared.css?v=20261107-kompaktne-kontrole-opisa-v5"><style>
+<link rel="stylesheet" href="./shared.css?v=20261107-pretraga-detalja-v13"><style>
 body[data-step-page="7"] #sceneFilters,body[data-step-page="7"] #sceneAll,body[data-step-page="7"] #categoryCount,body[data-step-page="7"] #phrases,body[data-step-page="7"] .pagination,body[data-step-page="7"] #openSearch{display:none!important}
 #detailPicker{padding:6px 0 12px}#detailPicker .dp-roles,#detailPicker .dp-groups{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0}#detailPicker button{cursor:pointer}#detailPicker .dp-tab{padding:9px 12px;border-radius:11px;border:1px solid #bbd2ef;background:#eef5ff;color:#194d8d;font-weight:700}#detailPicker .dp-tab.active{background:#2364b5;color:white;border-color:#2364b5}#detailPicker .dp-line{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 8px;background:#f5f8ff;border-radius:12px;margin:8px 0}#detailPicker .dp-value{flex:1;min-width:0;text-align:center;font-weight:750;color:#15396a}#detailPicker .dp-arrow{border:0;border-radius:9px;padding:9px 13px;background:#c51e37;color:white;font-size:21px}#detailPicker .dp-preview{border:1px solid #c9dbee;border-radius:14px;padding:12px;margin-top:12px}#detailPicker .dp-preview strong,#detailPicker .dp-preview small{display:block;margin-bottom:5px}#detailPicker .dp-preview small{color:#526887}#detailPicker .dp-actions{display:flex;gap:8px;justify-content:flex-end}#detailPicker .dp-actions button{padding:10px 13px;border:0;border-radius:10px;font-weight:750}#dpListen{background:#eaf2fd}#dpAdd{background:#17874c;color:white}#dpAdd.selected{background:#d72641!important;color:#fff!important;border:1px solid #bd1935!important}#detailPicker .dp-preview.dp-selected{background:#fff3f5!important;box-shadow:inset 0 0 0 2px #ed1636!important;border-color:#ed1636!important}#detailPicker .dp-preview.dp-selected strong{color:#b51b35!important}#detailPicker h2{font-size:19px;color:#15569c;margin:4px 0}
 
@@ -65,6 +65,12 @@ body[data-step-page="7"] #sceneFilters,body[data-step-page="7"] #sceneAll,body[d
  </section>
  <section class="panel" aria-label="Izbor rečenica">
   <div class="paneltitle scene-paneltitle"><strong id="selectorTitle" hidden aria-hidden="true"></strong><div id="sceneFilters" class="scene-filters" role="group" aria-label="Biranje situacije"><button type="button" class="scene-arrow" data-scene-turn="-1" aria-label="Prethodna situacija">❮</button><span id="sceneName" class="scene-name" aria-live="polite" aria-atomic="true">Priroda</span><button type="button" class="scene-arrow" data-scene-turn="1" aria-label="Sledeća situacija">❯</button></div><button type="button" id="sceneAll" class="scene-all" aria-pressed="false">Sve situacije</button><span class="small" id="categoryCount" aria-live="polite"></span></div>
+  
+  <div class="vocab-search" id="detailVocabSearch" role="search" aria-label="Pretraga detalja osobe">
+   <label class="vocab-search-label" for="detailVocabSearchInput"><span aria-hidden="true">⌕</span> <span>PRETRAGA DETALJA</span></label>
+   <div class="vocab-search-field"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.1" fill="none" stroke="currentColor" stroke-width="2.1"/><path d="m15.3 15.3 4.7 4.7" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/></svg><input id="detailVocabSearchInput" type="search" placeholder="Traži na srpskom ili nemačkom…" autocomplete="off" autocapitalize="none" spellcheck="false" aria-label="Pretraži nakit, lice i ostale detalje" aria-controls="detailVocabSearchResults" aria-expanded="false"><button id="detailVocabSearchClear" class="vocab-search-clear" type="button" aria-label="Obriši pretragu" hidden>×</button></div>
+   <div class="vocab-search-results" id="detailVocabSearchResults" aria-label="Pronađeni detalji" hidden></div>
+  </div>
   <div class="rolebar" id="rolebar" hidden aria-label="Izbor osobe"><button data-role="mann" class="active">Čovek</button><button data-role="frau">Žena</button><button data-role="kind">Dete</button></div>
   <div class="modebar" id="modebar" hidden aria-label="Izbor osobina"><button data-mode="description">Opis</button><button data-mode="age" class="active">Godine</button><button data-mode="hair">Kosa</button></div>
   <div class="agebar" id="agebar" hidden aria-label="Interaktivni izbor godina">
@@ -119,6 +125,41 @@ const groups=[
 ];
 let role=0,group=0,item=0;const $d=id=>document.getElementById(id);
 const beardTerms=new Set(["hat einen Bart","hat einen Schnurrbart","hat einen kurzen Bart","hat einen langen Bart"]);
+
+/* Brza pretraga detalja; identično vizuelno polju u 6. koraku. */
+const detailSearchRoot=$d("detailVocabSearch"),detailSearchInput=$d("detailVocabSearchInput");
+const detailSearchList=$d("detailVocabSearchResults"),detailSearchClear=$d("detailVocabSearchClear");
+const detailSearchEntries=groups.flatMap((g,groupIndex)=>g.items.map(([de,sr])=>({groupIndex,group:g.label,de,sr,search:sr+" "+de+" "+g.label})));
+let matchingDetails=[];
+function updateDetailSearch(){
+ const q=searchNormalize(detailSearchInput.value);
+ detailSearchClear.hidden=!q;
+ if(!q){matchingDetails=[];detailSearchList.innerHTML="";detailSearchList.hidden=true;detailSearchInput.setAttribute("aria-expanded","false");return}
+ const words=q.split(/\s+/).filter(Boolean);
+ matchingDetails=detailSearchEntries.filter(e=>words.every(w=>searchNormalize(e.search).includes(w)));
+ detailSearchList.hidden=false;detailSearchInput.setAttribute("aria-expanded","true");
+ detailSearchList.innerHTML=matchingDetails.length
+  ?matchingDetails.map((entry,index)=>'<button class="vocab-search-result" type="button" data-detail-match="'+index+'"><span class="vocab-result-group">'+escapeHTML(entry.group)+'</span><span class="vocab-result-name">'+escapeHTML(entry.sr)+'</span><small lang="de">'+escapeHTML(entry.de)+'</small><span class="vocab-result-arrow" aria-hidden="true">❯</span></button>').join("")
+  :'<p class="vocab-search-empty">Nema rezultata. Probaj drugu reč.</p>';
+}
+function pickDetailSearch(index){
+ const match=matchingDetails[index];if(!match)return;
+ if(beardTerms.has(match.de)&&role!==0)role=0;
+ group=match.groupIndex;
+ item=visibleItems().findIndex(v=>v[0]===match.de);
+ if(item<0)item=0;
+ render();
+ detailSearchInput.value="";updateDetailSearch();detailSearchInput.blur();
+}
+detailSearchInput.addEventListener("input",updateDetailSearch);
+detailSearchInput.addEventListener("focus",()=>{if(detailSearchInput.value.trim())updateDetailSearch()});
+detailSearchInput.addEventListener("keydown",e=>{
+ if(e.key==="Escape"){e.stopPropagation();detailSearchInput.value="";updateDetailSearch();detailSearchInput.blur()}
+ if(e.key==="Enter"&&matchingDetails.length){e.preventDefault();pickDetailSearch(0)}
+});
+detailSearchList.addEventListener("click",e=>{const b=e.target.closest("[data-detail-match]");if(b)pickDetailSearch(Number(b.dataset.detailMatch))});
+detailSearchClear.addEventListener("click",()=>{detailSearchInput.value="";updateDetailSearch();detailSearchInput.focus({preventScroll:true})});
+document.addEventListener("pointerdown",e=>{if(!detailSearchRoot.contains(e.target)){detailSearchList.hidden=true;detailSearchInput.setAttribute("aria-expanded","false")}});
 function visibleItems(){return groups[group].items.filter(v=>role===0||!beardTerms.has(v[0]))}
 function current(){const p=people[role],v=visibleItems()[item];return {cat:"custom-detail",role:p.key,de:p.de+" "+v[0]+".",sr:p.sr+" "+v[1]+".",step:5}}
 function render(){

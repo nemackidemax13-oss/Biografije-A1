@@ -1354,7 +1354,8 @@ body[data-step-page="9"] .wizard-footer .wizard-forward:active{
 
 /* Centrirana, mobilna pretraga reči na koracima 5 (odeća) i 6 (kosa). */
 body[data-step-page="4"] .vocab-search,
-body[data-step-page="5"] .vocab-search{
+body[data-step-page="5"] .vocab-search,
+body[data-step-page="7"] .vocab-search{
  position:relative;z-index:20;flex:0 0 auto;min-height:66px;
  display:flex;flex-direction:column;align-items:center;justify-content:center;
  gap:4px;padding:6px 10px 7px;
@@ -1381,7 +1382,7 @@ body[data-step-page="5"] .vocab-search{
 .vocab-result-arrow{flex:none;color:#d21f3c;font-size:12px}
 .vocab-search-empty{margin:0;padding:11px;text-align:center;color:#587592;font-size:12px}
 @media(max-height:670px){
- body[data-step-page="4"] .vocab-search,body[data-step-page="5"] .vocab-search{min-height:56px;gap:3px;padding:3px 8px 4px}
+ body[data-step-page="4"] .vocab-search,body[data-step-page="5"] .vocab-search,body[data-step-page="7"] .vocab-search{min-height:56px;gap:3px;padding:3px 8px 4px}
  .vocab-search-field{height:31px;min-height:31px}
  .vocab-search-label{font-size:10px}
  .vocab-search-results{max-height:min(29dvh,170px)}
