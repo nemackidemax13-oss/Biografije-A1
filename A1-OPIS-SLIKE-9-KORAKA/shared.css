@@ -1816,3 +1816,48 @@ body:not(.summary-mode) .separate-header h1#wizardTitle{
 @media(max-height:670px){
  body:not(.summary-mode) .separate-header{grid-template-rows:17px 20px minmax(0,1fr)!important}
 }
+
+/* v62: Kompaktan beli okvir ispitnog pitanja na svim koracima,
+   sa još prostora za vežbu bez vertikalnog skrolovanja cele aplikacije. */
+body[data-step-page]:not(.summary-mode) .app{
+ grid-template-rows:68px 32px minmax(0,1fr) 52px!important;
+ overflow:hidden!important;
+}
+body[data-step-page]:not(.summary-mode) .example{
+ box-sizing:border-box!important;
+ height:32px!important;min-height:32px!important;max-height:32px!important;
+ padding:2px 40px 2px 7px!important;
+ display:flex!important;justify-content:center!important;align-items:center!important;
+ border-radius:7px!important;overflow:hidden!important;
+}
+body[data-step-page]:not(.summary-mode) .example .sample-content{
+ min-height:0!important;width:100%!important;
+ gap:0!important;justify-content:center!important;align-items:center!important;
+ text-align:center!important;overflow:hidden!important;
+}
+body[data-step-page]:not(.summary-mode) .example .samplehead{
+ font-size:clamp(10px,2.85vw,12px)!important;
+ line-height:1.05!important;margin:0!important;
+ text-align:center!important;
+}
+body[data-step-page]:not(.summary-mode) .example .samplesr{
+ font-size:clamp(9px,2.5vw,10.5px)!important;
+ line-height:1.05!important;margin:0!important;
+ text-align:center!important;
+}
+body[data-step-page]:not(.summary-mode) .example .search-launch{
+ width:26px!important;height:26px!important;min-width:26px!important;
+ right:5px!important;border-width:1.5px!important;
+}
+body[data-step-page]:not(.summary-mode) .example .search-launch svg{
+ width:16px!important;height:16px!important;
+}
+body[data-step-page]:not(.summary-mode) .app>.panel{min-height:0!important}
+@media(max-height:670px){
+ body[data-step-page]:not(.summary-mode) .app{
+  grid-template-rows:62px 30px minmax(0,1fr) 52px!important;
+ }
+ body[data-step-page]:not(.summary-mode) .example{
+  height:30px!important;min-height:30px!important;max-height:30px!important;
+ }
+}
