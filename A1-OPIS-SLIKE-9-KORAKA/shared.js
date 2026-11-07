@@ -983,7 +983,8 @@ function renderList(){
  }
  const box=$("#phrases");const usable=box.clientHeight;const width=box.clientWidth;
  const ideal=width<338?73:68;
- PAGE_SIZE=Math.max(3,Math.min(12,Math.floor(Math.max(0,usable-5)/ideal)));
+ // Korak 4: uvek šest jednakih kartica po strani, kao korak 9.
+ PAGE_SIZE=Number(document.body.dataset.stepPage)===3?6:Math.max(3,Math.min(12,Math.floor(Math.max(0,usable-5)/ideal)));
  document.documentElement.style.setProperty("--page-rows",PAGE_SIZE);
  const data=source();const pages=Math.max(1,Math.ceil(data.length/PAGE_SIZE));page=Math.max(0,Math.min(page,pages-1));const visible=data.slice(page*PAGE_SIZE,(page+1)*PAGE_SIZE);$("#categoryCount").textContent=data.length+" rečenica";$("#pageCount").textContent="Strana "+(page+1)+" od "+pages;$("#prev").disabled=page<=0;$("#next").disabled=page>=pages-1;$("#phrases").innerHTML=visible.map(i=>{const a=BANK[i],is=chosen.includes(i);return '<div class="phrase '+(is?'selected':'')+'"><button class="add" data-add="'+i+'" aria-pressed="'+is+'"><span class="plus">'+(is?'✓':'❯')+'</span><span class="phrasetxt"><span class="de">'+escapeHTML(a.de)+'</span><span class="sr">'+escapeHTML(a.sr)+'</span></span></button><button class="sound" data-sound="'+i+'" aria-label="Izgovori rečenicu">🔊</button></div>'}).join("")}
 

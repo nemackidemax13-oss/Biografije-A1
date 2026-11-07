@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#14366b">
 <title>DE-MAX A1 | Završne rečenice — 10 koraka opisa slike</title>
-<link rel="stylesheet" href="./shared.css?v=20261107-zeleno-dalje10-zuta-pocetna-v8"><style>
+<link rel="stylesheet" href="./shared.css?v=20261107-sest-jednakih-recenica-v12"><style>
 body[data-step-page="8"] #sceneFilters,body[data-step-page="8"] #sceneAll,body[data-step-page="8"] #closingModes,body[data-step-page="8"] #categoryCount,body[data-step-page="8"] #phrases,body[data-step-page="8"] .pagination,body[data-step-page="8"] #openSearch{display:none!important}
 #endCategories{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin:8px 0}#endCategories button{min-height:43px;padding:6px 3px;background:#e6f1ff;color:#174b91;border:1px solid #a4c6ec;border-radius:9px;font-size:clamp(10px,2.6vw,13px);font-weight:800;line-height:1.18}#endCategories button.active{background:#1962b7;color:white}
 #endChoices{display:grid;gap:6px;max-height:min(46vh,420px);overflow-y:auto;padding:5px}#endChoices .end-line{display:flex;align-items:center;gap:8px;border:1px solid #d8e5f3;border-radius:9px;padding:9px;background:white}#endChoices .end-line.selected{background:#fff3f5;border:2px solid #ed1636;padding:8px}#endChoices .end-text{flex:1;min-width:0}#endChoices .end-text strong{display:block;color:#163a67;font-size:13px}#endChoices .end-text small{display:block;color:#566d87;font-size:11px}#endChoices .end-line button{flex-shrink:0;border:0;border-radius:7px;padding:8px;background:#eaf3ff;color:#195aa3;font-weight:800}#endChoices .end-line button.end-add{background:#e4f4e9;color:#126a42}#endChoices .end-line.selected .end-add{background:#d72641;color:white}
@@ -179,7 +179,7 @@ body[data-step-page="8"] #endAllScenes.active{border:2px solid #d4af37!important
   <button id="wizardForward" type="button" class="wizard-forward" aria-label="10. Moj opis slike"><span class="next-label">10. Moj opis slike</span><span class="next-arrow" aria-hidden="true">❯</span></button>
  </footer>
 </main>
-<script src="./shared.js?v=20261107-covek-mali-v10"></script>
+<script src="./shared.js?v=20261107-sest-jednakih-recenica-v12"></script>
 <script>
 (function(){
 const scenes=SCENE_DATA;
@@ -519,8 +519,8 @@ function render(){
  document.getElementById("endSceneName").textContent=scenes[scene].label;
  document.getElementById("endAllScenes").classList.toggle("active",allScenes);document.getElementById("endAllScenes").setAttribute("aria-pressed",String(allScenes));
  document.querySelectorAll("[data-end-group]").forEach(b=>b.classList.toggle("active",Number(b.dataset.endGroup)===group));
- const ids=[...new Set(sceneOptions())].filter(id=>!removedSentences.has(BANK[id]?.de));const pages=Math.max(1,Math.ceil(ids.length/3));endPage=Math.min(endPage,pages-1);const visible=ids.slice(endPage*3,endPage*3+3);document.getElementById("endPagerCount").textContent="Strana "+(endPage+1)+" od "+pages;document.getElementById("endPagePrev").disabled=endPage===0;document.getElementById("endPageNext").disabled=endPage>=pages-1;
- document.getElementById("endChoices").innerHTML=visible.map(id=>{const v=BANK[id],sel=chosen.includes(id);return '<div class="end-line '+(sel?'selected':'')+'"><div class="end-text"><strong>'+escapeHTML(v.de)+'</strong><small>'+escapeHTML(v.sr)+'</small></div><button type="button" data-end-play="'+id+'" aria-label="Poslušaj">🔊</button><button type="button" class="end-add" data-end-add="'+id+'" aria-pressed="'+sel+'">'+(sel?'✓ Izabrano':'❯ Dodaj')+'</button></div>'}).join("");
+ const ids=[...new Set(sceneOptions())].filter(id=>!removedSentences.has(BANK[id]?.de));const pageSize=6;const pages=Math.max(1,Math.ceil(ids.length/pageSize));endPage=Math.min(endPage,pages-1);const visible=ids.slice(endPage*pageSize,(endPage+1)*pageSize);document.getElementById("endPagerCount").textContent="Strana "+(endPage+1)+" od "+pages;document.getElementById("endPagePrev").disabled=endPage===0;document.getElementById("endPageNext").disabled=endPage>=pages-1;
+ document.getElementById("endChoices").innerHTML=visible.map(id=>{const v=BANK[id],sel=chosen.includes(id);return '<div class="phrase '+(sel?'selected':'')+'"><button type="button" class="add" data-end-add="'+id+'" aria-pressed="'+sel+'" aria-label="'+(sel?'Ukloni iz opisa':'Dodaj u opis')+'"><span class="plus">'+(sel?'✓':'❯')+'</span><span class="phrasetxt"><span class="de">'+escapeHTML(v.de)+'</span><span class="sr">'+escapeHTML(v.sr)+'</span></span></button><button type="button" class="sound" data-end-play="'+id+'" aria-label="Izgovori rečenicu">🔊</button></div>'}).join("");
 }
 document.getElementById("endScenePrev").onclick=()=>{scene=(scene-1+scenes.length)%scenes.length;group=outdoor.has(scenes[scene].id)?1:0;allScenes=false;endPage=0;render()};
 document.getElementById("endSceneNext").onclick=()=>{scene=(scene+1)%scenes.length;group=outdoor.has(scenes[scene].id)?1:0;allScenes=false;endPage=0;render()};
