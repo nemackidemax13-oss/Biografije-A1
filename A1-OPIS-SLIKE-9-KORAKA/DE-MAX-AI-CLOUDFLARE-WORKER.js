@@ -18,7 +18,7 @@ export default {async fetch(request,env){
  if(request.method!=="POST")return respond({error:"Samo POST zahtev."},405);
  if(!env.OPENAI_API_KEY)return respond({error:"OPENAI_API_KEY nije podešen na Worker-u."},503);
  try{
- const raw=await request.text();if(raw.length>5500000)return respond({error:"Slika je prevelika."},413);
+ const raw=await request.text();if(raw.length>9000000)return respond({error:"Slika je prevelika. Izaberi manju fotografiju."},413);
  const parsed=JSON.parse(raw);
  const image=parsed.image;
  if(typeof image!=="string"||!/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(image))return respond({error:"Neispravan format slike."},400);
