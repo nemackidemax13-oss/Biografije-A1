@@ -65,7 +65,7 @@ body[data-step-page="7"] #sceneFilters,body[data-step-page="7"] #sceneAll,body[d
  </section>
  <section class="panel" aria-label="Izbor rečenica">
   <div class="paneltitle scene-paneltitle"><strong id="selectorTitle" hidden aria-hidden="true"></strong><div id="sceneFilters" class="scene-filters" role="group" aria-label="Biranje situacije"><button type="button" class="scene-arrow" data-scene-turn="-1" aria-label="Prethodna situacija">❮</button><span id="sceneName" class="scene-name" aria-live="polite" aria-atomic="true">Priroda</span><button type="button" class="scene-arrow" data-scene-turn="1" aria-label="Sledeća situacija">❯</button></div><button type="button" id="sceneAll" class="scene-all" aria-pressed="false">Sve situacije</button><span class="small" id="categoryCount" aria-live="polite"></span></div>
-  <div class="rolebar" id="rolebar" hidden aria-label="Izbor osobe"><button data-role="mann" class="active">Muškarac</button><button data-role="frau">Žena</button><button data-role="kind">Dete</button></div>
+  <div class="rolebar" id="rolebar" hidden aria-label="Izbor osobe"><button data-role="mann" class="active">Čovek</button><button data-role="frau">Žena</button><button data-role="kind">Dete</button></div>
   <div class="modebar" id="modebar" hidden aria-label="Izbor osobina"><button data-mode="description">Opis</button><button data-mode="age" class="active">Godine</button><button data-mode="hair">Kosa</button></div>
   <div class="agebar" id="agebar" hidden aria-label="Interaktivni izbor godina">
    <div class="age-controls"><span class="age-person" id="agePerson">Der Mann</span>
@@ -105,10 +105,10 @@ body[data-step-page="7"] #sceneFilters,body[data-step-page="7"] #sceneAll,body[d
   <button id="wizardForward" type="button" class="wizard-forward" aria-label="Dalje: 9. Završne rečenice"><span class="next-label">Dalje: 9. Završne rečenice</span><span class="next-arrow" aria-hidden="true">❯</span></button>
  </footer>
 </main>
-<script src="./shared.js?v=20261107-kompaktne-kontrole-opisa-v5"></script>
+<script src="./shared.js?v=20261107-covek-mali-v10"></script>
 <script>
 (function(){
-const people=[{key:"mann",label:"Muškarac",de:"Er",sr:"On"},{key:"frau",label:"Žena",de:"Sie",sr:"Ona"},{key:"kind",label:"Dete",de:"Es",sr:"Ono"}];
+const people=[{key:"mann",label:"Čovek",de:"Er",sr:"On"},{key:"frau",label:"Žena",de:"Sie",sr:"Ona"},{key:"kind",label:"Dete",de:"Es",sr:"Ono"}];
 const groups=[
 {label:"Nakit",items:[
 ["trägt eine Halskette","nosi ogrlicu"],["trägt ein Armband","nosi narukvicu"],["trägt einen Ring","nosi prsten"],["trägt einen Ehering","nosi burmu"],["trägt Ohrringe","nosi minđuše"],["trägt eine Armbanduhr","nosi ručni sat"],["trägt eine goldene Kette","nosi zlatni lančić"],["trägt eine silberne Kette","nosi srebrni lančić"],["trägt eine Brosche","nosi broš"],["trägt eine schöne Uhr","nosi lep sat"]]},
