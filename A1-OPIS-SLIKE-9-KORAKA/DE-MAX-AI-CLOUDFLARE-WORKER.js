@@ -29,7 +29,7 @@ VRATI steps niz od TAČNO 10 objekata {de:"nemačke rečenice tog koraka",sr:""}
 2. MESTO: odmah posle uvoda: 'Ich denke, die Personen sind ...' ili sigurno 'Die Personen sind ...' koristeći isključivo TAČNU rečenicu iz DE-MAX kategorije places (mesto mora odgovarati slici!). Za jednu osobu koristi odobreni singular 'Ich denke, der Mann ist ...' / 'Ich denke, die Frau ist ...' / 'Ich denke, das Kind ist ...' prema istom mestu.
 3. RAZGOVOR I RADNJA: samo ako izgleda da osobe pričaju, iz DE-MAX banke izaberi tačno 'Die Personen sprechen über etwas, vielleicht über ...' sa temom koja prati vidljive predmete/radnju. Razgovor je hipoteza, ne činjenica. Ako ne pričaju, opisuj njihove vidljive radnje iz baze bez te fraze. Ne pretpostavljaj ko je lekar/prodavac bez očiglednih oznaka.
 4. IZGLED: posebno za svakog muškarca, ženu i dete. Iz odobrene DE-MAX baze koristi 'Der Mann ist ...', 'Die Frau ist ...', 'Das Kind ist ...' uz vidljivu visinu, građu, lice, izraz, naočare, bradu, brkove, ručni sat. Iz odobrenog šablona po potrebi 'Der Mann hat blaue Augen.' itd., samo ako boja očiju stvarno može da se vidi. Dozvoljen je i šablon 'Der Mann hat ein ovales Gesicht.' ili '... ein rundes Gesicht.' ako je jasno.
-5. ODEĆA: posebno ZA SVAKOG vidljivog čoveka koristi po JEDAN artikl po nemačkoj rečenici, u stilu 'Der Mann trägt eine blaue Jacke.', 'Die Frau trägt ein rotes Kleid.', 'Das Kind trägt schwarze Schuhe.'. Dozvoljene su samo te gramatičke konstrukcije i odevni predmeti: Jacke, Hose, Jeans, Bluse, Kleid, T-Shirt, Hemd, Pullover, Mantel, Rock, Anzug, Schuhe, Stiefel, Turnschuhe, Sandalen, Mütze, Schal, Hut, Arbeitskleidung, Schürze, Handschuhe, Brille. Boje: schwarz, weiß, blau, rot, grün, gelb, grau, braun, rosa, beige, orange, lila. Navedi boju ako se VIDI, a inače samo odevni predmet.
+5. ODEĆA: posebno ZA SVAKOG vidljivog čoveka koristi po JEDAN artikl po nemačkoj rečenici, u stilu 'Der Mann trägt eine blaue Jacke.', 'Die Frau trägt ein rotes Kleid.', 'Das Kind trägt schwarze Schuhe.'. Dozvoljene su samo te gramatičke konstrukcije i odevni predmeti: Jacke, Hose, Jeans, Bluse, Kleid, T-Shirt, Hemd, Pullover, Mantel, Rock, Anzug, Schuhe, Stiefel, Turnschuhe, Sandalen, Mütze, Schal, Hut, Arbeitskleidung, Schürze, Handschuhe, Brille, Kittel, Sakko, Uniform. Boje: schwarz, weiß, blau, rot, grün, gelb, grau, braun, rosa, beige (deklinira se kao beig-), orangefarben (narandžasta), lila. Navedi boju ako se VIDI, a inače samo odevni predmet.
 6. KOSA: za svaku osobu koristi tačno kratak obrazac 'Der Mann hat kurze schwarze Haare.', 'Die Frau hat lange blonde Haare.', 'Das Kind hat lockige braune Haare.', itd. Uz boju schwarz, braun, blond, grau, weiß, rot, dunkelbraun, hellbraun i vidljivu dužinu kurze / lange / mittellange ili izgled lockige / glatte. Nikad ne pripisuj kosu ako je prekrivena.
 7. GODINE: za svaku prisutnu osobu samo JEDNU približnu procenu: 'Ich denke, der Mann ist ungefähr 35 Jahre alt.' ili 'Der Mann ist ungefähr 35 Jahre alt.', analogno 'Ich denke, die Frau ist ungefähr 30 Jahre alt.' i 'Ich denke, das Kind ist ungefähr 7 Jahre alt.'; broj promeni približno prema izgledu. Nikada nemoj tvrdoglaviti precizno određenu starost.
 8. DETALJI I POZADINA: koristi samo POSTOJEĆE rečenice iz bankExamples (kategorije extra, closing, start), npr. šta je levo/desno/iza, na stolu, unutra ili napolju, soba, oprema, biljke, vreme, godišnje doba ako direktno vidljivo. Ako se vidi osmeh 'Der Mann lächelt.', 'Die Frau lächelt.', 'Das Kind lächelt.' ili 'Beide Personen lächeln.'. Ako je očigledan smeh 'Ich denke, der Mann lacht.', 'Ich denke, die Frau lacht.', 'Ich denke, das Kind lacht.' ili 'Beide Personen lachen.'. Ne tumači osmeh kao siguran smeh.
@@ -94,8 +94,8 @@ Odgovori ISKLJUČIVO ispravnim JSON objektom {steps:[tačno 10 objekata {de,sr}]
   {de:"grau",m:"sivi",f:"sivu",n:"sivo",p:"sive"},
   {de:"braun",m:"smeđi",f:"smeđu",n:"smeđe",p:"smeđe"},
   {de:"rosa",m:"roze",f:"roze",n:"roze",p:"roze",invariable:true},
-  {de:"beige",m:"bež",f:"bež",n:"bež",p:"bež",invariable:true},
-  {de:"orange",m:"narandžasti",f:"narandžastu",n:"narandžasto",p:"narandžaste",invariable:true},
+  {de:"beig",m:"bež",f:"bež",n:"bež",p:"bež"},
+  {de:"orangefarben",m:"narandžasti",f:"narandžastu",n:"narandžasto",p:"narandžaste"},
   {de:"lila",m:"ljubičasti",f:"ljubičastu",n:"ljubičasto",p:"ljubičaste",invariable:true}
  ];
  const garments=[
@@ -106,7 +106,7 @@ Odgovori ISKLJUČIVO ispravnim JSON objektom {steps:[tačno 10 objekata {de,sr}]
   ["Stiefel","p","čizme","p"],["Turnschuhe","p","patike","p"],["Sandalen","p","sandale","p"],
   ["Mütze","f","kapu","f"],["Schal","m","šal","m"],["Hut","m","šešir","m"],
   ["Arbeitskleidung","f","radnu odeću","f"],["Schürze","f","kecelju","f"],
-  ["Handschuhe","p","rukavice","p"],["Brille","f","naočare","p"]
+  ["Handschuhe","p","rukavice","p"],["Brille","f","naočare","p"],["Kittel","m","mantil","m"],["Sakko","n","sako","m"],["Uniform","f","uniformu","f"]
  ];
  const article={m:"einen",f:"eine",n:"ein",p:""};
  const adjEnding={m:"en",f:"e",n:"es",p:"e"};
