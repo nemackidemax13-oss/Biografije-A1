@@ -1006,40 +1006,41 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
  #screen0.photo-added #status{font-size:9px!important}
 }
 
-/* DE-MAX V71 — wider selected image and refined photo selection effect. */
-#screen0.photo-added .panel{padding-left:1px!important;padding-right:1px!important}
+
+/* DE-MAX V72: Restore v46 image-selection presentation only. */
 #screen0.photo-added .photo-reveal{
- width:100%!important;max-width:100%!important;
- padding:2px!important;margin:2px 0!important;
- border-radius:12px!important;
- background:linear-gradient(125deg,#b4d9ff,#f6fbff,#92c5ff)!important;
- box-shadow:0 3px 14px #1267b52b!important;
+ display:block!important;flex:0 1 auto!important;
+ width:fit-content!important;max-width:calc(100% - 18px)!important;
+ height:auto!important;min-height:0!important;
+ margin:9px auto 11px!important;padding:5px!important;
+ border-radius:16px!important;overflow:visible!important;
+ background:linear-gradient(130deg,#b9d8ff,#e1f0ff,#a0cafc)!important;
+ box-shadow:0 8px 24px #2a70b12a!important;
 }
 #screen0.photo-added .photo-reveal .picture,
 #screen0.photo-added #photo0{
- display:block!important;width:100%!important;max-width:100%!important;
- height:100%!important;max-height:100%!important;
- object-fit:contain!important;object-position:center!important;
- border-radius:9px!important;
+ display:block!important;width:auto!important;height:auto!important;
+ max-width:min(100%,calc(100vw - 65px))!important;
+ max-height:49dvh!important;object-fit:contain!important;
+ margin:0!important;border-radius:12px!important;
 }
 #screen0.photo-added .photo-reveal.ready{
- animation:demax-photo-enter71 .8s cubic-bezier(.19,1,.27,1) both!important;
+ animation:picture-arrives .65s cubic-bezier(.19,1.25,.4,1) both!important;
 }
 #screen0.photo-added .photo-reveal.ready .photo-glow{
- animation:photo-shine 1.25s ease .22s 1!important;
+ animation:photo-shine 1.1s ease .12s 1!important;
 }
 #screen0.photo-added .photo-reveal.ready .photo-success{
- animation:success-pop .55s cubic-bezier(.2,1.6,.4,1) .38s both!important;
+ animation:success-pop .5s cubic-bezier(.2,1.6,.4,1) .4s both!important;
 }
-@keyframes demax-photo-enter71{
- 0%{opacity:0;transform:translateY(20px) scale(.94);filter:brightness(1.15)}
- 55%{opacity:1;transform:translateY(-3px) scale(1.012);filter:brightness(1.04)}
- 100%{opacity:1;transform:translateY(0) scale(1);filter:brightness(1)}
+@media(max-height:620px){
+ #screen0.photo-added .photo-reveal .picture,
+ #screen0.photo-added #photo0{max-height:39dvh!important}
 }
 @media(prefers-reduced-motion:reduce){
  #screen0.photo-added .photo-reveal.ready,
  #screen0.photo-added .photo-reveal.ready .photo-glow,
- #screen0.photo-added .photo-reveal.ready .photo-success{animation:none!important;filter:none!important}
+ #screen0.photo-added .photo-reveal.ready .photo-success{animation:none!important}
  #screen0.photo-added .photo-reveal.ready .photo-success{transform:scale(1)!important}
 }
 </style></head><body><main class="app">
