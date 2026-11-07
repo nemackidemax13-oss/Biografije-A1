@@ -14,7 +14,7 @@ export default {async fetch(request,env){
  if(request.method==="OPTIONS")return new Response(null,{status:originAllowed?204:403,headers:cors});
  const respond=(body,status=200)=>new Response(JSON.stringify(body),{status,headers:{...HEADERS,...cors}});
  if(!originAllowed)return respond({error:"Origin nije dozvoljen. Dodaj domen u ALLOWED_ORIGINS."},403);
- if(request.method==="GET"&&new URL(request.url).searchParams.get("check")==="1")return respond({ok:true,version:"20261107-a1-sablon-start-v36",mode:"DEMAX_STRICT_TEMPLATES",introFix:true});
+ if(request.method==="GET"&&new URL(request.url).searchParams.get("check")==="1")return respond({ok:true,version:"20261107-detaljan-izgled-v37",mode:"DEMAX_STRICT_TEMPLATES",introFix:true});
  if(request.method!=="POST")return respond({error:"Samo POST zahtev."},405);
  if(!env.OPENAI_API_KEY)return respond({error:"OPENAI_API_KEY nije podešen na Worker-u."},503);
  try{
@@ -29,15 +29,15 @@ VRATI steps niz od TAČNO 10 objekata {de:"nemačke rečenice tog koraka",sr:""}
 1. OPIS OSOBA: OBAVEZNO napiši jednu POTPUNU, zasebnu prvu rečenicu tačno iz ponuđenih 'Auf diesem Bild sehe ich ...' primera, bez menjanja teksta. Ako koristiš izraz iz baze 'Auf dem Bild sehe ich ...', server će ga sam prevesti u 'Auf diesem Bild sehe ich ...'. ZAISTA prebroj vidljive osobe. Ako su tačno muškarac i žena, obavezno počni 'Auf diesem Bild sehe ich zwei Personen, einen Mann und eine Frau.'. Ako je drugačije, počni odgovarajućim šablonom 'Auf diesem Bild sehe ich ...' npr. 'Auf diesem Bild sehe ich einen Mann.' / 'Auf diesem Bild sehe ich eine Frau.' / 'Auf diesem Bild sehe ich ein Kind.' / 'Auf diesem Bild sehe ich zwei Männer.' / 'Auf diesem Bild sehe ich zwei Frauen.' / 'Auf diesem Bild sehe ich zwei Kinder.' / 'Auf diesem Bild sehe ich einen Mann und ein Kind.' / 'Auf diesem Bild sehe ich eine Frau und ein Kind.' / 'Auf diesem Bild sehe ich einen Mann, eine Frau und ein Kind.' / 'Auf diesem Bild sehe ich mehrere Personen.'. Iz baze ubaci pozicije i šta se vidi kada odgovara.
 2. MESTO: odmah posle uvoda: 'Ich denke, die Personen sind ...' ili sigurno 'Die Personen sind ...' koristeći isključivo TAČNU rečenicu iz DE-MAX kategorije places (mesto mora odgovarati slici!). Za jednu osobu koristi odobreni singular 'Ich denke, der Mann ist ...' / 'Ich denke, die Frau ist ...' / 'Ich denke, das Kind ist ...' prema istom mestu.
 3. RAZGOVOR I RADNJA: samo ako izgleda da osobe pričaju, iz DE-MAX banke izaberi tačno 'Die Personen sprechen über etwas, vielleicht über ...' sa temom koja prati vidljive predmete/radnju. Razgovor je hipoteza, ne činjenica. Ako ne pričaju, opisuj njihove vidljive radnje iz baze bez te fraze. Ne pretpostavljaj ko je lekar/prodavac bez očiglednih oznaka.
-4. IZGLED: posebno za svakog muškarca, ženu i dete. Iz odobrene DE-MAX baze koristi 'Der Mann ist ...', 'Die Frau ist ...', 'Das Kind ist ...' uz vidljivu visinu, građu, lice, izraz, naočare, bradu, brkove, ručni sat. Iz odobrenog šablona po potrebi 'Der Mann hat blaue Augen.' itd., samo ako boja očiju stvarno može da se vidi. Dozvoljen je i šablon 'Der Mann hat ein ovales Gesicht.' ili '... ein rundes Gesicht.' ako je jasno.
-5. ODEĆA: posebno ZA SVAKOG vidljivog čoveka koristi po JEDAN artikl po nemačkoj rečenici, u stilu 'Der Mann trägt eine blaue Jacke.', 'Die Frau trägt ein rotes Kleid.', 'Das Kind trägt schwarze Schuhe.'. Dozvoljene su samo te gramatičke konstrukcije i odevni predmeti: Jacke, Hose, Jeans, Bluse, Kleid, T-Shirt, Hemd, Pullover, Mantel, Rock, Anzug, Schuhe, Stiefel, Turnschuhe, Sandalen, Mütze, Schal, Hut, Arbeitskleidung, Schürze, Handschuhe, Brille, Kittel, Sakko, Uniform. Boje: schwarz, weiß, blau, rot, grün, gelb, grau, braun, rosa, beige (deklinira se kao beig-), orangefarben (narandžasta), lila. Navedi boju ako se VIDI, a inače samo odevni predmet.
-6. KOSA: za svaku osobu koristi tačno kratak obrazac 'Der Mann hat kurze schwarze Haare.', 'Die Frau hat lange blonde Haare.', 'Das Kind hat lockige braune Haare.', itd. Uz boju schwarz, braun, blond, grau, weiß, rot, dunkelbraun, hellbraun i vidljivu dužinu kurze / lange / mittellange ili izgled lockige / glatte. Nikad ne pripisuj kosu ako je prekrivena.
-7. GODINE: za svaku prisutnu osobu samo JEDNU približnu procenu: 'Ich denke, der Mann ist ungefähr 35 Jahre alt.' ili 'Der Mann ist ungefähr 35 Jahre alt.', analogno 'Ich denke, die Frau ist ungefähr 30 Jahre alt.' i 'Ich denke, das Kind ist ungefähr 7 Jahre alt.'; broj promeni približno prema izgledu. Nikada nemoj tvrdoglaviti precizno određenu starost.
-8. DETALJI I POZADINA: koristi samo POSTOJEĆE rečenice iz bankExamples (kategorije extra, closing, start), npr. šta je levo/desno/iza, na stolu, unutra ili napolju, soba, oprema, biljke, vreme, godišnje doba ako direktno vidljivo. Ako se vidi osmeh 'Der Mann lächelt.', 'Die Frau lächelt.', 'Das Kind lächelt.' ili 'Beide Personen lächeln.'. Ako je očigledan smeh 'Ich denke, der Mann lacht.', 'Ich denke, die Frau lacht.', 'Ich denke, das Kind lacht.' ili 'Beide Personen lachen.'. Ne tumači osmeh kao siguran smeh.
-9. ZAVRŠNE REČENICE: iz DE-MAX closing baze izaberi nekoliko smislenih rečenica koje stvarno odgovaraju slici. Poslednja rečenica je uvek 'Das war meine Bildbeschreibung.'. Nikad ne ubacuj nepovezane završne rečenice.
+4. IZGLED OBE OSOBE DETALJNO: ovaj korak je centralni deo opisa! Ako na slici ima muškarac i žena, obavezno najpre opiši muškarca i ZATIM ženu, svakoga POSEBNO, nikada samo muškarca ili samo ženu kada su osobine oboje dovoljno vidljive. Počni 'Der Mann ist ...' pa navedi 3–6 različitih, jasnih detalja muškarca: stas, krupnoća/građa, mlad/stariji izgled, oblik lica, oči ako se dobro vide, naočare, brkove, bradu, mimiku i položaj levo/desno. Zatim 'Die Frau ist ...' i na isti način 3–6 posebnih, vidljivih detalja žene: stas, građa, lice, oči, naočare, izraz lica, položaj. Ako postoji dete, isto pravilo i za 'Das Kind ist ...'. Kad osobina nije vidljiva, jednostavno je preskoči i NE dopunjavaj izmišljenom rečenicom. Ne pripisuj bradu/brkove ženi ili detetu. Iz bankExamples uzmi 'Der Mann ist groß.', 'Die Frau ist klein.', 'Der Mann hat einen Bart.', 'Die Frau sieht glücklich aus.' samo kada slika to zaista podržava. Iz dozvoljenih šablona koristi 'Der Mann hat blaue Augen.', 'Die Frau hat ein rundes Gesicht.', 'Der Mann trägt eine Brille.', 'Der Mann hat einen kurzen Bart.' SAMO ako se jasno razaznaje. Završni tekst neka ima pun opis OBE osobe pre sledećeg koraka. ODEĆU, KOSU I GODINE nemoj unositi u korak 4 jer za to postoje naredni posebni koraci.
+5. ODEĆA: odmah posle izgleda, i PRE kose i godina, opiši odevne predmete za OBE osobe: prvo sve jasno vidljive komade muškarca, potom žene, zatim deteta ako postoji. Ne preskači jednu osobu kada je njena odeća vidljiva. Koristi po JEDAN artikl po nemačkoj rečenici, u stilu 'Der Mann trägt eine blaue Jacke.', 'Die Frau trägt ein rotes Kleid.', 'Das Kind trägt schwarze Schuhe.'. Dozvoljene su samo te gramatičke konstrukcije i odevni predmeti: Jacke, Hose, Jeans, Bluse, Kleid, T-Shirt, Hemd, Pullover, Mantel, Rock, Anzug, Schuhe, Stiefel, Turnschuhe, Sandalen, Mütze, Schal, Hut, Arbeitskleidung, Schürze, Handschuhe, Brille, Kittel, Sakko, Uniform. Boje: schwarz, weiß, blau, rot, grün, gelb, grau, braun, rosa, beige (deklinira se kao beig-), orangefarben (narandžasta), lila. Navedi boju ako se VIDI, a inače samo odevni predmet.
+6. KOSA: tek NAKON detaljnog izgleda i odeće opiši kosu SVAKOG ko ima vidljivu kosu: prvo muškarca, pa ženu, pa dete. Za svakog upotrebi 'Der Mann hat kurze schwarze Haare.', 'Die Frau hat lange blonde Haare.', 'Das Kind hat lockige braune Haare.' itd. Obrati pažnju na boju schwarz, braun, blond, grau, weiß, rot, dunkelbraun, hellbraun, dužinu kurze / lange / mittellange i izgled lockige / glatte. Ako se dužina ne vidi, koristi pojedinačnu dozvoljenu rečenicu samo o boji. Nikad ne pripisuj kosu ako je prekrivena.
+7. GODINE: tek POSLE kose, u odvojenom koraku, navedi po jednu približnu starost svake prisutne osobe, prvo muškarca, pa žene, pa deteta: 'Ich denke, der Mann ist ungefähr 35 Jahre alt.' ili 'Der Mann ist ungefähr 35 Jahre alt.', zatim 'Ich denke, die Frau ist ungefähr 30 Jahre alt.' i 'Ich denke, das Kind ist ungefähr 7 Jahre alt.'; broj promeni prema približnom izgledu. Ne predstavljaj procenu kao činjenicu i ne koristi dve različite godine za istu osobu.
+8. DETALJI I POZADINA: tek POSLE kose i godina dodaj što više dodatnih VIDLJIVIH DETALJA (ručni sat, minđuše, nakit, torba, predmeti u rukama, geste, vidljivi osmesi, sto, stolice, police, drveće, vozila, prozori, boja prostora) i ono što je levo/desno/iza/u prvom planu. Iz bankExamples (extra, closing, start) biraj isključivo detalje koji su na konkretnoj fotografiji. Ako su napolju, vreme i godišnje doba navedi samo kada su jasni znaci, a ako su unutra, opiši prostor. Ako se vidi osmeh 'Der Mann lächelt.', 'Die Frau lächelt.', 'Das Kind lächelt.' ili 'Beide Personen lächeln.'. Ako je očigledan smeh 'Ich denke, der Mann lacht.', 'Ich denke, die Frau lacht.', 'Ich denke, das Kind lacht.' ili 'Beide Personen lachen.'. Ne tumači osmeh kao siguran smeh.
+9. ZAVRŠNE REČENICE: TEK NA KRAJU, posle svih osoba, kose, godina i detalja/pozadine, dodaj nekoliko smislenih rečenica iz DE-MAX closing baze koje odgovaraju baš toj slici i kao poslednju obavezno 'Das war meine Bildbeschreibung.'. Ne ubacuj novi opis lica, odeće, kose ili godina u završne rečenice.
 10. MOJ OPIS: može ostati prazan jer se automatski gradi iz proverenih prvih devet koraka.
 
-Opis neka bude vrlo detaljan ako se detalji stvarno vide: cilj je oko 20–35 kratkih A1 rečenica za jasnu sliku sa dve osobe, više ako je više vidljivih detalja, ali nikad ne dodavati izmišljene činjenice zbog brojke. U SVAKOM koraku samo odobrene rečenice iz bankExamples ili eksplicitnih A1 obrazaca. Bez dugih kombinovanih rečenica. Izaberi sceneNumber iz liste scenes na osnovu slike (ili null ako nijedna situacija nije prikladna); DE-MAX dijalog server preuzima direktno iz originalne scene i zato NIKAKAV izmišljeni dijalog ne treba pisati.
+Opis neka bude vrlo detaljan ako se detalji stvarno vide: cilj je oko 25–40 kratkih A1 rečenica za jasnu sliku sa dve osobe i dovoljno detalja, obavezno prikaz obe osobe u koracima 4–7 kada se detalji vide, više ako je više vidljivih detalja, ali nikad ne dodavati izmišljene činjenice zbog brojke. U SVAKOM koraku samo odobrene rečenice iz bankExamples ili eksplicitnih A1 obrazaca. Bez dugih kombinovanih rečenica. Izaberi sceneNumber iz liste scenes na osnovu slike (ili null ako nijedna situacija nije prikladna); DE-MAX dijalog server preuzima direktno iz originalne scene i zato NIKAKAV izmišljeni dijalog ne treba pisati.
 
 Odgovori ISKLJUČIVO ispravnim JSON objektom {steps:[tačno 10 objekata {de,sr}],description:"",sceneNumber:broj ili null,sceneName:""}. Ne uključuj dialogue.`;
  // Original DE-MAX dialogue bank from the student app, not invented examples.
@@ -139,6 +139,36 @@ Odgovori ISKLJUČIVO ispravnim JSON objektom {steps:[tačno 10 objekata {de,sr}]
   ["blaue","plave"],["braune","smeđe"],["grüne","zelene"],
   ["graue","sive"],["schwarze","crne"]
  ];
+
+ // Approved, grammatically fixed A1 appearance and orientation templates.
+ const personTraits=[
+  ["ist groß","je visok","je visoka","je visoko"],
+  ["ist klein","je nizak","je niska","je nisko"],
+  ["ist schlank","je vitak","je vitka","je vitko"],
+  ["ist sportlich","je sportski građen","je sportski građena","je sportski građeno"],
+  ["sieht jung aus","izgleda mlado","izgleda mlado","izgleda mlado"],
+  ["sieht älter aus","izgleda starije","izgleda starije","izgleda starije"]
+ ];
+ const personSides=[
+  ["steht links","stoji levo"],["steht rechts","stoji desno"],
+  ["sitzt links","sedi levo"],["sitzt rechts","sedi desno"],
+  ["steht in der Mitte","stoji u sredini"],["sitzt in der Mitte","sedi u sredini"]
+ ];
+ for(const [actorIndex,actor] of actors.entries()){
+  for(const trait of personTraits)put(actor.de+" "+trait[0]+".",actor.sr+" "+trait[actorIndex+1]+".");
+  for(const [de,sr] of personSides)put(actor.de+" "+de+".",actor.sr+" "+sr+".");
+  put(actor.de+" trägt eine Brille.",actor.sr+" nosi naočare.");
+ }
+ for(const [de,sr] of [
+  ["Der Mann hat einen kurzen Bart.","Muškarac ima kratku bradu."],
+  ["Der Mann hat einen langen Bart.","Muškarac ima dugu bradu."],
+  ["Der Mann hat einen grauen Bart.","Muškarac ima sedu bradu."],
+  ["Der Mann hat einen schwarzen Bart.","Muškarac ima crnu bradu."],
+  ["Der Mann hat einen braunen Bart.","Muškarac ima smeđu bradu."],
+  ["Der Mann hat einen Schnurrbart.","Muškarac ima brkove."],
+  ["Der Mann ist glatzköpfig.","Muškarac je ćelav."]
+ ])put(de,sr);
+
  for(const actor of actors){
   for(const [deEye,srEye] of eyes)put(actor.de+" hat "+deEye+" Augen.",actor.sr+" ima "+srEye+" oči.");
   for(const [dColor,sColor] of hairColors)
