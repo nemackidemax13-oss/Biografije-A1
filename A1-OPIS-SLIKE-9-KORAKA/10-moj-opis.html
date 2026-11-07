@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#14366b">
 <title>DE-MAX A1 | Moj opis slike — 10 koraka opisa slike</title>
-<link rel="stylesheet" href="./shared.css?v=20261107-zavrsni-ekran-pocetna-gore-v20">
+<link rel="stylesheet" href="./shared.css?v=20261107-pocetna-u-redu-sa-tri-dugmeta-v21">
 <style>
 /* Završni korak: opis je završen; mali povratak gore, bez dugmeta Dalje na dnu. */
 body[data-step-page="9"] .separate-header{position:relative!important}
@@ -53,12 +53,43 @@ body[data-step-page="9"] .wizard-footer #wizardBack{
  body[data-step-page="9"] .separate-header .summary-home{padding:1px 4px!important;font-size:9.5px!important}
  body[data-step-page="9"] .wizard-footer .summary-complete{gap:4px!important;padding:3px!important}
 }
+
+/* Četiri kontrole na završnoj strani u jednom redu; Početna je četvrta. */
+body[data-step-page="9"].summary-mode .controls.centered-controls{
+ display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;
+ grid-template-rows:34px!important;gap:3px!important;padding:5px 4px!important;
+}
+body[data-step-page="9"].summary-mode .controls.centered-controls #summaryHomeBottom{
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ box-sizing:border-box!important;width:100%!important;min-width:0!important;
+ height:34px!important;min-height:34px!important;margin:0!important;padding:2px 3px!important;
+ border:1px solid #d0a514!important;border-radius:7px!important;
+ background:#ffcf24!important;color:#273951!important;text-decoration:none!important;
+ text-align:center!important;white-space:normal!important;line-height:1.08!important;
+ font:900 clamp(8.5px,2.5vw,11px) system-ui,-apple-system,"Segoe UI",Arial,sans-serif!important;
+}
+body[data-step-page="9"].summary-mode .controls.centered-controls #clear{
+ white-space:normal!important;line-height:1.08!important;
+}
+body[data-step-page="9"].summary-mode .controls.centered-controls #summaryHomeBottom:active{
+ background:#f3bd09!important;
+}
+body[data-step-page="9"].summary-mode .controls.centered-controls #summaryHomeBottom:focus-visible{
+ outline:2px solid #2268b7!important;outline-offset:2px!important;
+}
+@media(max-width:355px){
+ body[data-step-page="9"].summary-mode .controls.centered-controls{
+  gap:2px!important;padding-left:3px!important;padding-right:3px!important;
+ }
+ body[data-step-page="9"].summary-mode .controls.centered-controls #summaryHomeBottom{
+  font-size:8.7px!important;padding:2px 1px!important;
+ }
+}
 </style>
 </head>
 <body data-step-page="9">
 <main class="app" id="app" aria-label="A1 opis slike — mustra za učenike">
   <header class="separate-header">
-  <a href="./index.html" class="summary-home" aria-label="Početna stranica" title="Vrati se na početnu stranicu"><span aria-hidden="true">⌂</span> Početna</a>
   <div class="separate-brand">DE-MAX <small>A1 · OPIS SLIKE</small></div>
   <h1 id="wizardTitle">10. Moj opis slike</h1>
   <span id="wizardSelected" hidden style="display:none!important"></span>
@@ -115,7 +146,7 @@ body[data-step-page="9"] .wizard-footer #wizardBack{
   <div class="paneltitle"><strong>Moj opis</strong><span class="small" id="total">0 rečenica</span></div>
   <div class="selected-area" id="selectedArea"></div>
   <div class="compact-nav"><button id="chosenPrev" class="nav" aria-label="Prethodna izabrana rečenica">‹</button><span id="chosenPage">Opis strana 1</span><button id="chosenNext" class="nav" aria-label="Sledeća izabrana rečenica">›</button></div>
-  <div class="controls centered-controls" aria-label="Automatsko slušanje kompletnog opisa"><button id="playAll" class="ctrl main" type="button" title="Poslušaj, pauziraj i nastavi čitanje jednim dugmetom">▶ Poslušaj</button><button id="stopAuto" class="ctrl" type="button" aria-label="Zaustavi slušanje">■ Stop</button><button id="clear" class="ctrl danger" type="button">Obriši moj opis</button></div>
+  <div class="controls centered-controls" aria-label="Automatsko slušanje kompletnog opisa"><button id="playAll" class="ctrl main" type="button" title="Poslušaj, pauziraj i nastavi čitanje jednim dugmetom">▶ Poslušaj</button><button id="stopAuto" class="ctrl" type="button" aria-label="Zaustavi slušanje">■ Stop</button><button id="clear" class="ctrl danger" type="button">Obriši moj opis</button><a id="summaryHomeBottom" class="ctrl home-ctrl" href="./index.html" aria-label="Početna stranica" title="Vrati se na početnu stranicu">Početna stranica</a></div>
  </section>
 
  <footer class="wizard-footer" aria-label="Kretanje kroz korake">
