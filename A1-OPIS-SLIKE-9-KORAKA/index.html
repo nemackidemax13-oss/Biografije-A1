@@ -159,31 +159,36 @@ button,a{-webkit-tap-highlight-color:transparent}
 }
 
 
-/* Početna: žuti naslov i žuti okviri koraka 1–9; završni 10. ostaje zelen. */
+/* Žuti su SAMO mali kvadrati sa brojevima 1–9; trake ostaju svetle.
+   Završni broj 10 ostaje zelen. */
 .hero{
- background:linear-gradient(110deg,#fff4ba,#ffe27b)!important;
- border-color:#e1b337!important;
+ background:linear-gradient(110deg,#eaf4ff,#f8fbff)!important;
+ border-color:#d7e6f8!important;
 }
 .steps li:not(:last-child){
- background:linear-gradient(105deg,#fff3a3,#ffe074)!important;
- border:1px solid #dfb12c!important;
- box-shadow:0 2px 4px #a47f161c!important;
+ background:#f7faff!important;
+ border:1px solid #dce8f7!important;
+ box-shadow:none!important;
 }
 .steps li:nth-child(2n):not(:last-child){
- background:linear-gradient(105deg,#ffeda0,#ffda60)!important;
+ background:#fff!important;
 }
 .steps li:not(:last-child) .step-name{
- color:#67460c!important;
+ color:#214d81!important;
 }
 .steps li:not(:last-child) .number{
- background:#ffc82c!important;
- color:#553a09!important;
- border:1px solid #d8a014!important;
+ background:#ffcf24!important;
+ color:#583c09!important;
+ border:1px solid #d3a318!important;
+}
+.steps li:last-child{
+ background:#eaf7ef!important;
+ border-color:#c5e5ce!important;
 }
 .steps li:last-child .step-name{color:#117e46!important}
 .steps li:last-child .number{
- color:#fff!important;
  background:#15904c!important;
+ color:#fff!important;
  border:1px solid #0e7940!important;
 }
 
