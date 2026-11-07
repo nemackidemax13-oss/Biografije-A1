@@ -184,6 +184,8 @@ const groups=[
 ];
 /* Dodatnih 20 A1 rečenica: izgled, radnje, predmeti, nakit i plaćanje. */
 groups[0].items.push(["trägt eine Perlenkette","nosi bisernu ogrlicu"]);
+groups[1].items.push(["hat ein schönes Gesicht","ima lepo lice"],["ist geschminkt","je našminkana"]);
+groups[4].items.push(["möchte das Auto reparieren","želi da popravi auto"]);
 groups[1].items.push(["hat graue Augen","ima sive oči"],["hat dunkle Augen","ima tamne oči"],["hat ein rundes Gesicht","ima okruglo lice"],["hat Sommersprossen","ima pege"],["sieht müde aus","izgleda umorno"],["sieht traurig aus","izgleda tužno"],["sieht überrascht aus","izgleda iznenađeno"]);
 groups[2].items.push(["bezahlt mit dem Handy","plaća mobilnim telefonom"]);
 groups.push({label:"Predmeti",items:[["hält ein Buch in der Hand","drži knjigu u ruci"],["hält einen Stift in der Hand","drži olovku u ruci"],["hält eine Flasche Wasser in der Hand","drži flašu vode u ruci"],["hält einen Regenschirm","drži kišobran"],["hält eine Blume in der Hand","drži cvet u ruci"],["trägt einen Rucksack","nosi ranac"]]});
@@ -198,6 +200,8 @@ const childExcludedDetails=new Set(["trägt einen Ehering","trägt Make-up","mö
 function allowedDetail(de){
  if(role===0&&manExcludedDetails.has(de))return false;
  if(role!==0&&beardTerms.has(de))return false;
+ if(role!==1&&(de==="ist geschminkt"||de==="trägt Make-up"))return false;
+ if(role!==0&&de==="möchte das Auto reparieren")return false;
  if(role===2&&childExcludedDetails.has(de))return false;
  return true;
 }
