@@ -124,7 +124,7 @@ $("dialogue").replaceChildren();dialogRows=[];
 (Array.isArray(data.dialogue)?data.dialogue:[]).forEach((l,i)=>{let el=document.createElement("article");el.className="sentence dialog";add(el,"speaker",String(l.speaker||((i%2)?"B":"A")));add(el,"de",String(l.de||""));add(el,"sr",String(l.sr||""));$("dialogue").append(el);if(l.de)dialogRows.push({de:String(l.de),element:el})});
 let scene=scenes.find(s=>s.n===Number(data.sceneNumber));$("scene").textContent=scene?"Situacija "+scene.n+": "+scene.sr:String(data.sceneName||"Dijalog prema slici");$("bankLink").replaceChildren();if(scene){let a=document.createElement("a");a.href="../DE_MAX_A1_40_SITUACIJA_10_DIJALOGA.html?s="+scene.n+"&d=1";a.target="_blank";a.rel="noopener";a.textContent="Otvori originalnih 10 dijaloga: "+scene.sr;$("bankLink").append(a)}
 // Moj opis se sastavlja isključivo od istih nemačkih rečenica iz koraka 1–9, bez dodatnog AI teksta.
-$("fullDescription").value=data.steps.slice(0,9).map(step=>String(step.de||"").trim()).filter(Boolean).join("\n\n");setStatus("Opis slike i dijalog su spremni.");view(1);
+$("fullDescription").value=data.steps.slice(0,9).map((step,i)=>(i+1)+". "+labels[i]+"\n"+String(step.de||"").trim()).join("\n\n");setStatus("Opis slike i dijalog su spremni.");view(1);
 }catch(e){setStatus("Greška: "+e.message,true)}finally{$("analyze").disabled=false}};
 $("readDescription").onclick=()=>{if(readingMode==="desc"&&paused){synth.resume();paused=false;return}playRows("desc")};
 $("pauseDescription").onclick=()=>pauseMode("desc");
@@ -132,7 +132,7 @@ $("stopDescription").onclick=()=>stopSpeech();
 $("readDialogue").onclick=()=>{if(readingMode==="dialog"&&paused){synth.resume();paused=false;return}playRows("dialog")};
 $("pauseDialogue").onclick=()=>pauseMode("dialog");
 $("stopDialogue").onclick=()=>stopSpeech();
-function playFull(){const text=$("fullDescription").value.trim();if(!text)return;if(!synth)return;stopSpeech();readingMode="full";let u=new SpeechSynthesisUtterance(text);u.lang="de-DE";u.rate=.83;u.onend=()=>{if(readingMode==="full")readingMode=""};synth.speak(u)}
+function playFull(){const text=$("fullDescription").value.split("\n").filter(line=>!/^\s*[1-9]\.\s/.test(line)).join(" ").trim();if(!text)return;if(!synth)return;stopSpeech();readingMode="full";let u=new SpeechSynthesisUtterance(text);u.lang="de-DE";u.rate=.83;u.onend=()=>{if(readingMode==="full")readingMode=""};synth.speak(u)}
 $("readFull").onclick=()=>{if(readingMode==="full"&&paused){synth.resume();paused=false;return}playFull()};
 $("pauseFull").onclick=()=>{if(readingMode!=="full")return;if(paused){synth.resume();paused=false;$("fullStatus").textContent="Čitanje nastavljeno."}else{synth.pause();paused=true;$("fullStatus").textContent="Pauza."}};
 $("stopFull").onclick=()=>stopSpeech();
