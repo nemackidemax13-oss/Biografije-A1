@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#14366b">
 <title>DE-MAX A1 | Moj opis slike — 10 koraka opisa slike</title>
-<link rel="stylesheet" href="./shared.css?v=20261107-pocetna-ravna-strelica-v23">
+<link rel="stylesheet" href="./shared.css?v=20261107-strelica-od-P-do-a-v24">
 <style>
 /* Završni korak: opis je završen; mali povratak gore, bez dugmeta Dalje na dnu. */
 body[data-step-page="9"] .separate-header{position:relative!important}
@@ -68,16 +68,34 @@ body[data-step-page="9"].summary-mode .controls.centered-controls #summaryHomeBo
  text-align:center!important;white-space:normal!important;line-height:1.08!important;
  font:900 clamp(8.5px,2.5vw,11px) system-ui,-apple-system,"Segoe UI",Arial,sans-serif!important;
 }
+/* Širina strelice je tačno širina natpisa: od P do a. */
+body[data-step-page="9"].summary-mode .controls.centered-controls #summaryHomeBottom .home-content{
+ position:relative!important;display:inline-flex!important;flex-direction:column!important;
+ align-items:center!important;justify-content:center!important;max-width:100%!important;
+ width:max-content!important;min-width:0!important;
+}
 body[data-step-page="9"].summary-mode .controls.centered-controls #summaryHomeBottom .home-label{
- display:block!important;font-size:clamp(8.3px,2.3vw,10px)!important;
- line-height:1.04!important;text-align:center!important;max-width:100%!important;
- transform:translateY(1px)!important;
+ display:block!important;max-width:100%!important;white-space:nowrap!important;
+ font-size:clamp(8px,2.15vw,10px)!important;line-height:1.04!important;
+ text-align:center!important;overflow:visible!important;
 }
 body[data-step-page="9"].summary-mode .controls.centered-controls #summaryHomeBottom .home-left-arrow{
- position:absolute!important;bottom:0!important;left:50%!important;
- transform:translateX(-50%)!important;display:block!important;
- font-family:Arial,sans-serif!important;font-size:11px!important;font-weight:800!important;
- line-height:1!important;color:#273951!important;pointer-events:none!important;
+ display:block!important;position:absolute!important;
+ left:0!important;right:0!important;top:calc(100% + 3px)!important;
+ width:100%!important;height:8px!important;
+ color:#273951!important;pointer-events:none!important;
+}
+body[data-step-page="9"].summary-mode .controls.centered-controls #summaryHomeBottom .home-left-arrow::after{
+ content:""!important;position:absolute!important;
+ left:1px!important;right:0!important;top:4px!important;
+ border-top:2px solid currentColor!important;
+}
+body[data-step-page="9"].summary-mode .controls.centered-controls #summaryHomeBottom .home-left-arrow::before{
+ content:""!important;position:absolute!important;
+ left:1px!important;top:1px!important;
+ width:6px!important;height:6px!important;
+ border-left:2px solid currentColor!important;border-bottom:2px solid currentColor!important;
+ transform:rotate(45deg)!important;
 }
 body[data-step-page="9"].summary-mode .controls.centered-controls #clear{
  white-space:normal!important;line-height:1.08!important;
@@ -157,7 +175,7 @@ body[data-step-page="9"].summary-mode .controls.centered-controls #summaryHomeBo
   <div class="paneltitle"><strong>Moj opis</strong><span class="small" id="total">0 rečenica</span></div>
   <div class="selected-area" id="selectedArea"></div>
   <div class="compact-nav"><button id="chosenPrev" class="nav" aria-label="Prethodna izabrana rečenica">‹</button><span id="chosenPage">Opis strana 1</span><button id="chosenNext" class="nav" aria-label="Sledeća izabrana rečenica">›</button></div>
-  <div class="controls centered-controls" aria-label="Automatsko slušanje kompletnog opisa"><button id="playAll" class="ctrl main" type="button" title="Poslušaj, pauziraj i nastavi čitanje jednim dugmetom">▶ Poslušaj</button><button id="stopAuto" class="ctrl" type="button" aria-label="Zaustavi slušanje">■ Stop</button><button id="clear" class="ctrl danger" type="button">Obriši moj opis</button><a id="summaryHomeBottom" class="ctrl home-ctrl" href="./index.html" aria-label="Početna stranica" title="Vrati se na početnu stranicu"><span class="home-label">Početna stranica</span><span class="home-left-arrow" aria-hidden="true">←</span></a></div>
+  <div class="controls centered-controls" aria-label="Automatsko slušanje kompletnog opisa"><button id="playAll" class="ctrl main" type="button" title="Poslušaj, pauziraj i nastavi čitanje jednim dugmetom">▶ Poslušaj</button><button id="stopAuto" class="ctrl" type="button" aria-label="Zaustavi slušanje">■ Stop</button><button id="clear" class="ctrl danger" type="button">Obriši moj opis</button><a id="summaryHomeBottom" class="ctrl home-ctrl" href="./index.html" aria-label="Početna stranica" title="Vrati se na početnu stranicu"><span class="home-content"><span class="home-label">Početna stranica</span><span class="home-left-arrow" aria-hidden="true"></span></span></a></div>
  </section>
 
  <footer class="wizard-footer" aria-label="Kretanje kroz korake">
