@@ -1447,7 +1447,9 @@ function restoreDraft(){
   // Prati ranije izabranu rečenicu i kad je premeštena iz Detalja u Opis osoba.
   if(i<0&&entry.de==="Im Hintergrund sehe ich noch viele Personen.")
    i=BANK.findIndex(a=>a.de===entry.de&&a.sr===entry.sr);
-  if(i<0&&["custom-clothing","custom-hair","age"].includes(normalized.cat)){
+  // Sačuvaj i posebne detalje iz 8. koraka i novokreirane završne
+  // rečenice iz 9. koraka kada učenik pređe na 10. Moj opis.
+  if(i<0&&["custom-clothing","custom-hair","custom-detail","age","closing"].includes(normalized.cat)){
    i=BANK.length;BANK.push({...normalized});
   }
   if(i>=0&&!recovered.includes(i))recovered.push(i);
