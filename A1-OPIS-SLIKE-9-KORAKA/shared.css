@@ -1716,3 +1716,30 @@ html,body{height:100dvh;max-height:100dvh;overflow:hidden!important}
  .separate-header .demax-folder{right:3px!important;max-width:107px!important}
  .separate-header .separate-brand{max-width:calc(100% - 113px)!important}
 }
+
+/* v55 – Duži naziv "Moje rečenice": vidljiv i čitljiv na telefonu. */
+.separate-header .demax-folder{
+  max-width:none!important;width:auto!important;min-width:123px!important;
+  display:inline-flex!important;flex-wrap:nowrap!important;
+  justify-content:center!important;align-items:center!important;
+  gap:3px!important;padding:2px 5px!important;
+  top:2px!important;bottom:auto!important;right:4px!important;
+  height:21px!important;white-space:nowrap!important;
+}
+.separate-header .demax-folder .demax-folder-label{
+  display:inline!important;visibility:visible!important;
+  font-size:clamp(9px,2.6vw,10.5px)!important;
+  font-weight:850!important;white-space:nowrap!important;
+}
+.separate-header .demax-folder .demax-folder-icon{font-size:13px!important;flex-shrink:0!important}
+.separate-header .demax-folder .demax-folder-count{flex-shrink:0!important}
+.separate-header .separate-brand{
+  max-width:calc(100% - 140px)!important;
+  font-size:clamp(10px,3vw,12px)!important;
+  white-space:nowrap!important;
+}
+.separate-header .separate-brand small{font-size:clamp(7px,1.9vw,8px)!important}
+@media(max-width:350px){
+ .separate-header .demax-folder{min-width:119px!important;right:2px!important;padding:2px 3px!important}
+ .separate-header .separate-brand{max-width:calc(100% - 132px)!important}
+}
