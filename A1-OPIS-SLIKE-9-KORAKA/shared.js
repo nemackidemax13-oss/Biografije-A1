@@ -1434,6 +1434,11 @@ function restoreDraft(){
  for(const entry of saved.entries){
   if(!entry||typeof entry.de!=="string"||typeof entry.sr!=="string"||typeof entry.cat!=="string")continue;
   const normalized=normalizeSavedClothing(entry);
+  // Ažuriraj i ranije sačuvanu rečenicu za sve tri osobe.
+  if(normalized.cat==="custom-detail"&&/^(Er|Sie|Es) trägt eine schöne Uhr\.$/.test(normalized.de)){
+   normalized.de=normalized.de.replace("eine schöne Uhr.","eine schöne Armbanduhr.");
+   normalized.sr=normalized.sr.replace(/nosi lep sat\.$/,"nosi lep ručni sat.");
+  }
   // Stariji sačuvani izbori mogu imati prevode "muškarac"/"nizak".
   // Pretvori samo srpski prevod da se uklopi sa ažuriranom bazom bez gubitka izbora.
   normalized.sr=normalized.sr.replace(/muškarca|muškarac|nizak|niska|nisko/gi,word=>{
