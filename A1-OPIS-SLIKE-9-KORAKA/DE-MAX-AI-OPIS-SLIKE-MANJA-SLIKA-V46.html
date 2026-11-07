@@ -476,6 +476,41 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
 @media(max-height:640px){#screen3 .dialogue-head-row #photo3{height:clamp(46px,8.5dvh,65px)!important;max-height:65px!important}}
 
 #screen2 .detail-title{flex:0 0 auto;margin:0;text-align:center;color:#B18B20;font:800 11px/1.1 system-ui,Arial;padding:0}
+
+/* DE-MAX V51 — remove "Opis slike" header on the three learning screens;
+   let the picture start at the top of the usable phone display. */
+.app.study-page .header{display:none!important}
+#screen1 .summary-scroll,#screen2 .full-description-scroll,#screen3 #dialogueScroll{padding-top:1px!important}
+#screen2 .full-description-panel{padding-top:2px!important}
+#screen2 .full-photo-line{flex-basis:clamp(85px,15dvh,150px)!important;height:clamp(85px,15dvh,150px)!important}
+#screen3 .dialogue-page-nav.single-page{display:none!important;visibility:hidden!important;height:0!important;flex:0 0 0!important;margin:0!important;padding:0!important;border:0!important}
+#screen1 .summary-editor-wrap{position:relative;display:block;flex:1 1 auto;min-height:0;overflow:hidden}
+#screen1 .summary-editor-wrap .summary-editor{
+ display:block!important;position:absolute;inset:0;width:100%!important;height:100%!important;
+ flex:none!important;min-height:0;max-height:none!important;resize:none;
+}
+#screen1 .summary-editor-wrap .summary-editor.reading-mode{visibility:hidden}
+#screen1 .summary-reading{
+ position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;
+ border:1px solid #c6d7ec;border-radius:9px;padding:9px 10px;
+ background:#fbfdff;color:#117740;
+ font:600 13px/1.52 system-ui,Arial;white-space:pre-wrap;
+ overflow-wrap:anywhere;overscroll-behavior:contain;
+ cursor:text;
+}
+#screen1 .summary-reading[hidden]{display:none!important}
+#screen1 .summary-reading .speech-word{
+ transition:color .08s linear,background .08s linear;
+ border-radius:3px;
+}
+#screen1 .summary-reading .speech-word.speech-active{
+ background:#ffe35b;color:#ad253b;
+ box-shadow:0 1px 2px #dbb22940;
+}
+@media(max-height:650px){
+ #screen2 .full-photo-line{flex-basis:clamp(60px,12dvh,95px)!important;height:clamp(60px,12dvh,95px)!important}
+}
+@media(prefers-reduced-motion:reduce){#screen1 .summary-reading .speech-word{transition:none}}
 </style></head><body><main class="app">
 <header class="header"><h1>Opis slike</h1></header>
 <section class="screen active" id="screen0"><div class="scroll"><div class="panel"><h2 class="title" id="uploadHeading">Ubaci sliku za opis</h2><label class="upload"><span class="upload-icon">📷</span><span class="upload-title">Izaberi fotografiju</span><span class="upload-sub">Dodirni ovde za galeriju ili kameru</span><input id="file" type="file" accept="image/*"></label><div class="photo-reveal" id="photoReveal"><span class="photo-glow" aria-hidden="true"></span><img class="picture" id="photo0" alt="Izabrana slika"><span class="photo-success" aria-hidden="true">✓</span><span class="sparkle sp1" aria-hidden="true">✦</span><span class="sparkle sp2" aria-hidden="true">✧</span><span class="sparkle sp3" aria-hidden="true">✦</span></div><p class="status" id="status">Prvo izaberi sliku.</p></div><div class="demax-a1-brand" aria-label="De-Max A1"><span>De-Max</span> <strong>A1</strong></div><input id="endpoint" type="hidden" value="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev"></div><div class="footer upload-footer"><button class="action green" id="analyze" disabled>Automatski opiši sliku</button></div></section>
@@ -492,12 +527,12 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
   <button type="button" id="summaryPlus" class="summary-size" title="Uvećaj tekst" aria-label="Uvećaj veličinu teksta">+</button>
  </div>
  <label class="summary-label" for="summaryGerman">Moj kompletan opis na nemačkom</label>
- <textarea id="summaryGerman" class="summary-editor" lang="de" spellcheck="false" aria-label="Kompletan opis slike na nemačkom koji možeš uređivati"></textarea>
+ <div class="summary-editor-wrap"><textarea id="summaryGerman" class="summary-editor" lang="de" spellcheck="false" aria-label="Kompletan opis slike na nemačkom koji možeš uređivati"></textarea><div id="summaryReading" class="summary-reading" lang="de" role="status" aria-label="Označavanje nemačkog teksta tokom izgovora" hidden></div></div>
  <div id="summarySerbian" class="summary-serbian" lang="sr" hidden aria-label="Srpski prevod kompletnog opisa"></div>
  <p id="summaryStatus" class="summary-status" role="status" aria-live="polite">▶ Auto čita ceo tekst na nemačkom.</p>
 </div></div><div class="footer"><button class="action pale" type="button" id="summaryBack">❮ Slika</button><button class="action green" type="button" id="summaryDetail">Detaljan opis ❯</button></div></section>
 <section class="screen" id="screen2"><div class="scroll full-description-scroll"><div class="panel full-description-panel">
- <h2 class="detail-title">3. Detaljan opis slike</h2><div class="full-photo-line"><img class="picture small" id="photo2" alt="Slika za detaljan opis"></div>
+ <div class="full-photo-line"><img class="picture small" id="photo2" alt="Slika za detaljan opis"></div><h2 class="detail-title">3. Detaljan opis slike</h2>
  <div class="full-list-toolbar"><button class="full-mini-auto" id="autoFull" type="button" aria-label="Automatsko slušanje trenutne stranice opisa" aria-pressed="false">▶ Auto</button><div class="full-right-tools"><button class="full-mini-translate" id="translateFull" type="button" aria-pressed="false">Prevod</button><button class="full-font-btn" id="fontPlus" type="button" aria-label="Uvećaj tekst" title="Uvećaj tekst">+</button><button class="full-font-btn" id="fontMinus" type="button" aria-label="Smanji tekst" title="Smanji tekst">−</button></div></div>
  <div id="fullDescription" class="full-description-text full-structured-description" role="region" aria-label="Moj opis slike na nemačkom jeziku: koraci 1 do 6 ili 7 do 9"></div>
  <nav class="desc-page-nav" aria-label="Listanje koraka opisa"><button type="button" id="descPrev" aria-label="Prethodna stranica opisa">❮</button><span id="descPageLabel" aria-live="polite">1–6 · Strana 1/2</span><button type="button" id="descNext" aria-label="Sledeća stranica opisa">❯</button></nav>
@@ -515,7 +550,7 @@ const DEFAULT_WORKER_URL="https://automatskiopisslikeidijalozi.nemackidemax13.wo
 const $=id=>document.getElementById(id);
 const labels=["Opis osoba na slici","Razgovor osoba","Mesto osoba na slici","Izgled osoba na slici","Odeća osoba na slici","Kosa osoba na slici","Godine osoba na slici","Detalji na slici","Završni deo","Moj opis slike"];
 const scenes=[...(window.DEMAX_SCENES||[]),...(window.DEMAX_NEW_SCENES||[])].sort((a,b)=>a.n-b.n);
-let fullFontScale=1,fullSteps=[],fullTranslated=false,fullAudioIndex=-1,fullAudioAuto=false,fullAudioLines=[],summaryFontScale=1,summaryEdited=false,dialogueFontScale=1,dialogueAuto=false,dialoguePages=[],dialoguePageIndex=0,descriptionPage=0;let imageData="",bank=[],descRows=[],dialogRows=[],currentPage=0,voiceToken=0,paused=false,readingMode="",readingIndex=0;
+let summarySpeechTokens=[],fullFontScale=1,fullSteps=[],fullTranslated=false,fullAudioIndex=-1,fullAudioAuto=false,fullAudioLines=[],summaryFontScale=1,summaryEdited=false,dialogueFontScale=1,dialogueAuto=false,dialoguePages=[],dialoguePageIndex=0,descriptionPage=0;let imageData="",bank=[],descRows=[],dialogRows=[],currentPage=0,voiceToken=0,paused=false,readingMode="",readingIndex=0;
 const synth=window.speechSynthesis;
 $("endpoint").value=DEFAULT_WORKER_URL;
 fetch("./shared.js").then(r=>r.text()).then(t=>{let p=t.indexOf("const BANK=");if(p<0)return;let a=p+11,b=t.indexOf("];",a);if(b<0)return;let data=JSON.parse(t.slice(a,b+1));if(Array.isArray(data))bank=data.filter(x=>x?.de&&x?.sr)}).catch(()=>{});
@@ -528,6 +563,7 @@ function updateJourneyProgress(){
 }
 function view(n){
  stopSpeech();currentPage=n;
+ document.querySelector(".app").classList.toggle("study-page",n!==0);
  for(let i=0;i<4;i++)$("screen"+i).classList.toggle("active",i===n);
  updateJourneyProgress();
  if(n===3)requestAnimationFrame(()=>paginateDialogue());
@@ -545,7 +581,7 @@ function sampleBank(){
 
 function pageRows(mode){return mode==="desc"?descRows:mode==="dialog"?dialogRows:[]}
 function cleanHighlight(){document.querySelectorAll(".sentence.playing").forEach(el=>el.classList.remove("playing"))}
-function stopSpeech(){voiceToken++;paused=false;readingMode="";readingIndex=0;fullAudioIndex=-1;fullAudioAuto=false;dialogueAuto=false;if(synth)synth.cancel();cleanHighlight();updateFullAudioUI();updateDialogueAudioUI();updateSummaryAudioUI()}
+function stopSpeech(){voiceToken++;paused=false;readingMode="";readingIndex=0;fullAudioIndex=-1;fullAudioAuto=false;dialogueAuto=false;if(synth)synth.cancel();cleanHighlight();clearSummaryHighlight();updateFullAudioUI();updateDialogueAudioUI();updateSummaryAudioUI()}
 function playRows(mode,index=0,auto=true){
  if(!synth){alert("Ovaj pregledač ne podržava izgovor.");return}
  stopSpeech();readingMode=mode;readingIndex=index;dialogueAuto=mode==="dialog"&&auto;
@@ -571,6 +607,7 @@ function showDialoguePage(page){
  dialoguePageIndex=Math.max(0,Math.min(page,dialoguePages.length-1));
  const visible=new Set(dialoguePages[dialoguePageIndex]);
  for(let i=0;i<dialogRows.length;i++)dialogRows[i].element.hidden=!visible.has(i);
+ $("dialoguePager").classList.toggle("single-page",dialoguePages.length<=1);
  $("dialoguePager").style.visibility=dialoguePages.length>1?"visible":"hidden";
  $("dialoguePrev").disabled=dialoguePageIndex===0;
  $("dialogueNext").disabled=dialoguePageIndex>=dialoguePages.length-1;
@@ -584,6 +621,7 @@ function revealDialogueIndex(index){
 function paginateDialogue(anchor=0){
  if(currentPage!==3)return;
  const box=$("dialogue");
+ $("dialoguePager").classList.remove("single-page");
  for(const row of dialogRows)row.element.hidden=false;
  const available=Math.max(65,box.clientHeight-3);
  const sizes=dialogRows.map(r=>{
@@ -595,13 +633,13 @@ function paginateDialogue(anchor=0){
  for(let i=0;i<dialogRows.length;){
   const n=Math.min(2,dialogRows.length-i);
   const pairHeight=sizes.slice(i,i+n).reduce((sum,x)=>sum+x,0);
-  if(items.length&&(height+pairHeight>available-1||items.length+n>6)){groups.push(items);items=[];height=0}
+  if(items.length&&height+pairHeight>available-2){groups.push(items);items=[];height=0}
   for(let j=0;j<n;j++)items.push(i+j);
   height+=pairHeight;i+=n;
  }
  if(items.length)groups.push(items);
  dialoguePages=groups;
- if(!groups.length){$("dialoguePager").style.visibility="hidden";return}
+ if(!groups.length){$("dialoguePager").classList.add("single-page");$("dialoguePager").style.visibility="hidden";return}
  const page=groups.findIndex(arr=>arr.includes(anchor));
  showDialoguePage(page>=0?page:0);
 }
@@ -827,22 +865,92 @@ function updateSummaryAudioUI(){
 function updateSummaryFont(){
  const scale=summaryFontScale;
  $("summaryGerman").style.fontSize=(Math.round(13*scale*10)/10)+"px";
+ $("summaryReading").style.fontSize=(Math.round(13*scale*10)/10)+"px";
  $("summarySerbian").style.fontSize=(Math.round(11*scale*10)/10)+"px";
 }
+
+/* Highlight the exact spoken word when the browser supplies speech onboundary
+   char offsets. Otherwise highlight the sentence without fabricating timing. */
+function renderSummarySpeechText(){
+ const text=$("summaryGerman").value,area=$("summaryReading");
+ area.replaceChildren();summarySpeechTokens=[];
+ const chunks=text.match(/\s+|[^\s]+/gu)||[];
+ let offset=0;
+ for(const chunk of chunks){
+  if(/^\s+$/u.test(chunk)){area.append(document.createTextNode(chunk));offset+=chunk.length;continue}
+  const span=document.createElement("span");span.className="speech-word";
+  span.textContent=chunk;area.append(span);
+  summarySpeechTokens.push({start:offset,end:offset+chunk.length,span});
+  offset+=chunk.length;
+ }
+}
+function clearSummaryHighlight(){
+ const editor=$("summaryGerman"),area=$("summaryReading");
+ if(!editor||!area)return;
+ editor.classList.remove("reading-mode");area.hidden=true;
+ for(const t of summarySpeechTokens)t.span.classList.remove("speech-active");
+}
+function markSummarySpeechRange(start,end,word=false){
+ const area=$("summaryReading");let first=null;
+ for(const t of summarySpeechTokens){
+  const active=word? t.start<=start&&start<t.end : t.start<end&&t.end>start;
+  t.span.classList.toggle("speech-active",active);
+  if(active&&!first)first=t.span;
+ }
+ if(first){
+  const top=first.offsetTop,lower=top+first.offsetHeight;
+  if(top<area.scrollTop||lower>area.scrollTop+area.clientHeight)
+   area.scrollTop=Math.max(0,top-area.clientHeight/3);
+ }
+}
+function summaryPartsWithOffsets(value){
+ const phrases=separateGermanSentences(value);
+ let pos=0;
+ return phrases.map(de=>{
+  const start=Math.max(0,value.indexOf(de,pos));
+  pos=start+de.length;
+  return {de,start,end:pos};
+ });
+}
+$("summaryReading").onclick=()=>{
+ if(readingMode==="summary")stopSpeech();
+ $("summaryGerman").focus();
+};
 function playSummary(){
  if(!synth){$("summaryStatus").textContent="Izgovor nije dostupan u ovom pregledaču.";return}
- const phrases=separateGermanSentences($("summaryGerman").value);
+ const source=$("summaryGerman").value;
+ const phrases=summaryPartsWithOffsets(source);
  if(!phrases.length){$("summaryStatus").textContent="Nema rečenica za slušanje.";return}
- stopSpeech();readingMode="summary";paused=false;
+ stopSpeech();renderSummarySpeechText();
+ $("summaryGerman").classList.add("reading-mode");
+ $("summaryReading").hidden=false;
+ $("summaryReading").scrollTop=$("summaryGerman").scrollTop;
+ readingMode="summary";paused=false;
  const token=voiceToken;let i=0;
  updateSummaryAudioUI();
  function next(){
   if(token!==voiceToken||readingMode!=="summary"||paused)return;
-  if(i>=phrases.length){stopSpeech();$("summaryStatus").textContent="Završeno čitanje kompletnog opisa.";return}
+  if(i>=phrases.length){
+   stopSpeech();$("summaryStatus").textContent="Završeno čitanje kompletnog opisa.";return
+  }
+  const part=phrases[i];
   $("summaryStatus").textContent="Izgovor: rečenica "+(i+1)+" / "+phrases.length;
-  const u=new SpeechSynthesisUtterance(phrases[i]);u.lang="de-DE";u.rate=.83;u.pitch=1;
-  u.onend=()=>{if(token!==voiceToken)return;i++;next()};
-  u.onerror=err=>{if(token!==voiceToken)return;
+  markSummarySpeechRange(part.start,part.end,false);
+  const u=new SpeechSynthesisUtterance(part.de);u.lang="de-DE";u.rate=.83;u.pitch=1;
+  let seenBoundary=false;
+  u.onboundary=e=>{
+   if(token!==voiceToken||readingMode!=="summary"||paused)return;
+   if(typeof e.charIndex!=="number"||!Number.isFinite(e.charIndex))return;
+   // Use charLength when available; single-word fallback finds the enclosing token.
+   const absolute=part.start+Math.min(part.de.length,Math.max(0,e.charIndex));
+   seenBoundary=true;markSummarySpeechRange(absolute,absolute+(e.charLength||1),true);
+  };
+  u.onend=()=>{
+   if(token!==voiceToken)return;
+   i++;next()
+  };
+  u.onerror=err=>{
+   if(token!==voiceToken)return;
    if(err.error==="canceled"||err.error==="interrupted")return;
    i++;next()
   };
