@@ -550,6 +550,64 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
   min-height:27px!important;height:27px!important
  }
 }
+
+/* DE-MAX A1 V53: three full-width photo frames without cropping the photo. 
+   The width stretches nearly to both sides; the real image remains proportionate. */
+#screen1 .summary-image-wrap,#screen2 .full-photo-line,#screen3 .dialogue-wide-photo{
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ align-self:stretch!important;box-sizing:border-box!important;
+ width:100%!important;max-width:100%!important;min-width:0!important;
+ margin:0!important;padding:2px!important;
+ border:1px solid #d2e2f4!important;
+ border-radius:8px!important;background:#f4f9ff!important;
+ overflow:hidden!important;
+}
+#screen1 .summary-image-wrap{
+ flex:0 0 clamp(110px,23dvh,225px)!important;
+ height:clamp(110px,23dvh,225px)!important;
+}
+#screen2 .full-photo-line{
+ flex:0 0 clamp(100px,19dvh,190px)!important;
+ height:clamp(100px,19dvh,190px)!important;
+}
+#screen3 .dialogue-wide-photo{
+ flex:0 0 clamp(92px,17dvh,170px)!important;
+ height:clamp(92px,17dvh,170px)!important;
+ margin:0 0 3px!important;
+}
+#screen1 .summary-image-wrap #photo1,
+#screen2 .full-photo-line #photo2,
+#screen3 .dialogue-wide-photo #photo3{
+ display:block!important;position:static!important;
+ width:100%!important;max-width:100%!important;min-width:0!important;
+ height:100%!important;max-height:100%!important;min-height:0!important;
+ margin:0!important;padding:0!important;border:0!important;
+ object-fit:contain!important;object-position:center center!important;
+ border-radius:5px!important;background:transparent!important;
+}
+#screen3 .dialogue-head-row{
+ display:block!important;grid-template-columns:none!important;
+ width:100%!important;min-width:0!important;margin:0 0 2px!important;
+}
+#screen3 .dialogue-head-copy{width:100%!important;display:flex!important;align-items:center;flex-direction:row!important;gap:5px!important}
+#screen3 .dialogue-head-copy .title{flex:0 1 auto;font-size:11px!important;white-space:normal}
+#screen3 .dialogue-head-copy .pill{flex:1 1 auto;min-width:0;text-align:right!important}
+#screen3 .dialogue-top{padding:3px 5px 2px!important}
+@media(max-height:650px){
+ #screen1 .summary-image-wrap{
+  flex-basis:clamp(84px,19dvh,126px)!important;height:clamp(84px,19dvh,126px)!important
+ }
+ #screen2 .full-photo-line{
+  flex-basis:clamp(75px,16dvh,108px)!important;height:clamp(75px,16dvh,108px)!important
+ }
+ #screen3 .dialogue-wide-photo{
+  flex-basis:clamp(70px,14dvh,100px)!important;height:clamp(70px,14dvh,100px)!important
+ }
+}
+@media(max-width:350px){
+ #screen3 .dialogue-head-copy .title{font-size:10px!important}
+ #screen3 .dialogue-head-copy .pill{font-size:8px!important}
+}
 </style></head><body><main class="app">
 <header class="header"><h1>Opis slike</h1></header>
 <section class="screen active" id="screen0"><div class="scroll"><div class="panel"><h2 class="title" id="uploadHeading">Ubaci sliku za opis</h2><label class="upload"><span class="upload-icon">📷</span><span class="upload-title">Izaberi fotografiju</span><span class="upload-sub">Dodirni ovde za galeriju ili kameru</span><input id="file" type="file" accept="image/*"></label><div class="photo-reveal" id="photoReveal"><span class="photo-glow" aria-hidden="true"></span><img class="picture" id="photo0" alt="Izabrana slika"><span class="photo-success" aria-hidden="true">✓</span><span class="sparkle sp1" aria-hidden="true">✦</span><span class="sparkle sp2" aria-hidden="true">✧</span><span class="sparkle sp3" aria-hidden="true">✦</span></div><p class="status" id="status">Prvo izaberi sliku.</p></div><div class="demax-a1-brand" aria-label="De-Max A1"><span>De-Max</span> <strong>A1</strong></div><input id="endpoint" type="hidden" value="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev"></div><div class="footer upload-footer"><button class="action green" id="analyze" disabled>Automatski opiši sliku</button></div></section>
@@ -576,7 +634,7 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
  <div id="fullDescription" class="full-description-text full-structured-description" role="region" aria-label="Moj opis slike na nemačkom jeziku: koraci 1 do 6 ili 7 do 9"></div>
  <nav class="desc-page-nav" aria-label="Listanje koraka opisa"><button type="button" id="descPrev" aria-label="Prethodna stranica opisa">❮</button><span id="descPageLabel" aria-live="polite">1–6 · Strana 1/2</span><button type="button" id="descNext" aria-label="Sledeća stranica opisa">❯</button></nav>
  <p class="muted" id="fullStatus">Kompletan tekst na nemačkom.</p></div></div><div class="footer"><button class="action pale" id="backFromFull">❮ Moj opis</button><button class="action green" id="goDialogue">Dijalog ❯</button></div></section>
-<section class="screen" id="screen3"><div class="scroll" id="dialogueScroll"><div class="panel dialogue-top"><div class="dialogue-head-row"><img class="picture small" id="photo3" alt="Fotografija za vežbu dijaloga"><div class="dialogue-head-copy"><h2 class="title">4. Dijalog A i B · Učenici</h2><div id="scene" class="pill">Situacija prema slici</div></div></div><div class="dialogue-toolbar" role="group" aria-label="Slušanje, prevod i veličina teksta"><button class="dialogue-auto" id="readDialogue" type="button" aria-pressed="false">▶ Auto</button><button class="dialogue-pause" id="pauseDialogue" type="button">⏸ Pauza</button><button class="dialogue-stop" id="stopDialogue" type="button">■ Stop</button><button class="dialogue-translate" id="translationDialogue" type="button" aria-pressed="false">Prevod</button><button class="dialogue-size" id="dialogueFontMinus" type="button" aria-label="Smanji tekst dijaloga">−</button><button class="dialogue-size" id="dialogueFontPlus" type="button" aria-label="Uvećaj tekst dijaloga">+</button></div><p class="muted" id="dialogueStatus" style="text-align:center">Dodirni ▶ uz rečenicu ili uključi Auto.</p></div><div id="dialogue" class="hide-translation" aria-label="Dijalog učenika A i B bez skrolovanja"></div><div class="dialogue-page-nav" id="dialoguePager"><button type="button" id="dialoguePrev" aria-label="Prethodne replike">❮</button><span id="dialoguePageLabel" aria-live="polite"></span><button type="button" id="dialogueNext" aria-label="Sledeće replike">❯</button></div></div><div class="footer"><button class="action pale" id="backToDescription">❮ Detaljan opis</button><button class="action green" id="restart">Nova slika ↻</button></div></section>
+<section class="screen" id="screen3"><div class="scroll" id="dialogueScroll"><div class="panel dialogue-top"><div class="dialogue-wide-photo"><img class="picture small" id="photo3" alt="Fotografija za vežbu dijaloga"></div><div class="dialogue-head-row"><div class="dialogue-head-copy"><h2 class="title">4. Dijalog A i B · Učenici</h2><div id="scene" class="pill">Situacija prema slici</div></div></div><div class="dialogue-toolbar" role="group" aria-label="Slušanje, prevod i veličina teksta"><button class="dialogue-auto" id="readDialogue" type="button" aria-pressed="false">▶ Auto</button><button class="dialogue-pause" id="pauseDialogue" type="button">⏸ Pauza</button><button class="dialogue-stop" id="stopDialogue" type="button">■ Stop</button><button class="dialogue-translate" id="translationDialogue" type="button" aria-pressed="false">Prevod</button><button class="dialogue-size" id="dialogueFontMinus" type="button" aria-label="Smanji tekst dijaloga">−</button><button class="dialogue-size" id="dialogueFontPlus" type="button" aria-label="Uvećaj tekst dijaloga">+</button></div><p class="muted" id="dialogueStatus" style="text-align:center">Dodirni ▶ uz rečenicu ili uključi Auto.</p></div><div id="dialogue" class="hide-translation" aria-label="Dijalog učenika A i B bez skrolovanja"></div><div class="dialogue-page-nav" id="dialoguePager"><button type="button" id="dialoguePrev" aria-label="Prethodne replike">❮</button><span id="dialoguePageLabel" aria-live="polite"></span><button type="button" id="dialogueNext" aria-label="Sledeće replike">❯</button></div></div><div class="footer"><button class="action pale" id="backToDescription">❮ Detaljan opis</button><button class="action green" id="restart">Nova slika ↻</button></div></section>
 <div class="journey-progress" id="journeyProgress" role="progressbar" aria-label="Napredak: slika, moj opis, detaljan opis i dijalog" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="journey-progress-fill" id="journeyFill"></div></div>
 <div class="powered">Powered By De-Max</div></main>
 <script src="../DE_MAX_A1_DIJALOZI_40_DATA_01.js?v=20261018"></script>
