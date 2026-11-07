@@ -21,107 +21,206 @@ export default {async fetch(request,env){
  const parsed=JSON.parse(raw);
  const image=parsed.image;
  if(typeof image!=="string"||!/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(image))return respond({error:"Neispravan format slike."},400);
- const instructions=`Ti si profesor nemačkog jezika na nivou A1 za DE-MAX Tutin. Isporuči detaljan, ali prirodan i GRAMATIČKI TAČAN opis STVARNO VIDLJIVE fotografije, u tačno 10 koraka. Obavezno se oslanjaj na DE-MAX bazu rečenica bankExamples koju dobijaš u korisničkom zahtevu. KADA IZ BAZE POSTOJI ODGOVARAJUĆA ISTINITA REČENICA, upotrebi njen identičan nemački tekst i odgovarajući srpski prevod. Ako baza nema korisnikovu obaveznu strukturu (npr. 'Auf diesem Bild...', procenu godina ili boju očiju), dozvoljeno je sastaviti samo KRATKU A1 rečenicu od korisnikovog šablona i činjenica koje se vide, nikada izmišljati činjenice, dodatne radnje, identitet, zanimanje, osećanja ili razgovor. Ne ponavljaj opšte neodređene tvrdnje. Redosled u steps[0..9] je obavezan, a opis na ekranu sastavlja se od steps[0..8].
-1. OPIS OSOBA: počni tačno šablonom 'Auf diesem Bild sehe ich zwei Personen, einen Mann und eine Frau.' SAMO ako zaista vidiš upravo jednog muškarca i jednu ženu. Za drugačiji broj i sastav upotrebi gramatički ispravan A1 oblik 'Auf diesem Bild sehe ich ...': jednog muškarca, dve žene, jedno dete, muškarca i dete, više ljudi itd. NIKADA ne izmišljaj osobe. Dodaj šta osobe jasno rade, sede ili stoje.
-2. MESTO: odmah posle broja osoba upotrebi 'Ich denke, die Personen sind ...' i na osnovu fotografije tačno mesto: im Park, im Supermarkt, in der Bäckerei, beim Arzt, in der Küche, im Restaurant, am Bahnhof, in der Schule, im Freien itd. Izaberi JEDNO konkretno najverovatnije mesto iz DE-MAX baze 'places', samo ako scena to podržava; za očiglednu lokaciju možeš 'Die Personen sind ...'. Za samo jednu osobu koristi 'Ich denke, der Mann / die Frau / das Kind ist ...', a ne množinu.
-3. RAZGOVOR I RADNJA: kada vidiš osobe kako međusobno razgovaraju, koristi korisnikov obrazac 'Die Personen sprechen über etwas, vielleicht über ...' i jednu temu koja odgovara PRIKAZANOJ radnji i predmetima. Za razgovor biraj iz DE-MAX 'start' primera. Npr. ako je u pekari i gledaju hleb, '... vielleicht über das Brot'; ako gledaju auto, '... vielleicht über das Auto'. Obavezno reči 'vielleicht' ili 'ich denke' kad samo pretpostavljaš temu; fotografija ne snima zvuk. Ako osobe NE deluju kao da razgovaraju, ne tvrdi da razgovaraju, nego opiši šta zaista rade; ako je samo jedna osoba, ne izmišljaj sagovornika.
-4. DETALJAN IZGLED SVAKOG: zasebno i dosledno opiši muškarca 'Der Mann ist ...', ženu 'Die Frau ist ...' i dete 'Das Kind ist ...' kada su na fotografiji. Uključi šta se VIDI: visok/nizak, krupniji/vitak, lice (Gesicht), izraz lica, oči SAMO ako se boja i izgled zaista razaznaju, bradu (Bart), brkove (Schnurrbart), naočare (Brille), ručni sat (Armbanduhr) SAMO ako se vidi. Ne navodi da nema bradu, sat ili naočare ako ti detalji nisu dovoljno vidljivi. Izgled opisuj bez neprimerenih procena i bez nagađanja o identitetu.
-5. ODEĆA: za svakog posebno 'Der Mann trägt ...', 'Die Frau trägt ...', 'Das Kind trägt ...'. Navedite tačne vidljive odevne predmete i BOJE (jakna, majica, košulja, pantalone, haljina, suknja, cipele, obuća, radno odelo). Za dve osobe nemoj pomešati odeću. Upotrebi tačan rod, padež i pridevske nastavke: 'Der Mann trägt eine blaue Jacke.' / 'Die Frau trägt ein rotes Kleid.'. Izostavi nevidljivu odeću. Ako su prisutna deca, opiši njihovu odeću na isti način.
-6. KOSA: posebno za svaku vidljivu osobu: 'Der Mann hat kurze schwarze Haare.', 'Die Frau hat lange blonde Haare.', 'Das Kind hat lockige braune Haare.' samo kad je uočljivo. Kosa može biti kratka, duga, ravna, kovrdžava, smeđa, crna, plava, seda; ćelavost samo ako se vidi. Ne mešaj kosu muškarca, žene i deteta.
-7. GODINE: za SVAKU prisutnu osobu koristi procenu, nikad preciznu tvrdnju. DVE dozvoljene konstrukcije: 'Ich denke, der Mann ist ungefähr 35 Jahre alt.' ILI 'Der Mann ist ungefähr 35 Jahre alt.'; analogno 'Ich denke, die Frau ist ungefähr 30 Jahre alt.' ILI 'Die Frau ist ungefähr 30 Jahre alt.'; 'Ich denke, das Kind ist ungefähr 7 Jahre alt.' ILI 'Das Kind ist ungefähr 7 Jahre alt.'. Za svaku osobu upotrebi SAMO jednu od dve konstrukcije, ne obe. Broj prilagodi približno izgledu, bez lažne sigurnosti. Ako se uopšte ne može proceniti, preskoči tu osobu.
-8. VIDljIVI DETALJI I POZADINA: reci šta se još vidi iza/ispred osoba (im Hintergrund, links, rechts), nameštaj, prodavnica, cveće, kola, predmeti u rukama, životinje. Ako su napolju i fotografija jasno prikazuje, reci kakvo je vreme 'Das Wetter ist sonnig.' ili 'Es regnet.' i eventualno godišnje doba SAMO kad postoje očigledni znaci; inače izostavi godišnje doba. Ako su unutra, opiši prostoriju, boje, stolove, stolice, prozore i druge vidljive predmete. Za osmeh koristi 'Der Mann lächelt.' / 'Die Frau lächelt.' i kada su obe osobe nasmejane 'Beide Personen lächeln.'; 'Ich denke, der Mann lacht.' / 'Ich denke, die Frau lacht.' i 'Beide Personen lachen.' koristi samo kad je jasno da se zapravo smeju, a ne samo osmehuju. Isto pravilo primeni na dete 'Das Kind lächelt.' ili 'Das Kind lacht.'.
-9. ZAVRŠNE REČENICE: koristi odgovarajuće završne rečenice iz DE-MAX 'closing' baze vezane za mesto i situaciju. Ako ciljevi ljudi nisu sigurni, samo 'Ich denke, ...' ili 'Vielleicht ...'. Završetak uvek 'Das war meine Bildbeschreibung.' i nemoj gomilati nepovezane završne rečenice.
-10. MOJ OPIS SLIKE: vrati sažet pregled istih činjenica, bez novih detalja. Aplikacija zapravo automatski sastavlja kompletan opis iz steps[0..8], zato korak 10 ne sme sadržati drugačije tvrdnje.
-DETALJNOST – NOVI OBAVEZNI STANDARD: Učenik želi MNOGO BOGATIJI opis od prethodnog, ali bez nagađanja. Prvo u sebi prepoznaj i proveri svaku osobu, njenu poziciju levo/desno/u sredini, odevne predmete, boje, kosu, lice i dodatke; odvojeno popiši prostor i vidljive detalje. Tek onda piši nemačke rečenice. Neka steps[0..8] zajedno daju otprilike 140–240 nemačkih reči za tipičnu jasnu fotografiju sa dve osobe; za tri osobe i detaljnu pozadinu može biti 240–310, a za nejasnu ili jednostavnu sliku znatno manje. Ne popunjavaj broj reči izmišljanjem ili ponavljanjem. Napiši obilje KRATKIH A1 rečenica; cilj je potpunost stvarno vidljivih činjenica, a ne duge konstrukcije. Koraci 4, 5, 6 i 8 obično treba da budu najdetaljniji kada je scena jasna.
+ const instructions=`Ti si stručni DE-MAX A1 sistem za OPIS STVARNE FOTOGRAFIJE. Tvoj jedini cilj je da pravilno izabereš već postojeće NEMAČKE REČENICE iz date DE-MAX bankExamples baze ili strogo dozvoljenih A1 ŠABLONA navedenih dole. Ne smeš slobodno izmišljati nove rečenice niti izmišljati objekte, odeću, boje, radnje, godine, razgovor, mesto ili ljude kojih nema na slici. Worker će SVAKU rečenicu proveriti i odbaciti sve što nije iz banke ili dozvoljenog šablona. Ne piši dugačke složene rečenice; samo jednu proverljivu informaciju po rečenici. NIKADA ne dodaj detalj samo da bi opis bio duži. Ne mešaj osobine muškarca, žene i deteta.
 
-KONKRETNO PROŠIRENJE PO KORACIMA:
-1. Nakon početne rečenice opiši koliko ima muškaraca/žena/dece; raspored na slici (links, rechts, in der Mitte, im Vordergrund) i vidljiv položaj (steht, sitzt, geht, arbeitet, wartet). Broji pažljivo i nemoj pripisati detetu odrasle osobine.
-2. Opiši konkretno mesto i 1–3 jasne prostorne karakteristike: unutra/spolja, gde stoje/sede osobe i koji vidljiv predmet odaje mesto. Koristi 'Ich denke, die Personen sind ...' samo za zaključak koji vizuelni kontekst opravdava.
-3. Opiši radnje SVAKOG lika zasebno: gleda, drži, bira, kupuje, čita, piše, kuva, šeta, jede, razgovara, čeka; šta je pred njim ili u ruci. Napiši 'Die Personen sprechen über etwas, vielleicht über ...' samo ako međusobno deluju kao da razgovaraju. Temu izvedi iz vidljivih stvari. Ako nema očiglednog razgovora, odgovarajuće opisuj vidljivu radnju, ne forsiraj ovu frazu.
-4. Za SVAKU vidljivu osobu odvojeno navedi stas (groß/klein/schlank), približan izgled (jung/älter) bez vrednosnog suda, izgled lica, osmeh/pogled, vidljive oči i boju očiju samo ako je jasno, naočare, bradu/brkove samo ako se zaista vide. Kada dva čoveka imaju različite osobine, opiši ih posebno i ne mešaj. Ne govori o karakteru osobe samo na osnovu lica.
-5. Za SVAKU osobu zasebno opiši što više jasno VIDljivih odevnih predmeta, boja i vrste: Jacke, Mantel, Hemd, T-Shirt, Bluse, Pullover, Kleid, Rock, Hose, Jeans, Schuhe, Stiefel, Arbeitskleidung, Mütze, Schal; ako se vide, torba i sat, ali ne mešaj odevne predmete. Opiši i razliku u bojama: 'Der Mann trägt eine schwarze Jacke und eine blaue Hose.'; 'Die Frau trägt eine weiße Bluse und einen langen Rock.' samo kada odgovara stvarnoj slici. Gramatički pravilno deklinirati prideve i članove.
-6. Za svaku osobu kojoj se vidi kosa: boja, dužina, tekstura (glatt/lockig), frizura (offen/zusammengebunden) kada se može razaznati. Opisi 'Der Mann hat ...', 'Die Frau hat ...', 'Das Kind hat ...' bez zamene osoba. Ako se ne vidi zbog kape, napiši samo ono što se zaista vidi, ne zamišljaj kosu.
-7. Za svaku prisutnu osobu jedna jasna približna procena godina 'Ich denke, ... ist ungefähr ... Jahre alt.' ili '... ist ungefähr ... Jahre alt.'; ne navodi dva različita broja. Za dete ista pravila. Ako je starost vrlo neodređena, umesto broja može 'Der Mann sieht jung aus.' ali ne lažna preciznost.
-8. Temeljno proveri okolinu: pozadina i prvi plan, zidovi, police, stolovi, stolice, prozori, vrata, lampe, cveće, knjige, vozila, proizvodi, hrana, drveće, put, nebo, voda, životinje. Za predmete koje vidiš opiši položaj i boju ako je jasna: 'Im Hintergrund sehe ich ...', 'Links steht ...', 'Auf dem Tisch liegt ...'. Za napolju: vremenske prilike samo iz direktnih pokazatelja; godišnje doba samo uz vrlo jasan vizuelni znak. Za unutra: prostoriju i raspored bez pretpostavljanja vlasnika ili namene. Ako se vidi osmeh, 'Der Mann lächelt.', 'Die Frau lächelt.', 'Beide Personen lächeln.'; '... lacht/lachen' samo ako je smeh očigledan, bez preuveličavanja.
-9. Napiši nekoliko prirodnih smislenih završnih rečenica relevantnih za konkretnu scenu, pre svega iz kategorije closing iz DE-MAX baze; može 'Ich denke, ...' za neizvestan cilj, 'Das Bild gefällt mir.' samo ako odgovara vežbi, i kao poslednju rečenicu UVEK 'Das war meine Bildbeschreibung.'. Izbegni generičke rečenice nepovezane sa slikom.
-DODATNA PRAVILA KVALITETA: Koristi DE-MAX bankExamples po kategoriji start/places/mann/frau/kind/extra/closing kada zaista odgovaraju slici i gramatici; baza služi kao izvor DOBRIH PRIMERA, ne kao dozvola da se slepo nalepi rečenica o objektu koji ne postoji. Ako baza nema odgovarajuću rečenicu, napiši kratku novu nemačku A1 rečenicu vernu slici. Rečenice za muškarca, ženu i dete moraju ostati dosledne kroz korake. Ne tvrdi da su ljudi u srodstvu, da imaju zdravstvene simptome, šta govore, kako se zovu ili zašto nešto rade. Ne ponavljaj iste stvari u više koraka osim kada to zaista čini opis jasnijim. Ne stavljaj liste ili numerisanje U STRING de; svaka stavka steps već odgovara nazivu koraka. Nemački tekst piši sa pravilnom interpunkcijom i po jednom tvrdnjom po kratkoj rečenici.
-Opšta pravila: NEMAČKI A1, kratke rečenice, logična i gramatička pravilnost, dovoljno detalja za prisutne osobe, ali nikakve izmišljene informacije. Koristi stvarnu bazu pre slobodnog generisanja. Ne koristi bezrazložne pretpostavke o bolesti, profesiji, porodičnom odnosu, godišnjem dobu, razgovoru ili godinama kao sigurnim činjenicama. Ako su samo predmeti/životinje, prilagodi opis njima bez izmišljanja ljudi. U svakom koraku vrati de i prevod sr (srpska latinica) u istoj temi; zaseban precizan prevod se potom priprema u drugom prolazu.
-DIJALOZI: Na osnovu fotografije izaberi sceneNumber iz ponuđenih scena, ili null ako nema podudaranja. Koristi originalne DE-MAX dijaloge iz polja scenes[n].dialog, extra i roles. Neka dijalog ima 10–12 kratkih, naizmeničnih replika A/B, počinje pozdravom i završava se oproštajem. Prioritet su originalne replike i njihovi prevodi iz baze, a nove replike samo kad su nužne za logičnu vezu. Dijalog predstavlja MOGUĆU vežbu u toj situaciji, ne razgovor koji se sigurno čuje na fotografiji.
-Vrati samo jedan valjan JSON objekat sa keys steps (niz tačno 10 objekata {de,sr}), description (spojen nemački tekst zasnovan na steps 1–9), sceneNumber (broj ili null), sceneName, dialogue (10–12 objekata {speaker,de,sr}). Bez markdown-a, bez dodatnog objašnjenja.`;
+VRATI steps niz od TAČNO 10 objekata {de:"nemačke rečenice tog koraka",sr:""}. Polje de sadrži jednu ili više celih kratkih nemačkih rečenica, sa tačkom i razmakom između njih. Ako vidljivih činjenica nema, de može biti prazno (izuzev prvog i završnog koraka). Sve iz steps 1–9 predstavljaju povezani opis, redosled je presudan. Korak 10 je samo pregled, server ga automatski pravi. Za svaku banku koristi DOSLOVNE nemačke rečenice, bez promene reči, reda i gramatičkog oblika. Polje sr može biti prazno jer server srpski prevod UZIMA DIREKTNO IZ BAZE I ODOBRENIH ŠABLONA.
+
+1. OPIS OSOBA: ZAISTA prebroj vidljive osobe. Ako su tačno muškarac i žena, obavezno počni 'Auf diesem Bild sehe ich zwei Personen, einen Mann und eine Frau.'. Ako je drugačije, počni odgovarajućim šablonom 'Auf diesem Bild sehe ich ...' npr. 'Auf diesem Bild sehe ich einen Mann.' / 'Auf diesem Bild sehe ich eine Frau.' / 'Auf diesem Bild sehe ich ein Kind.' / 'Auf diesem Bild sehe ich zwei Männer.' / 'Auf diesem Bild sehe ich zwei Frauen.' / 'Auf diesem Bild sehe ich zwei Kinder.' / 'Auf diesem Bild sehe ich einen Mann und ein Kind.' / 'Auf diesem Bild sehe ich eine Frau und ein Kind.' / 'Auf diesem Bild sehe ich einen Mann, eine Frau und ein Kind.' / 'Auf diesem Bild sehe ich mehrere Personen.'. Iz baze ubaci pozicije i šta se vidi kada odgovara.
+2. MESTO: odmah posle uvoda: 'Ich denke, die Personen sind ...' ili sigurno 'Die Personen sind ...' koristeći isključivo TAČNU rečenicu iz DE-MAX kategorije places (mesto mora odgovarati slici!). Za jednu osobu koristi odobreni singular 'Ich denke, der Mann ist ...' / 'Ich denke, die Frau ist ...' / 'Ich denke, das Kind ist ...' prema istom mestu.
+3. RAZGOVOR I RADNJA: samo ako izgleda da osobe pričaju, iz DE-MAX banke izaberi tačno 'Die Personen sprechen über etwas, vielleicht über ...' sa temom koja prati vidljive predmete/radnju. Razgovor je hipoteza, ne činjenica. Ako ne pričaju, opisuj njihove vidljive radnje iz baze bez te fraze. Ne pretpostavljaj ko je lekar/prodavac bez očiglednih oznaka.
+4. IZGLED: posebno za svakog muškarca, ženu i dete. Iz odobrene DE-MAX baze koristi 'Der Mann ist ...', 'Die Frau ist ...', 'Das Kind ist ...' uz vidljivu visinu, građu, lice, izraz, naočare, bradu, brkove, ručni sat. Iz odobrenog šablona po potrebi 'Der Mann hat blaue Augen.' itd., samo ako boja očiju stvarno može da se vidi. Dozvoljen je i šablon 'Der Mann hat ein ovales Gesicht.' ili '... ein rundes Gesicht.' ako je jasno.
+5. ODEĆA: posebno ZA SVAKOG vidljivog čoveka koristi po JEDAN artikl po nemačkoj rečenici, u stilu 'Der Mann trägt eine blaue Jacke.', 'Die Frau trägt ein rotes Kleid.', 'Das Kind trägt schwarze Schuhe.'. Dozvoljene su samo te gramatičke konstrukcije i odevni predmeti: Jacke, Hose, Jeans, Bluse, Kleid, T-Shirt, Hemd, Pullover, Mantel, Rock, Anzug, Schuhe, Stiefel, Turnschuhe, Sandalen, Mütze, Schal, Hut, Arbeitskleidung, Schürze, Handschuhe, Brille, Kittel, Sakko, Uniform. Boje: schwarz, weiß, blau, rot, grün, gelb, grau, braun, rosa, beige (deklinira se kao beig-), orangefarben (narandžasta), lila. Navedi boju ako se VIDI, a inače samo odevni predmet.
+6. KOSA: za svaku osobu koristi tačno kratak obrazac 'Der Mann hat kurze schwarze Haare.', 'Die Frau hat lange blonde Haare.', 'Das Kind hat lockige braune Haare.', itd. Uz boju schwarz, braun, blond, grau, weiß, rot, dunkelbraun, hellbraun i vidljivu dužinu kurze / lange / mittellange ili izgled lockige / glatte. Nikad ne pripisuj kosu ako je prekrivena.
+7. GODINE: za svaku prisutnu osobu samo JEDNU približnu procenu: 'Ich denke, der Mann ist ungefähr 35 Jahre alt.' ili 'Der Mann ist ungefähr 35 Jahre alt.', analogno 'Ich denke, die Frau ist ungefähr 30 Jahre alt.' i 'Ich denke, das Kind ist ungefähr 7 Jahre alt.'; broj promeni približno prema izgledu. Nikada nemoj tvrdoglaviti precizno određenu starost.
+8. DETALJI I POZADINA: koristi samo POSTOJEĆE rečenice iz bankExamples (kategorije extra, closing, start), npr. šta je levo/desno/iza, na stolu, unutra ili napolju, soba, oprema, biljke, vreme, godišnje doba ako direktno vidljivo. Ako se vidi osmeh 'Der Mann lächelt.', 'Die Frau lächelt.', 'Das Kind lächelt.' ili 'Beide Personen lächeln.'. Ako je očigledan smeh 'Ich denke, der Mann lacht.', 'Ich denke, die Frau lacht.', 'Ich denke, das Kind lacht.' ili 'Beide Personen lachen.'. Ne tumači osmeh kao siguran smeh.
+9. ZAVRŠNE REČENICE: iz DE-MAX closing baze izaberi nekoliko smislenih rečenica koje stvarno odgovaraju slici. Poslednja rečenica je uvek 'Das war meine Bildbeschreibung.'. Nikad ne ubacuj nepovezane završne rečenice.
+10. MOJ OPIS: može ostati prazan jer se automatski gradi iz proverenih prvih devet koraka.
+
+Opis neka bude vrlo detaljan ako se detalji stvarno vide: cilj je oko 20–35 kratkih A1 rečenica za jasnu sliku sa dve osobe, više ako je više vidljivih detalja, ali nikad ne dodavati izmišljene činjenice zbog brojke. U SVAKOM koraku samo odobrene rečenice iz bankExamples ili eksplicitnih A1 obrazaca. Bez dugih kombinovanih rečenica. Izaberi sceneNumber iz liste scenes na osnovu slike (ili null ako nijedna situacija nije prikladna); DE-MAX dijalog server preuzima direktno iz originalne scene i zato NIKAKAV izmišljeni dijalog ne treba pisati.
+
+Odgovori ISKLJUČIVO ispravnim JSON objektom {steps:[tačno 10 objekata {de,sr}],description:"",sceneNumber:broj ili null,sceneName:""}. Ne uključuj dialogue.`;
  // Original DE-MAX dialogue bank from the student app, not invented examples.
  const pair=x=>({de:String(x?.de||"").slice(0,150),sr:String(x?.sr||"").slice(0,170)});
- const scenes=Array.isArray(parsed.scenes)?parsed.scenes.slice(0,50).map(x=>({
-  n:Number(x.n),sr:String(x.sr||"").slice(0,90),de:String(x.de||"").slice(0,90),roles:String(x.roles||"").slice(0,100),
-  dialog:Array.isArray(x.dialog)?x.dialog.slice(0,6).map(pair):[],
-  extra:Array.isArray(x.extra)?x.extra.slice(0,3).map(pair):[]
- })):[];
- const bankExamples=Array.isArray(parsed.bankExamples)?parsed.bankExamples.slice(0,180).map(x=>({
+ const scenes=Array.isArray(parsed.scenes)?parsed.scenes.slice(0,50).map(x=>({n:Number(x.n),sr:String(x.sr||"").slice(0,90),de:String(x.de||"").slice(0,90),roles:String(x.roles||"").slice(0,100)})):[];
+ const bankExamples=Array.isArray(parsed.bankExamples)?parsed.bankExamples.slice(0,650).map(x=>({
   cat:String(x.cat||"").slice(0,25),de:String(x.de||"").slice(0,180),sr:String(x.sr||"").slice(0,180)
  })):[];
  const context=JSON.stringify({scenes,bankExamples});
- const api=await fetch("https://api.openai.com/v1/chat/completions",{method:"POST",headers:{"Authorization":"Bearer "+env.OPENAI_API_KEY,"Content-Type":"application/json"},body:JSON.stringify({model:env.OPENAI_MODEL||"gpt-4.1-mini",temperature:.35,response_format:{type:"json_object"},max_tokens:7000,messages:[{role:"system",content:instructions},{role:"user",content:[{type:"text",text:"Opiši ovu sliku po koracima i izaberi odgovarajući dijalog. Podaci iz postojećih DE-MAX baza: "+context},{type:"image_url",image_url:{url:image,detail:"high"}}]}]})});
+ const api=await fetch("https://api.openai.com/v1/chat/completions",{method:"POST",headers:{"Authorization":"Bearer "+env.OPENAI_API_KEY,"Content-Type":"application/json"},body:JSON.stringify({model:env.OPENAI_MODEL||"gpt-4.1-mini",temperature:.12,response_format:{type:"json_object"},max_tokens:5000,messages:[{role:"system",content:instructions},{role:"user",content:[{type:"text",text:"Opiši ovu sliku po koracima i izaberi odgovarajući dijalog. Podaci iz postojećih DE-MAX baza: "+context},{type:"image_url",image_url:{url:image,detail:"high"}}]}]})});
  const data=await api.json();
  if(!api.ok)return respond({error:"AI servis: "+(data.error?.message||"greška "+api.status)},502);
+
  const result=JSON.parse(data.choices?.[0]?.message?.content||"{}");
- if(!Array.isArray(result.steps)||result.steps.length!==10||typeof result.description!=="string")return respond({error:"AI nije vratio očekivani format opisa. Pokušaj ponovo."},502);
+ if(!Array.isArray(result.steps)||result.steps.length!==10)
+  return respond({error:"AI nije vratio svih 10 koraka. Pokušaj ponovo."},502);
 
- // Always translate the FINAL German sentences, rather than trusting a loosely
- // aligned paragraph translation from the picture-description model.
- const splitGerman=value=>{
-  const s=String(value||"").trim();
-  if(!s)return [];
-  return s.split(/(?<=[.!?])\s+(?=[A-ZÄÖÜ„"0-9])/u).map(x=>x.trim()).filter(Boolean);
- };
- const rawSteps=result.steps.slice(0,10);
- const rawDialogue=Array.isArray(result.dialogue)?result.dialogue.slice(0,12):[];
- const germanSteps=rawSteps.map((s,i)=>({
-  index:i,lines:splitGerman(s.de).map((de,j)=>({key:"s"+i+"-"+j,de}))
- }));
- const germanDialogue=rawDialogue.map((s,i)=>({key:"d"+i,de:String(s.de||"").trim()})).filter(x=>x.de);
- const originals=[...germanSteps.flatMap(x=>x.lines),...germanDialogue];
- if(!originals.length)return respond({error:"AI nije napisao nemačke rečenice za prevod."},502);
+ // Trusted DE-MAX picture bank + fixed A1 language templates ONLY.
+ // No unchecked AI-written sentence is ever returned to the learner.
+ const allowed=new Map();
+ const norm=s=>String(s||"").normalize("NFC").replace(/\s+/g," ").trim();
+ const put=(de,sr)=>{const key=norm(de);if(key&&sr&&!allowed.has(key))allowed.set(key,{de:key,sr:String(sr).trim()})};
+ for(const x of bankExamples)put(x.de,x.sr);
 
- const translateInstructions="Ti si iskusan profesionalni prevodilac nemački → srpski (latinica). Ovo je drugi, nezavisan prolaz za tačnost prevoda DE-MAX A1. PREVEDI ISKLJUČIVO NEMAČKI TEKST IZ SVAKOG POLJA de, doslovno i gramatički prirodno, NA SRPSKI LATINICOM. Ne oslanjaj se na pretpostavke o slici, nemoj dodavati ili izostavljati imena osoba, brojeve, boje, odeću, mesta, negaciju ili radnje. Naročito razlikuj Mann=muškarac/čovek, Frau=žena, Kind=dete, trägt=nosi, hat=ima, ungefähr=otprilike, vielleicht=možda, ich denke=mislim. Svaku ulaznu rečenicu prevedi JEDNOM i sačuvaj identični key. Ne spajaj, ne menjaj redosled, ne prepisuj nemački u prevod. Odgovori ISKLJUČIVO validnim JSON objektom sa poljem translations: niz objekata {key,sr}. Jedan prevod za svaki ulazni key, ni manje ni više.";
- const translationResponse=await fetch("https://api.openai.com/v1/chat/completions",{
-  method:"POST",
-  headers:{"Authorization":"Bearer "+env.OPENAI_API_KEY,"Content-Type":"application/json"},
-  body:JSON.stringify({
-   model:env.OPENAI_TRANSLATION_MODEL||env.OPENAI_MODEL||"gpt-4.1-mini",
-   temperature:0,
-   response_format:{type:"json_object"},
-   max_tokens:6500,
-   messages:[
-    {role:"system",content:translateInstructions},
-    {role:"user",content:JSON.stringify({sentences:originals})}
-   ]
-  })
- });
- const translationData=await translationResponse.json();
- if(!translationResponse.ok)return respond({error:"AI prevod nije uspeo: "+(translationData.error?.message||translationResponse.status)},502);
- let translationResult;
- try{translationResult=JSON.parse(translationData.choices?.[0]?.message?.content||"{}")}
- catch(_){return respond({error:"Prevod nije vraćen kao ispravan JSON. Pokušaj ponovo."},502)}
- const translations=Array.isArray(translationResult.translations)?translationResult.translations:[];
- const translationMap=new Map(translations.map(x=>[String(x.key||""),String(x.sr||"").trim()]));
- if(translations.length!==originals.length||translationMap.size!==originals.length||
-    originals.some(x=>!translationMap.get(x.key))){
-  return respond({error:"Prevod nije usklađen sa svim nemačkim rečenicama. Pokušaj ponovo."},502);
+ const actors=[
+  {de:"Der Mann",lo:"der Mann",sr:"Muškarac",srGen:"muškarac"},
+  {de:"Die Frau",lo:"die Frau",sr:"Žena",srGen:"žena"},
+  {de:"Das Kind",lo:"das Kind",sr:"Dete",srGen:"dete"}
+ ];
+ const intro=[
+  ["Auf diesem Bild sehe ich einen Mann.","Na ovoj slici vidim jednog muškarca."],
+  ["Auf diesem Bild sehe ich eine Frau.","Na ovoj slici vidim jednu ženu."],
+  ["Auf diesem Bild sehe ich ein Kind.","Na ovoj slici vidim jedno dete."],
+  ["Auf diesem Bild sehe ich zwei Personen, einen Mann und eine Frau.","Na ovoj slici vidim dve osobe, jednog muškarca i jednu ženu."],
+  ["Auf diesem Bild sehe ich zwei Männer.","Na ovoj slici vidim dva muškarca."],
+  ["Auf diesem Bild sehe ich zwei Frauen.","Na ovoj slici vidim dve žene."],
+  ["Auf diesem Bild sehe ich zwei Kinder.","Na ovoj slici vidim dvoje dece."],
+  ["Auf diesem Bild sehe ich einen Mann und ein Kind.","Na ovoj slici vidim muškarca i dete."],
+  ["Auf diesem Bild sehe ich eine Frau und ein Kind.","Na ovoj slici vidim ženu i dete."],
+  ["Auf diesem Bild sehe ich einen Mann, eine Frau und ein Kind.","Na ovoj slici vidim muškarca, ženu i dete."],
+  ["Auf diesem Bild sehe ich drei Personen.","Na ovoj slici vidim tri osobe."],
+  ["Auf diesem Bild sehe ich mehrere Personen.","Na ovoj slici vidim više osoba."],
+  ["Auf diesem Bild sehe ich keine Personen.","Na ovoj slici ne vidim osobe."]
+ ];
+ intro.forEach(p=>put(p[0],p[1]));
+ const allowedIntros=new Set(intro.map(x=>x[0]));
+ // Colors with their correctly declined Serbian accusative adjective forms.
+ const colors=[
+  {de:"schwarz",m:"crni",f:"crnu",n:"crno",p:"crne"},
+  {de:"weiß",m:"beli",f:"belu",n:"belo",p:"bele"},
+  {de:"blau",m:"plavi",f:"plavu",n:"plavo",p:"plave"},
+  {de:"rot",m:"crveni",f:"crvenu",n:"crveno",p:"crvene"},
+  {de:"grün",m:"zeleni",f:"zelenu",n:"zeleno",p:"zelene"},
+  {de:"gelb",m:"žuti",f:"žutu",n:"žuto",p:"žute"},
+  {de:"grau",m:"sivi",f:"sivu",n:"sivo",p:"sive"},
+  {de:"braun",m:"smeđi",f:"smeđu",n:"smeđe",p:"smeđe"},
+  {de:"rosa",m:"roze",f:"roze",n:"roze",p:"roze",invariable:true},
+  {de:"beig",m:"bež",f:"bež",n:"bež",p:"bež"},
+  {de:"orangefarben",m:"narandžasti",f:"narandžastu",n:"narandžasto",p:"narandžaste"},
+  {de:"lila",m:"ljubičasti",f:"ljubičastu",n:"ljubičasto",p:"ljubičaste",invariable:true}
+ ];
+ const garments=[
+  ["Jacke","f","jaknu","f"],["Hose","f","pantalone","p"],["Jeans","f","farmerke","p"],
+  ["Bluse","f","bluzu","f"],["Kleid","n","haljinu","f"],["T-Shirt","n","majicu","f"],
+  ["Hemd","n","košulju","f"],["Pullover","m","džemper","m"],["Mantel","m","kaput","m"],
+  ["Rock","m","suknju","f"],["Anzug","m","odelo","n"],["Schuhe","p","cipele","p"],
+  ["Stiefel","p","čizme","p"],["Turnschuhe","p","patike","p"],["Sandalen","p","sandale","p"],
+  ["Mütze","f","kapu","f"],["Schal","m","šal","m"],["Hut","m","šešir","m"],
+  ["Arbeitskleidung","f","radnu odeću","f"],["Schürze","f","kecelju","f"],
+  ["Handschuhe","p","rukavice","p"],["Brille","f","naočare","p"],["Kittel","m","mantil","m"],["Sakko","n","sako","m"],["Uniform","f","uniformu","f"]
+ ];
+ const article={m:"einen",f:"eine",n:"ein",p:""};
+ const adjEnding={m:"en",f:"e",n:"es",p:"e"};
+ for(const actor of actors){
+  for(const [noun,g,srN,srG] of garments){
+   const prefix=article[g]?article[g]+" ":"";
+   put(actor.de+" trägt "+prefix+noun+".",actor.sr+" nosi "+srN+".");
+   for(const color of colors){
+    const adjective=color.invariable?color.de:color.de+adjEnding[g];
+    const de=actor.de+" trägt "+prefix+adjective+" "+noun+".";
+    const sr=actor.sr+" nosi "+color[srG]+" "+srN+".";
+    put(de,sr);
+   }
+  }
  }
- const translatedSteps=germanSteps.map((step,i)=>{
-  const lines=step.lines.map(line=>({de:line.de,sr:translationMap.get(line.key)}));
+ const hairColors=[
+  ["schwarze","crnu"],["braune","smeđu"],["blonde","plavu"],["graue","sedu"],
+  ["weiße","belu"],["rote","crvenu"],["dunkelbraune","tamnobraon"],
+  ["hellbraune","svetlosmeđu"]
+ ];
+ const hairForms=[
+  ["kurze","kratku"],["lange","dugu"],["mittellange","srednje dugu"],
+  ["lockige","kovrdžavu"],["glatte","ravnu"]
+ ];
+ const eyes=[
+  ["blaue","plave"],["braune","smeđe"],["grüne","zelene"],
+  ["graue","sive"],["schwarze","crne"]
+ ];
+ for(const actor of actors){
+  for(const [deEye,srEye] of eyes)put(actor.de+" hat "+deEye+" Augen.",actor.sr+" ima "+srEye+" oči.");
+  for(const [dColor,sColor] of hairColors)
+   for(const [dForm,sForm] of hairForms)
+    put(actor.de+" hat "+dForm+" "+dColor+" Haare.",actor.sr+" ima "+sForm+" "+sColor+" kosu.");
+  for(const [deShape,srShape] of [["ovales","ovalno"],["rundes","okruglo"]])
+   put(actor.de+" hat ein "+deShape+" Gesicht.",actor.sr+" ima "+srShape+" lice.");
+  for(let age=2;age<=90;age++){
+   const de=actor.lo+" ist ungefähr "+age+" Jahre alt.";
+   put(actor.de+" ist ungefähr "+age+" Jahre alt.",actor.sr+" ima otprilike "+age+" godina.");
+   put("Ich denke, "+de,"Mislim da "+actor.srGen+" ima otprilike "+age+" godina.");
+  }
+  put(actor.de+" lächelt.",actor.sr+" se osmehuje.");
+  put(actor.de+" lacht.",actor.sr+" se smeje.");
+  put("Ich denke, "+actor.lo+" lacht.","Mislim da se "+actor.srGen+" smeje.");
+ }
+ put("Beide Personen lachen.","Obe osobe se smeju.");
+ put("Beide Personen lächeln.","Obe osobe se osmehuju.");
+
+ // Convert already-authored plural location patterns to user-approved singular.
+ for(const entry of bankExamples.filter(x=>x.cat==="places")){
+  const match=norm(entry.de).match(/^Die Personen sind (.+)\.$/);
+  const tr=norm(entry.sr).match(/^Osobe su (.+)\.$/);
+  if(!match||!tr)continue;
+  for(const actor of actors)
+   put("Ich denke, "+actor.lo+" ist "+match[1]+".","Mislim da je "+actor.srGen+" "+tr[1]+".");
+ }
+ put("Das war meine Bildbeschreibung.","To je bio moj opis slike.");
+
+ const segment=value=>{
+  const s=norm(value);
+  if(!s)return [];
+  return s.split(/(?<=[.!?])\s+(?=[A-ZÄÖÜ„"0-9])/u).map(x=>norm(x)).filter(Boolean);
+ };
+ const seen=new Set();let rejected=0;
+ const chosen=result.steps.map((raw,i)=>{
+  const lines=[];
+  for(const s of segment(raw?.de)){
+   const exact=allowed.get(s);
+   if(!exact){rejected++;continue;}
+   if(seen.has(exact.de)){continue;}
+   seen.add(exact.de);lines.push({...exact});
+  }
   return {de:lines.map(x=>x.de).join(" "),sr:lines.map(x=>x.sr).join(" "),lines};
  });
- const translatedDialogue=rawDialogue.map((line,i)=>({
-  speaker:String(line.speaker||(i%2?"B":"A")),
-  de:String(line.de||"").trim(),
-  sr:translationMap.get("d"+i)||String(line.sr||"").trim()
+ // Enforce correct opening, no made-up people in otherwise unsupported opener.
+ const first=chosen[0].lines.find(x=>allowedIntros.has(x.de));
+ if(!first)return respond({error:"Opis slike nema pouzdan početak prema DE-MAX A1 šablonu. Pokušaj ponovo."},502);
+ chosen[0].lines=[first,...chosen[0].lines.filter(x=>x!==first)];
+ chosen[0].de=chosen[0].lines.map(x=>x.de).join(" ");
+ chosen[0].sr=chosen[0].lines.map(x=>x.sr).join(" ");
+ const ending="Das war meine Bildbeschreibung.";
+ for(const step of chosen){
+  step.lines=step.lines.filter(x=>x.de!==ending);
+  step.de=step.lines.map(x=>x.de).join(" ");
+  step.sr=step.lines.map(x=>x.sr).join(" ");
+ }
+ const endLine=allowed.get(ending);
+ chosen[8].lines.push({...endLine});
+ chosen[8].de=chosen[8].lines.map(x=>x.de).join(" ");
+ chosen[8].sr=chosen[8].lines.map(x=>x.sr).join(" ");
+ const allLines=chosen.slice(0,9).flatMap(s=>s.lines);
+ if(allLines.length<9)return respond({error:"Nedovoljno pouzdanih rečenica iz DE-MAX baze i šablona. Pokušaj sa jasnijom fotografijom.",rejected},502);
+ const summary={de:allLines.map(x=>x.de).join(" "),sr:allLines.map(x=>x.sr).join(" "),lines:allLines};
+ chosen[9]=summary;
+
+ // Strictly source dialogue from the selected original DE-MAX scene.
+ const selectedScene=Array.isArray(parsed.scenes)?
+  parsed.scenes.find(s=>Number(s.n)===Number(result.sceneNumber)):null;
+ const rawDialogue=Array.isArray(selectedScene?.dialog)?
+  selectedScene.dialog.filter(x=>x&&x.de&&x.sr):[];
+ const chosenDialogue=rawDialogue.length>12?
+  [...rawDialogue.slice(0,10),...rawDialogue.slice(-2)]:rawDialogue.slice(0,12);
+ const dialogue=chosenDialogue.map((x,i)=>({
+  speaker:i%2?"B":"A",
+  de:String(x.de).trim(),
+  sr:String(x.sr).trim()
  }));
  return respond({
-  steps:translatedSteps,
-  description:translatedSteps.slice(0,9).flatMap(x=>x.lines.map(l=>l.de)).join(" "),
-  sceneNumber:Number.isInteger(Number(result.sceneNumber))&&Number(result.sceneNumber)>0?Number(result.sceneNumber):null,
-  sceneName:String(result.sceneName||""),
-  dialogue:translatedDialogue
+  steps:chosen,
+  description:summary.de,
+  sceneNumber:selectedScene?Number(selectedScene.n):null,
+  sceneName:selectedScene?String(selectedScene.sr||""):String(result.sceneName||""),
+  dialogue,
+  sourceMode:"DE-MAX baza i potvrđeni A1 šabloni",
+  filteredSentences:rejected
  });
 
  }catch(e){return respond({error:"Greška u obradi zahteva: "+e.message},500)}
