@@ -159,12 +159,26 @@ button,a{-webkit-tap-highlight-color:transparent}
 }
 
 
-/* 10 koraka opisa slike: koraci 1–9 plavi, deseti ostaje zeleni. */
-.steps li:not(:last-child) .step-name,
-.steps li:not(:last-child) .number{color:#2064b2!important}
+/* Početna: žuti naslov i žuti okviri koraka 1–9; završni 10. ostaje zelen. */
+.hero{
+ background:linear-gradient(110deg,#fff4ba,#ffe27b)!important;
+ border-color:#e1b337!important;
+}
+.steps li:not(:last-child){
+ background:linear-gradient(105deg,#fff3a3,#ffe074)!important;
+ border:1px solid #dfb12c!important;
+ box-shadow:0 2px 4px #a47f161c!important;
+}
+.steps li:nth-child(2n):not(:last-child){
+ background:linear-gradient(105deg,#ffeda0,#ffda60)!important;
+}
+.steps li:not(:last-child) .step-name{
+ color:#67460c!important;
+}
 .steps li:not(:last-child) .number{
- background:#e3efff!important;
- border:1px solid #bfd8f6!important;
+ background:#ffc82c!important;
+ color:#553a09!important;
+ border:1px solid #d8a014!important;
 }
 .steps li:last-child .step-name{color:#117e46!important}
 .steps li:last-child .number{
@@ -196,7 +210,7 @@ button,a{-webkit-tap-highlight-color:transparent}
  <section class="instructions" aria-label="Uputstvo za vežbanje">
   <strong>Uputstvo za učenike</strong>
   <p>U svakom koraku izaberi željene rečenice tako što ćeš ih dodirnuti. Pored svake izabrane rečenice pojaviće se znak <b>✓</b>, a rečenica će biti obojena kako bi znao koje si odabrao.</p>
-  <p>Zatim pritisni zeleno dugme <b>Dalje</b> za prelazak na sledeći deo opisa.</p>
+  <p>Zatim pritisni žuto dugme <b>Dalje</b> za sledeći korak. Na 9. koraku zeleno dugme vodi do kompletnog opisa.</p>
   <p>Na <b>9. stranici</b> izaberi završne rečenice, a na <b>10. stranici</b> pogledaj kompletan opis slike sastavljen od svojih izbora.</p>
   <p>Na kraju možeš <b>poslušati ceo opis slike na nemačkom jeziku</b> i vežbati pravilan izgovor.</p>
  </section>
