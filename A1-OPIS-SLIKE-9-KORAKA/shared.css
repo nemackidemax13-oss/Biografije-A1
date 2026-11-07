@@ -1675,3 +1675,9 @@ html,body{height:100dvh;max-height:100dvh;overflow:hidden!important}
 .separate-header .demax-folder .demax-folder-count{height:16px!important;min-width:16px!important;font-size:10px!important}
 .separate-header .separate-brand{max-width:calc(100% - 128px)!important;justify-self:start!important;overflow:hidden!important}
 @media(max-width:350px){.separate-header .demax-folder{right:3px!important;padding:2px 3px!important;max-width:111px!important}}
+
+/* v51: Folder u donjem desnom delu zaglavlja – natpis DE-MAX A1 OPIS SLIKE ostaje potpuno vidljiv. */
+.separate-header .demax-folder{top:auto!important;bottom:3px!important;right:5px!important;min-height:21px!important}
+.separate-header .separate-brand{max-width:100%!important;overflow:visible!important}
+.separate-header h1#wizardTitle{box-sizing:border-box!important;padding-right:116px!important;text-align:left!important;padding-left:7px!important;font-size:clamp(12px,3.2vw,15px)!important}
+@media(max-width:350px){.separate-header h1#wizardTitle{padding-right:105px!important;font-size:12px!important}.separate-header .demax-folder .demax-folder-label{font-size:9px!important}}
