@@ -1559,7 +1559,7 @@ document.addEventListener("pointerdown",event=>{
 },true);
 function demaxFolder(){
   const compose=document.querySelector(".panel.compose");
-  const header=compose?.querySelector(".paneltitle");
+  const header=document.querySelector(".separate-header");
   if(!header)return null;
   let button=document.getElementById("demaxFolder");
   if(!button){
