@@ -1625,3 +1625,6 @@ body[data-step-page="8"] #endChoices .phrase .sound{
 body[data-step-page="4"] #openSearch,
 body[data-step-page="5"] #openSearch,
 body[data-step-page="6"] #openSearch{display:none!important}
+
+/* Koraci 5 Odeća, 6 Kosa i 8 Detalji: vidljiva je centralna pretraga, bez duple lupe u zaglavlju. */
+body[data-step-page="7"] #openSearch{display:none!important}

@@ -1262,7 +1262,7 @@ if(sceneButtons){
  const syncScene=()=>{
   const i=SCENE_DATA.findIndex(x=>x.id===sceneFilter);
   const special=sceneFilter==="weather"?"Vreme napolju":sceneFilter==="indoor"?"Unutra":"Sve";
-  current.textContent=i<0?special:SCENE_DATA[i].label;
+  current.textContent=i<0?special:(i+1)+". "+SCENE_DATA[i].label;
   current.setAttribute("aria-label",i<0?special:SCENE_DATA[i].label+", "+(i+1)+" od "+SCENE_DATA.length);
   const kindbar=$("#closingModes");
   if(kindbar)kindbar.querySelectorAll("[data-closing-mode]").forEach(b=>{
