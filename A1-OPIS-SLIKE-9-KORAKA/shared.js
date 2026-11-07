@@ -1565,8 +1565,8 @@ function demaxFolder(){
   if(!button){
     button=document.createElement("button");
     button.type="button";button.id="demaxFolder";button.className="demax-folder";
-    button.setAttribute("aria-label","Folder Moj opis – pregled sačuvanih rečenica");
-    button.innerHTML='<span class="demax-folder-icon" aria-hidden="true">📁</span><span class="demax-folder-label">Moj folder</span><span class="demax-folder-count">0</span>';
+    button.setAttribute("aria-label","Moje rečenice – pregled sačuvanih rečenica");
+    button.innerHTML='<span class="demax-folder-icon" aria-hidden="true">📁</span><span class="demax-folder-label">Moje rečenice</span><span class="demax-folder-count">0</span>';
     header.appendChild(button);
     button.addEventListener("click",()=>{
       compose.classList.remove("demax-folder-open");void compose.offsetWidth;
@@ -1580,7 +1580,7 @@ function demaxSyncFolder(){
   const button=demaxFolder();if(!button)return;
   const count=button.querySelector(".demax-folder-count");
   if(count)count.textContent=String(chosen.length);
-  button.setAttribute("aria-label","Moj folder: "+chosen.length+" izabranih rečenica");
+  button.setAttribute("aria-label","Moje rečenice: "+chosen.length+" izabranih rečenica");
 }
 function demaxFlyToFolder(line){
   const folder=demaxFolder();
