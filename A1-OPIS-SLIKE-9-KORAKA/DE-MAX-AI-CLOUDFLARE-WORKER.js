@@ -33,10 +33,10 @@ OBAVEZAN REDOSLED IZ ORIGINALNE BAZE 9 KORAKA: steps ima 10 elemenata, za prve 9
 6. KOSA: za svakog posebno 'Der Mann hat kurze schwarze Haare.', 'Die Frau hat lange blonde Haare.', 'Das Kind hat lockige braune Haare.' ili tačan drugi fiksni oblik; dužina, boja, kovrdžava/ravna, samo kada se vidi.
 7. GODINE: za svaku osobu samo jedna približna procena, npr. 'Ich denke, der Mann ist ungefähr 35 Jahre alt.', 'Ich denke, die Frau ist ungefähr 30 Jahre alt.', 'Ich denke, das Kind ist ungefähr 7 Jahre alt.' ili bez 'Ich denke'. Broj odgovara približnom izgledu, ne predstavlja se kao sigurna činjenica.
 8. DETALJI SLIKE: odaberi iz BANK extra/start/closing relevantne rečenice o predmetima u rukama, satovima, nakitu, izrazima lica, osmehu, smehu, životinjama, pozadini, levo/desno, unutrašnjem prostoru ili vidljivim vremenskim prilikama i godišnjem dobu SAMO kad je očigledno. Za smeh: 'Beide Personen lachen.' samo kad se obe osobe jasno smeju; za osmeh: 'Beide Personen lächeln.' kad se osmehuju.
-9. ZAVRŠNE REČENICE: isključivo smisleni primeri iz DE-MAX closing baze koji odgovaraju slici. Poslednja rečenica 'Das war meine Bildbeschreibung.'.
+9. ZAVRŠNI DEO – OPIS NA KRAJU: nakon 8. koraka prvo 1–2 rečenice iz baze o onome što ZAISTA vidiš u POZADINI u obliku 'Im Hintergrund sehe ich noch ...', koristeći tačan postojeći tekst iz baze ili samo strogo dozvoljene gramatičke šablone; zatim ako su NAPOLJU i vreme je jasno vidljivo, koristi postojeću 'Das Wetter ist sonnig.' / 'Das Wetter ist schön.' / 'Es regnet.' / 'Es ist bewölkt.' (ne tvrdi vreme unutra); zatim ako se ZAISTA VIDI kupovina ili plaćanje, primeni odobreni 'Ich denke, die Personen kaufen Brot.' / 'Ich denke, die Frau kauft Blumen.' / 'Ich denke, der Mann kauft Schuhe.' sa pravim predmetom koji je vidljiv. Ako nema kupovine nemoj pisati da kupuju. Zatim eventualno 1–2 prikladne originalne closing rečenice za stvarnu situaciju iz baze. Poslednja rečenica UVEK 'Das war meine Bildbeschreibung.'. Ne ponavljaj isto iz koraka 8. Server proverava svaki opis sa fotografijom i premešta relevantne rečenice o pozadini i vremenu u korak 9.
 10. MOJ OPIS: ostavi prazan, server sklapa identične rečenice iz koraka 1–9.
 
-FIKSNI DODATNI A1 ŠABLONI: dopušteni su samo postojeći početni izrazi 'Auf diesem Bild sehe ich ...', gramatički ispravne rečenice oblika 'Der Mann/Die Frau/Das Kind trägt [odevni predmet i boja]' iz kataloga, '... hat [dužina/boja] Haare.', '... hat [boja] Augen.', '... ist ungefähr [broj] Jahre alt.', 'Ich denke, ... ist ungefähr ... Jahre alt.', 'Der Mann hat einen Bart/Schnurrbart.', i očigledne mimike; to su sistemski unapred generisane dozvoljene varijante. NEMOJ slobodno kombinovati nepovezane rečenice, dodavati još jedan nepoznat predmet niti slobodno pisati nove nemačke rečenice.
+FIKSNI DODATNI A1 ŠABLONI: dopušteni su samo postojeći početni izrazi 'Auf diesem Bild sehe ich ...', gramatički ispravne rečenice oblika 'Der Mann/Die Frau/Das Kind trägt [odevni predmet i boja]' iz kataloga, '... hat [dužina/boja] Haare.', '... hat [boja] Augen.', '... ist ungefähr [broj] Jahre alt.', 'Ich denke, ... ist ungefähr ... Jahre alt.', 'Der Mann hat einen Bart/Schnurrbart.', i očigledne mimike; to su sistemski unapred generisane dozvoljene varijante. 9. korak dodatno koristi SAMO sistemski dozvoljene fiksne oblike 'Im Hintergrund sehe ich noch ...' i 'Ich denke, die Personen/der Mann/die Frau kauft/kaufen ...', kada su pouzdano potvrđeni vizuelnom analizom, uz tačan prevod; vreme se uzima iz originalnih weather/closing rečenica. NEMOJ slobodno kombinovati nepovezane rečenice, dodavati još jedan nepoznat predmet niti slobodno pisati nove nemačke rečenice.
 
 PRAVILA KVALITETA: pre pisanja u sebi proveri koliko osoba je prisutno, pripadnost odeće, položaj na slici, lice i kosu svake osobe, mesto i objekte. Opisi detaljno kada je slika jasna: 18–35 kratkih rečenica je moguće, ali broj nije cilj. Ako slika nema dovoljno informacija, napiši manje. Izbor scena sceneNumber je najviše 1–40, i to jedna od originalnih 40 situacija, ako postoji odgovarajuća. Ne piši nove dijaloge: izabrani originalni dijalog već postoji i server ga uzima iz baze. Za DODATNU POUZDANOST, pored steps obavezno vrati i stepSentenceIds: objekat sa ključevima "0"..."8" gde je vrednost niz indeksa i iz kataloga context.bankSentences; svaki i mora biti doslovno ID odgovarajuće vidljive rečenice iz DE-MAX baze, nikada tekst koji nisi video. Koraci 4, 5, 6, 7 i 8 treba da imaju rečenice kada su detalji na slici vidljivi. Primenjivaće se i strukturirani vizuelni podaci iz prvog prolaza. Možeš predložiti dialogueIndices kao rastući niz 10 ili 12 CELOBROJNIH indeksa originalnih replika iz context.dialogueOptions za scenu: izaberi replike koje logično idu od pozdrava do oproštaja, očuvaj redosled i smenjivanje A/B. Ako nema odgovarajuće scene, ostavi niz prazan.
 Odgovori SAMO JSON objektom {steps:[tačno 10 objekata {de,sr:""}],description:"",sceneNumber:broj ili null,sceneName:"",dialogueIndices:[indeksi]}. Nema drugog teksta.`;
@@ -59,7 +59,7 @@ Odgovori SAMO JSON objektom {steps:[tačno 10 objekata {de,sr:""}],description:"
   return respond({error:"Nije učitana originalna DE-MAX baza opisa i 40 dijaloga. Osveži stranicu i pokušaj ponovo."},422);
  const sceneLabels=fullScenes.map(s=>({n:s.n,sr:s.sr,de:s.de,roles:s.roles}));
  // Phase 1: visual recognition alone, WITHOUT suggesting arbitrary sentences.
- const visionSystem="Prepoznaj samo ono što se STVARNO VIDI na fotografiji za nemački A1 usmeni ispit. Odgovori ISKLJUČIVO JSON objektom sa sledećim poljima: sceneNumber (broj iz 40 ponuđenih situacija ili null), people (niz za svaku vidljivu osobu, od leve ka desnoj; svaka ima kind: 'Mann'|'Frau'|'Kind'|'unsicher', stature: 'groß'|'klein'|'schlank'|'sportlich'|null, position: 'links'|'rechts'|'Mitte'|null, posture: 'steht'|'sitzt'|null, glasses:boolean|null, beard:'kurzen'|'langen'|'grauen'|'schwarzen'|'braunen'|null samo kod muškarca, moustache:boolean|null samo kod muškarca, faceShape:'oval'|'rund'|null, eyeColor:'blau'|'braun'|'grün'|'grau'|null SAMO AKO JE ZAISTA JASNO, clothes:[{item:'Jacke'|'Hose'|'Jeans'|'Bluse'|'Kleid'|'T-Shirt'|'Hemd'|'Pullover'|'Mantel'|'Rock'|'Anzug'|'Schuhe'|'Stiefel'|'Turnschuhe'|'Sandalen'|'Mütze'|'Schal'|'Hut'|'Arbeitskleidung'|'Schürze'|'Handschuhe'|'Brille'|'Kittel'|'Sakko'|'Uniform',color:'schwarz'|'weiß'|'blau'|'rot'|'grün'|'gelb'|'grau'|'braun'|'rosa'|'beig'|'orangefarben'|'lila'|null}] (do 5 stvari koje se stvarno vide), hair:{length:'kurze'|'lange'|'mittellange'|'lockige'|'glatte'|null,color:'schwarze'|'braune'|'blonde'|'graue'|'weiße'|'rote'|'dunkelbraune'|'hellbraune'|null}|null, ageApprox:ceo broj 2..90 ili null, expression:'lächelt'|'lacht'|null, watch:boolean|null, earrings:boolean|null, necklace:boolean|null, appearance:'kratko samo vidljivo na srpskom', clothesNote:'kratko na srpskom', hairNote:'kratko na srpskom'}), backgroundObjects (niz SAMO jasnih objekata: 'Tisch','Stuhl','Fenster','Baum','Bäume','Blumen','Auto','Brot','Regal','Tür','Straße','Sonne','Buch','Hund','Katze','Wasser'; prazno ako nije jasno), visualFacts:[kratke činjenice na srpskom], interaction:'jasna radnja na srpskom'|null, indoor:boolean|null, weather:'sunny'|'rainy'|'cloudy'|null. NE IZMISLJAJ boje očiju, kosu, sat, garderobu, broj godina ili bilo šta što nije dovoljno jasno. Ako osoba nije sigurno muško/žensko, koristi kind:'unsicher' (bez izmišljanja pola). Ako se pozadina ne vidi, backgroundObjects:[]; ako je kosa prekrivena hair:null.";
+ const visionSystem="Prepoznaj samo ono što se STVARNO VIDI na fotografiji za nemački A1 usmeni ispit. Odgovori ISKLJUČIVO JSON objektom sa sledećim poljima: sceneNumber (broj iz 40 ponuđenih situacija ili null), people (niz za svaku vidljivu osobu, od leve ka desnoj; svaka ima kind: 'Mann'|'Frau'|'Kind'|'unsicher', stature: 'groß'|'klein'|'schlank'|'sportlich'|null, position: 'links'|'rechts'|'Mitte'|null, posture: 'steht'|'sitzt'|null, glasses:boolean|null, beard:'kurzen'|'langen'|'grauen'|'schwarzen'|'braunen'|null samo kod muškarca, moustache:boolean|null samo kod muškarca, faceShape:'oval'|'rund'|null, eyeColor:'blau'|'braun'|'grün'|'grau'|null SAMO AKO JE ZAISTA JASNO, clothes:[{item:'Jacke'|'Hose'|'Jeans'|'Bluse'|'Kleid'|'T-Shirt'|'Hemd'|'Pullover'|'Mantel'|'Rock'|'Anzug'|'Schuhe'|'Stiefel'|'Turnschuhe'|'Sandalen'|'Mütze'|'Schal'|'Hut'|'Arbeitskleidung'|'Schürze'|'Handschuhe'|'Brille'|'Kittel'|'Sakko'|'Uniform',color:'schwarz'|'weiß'|'blau'|'rot'|'grün'|'gelb'|'grau'|'braun'|'rosa'|'beig'|'orangefarben'|'lila'|null}] (do 5 stvari koje se stvarno vide), hair:{length:'kurze'|'lange'|'mittellange'|'lockige'|'glatte'|null,color:'schwarze'|'braune'|'blonde'|'graue'|'weiße'|'rote'|'dunkelbraune'|'hellbraune'|null}|null, ageApprox:ceo broj 2..90 ili null, expression:'lächelt'|'lacht'|null, watch:boolean|null, earrings:boolean|null, necklace:boolean|null, appearance:'kratko samo vidljivo na srpskom', clothesNote:'kratko na srpskom', hairNote:'kratko na srpskom'}), backgroundObjects (niz SAMO jasnih objekata: 'Tisch','Stuhl','Fenster','Baum','Bäume','Blumen','Auto','Brot','Regal','Tür','Straße','Sonne','Buch','Hund','Katze','Wasser'; prazno ako nije jasno), visualFacts:[kratke činjenice na srpskom], interaction:'jasna radnja na srpskom'|null, indoor:boolean|null, weather:'sunny'|'rainy'|'cloudy'|null. NE IZMISLJAJ boje očiju, kosu, sat, garderobu, broj godina ili bilo šta što nije dovoljno jasno. Ako osoba nije sigurno muško/žensko, koristi kind:'unsicher' (bez izmišljanja pola). backgroundObjects sadrži SAMO predmete koji su zaista u POZADINI, ne u rukama ili prvom planu; ako se pozadina ne vidi, backgroundObjects:[]; ako je kosa prekrivena hair:null. DODAJ shopping:{visible:boolean,subject:'personen'|'mann'|'frau'|'kind'|null,item:'Brot'|'Obst'|'Gemüse'|'Blumen'|'Kleidung'|'Schuhe'|'Medikamente'|'Bücher'|'Fleisch'|'Lebensmittel'|'Fahrkarten'|null}; shopping.visible postavi true SAMO ako postoji jasan čin kupovine ili plaćanja na fotografiji, ne samo zato što ljudi stoje u prodavnici. subject:'personen' samo ako obe osobe zaista kupuju, inače pojedinačno. item isključivo ako je to što kupuju jasno vidljivo; ako nije, shopping.item=null. indoor:false SAMO kad su stvarno napolju, a weather definisi SAMO ako to dokazuje slika.";
  let observation={sceneNumber:null,people:[],visualFacts:[]};
  try{
   const vi=await fetch("https://api.openai.com/v1/chat/completions",{
@@ -270,6 +270,38 @@ Odgovori SAMO JSON objektom {steps:[tačno 10 objekata {de,sr:""}],description:"
   ["Wasser","Auf dem Bild sehe ich Wasser.","Na slici vidim vodu."]
  ];
  for(const [,de,sr] of backgroundTemplates)put(de,sr);
+ // Teacher's FINAL (step 9) template: only confirmed objects in BACKGROUND.
+ const backgroundClosing=[
+  ["Tisch","einen Tisch","sto"],["Stuhl","einen Stuhl","stolicu"],
+  ["Fenster","ein Fenster","prozor"],["Baum","einen Baum","drvo"],
+  ["Bäume","viele Bäume","mnogo drveća"],["Blumen","Blumen","cveće"],
+  ["Auto","ein Auto","automobil"],["Brot","Brot","hleb"],
+  ["Regal","ein Regal","policu"],["Tür","eine Tür","vrata"],
+  ["Straße","eine Straße","ulicu"],["Sonne","die Sonne","sunce"],
+  ["Buch","ein Buch","knjigu"],["Hund","einen Hund","psa"],
+  ["Katze","eine Katze","mačku"],["Wasser","Wasser","vodu"]
+ ];
+ for(const [,noun,srNoun] of backgroundClosing)
+  put("Im Hintergrund sehe ich noch "+noun+".","U pozadini vidim još "+srNoun+".");
+ // These buying statements are *fixed exam templates*, never generated freeform.
+ const shoppingNouns=[
+  ["Brot","Brot","hleb"],["Obst","Obst","voće"],
+  ["Gemüse","Gemüse","povrće"],["Blumen","Blumen","cveće"],
+  ["Kleidung","Kleidung","odeću"],["Schuhe","Schuhe","obuću"],
+  ["Medikamente","Medikamente","lekove"],["Bücher","Bücher","knjige"],
+  ["Fleisch","Fleisch","meso"],["Lebensmittel","Lebensmittel","namirnice"],
+  ["Fahrkarten","Fahrkarten","karte"]
+ ];
+ const shoppingActors=[
+  ["personen","die Personen","kaufen","Mislim da osobe kupuju"],
+  ["mann","der Mann","kauft","Mislim da muškarac kupuje"],
+  ["frau","die Frau","kauft","Mislim da žena kupuje"],
+  ["kind","das Kind","kauft","Mislim da dete kupuje"]
+ ];
+ for(const [,deNoun,srNoun] of shoppingNouns)
+  for(const [,person,verb,sr] of shoppingActors)
+   put("Ich denke, "+person+" "+verb+" "+deNoun+".",sr+" "+srNoun+".");
+
  // Hair without a reliably visible color/length remains an allowed A1 sentence.
  for(const actor of actors){
   for(const [dLength,sLength] of [["kurze","kratku"],["lange","dugu"],["mittellange","srednje dugu"],["lockige","kovrdžavu"],["glatte","ravnu"]])
@@ -411,6 +443,54 @@ Odgovori SAMO JSON objektom {steps:[tačno 10 objekata {de,sr:""}],description:"
  chosen[0].lines=[{...first},...chosen[0].lines.filter(x=>!allowedIntros.has(x.de)&&!/^Auf dem Bild sehe ich /.test(x.de))];
  chosen[0].de=chosen[0].lines.map(x=>x.de).join(" ");
  chosen[0].sr=chosen[0].lines.map(x=>x.sr).join(" ");
+ // The exam ending has three photographic parts BEFORE the closing sentence:
+ // (1) true background, (2) weather outdoors, (3) observed purchases.
+ // Use original bank phrases first; systematic variants only when vision confirms.
+ const finalStep=chosen[8];
+ const weatherPhrases=/^(?:Das Wetter ist |Es regnet(?: stark)?\.|Es ist bewölkt\.|Es ist sonnig\.)/;
+ const isFinalDetail=de=>/^Im Hintergrund sehe ich /.test(de)||weatherPhrases.test(de)||/^Ich denke, (?:die Personen|der Mann|die Frau|das Kind) kauf(?:en|t) /.test(de);
+ // Put such phrases in step 9, even when a language-model step chose step 8.
+ for(let i=0;i<8;i++){
+  const moved=chosen[i].lines.filter(x=>isFinalDetail(x.de));
+  if(!moved.length)continue;
+  chosen[i].lines=chosen[i].lines.filter(x=>!isFinalDetail(x.de));
+  chosen[i].de=chosen[i].lines.map(x=>x.de).join(" ");
+  chosen[i].sr=chosen[i].lines.map(x=>x.sr).join(" ");
+  for(const x of moved)if(!finalStep.lines.some(y=>y.de===x.de))finalStep.lines.push(x);
+ }
+ const observedBackground=new Set(Array.isArray(observation.backgroundObjects)?observation.backgroundObjects:[]);
+ let backgroundAdds=0;
+ for(const [name,noun] of backgroundClosing){
+  if(observedBackground.has(name)&&backgroundAdds<2&&append(8,"Im Hintergrund sehe ich noch "+noun+"."))
+   backgroundAdds++;
+ }
+ const outside=observation.indoor===false;
+ const weather=String(observation.weather||"");
+ // Only weather supported by the photo: original closing/weather bank sentences.
+ if(outside&&["sunny","rainy","cloudy"].includes(weather)){
+  const existingWeather=finalStep.lines.some(x=>weatherPhrases.test(x.de));
+  if(!existingWeather){
+   const sentence=weather==="sunny"?"Das Wetter ist sonnig.":
+     weather==="rainy"?"Es regnet.":"Es ist bewölkt.";
+   append(8,sentence);
+  }
+ }
+ // The image must show buying, and the buyer AND product must be identifiable.
+ const shopping=observation.shopping&&typeof observation.shopping==="object"?observation.shopping:null;
+ if(shopping?.visible===true){
+  const buyer=shoppingActors.find(x=>x[0]===shopping.subject);
+  const item=shoppingNouns.find(x=>x[0]===shopping.item);
+  if(buyer&&item)append(8,"Ich denke, "+buyer[1]+" "+buyer[2]+" "+item[1]+".");
+ }
+ // Final ordered display: background -> weather -> possible purchase -> other
+ // scene-specific closing phrases -> the required closing line (added below).
+ const finalWeight=de=>/^Im Hintergrund sehe ich /.test(de)?0:
+  weatherPhrases.test(de)?1:
+  /^Ich denke, (?:die Personen|der Mann|die Frau|das Kind) kauf(?:en|t) /.test(de)?2:3;
+ finalStep.lines.sort((a,b)=>finalWeight(a.de)-finalWeight(b.de));
+ finalStep.de=finalStep.lines.map(x=>x.de).join(" ");
+ finalStep.sr=finalStep.lines.map(x=>x.sr).join(" ");
+
  const ending="Das war meine Bildbeschreibung.";
  for(const step of chosen){
   step.lines=step.lines.filter(x=>x.de!==ending);
