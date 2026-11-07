@@ -1181,7 +1181,7 @@ function updateSpeakingFrame(){
   row.querySelector(".index").textContent=(pos+1)+".";
  }
 }
-function addOrRemove(i){const displayPosition=orderedChosen().indexOf(i),pos=chosen.indexOf(i);if(pos<0){if(BANK[i]?.closingEnding){chosen=chosen.filter(id=>!BANK[id]?.closingEnding&&!["Das war meine Bildbeschreibung.","Das ist alles, was ich sehe."].includes(BANK[id]?.de))}chosen.push(i);chosenIndex=orderedChosen().indexOf(i);listen(i)}else{stop();chosen.splice(pos,1);chosenIndex=Math.max(0,Math.min(displayPosition,chosen.length-1))}renderChosen();renderList();renderAge();renderHair();renderClothing();persistDraft()}
+function addOrRemove(i){const displayPosition=orderedChosen().indexOf(i),pos=chosen.indexOf(i);if(pos<0){demaxFlyToFolder(BANK[i]);if(BANK[i]?.closingEnding){chosen=chosen.filter(id=>!BANK[id]?.closingEnding&&!["Das war meine Bildbeschreibung.","Das ist alles, was ich sehe."].includes(BANK[id]?.de))}chosen.push(i);chosenIndex=orderedChosen().indexOf(i);listen(i)}else{stop();chosen.splice(pos,1);chosenIndex=Math.max(0,Math.min(displayPosition,chosen.length-1))}renderChosen();renderList();renderAge();renderHair();renderClothing();persistDraft()}
 function showRoles(){
  const show=step===3||step===4,appearance=step===3&&appearanceMode!=="description";
  $("#rolebar").hidden=!show;
@@ -1551,6 +1551,62 @@ function setupStepProgress(){
   }
  }
 }
+/* DE-MAX: mali folder izabranih rečenica i animacija dodavanja u svih 10 koraka. */
+let demaxLastPick=null;
+document.addEventListener("pointerdown",event=>{
+  const target=event.target.closest("button,[role=button]");
+  if(target){const b=target.getBoundingClientRect();demaxLastPick={x:b.left+b.width/2,y:b.top+b.height/2,t:Date.now()};}
+},true);
+function demaxFolder(){
+  const compose=document.querySelector(".panel.compose");
+  const header=compose?.querySelector(".paneltitle");
+  if(!header)return null;
+  let button=document.getElementById("demaxFolder");
+  if(!button){
+    button=document.createElement("button");
+    button.type="button";button.id="demaxFolder";button.className="demax-folder";
+    button.setAttribute("aria-label","Folder Moj opis – pregled sačuvanih rečenica");
+    button.innerHTML='<span class="demax-folder-icon" aria-hidden="true">📁</span><span class="demax-folder-label">Moj folder</span><span class="demax-folder-count">0</span>';
+    header.appendChild(button);
+    button.addEventListener("click",()=>{
+      compose.classList.remove("demax-folder-open");void compose.offsetWidth;
+      compose.classList.add("demax-folder-open");
+      document.getElementById("selectedArea")?.focus({preventScroll:true});
+    });
+  }
+  return button;
+}
+function demaxSyncFolder(){
+  const button=demaxFolder();if(!button)return;
+  const count=button.querySelector(".demax-folder-count");
+  if(count)count.textContent=String(chosen.length);
+  button.setAttribute("aria-label","Moj folder: "+chosen.length+" izabranih rečenica");
+}
+function demaxFlyToFolder(line){
+  const folder=demaxFolder();
+  if(!folder)return;
+  const goal=folder.getBoundingClientRect();
+  const source=(demaxLastPick&&Date.now()-demaxLastPick.t<1400)?demaxLastPick:null;
+  const start=source||{x:window.innerWidth/2,y:window.innerHeight*.43};
+  const ghost=document.createElement("span");
+  ghost.className="demax-flying-sentence";
+  ghost.textContent=(line?.de||"✓ Rečenica");
+  ghost.style.left=start.x+"px";ghost.style.top=start.y+"px";
+  document.body.appendChild(ghost);
+  if(window.matchMedia("(prefers-reduced-motion: reduce)").matches||!ghost.animate){
+    ghost.remove();demaxSyncFolder();return;
+  }
+  const dx=goal.left+goal.width/2-start.x,dy=goal.top+goal.height/2-start.y;
+  const anim=ghost.animate([
+    {transform:"translate(-50%,-50%) scale(1)",opacity:1},
+    {offset:.5,transform:"translate(calc(-50% + "+(dx*.5)+"px),calc(-50% + "+(dy*.5-38)+"px)) scale(.85)",opacity:1},
+    {transform:"translate(calc(-50% + "+dx+"px),calc(-50% + "+dy+"px)) scale(.12)",opacity:0}
+  ],{duration:620,easing:"cubic-bezier(.2,.75,.2,1)"});
+  anim.onfinish=()=>{ghost.remove();folder.classList.remove("demax-folder-pop");void folder.offsetWidth;folder.classList.add("demax-folder-pop");};
+  anim.oncancel=()=>ghost.remove();
+}
+const demaxOriginalRenderChosen=renderChosen;
+renderChosen=function(){demaxOriginalRenderChosen();demaxSyncFolder();};
 window.addEventListener("pagehide",()=>{stop();persistDraft()});
 restoreDraft();
 showWizard(PAGE_INDEX);
