@@ -1743,3 +1743,45 @@ html,body{height:100dvh;max-height:100dvh;overflow:hidden!important}
  .separate-header .demax-folder{min-width:119px!important;right:2px!important;padding:2px 3px!important}
  .separate-header .separate-brand{max-width:calc(100% - 132px)!important}
 }
+
+/* v56: Logo u prvom redu, folder ISPOD njega, naslov centriran u trećem redu.
+   Sva tri elementa imaju svoj prostor i ne preklapaju se na mobilnom. */
+body:not(.summary-mode) .app{grid-template-rows:68px 35px minmax(0,1fr) 52px!important}
+body:not(.summary-mode) .separate-header{
+ height:68px!important;min-height:0!important;
+ display:grid!important;position:relative!important;
+ grid-template-columns:minmax(0,1fr)!important;
+ grid-template-rows:18px 22px minmax(0,1fr)!important;
+ gap:0!important;row-gap:0!important;
+ padding:3px 7px!important;
+ justify-items:stretch!important;align-items:center!important;
+ overflow:hidden!important;
+}
+body:not(.summary-mode) .separate-header .separate-brand{
+ grid-row:1!important;grid-column:1!important;align-self:center!important;
+ justify-self:start!important;
+ width:auto!important;max-width:100%!important;
+ overflow:visible!important;white-space:nowrap!important;
+}
+body:not(.summary-mode) .separate-header .demax-folder{
+ position:static!important;grid-row:2!important;grid-column:1!important;
+ justify-self:start!important;align-self:center!important;
+ width:max-content!important;min-width:0!important;max-width:100%!important;
+ height:21px!important;min-height:21px!important;
+ top:auto!important;right:auto!important;bottom:auto!important;
+ padding:2px 7px!important;
+}
+body:not(.summary-mode) .separate-header h1#wizardTitle{
+ grid-row:3!important;grid-column:1!important;align-self:center!important;justify-self:center!important;
+ width:100%!important;max-width:100%!important;
+ margin:0!important;padding:0!important;text-align:center!important;
+ font-size:clamp(11px,3.3vw,15px)!important;
+ line-height:1.05!important;white-space:nowrap!important;overflow:visible!important;
+}
+@media(max-height:670px){
+ body:not(.summary-mode) .app{grid-template-rows:62px 35px minmax(0,1fr) 52px!important}
+ body:not(.summary-mode) .separate-header{
+  height:62px!important;grid-template-rows:17px 20px minmax(0,1fr)!important;padding:2px 6px!important
+ }
+ body:not(.summary-mode) .separate-header .demax-folder{height:19px!important;min-height:19px!important}
+}
