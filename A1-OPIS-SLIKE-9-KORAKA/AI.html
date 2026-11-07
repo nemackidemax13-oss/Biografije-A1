@@ -1266,49 +1266,71 @@ $("analyze").onclick=async()=>{
  if(generatedLocked&&!reachedDialogue){setStatus("Novu sliku možeš generisati tek kada dođeš do dijaloga.",true);return}
  if(!imageData){setStatus("Izaberi sliku.",true);return}if(!bank.length){setStatus("Baza opisa slike se još učitava. Pokušaj ponovo.",true);return}let url=$("endpoint").value.trim();if(!/^https:\/\//.test(url)){setStatus("Podesi Cloudflare Worker adresu.",true);return}$("analyze").disabled=true;setStatus("AI analizira sliku i priprema opis i dijalog…");
 try{
-const baseRequest={image:imageData,scenes:scenes.map(s=>({n:s.n,sr:s.sr,de:s.de,roles:s.roles||"",dialog:(Array.isArray(s.dialog)?s.dialog:[]).map(pair=>({de:String(pair[0]||""),sr:String(pair[1]||"")})),extra:(Array.isArray(s.extra)?s.extra:[]).map(pair=>({de:String(pair[0]||""),sr:String(pair[1]||"")}))})),bankExamples:sampleBank(),visualAccuracyInstructions:"Obavezno prouči ORIGINALNU fotografiju pre izbora situacije, opisa i dijaloga. Prepoznaj šta osobe zaista rade, koje predmete drže, pokazuju ili kupuju, i koja odeća ili roba je stvarno vidljiva. Ne zamenjuj haljinu jaknom, košuljom ili drugim artiklom. Ne izmišljaj sadržaj, mesto, radnje, boje ni namere koje se ne vide. Ako je predmet nejasan, napiši opštu tačnu rečenicu. Svi koraci opisa i dijalog moraju odgovarati ISTOJ fotografiji.",dialogueAccuracyInstructions:"Dijalog napravi specifično prema fotografiji, nikada generički po unapred izabranoj temi. Primer: ako u butiku žena bira ili kupuje HALJINU, prodavačica i kupac razgovaraju o HALJINI, njenoj boji, veličini, ceni ili isprobavanju samo kada takve okolnosti odgovaraju slici. Ne govori da kupuje JAKNU ako nije jakna. Isto važi za svaku drugu sliku: prepoznaj stvarne ljude, mesto, predmet, aktivnost i uloge i napiši prirodan A1 razgovor vezan za baš taj prizor. Ne dodaj nevidljive činjenice kao potvrđene. Svaka replika mora biti u skladu sa prepoznatom situacijom, a sceneNumber i sceneName takođe moraju odgovarati slici."};
-const normalizeAIResponse=(raw)=>{
- let d=raw;
- if(typeof d==="string"){try{d=JSON.parse(d)}catch{return null}}
- if(d&&typeof d.result==="object"&&!Array.isArray(d.steps))d=d.result;
- if(d&&typeof d.data==="object"&&!Array.isArray(d.steps))d=d.data;
- if(!d||typeof d!=="object")return null;
- let steps=Array.isArray(d.steps)?d.steps.slice():[];
- if(!steps.length&&Array.isArray(d.descriptionSteps))steps=d.descriptionSteps.slice();
- if(!steps.length&&Array.isArray(d.sections))steps=d.sections.slice();
- steps=steps.map(x=>typeof x==="string"?{de:x,sr:""}:x);
- if(steps.length===9){
-  const de=String(d.description||d.summaryDE||d.summary||steps.map(x=>x?.de||"").join(" ")).trim();
-  const sr=String(d.descriptionSR||d.summarySR||steps.map(x=>x?.sr||"").join(" ")).trim();
-  if(de)steps.push({de,sr});
+ // Keep requests small enough for the Cloudflare Worker and vision model.
+ const baseRequest={
+  image:imageData,
+  scenes:scenes.map(x=>({
+   n:x.n,sr:x.sr,de:x.de,roles:x.roles||"",
+   dialog:(Array.isArray(x.dialog)?x.dialog:[]).slice(0,2).map(p=>({de:String(p[0]||""),sr:String(p[1]||"")}))
+  })),
+  bankExamples:sampleBank(true).slice(0,65),
+  expectedSteps:10,
+  visualAccuracyInstructions:"Samo sadržaj sa slike, bez izmišljanja predmeta ili događaja. Haljina je Kleid, ne Jacke. Pripremi tačno 10 koraka.",
+  dialogueAccuracyInstructions:"Dijalog A1 mora odgovarati baš fotografiji: mesto, ljudi, predmet i konkretna radnja; ako je haljina vidljiva u butiku, razgovor je o haljini, ne o jakni."
+ };
+ const normalizeAIResponse=(raw)=>{
+  let d=raw;
+  if(typeof d==="string"){try{d=JSON.parse(d)}catch{return null}}
+  if(d&&typeof d.result==="object"&&!Array.isArray(d.steps))d=d.result;
+  if(d&&typeof d.data==="object"&&!Array.isArray(d.steps))d=d.data;
+  if(!d||typeof d!=="object")return null;
+  let incoming=Array.isArray(d.steps)?d.steps:
+    (Array.isArray(d.descriptionSteps)?d.descriptionSteps:
+    (Array.isArray(d.sections)?d.sections:[]));
+  if(!incoming.length)return null;
+  const steps=Array.from({length:10},()=>({de:"",sr:""}));
+  incoming.forEach((item,i)=>{
+   const p=typeof item==="string"?{de:item}:item;
+   if(!p||typeof p!=="object")return;
+   const n=Number(p.step??p.stepNumber??p.number);
+   const index=Number.isInteger(n)&&n>=1&&n<=10?n-1:i;
+   if(index<0||index>9)return;
+   const de=String(p.de||p.german||p.text||"").trim();
+   const sr=String(p.sr||p.serbian||p.translation||"").trim();
+   if(de){steps[index]={...p,de,sr};}
+  });
+  // A reliable photo-specific step is required; never invent a visual fact.
+  if(steps.slice(0,9).every(x=>!x.de))return null;
+  // Empty steps use an explicit neutral statement, not an invented visual description.
+  for(let i=0;i<9;i++)if(!steps[i].de)
+   steps[i]={de:"Dazu kann ich auf dem Bild nichts Sicheres sagen.",sr:"O tome ne mogu ništa pouzdano da kažem na slici."};
+  let summary=String(d.description||d.summaryDE||d.summary||"").trim();
+  let summarySR=String(d.descriptionSR||d.summarySR||"").trim();
+  if(!steps[9].de){
+   steps[9]={de:summary||steps.slice(0,9).filter(x=>!x.de.startsWith("Dazu kann")).map(x=>x.de).join(" "),sr:summarySR||steps.slice(0,9).filter(x=>!x.de.startsWith("Dazu kann")).map(x=>x.sr).filter(Boolean).join(" ")};
+  }
+  if(!steps[9].de)return null;
+  return {...d,steps};
+ };
+ let data=null,lastError="";
+ for(let attempt=1;attempt<=2;attempt++){
+  if(attempt===2)setStatus("Pokušavam kraći AI zahtev…");
+  try{
+   const body=attempt===1?baseRequest:{...baseRequest,bankExamples:sampleBank(true).slice(0,25),scenes:baseRequest.scenes.map(({n,sr,de,roles})=>({n,sr,de,roles}))};
+   const controller=new AbortController();
+   const timeout=setTimeout(()=>controller.abort(),45000);
+   let res;
+   try{res=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body),signal:controller.signal})}
+   finally{clearTimeout(timeout)}
+   const raw=await res.json().catch(()=>null);
+   if(!res.ok){lastError=String(raw?.error||"HTTP "+res.status);if(res.status>=400&&res.status<500&&res.status!==408&&res.status!==429)break;continue}
+   data=normalizeAIResponse(raw);
+   if(data)break;
+   lastError="Cloudflare AI nije vratio nijedan upotrebljiv opis.";
+  }catch(e){lastError=e?.name==="AbortError"?"Cloudflare AI nije odgovorio na vreme.":String(e?.message||e)}
  }
- if(steps.length<10||steps.slice(0,9).some(x=>!x||typeof x.de!=="string"||!x.de.trim()))return null;
- if(!steps[9]?.de?.trim())steps[9]={de:String(d.description||steps.slice(0,9).map(x=>x.de).join(" ")),sr:String(d.descriptionSR||steps.slice(0,9).map(x=>x.sr||"").join(" "))};
- d.steps=steps.slice(0,10);return d;
-};
-let data=null,lastError="";
-for(let attempt=1;attempt<=3;attempt++){
- if(attempt>1)setStatus("AI odgovor nije potpun. Ponavljam analizu ("+attempt+"/3)…");
- const compact=attempt>1;
- const body={...baseRequest,bankExamples:sampleBank(compact)};
- if(attempt===3){
-  // Worker compatibility: keep the established request fields, shorten example content.
-  body.bankExamples=sampleBank(true).slice(0,90);
- }
- try{
-  const controller=new AbortController();
-  const timeout=setTimeout(()=>controller.abort(),60000);
-  let res;
-  try{res=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body),signal:controller.signal})}
-  finally{clearTimeout(timeout)}
-  const raw=await res.json().catch(()=>null);
-  if(!res.ok){lastError=String(raw?.error||"HTTP "+res.status);if(res.status>=400&&res.status<500&&res.status!==408&&res.status!==429)break;continue}
-  const candidate=normalizeAIResponse(raw);
-  if(candidate){data=candidate;break}
-  lastError="AI nije poslao svih 10 koraka u ispravnom obliku.";
- }catch(e){lastError=e?.name==="AbortError"?"AI servis nije odgovorio na vreme.":String(e?.message||e)}
-}
-if(!data)throw Error(lastError+" Pokušaj ponovo ili proveri Cloudflare Worker.");
+ if(!data)throw Error(lastError+" Proveri Cloudflare Worker.");
+
 $("dialogue").replaceChildren();dialogRows=[];
 $("dialogue").classList.add("hide-translation");
 $("translationDialogue").textContent="Prevod";$("translationDialogue").setAttribute("aria-pressed","false");
