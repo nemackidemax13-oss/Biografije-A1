@@ -481,9 +481,24 @@ Odgovori SAMO JSON objektom {steps:[tačno 10 objekata {de,sr:""}],description:"
  finalStep.de=finalStep.lines.map(x=>x.de).join(" ");
  finalStep.sr=finalStep.lines.map(x=>x.sr).join(" ");
  const observedBackground=new Set(Array.isArray(observation.backgroundObjects)?observation.backgroundObjects:[]);
+ // Bank phrases about the background are used only when its object is also
+ // supported by the independent photo-recognition output.
+ const backgroundPattern={
+  Tisch:/Tisch|Tische/,Stuhl:/Stuhl|Stühle/,Fenster:/Fenster/,
+  Baum:/Baum|Bäume/,Bäume:/Baum|Bäume/,Blumen:/Blumen/,
+  Auto:/Auto/,Brot:/Brot|Brote|Brötchen/,Regal:/Regal|Regale/,
+  Tür:/Tür|Türen/,Straße:/Straße/,Sonne:/Sonne/,Buch:/Buch|Bücher/,
+  Hund:/Hund/,Katze:/Katze/,Wasser:/Wasser/
+ };
+ const backgroundSupported=de=>[...observedBackground].some(name=>backgroundPattern[name]?.test(de));
+ finalStep.lines=finalStep.lines.filter(x=>!/^Im Hintergrund sehe ich /.test(x.de)||backgroundSupported(x.de));
+ finalStep.de=finalStep.lines.map(x=>x.de).join(" ");
+ finalStep.sr=finalStep.lines.map(x=>x.sr).join(" ");
  let backgroundAdds=0;
  for(const [name,noun] of backgroundClosing){
-  if(observedBackground.has(name)&&backgroundAdds<2&&append(8,"Im Hintergrund sehe ich noch "+noun+"."))
+  if(observedBackground.has(name)&&backgroundAdds<2&&
+     !finalStep.lines.some(x=>backgroundPattern[name]?.test(x.de))&&
+     append(8,"Im Hintergrund sehe ich noch "+noun+"."))
    backgroundAdds++;
  }
  const outside=observation.indoor===false;
