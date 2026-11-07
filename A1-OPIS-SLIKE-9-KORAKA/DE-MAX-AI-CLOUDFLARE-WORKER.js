@@ -74,7 +74,7 @@ Odgovori SAMO JSON objektom {steps:[tačno 10 objekata {de,sr:""}],description:"
  }catch(_){/* Keep working with the original image in phase 2. */}
  const matched=fullScenes.find(s=>s.n===Number(observation.sceneNumber))||null;
  // The original 9-step database marks location-relevant examples with sceneDetailIds/closingSceneIds.
- const sceneKeyMap=[null,"priroda","pekara","radionica","stan","kuhinja","butik","apoteka","mesara","biblioteka","skola","kafic","basta","supermarket","suma","hotel","knjizara","cvecara","voz","cekaonica","soba","fitnes","biro","doktor","plaza","park","obucara","auto","autobus","bioskop","stan","reka","stanica","plaza","aerodrom","more","jezero","pijaca","ulica","recepcija","kasa"];
+ const sceneKeyMap=[null,"priroda","pekara","radionica","stan","kuhinja","butik","apoteka","mesara","biblioteka","skola","kafic","basta","supermarket","suma","hotel","knjizara","cvecara","voz","cekaonica","soba","fitnes","biro","doktor",null,"park","obucara","auto","autobus","bioskop","stan","reka","stanica","plaza","aerodrom","more","jezero","pijaca","ulica","hotel","kasa"];
  const sceneKey=matched?sceneKeyMap[matched.n]:"";
  const general=bankExamples.filter(x=>!x.sceneDetailIds.length&&!x.closingSceneIds.length);
  const sceneSpecific=sceneKey?bankExamples.filter(x=>x.sceneDetailIds.includes(sceneKey)||x.closingSceneIds.includes(sceneKey)):[];
@@ -243,6 +243,7 @@ Odgovori SAMO JSON objektom {steps:[tačno 10 objekata {de,sr:""}],description:"
   const match=norm(entry.de).match(/^Die Personen sind (.+)\.$/);
   const tr=norm(entry.sr).match(/^Osobe su (.+)\.$/);
   if(!match||!tr)continue;
+  put("Ich denke, die Personen sind "+match[1]+".","Mislim da su osobe "+tr[1]+".");
   for(const actor of actors)
    put("Ich denke, "+actor.lo+" ist "+match[1]+".","Mislim da je "+actor.srGen+" "+tr[1]+".");
  }
