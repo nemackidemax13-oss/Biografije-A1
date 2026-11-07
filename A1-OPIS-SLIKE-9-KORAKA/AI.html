@@ -513,23 +513,23 @@ const DEFAULT_WORKER_URL="https://automatskiopisslikeidijalozi.nemackidemax13.wo
 const $=id=>document.getElementById(id);
 const labels=["Opis osoba na slici","Razgovor osoba","Mesto osoba na slici","Izgled osoba na slici","Odeća osoba na slici","Kosa osoba na slici","Godine osoba na slici","Detalji na slici","Završni deo","Moj opis slike"];
 const scenes=[...(window.DEMAX_SCENES||[]),...(window.DEMAX_NEW_SCENES||[])].sort((a,b)=>a.n-b.n);
-let fullFontScale=1,fullSteps=[],fullTranslated=false,fullAudioIndex=-1,fullAudioAuto=false,fullAudioLines=[],dialogueFontScale=1,dialogueAuto=false,dialoguePages=[],dialoguePageIndex=0,descriptionPage=0;let imageData="",bank=[],descRows=[],dialogRows=[],currentPage=0,voiceToken=0,paused=false,readingMode="",readingIndex=0;
+let fullFontScale=1,fullSteps=[],fullTranslated=false,fullAudioIndex=-1,fullAudioAuto=false,fullAudioLines=[],summaryFontScale=1,summaryEdited=false,dialogueFontScale=1,dialogueAuto=false,dialoguePages=[],dialoguePageIndex=0,descriptionPage=0;let imageData="",bank=[],descRows=[],dialogRows=[],currentPage=0,voiceToken=0,paused=false,readingMode="",readingIndex=0;
 const synth=window.speechSynthesis;
 $("endpoint").value=DEFAULT_WORKER_URL;
 fetch("./shared.js").then(r=>r.text()).then(t=>{let p=t.indexOf("const BANK=");if(p<0)return;let a=p+11,b=t.indexOf("];",a);if(b<0)return;let data=JSON.parse(t.slice(a,b+1));if(Array.isArray(data))bank=data.filter(x=>x?.de&&x?.sr)}).catch(()=>{});
 function setStatus(t,bad=false){$("status").textContent=t;$("status").className="status"+(bad?" error":"")}
 function updateJourneyProgress(){
- const amount=currentPage===0?0:currentPage===2?100:descriptionPage===0?33:67;
+ const amount=currentPage===0?0:currentPage===1?33:currentPage===2?(descriptionPage===0?66:82):100;
  $("journeyFill").style.width=amount+"%";
  $("journeyProgress").setAttribute("aria-valuenow",String(amount));
- $("journeyProgress").setAttribute("aria-valuetext",amount===100?"Dijalog: završna etapa":amount===67?"Opis: koraci 7 do 9":amount===33?"Opis: koraci 1 do 6":"Početak");
+ $("journeyProgress").setAttribute("aria-valuetext",currentPage===3?"4. Dijalog":currentPage===2?(descriptionPage===0?"3. Detaljan opis: koraci 1 do 6":"3. Detaljan opis: koraci 7 do 9"):currentPage===1?"2. Moj opis slike":"1. Slika");
 }
 function view(n){
  stopSpeech();currentPage=n;
- for(let i=0;i<3;i++)$("screen"+i).classList.toggle("active",i===n);
+ for(let i=0;i<4;i++)$("screen"+i).classList.toggle("active",i===n);
  updateJourneyProgress();
- if(n===2)requestAnimationFrame(()=>paginateDialogue());
- if(n===1)requestAnimationFrame(fitFullDescription);
+ if(n===3)requestAnimationFrame(()=>paginateDialogue());
+ if(n===2)requestAnimationFrame(fitFullDescription);
 }
 function add(el,cls,txt){let d=document.createElement("div");d.className=cls;d.textContent=txt;el.append(d);return d}
 function norm(s){return String(s||"").toLocaleLowerCase("de").replace(/[^a-zäöüß0-9 ]/g,"").replace(/\s+/g," ").trim()}
@@ -543,7 +543,7 @@ function sampleBank(){
 
 function pageRows(mode){return mode==="desc"?descRows:mode==="dialog"?dialogRows:[]}
 function cleanHighlight(){document.querySelectorAll(".sentence.playing").forEach(el=>el.classList.remove("playing"))}
-function stopSpeech(){voiceToken++;paused=false;readingMode="";readingIndex=0;fullAudioIndex=-1;fullAudioAuto=false;dialogueAuto=false;if(synth)synth.cancel();cleanHighlight();updateFullAudioUI();updateDialogueAudioUI()}
+function stopSpeech(){voiceToken++;paused=false;readingMode="";readingIndex=0;fullAudioIndex=-1;fullAudioAuto=false;dialogueAuto=false;if(synth)synth.cancel();cleanHighlight();updateFullAudioUI();updateDialogueAudioUI();updateSummaryAudioUI()}
 function playRows(mode,index=0,auto=true){
  if(!synth){alert("Ovaj pregledač ne podržava izgovor.");return}
  stopSpeech();readingMode=mode;readingIndex=index;dialogueAuto=mode==="dialog"&&auto;
@@ -580,7 +580,7 @@ function revealDialogueIndex(index){
  if(page>=0&&page!==dialoguePageIndex)showDialoguePage(page);
 }
 function paginateDialogue(anchor=0){
- if(currentPage!==2)return;
+ if(currentPage!==3)return;
  const box=$("dialogue");
  for(const row of dialogRows)row.element.hidden=false;
  const available=Math.max(65,box.clientHeight-3);
@@ -605,7 +605,7 @@ function paginateDialogue(anchor=0){
 }
 $("dialoguePrev").onclick=()=>showDialoguePage(dialoguePageIndex-1);
 $("dialogueNext").onclick=()=>showDialoguePage(dialoguePageIndex+1);
-window.addEventListener("resize",()=>{if(currentPage===2)requestAnimationFrame(()=>paginateDialogue(dialoguePages[dialoguePageIndex]?.[0]||0))});
+window.addEventListener("resize",()=>{if(currentPage===3)requestAnimationFrame(()=>paginateDialogue(dialoguePages[dialoguePageIndex]?.[0]||0))});
 function updateDialogueAudioUI(){
  for(let i=0;i<dialogRows.length;i++){
   const b=dialogRows[i].listen;if(!b)continue;
@@ -631,7 +631,7 @@ function changeDialogueFont(delta){
 }
 $("dialogueFontPlus").onclick=()=>changeDialogueFont(.1);
 $("dialogueFontMinus").onclick=()=>changeDialogueFont(-.1);
-$("file").onchange=async e=>{let f=e.target.files[0];if(!f)return;if(!f.type.startsWith("image/")||f.size>12e6){setStatus("Izaberi JPG/PNG/WebP sliku manju od 12 MB.",true);return}try{const bmp=await createImageBitmap(f),cv=document.createElement("canvas"),scale=Math.min(1,1280/Math.max(bmp.width,bmp.height));cv.width=Math.round(bmp.width*scale);cv.height=Math.round(bmp.height*scale);cv.getContext("2d").drawImage(bmp,0,0,cv.width,cv.height);bmp.close();imageData=cv.toDataURL("image/jpeg",.8);for(let i=0;i<3;i++){let img=$("photo"+i);img.src=imageData;img.style.display="block"}const reveal=$("photoReveal");reveal.classList.remove("ready");void reveal.offsetWidth;reveal.classList.add("ready");document.querySelector(".upload").classList.add("has-photo");document.querySelector(".upload-title").textContent="✓ Fotografija dodata";$("uploadHeading").textContent="Dodata slika za opis";$("analyze").disabled=false;setStatus("✓ Fotografija je uspešno dodata.")}catch(err){setStatus("Nije moguće otvoriti sliku.",true)}};
+$("file").onchange=async e=>{let f=e.target.files[0];if(!f)return;if(!f.type.startsWith("image/")||f.size>12e6){setStatus("Izaberi JPG/PNG/WebP sliku manju od 12 MB.",true);return}try{const bmp=await createImageBitmap(f),cv=document.createElement("canvas"),scale=Math.min(1,1280/Math.max(bmp.width,bmp.height));cv.width=Math.round(bmp.width*scale);cv.height=Math.round(bmp.height*scale);cv.getContext("2d").drawImage(bmp,0,0,cv.width,cv.height);bmp.close();imageData=cv.toDataURL("image/jpeg",.8);for(let i=0;i<4;i++){let img=$("photo"+i);img.src=imageData;img.style.display="block"}const reveal=$("photoReveal");reveal.classList.remove("ready");void reveal.offsetWidth;reveal.classList.add("ready");document.querySelector(".upload").classList.add("has-photo");document.querySelector(".upload-title").textContent="✓ Fotografija dodata";$("uploadHeading").textContent="Dodata slika za opis";$("analyze").disabled=false;setStatus("✓ Fotografija je uspešno dodata.")}catch(err){setStatus("Nije moguće otvoriti sliku.",true)}};
 $("analyze").onclick=async()=>{if(!imageData){setStatus("Izaberi sliku.",true);return}if(!bank.length){setStatus("Baza opisa slike se još učitava. Pokušaj ponovo.",true);return}let url=$("endpoint").value.trim();if(!/^https:\/\//.test(url)){setStatus("Podesi Cloudflare Worker adresu.",true);return}$("analyze").disabled=true;setStatus("AI analizira sliku i priprema opis i dijalog…");
 try{let res=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({image:imageData,scenes:scenes.map(s=>({n:s.n,sr:s.sr,de:s.de,roles:s.roles||"",dialog:(Array.isArray(s.dialog)?s.dialog:[]).map(pair=>({de:String(pair[0]||""),sr:String(pair[1]||"")})),extra:(Array.isArray(s.extra)?s.extra:[]).map(pair=>({de:String(pair[0]||""),sr:String(pair[1]||"")}))})),bankExamples:sampleBank()})});let data=await res.json().catch(()=>({}));if(!res.ok)throw Error(data.error||"HTTP "+res.status);if(!Array.isArray(data.steps)||data.steps.length!==10)throw Error("Nema 10 koraka opisa.");
 $("dialogue").replaceChildren();dialogRows=[];
@@ -664,8 +664,18 @@ let scene=scenes.find(s=>s.n===Number(data.sceneNumber));
 $("scene").textContent=scene?"Situacija "+scene.n+": "+scene.sr:String(data.sceneName||"Dijalog prema slici");
 // Druga stranica uvek koristi iste AI recenice kao koraci 1–9.
 fullSteps=data.steps.slice(0,9).map((step,i)=>({title:(i+1)+". "+labels[i],de:String(step.de||"").trim(),sr:String(step.sr||"").trim(),lines:normalizeStepLines(step)}));
-descriptionPage=0;fullTranslated=false;renderFullDescription();$("translateFull").textContent="Prevod";$("translateFull").setAttribute("aria-pressed","false");
-setStatus("Opis slike i dijalog su spremni.");view(1);requestAnimationFrame(fitFullDescription);
+descriptionPage=0;const summarySource=data.steps[9]||{};
+const summaryDE=String(summarySource.de||data.description||data.steps.slice(0,9).map(x=>x.de||"").join(" ")).trim();
+const summarySR=String(summarySource.sr||data.steps.slice(0,9).map(x=>x.sr||"").join(" ")).trim();
+$("summaryGerman").value=summaryDE;
+$("summarySerbian").textContent=summarySR||"Prevod trenutno nije dostupan.";
+$("summarySerbian").hidden=true;
+$("summaryTranslate").textContent="Prevod";
+$("summaryTranslate").setAttribute("aria-pressed","false");
+$("summaryStatus").textContent="▶ Auto čita ceo tekst na nemačkom.";
+summaryFontScale=1;summaryEdited=false;updateSummaryFont();
+fullTranslated=false;renderFullDescription();$("translateFull").textContent="Prevod";$("translateFull").setAttribute("aria-pressed","false");
+setStatus("Moj opis, detaljan opis i dijalog su spremni.");view(1);
 }catch(e){setStatus("Greška: "+e.message,true)}finally{$("analyze").disabled=false}};
 $("readDialogue").onclick=()=>{if(readingMode==="dialog"&&dialogueAuto&&!paused){stopSpeech();return}if(readingMode==="dialog"&&paused){synth.resume();paused=false;updateDialogueAudioUI();return}playRows("dialog",0,true)};
 $("pauseDialogue").onclick=()=>pauseMode("dialog");
@@ -748,7 +758,7 @@ function showDescriptionPage(page,stopAudio=true){
 $("descPrev").onclick=()=>showDescriptionPage(descriptionPage-1);
 $("descNext").onclick=()=>showDescriptionPage(descriptionPage+1);
 function fitFullDescription(){
- const field=$("fullDescription");if(!field||currentPage!==1)return;
+ const field=$("fullDescription");if(!field||currentPage!==2)return;
  field.style.zoom="1";field.style.overflowY="hidden";
  field.style.setProperty("--font-scale",String(fullFontScale));
  let scale=1;
@@ -759,7 +769,7 @@ function fitFullDescription(){
  // Very long AI texts remain readable: allow scrolling only when absolutely necessary.
  if(field.scrollHeight>field.clientHeight+2)field.style.overflowY="auto";
 }
-window.addEventListener("resize",()=>{if(currentPage===1)requestAnimationFrame(fitFullDescription)});
+window.addEventListener("resize",()=>{if(currentPage===2)requestAnimationFrame(fitFullDescription)});
 function updateFullAudioUI(){
  for(let i=0;i<fullAudioLines.length;i++){
   const row=fullAudioLines[i],on=readingMode==="full"&&fullAudioIndex===i;
@@ -803,9 +813,71 @@ $("translateFull").onclick=()=>{
  $("translateFull").setAttribute("aria-pressed",String(fullTranslated));
  requestAnimationFrame(fitFullDescription);
 };
-$("backFromFull").onclick=()=>view(0);
-$("goDialogue").onclick=()=>{view(2);if(dialogRows.length)playRows("dialog")};
-$("backToDescription").onclick=()=>view(1);
-$("restart").onclick=()=>{stopSpeech();view(0);$("file").value="";$("analyze").disabled=true;imageData="";for(let i=0;i<3;i++){$("photo"+i).style.display="none"}$("photoReveal").classList.remove("ready");document.querySelector(".upload").classList.remove("has-photo");document.querySelector(".upload-title").textContent="Izaberi fotografiju";$("uploadHeading").textContent="Ubaci sliku za opis";setStatus("Izaberi novu sliku.");};
+
+/* Complete mail-style student description with German speech, translation and font size. */
+function updateSummaryAudioUI(){
+ const b=$("summaryAuto");if(!b)return;
+ const playing=readingMode==="summary";
+ b.textContent=playing?"■ Auto STOP":"▶ Auto";b.setAttribute("aria-pressed",String(playing));
+ const pause=$("summaryPause");
+ if(pause){pause.textContent=playing&&paused?"▶ Nastavi":"⏸";pause.setAttribute("aria-pressed",String(playing&&paused))}
+}
+function updateSummaryFont(){
+ const scale=summaryFontScale;
+ $("summaryGerman").style.fontSize=(Math.round(13*scale*10)/10)+"px";
+ $("summarySerbian").style.fontSize=(Math.round(11*scale*10)/10)+"px";
+}
+function playSummary(){
+ if(!synth){$("summaryStatus").textContent="Izgovor nije dostupan u ovom pregledaču.";return}
+ const phrases=separateGermanSentences($("summaryGerman").value);
+ if(!phrases.length){$("summaryStatus").textContent="Nema rečenica za slušanje.";return}
+ stopSpeech();readingMode="summary";paused=false;
+ const token=voiceToken;let i=0;
+ updateSummaryAudioUI();
+ function next(){
+  if(token!==voiceToken||readingMode!=="summary"||paused)return;
+  if(i>=phrases.length){stopSpeech();$("summaryStatus").textContent="Završeno čitanje kompletnog opisa.";return}
+  $("summaryStatus").textContent="Izgovor: rečenica "+(i+1)+" / "+phrases.length;
+  const u=new SpeechSynthesisUtterance(phrases[i]);u.lang="de-DE";u.rate=.83;u.pitch=1;
+  u.onend=()=>{if(token!==voiceToken)return;i++;next()};
+  u.onerror=err=>{if(token!==voiceToken)return;
+   if(err.error==="canceled"||err.error==="interrupted")return;
+   i++;next()
+  };
+  synth.speak(u)
+ }
+ next()
+}
+$("summaryAuto").onclick=()=>{
+ if(readingMode==="summary"){if(paused){synth.resume();paused=false;updateSummaryAudioUI()}else stopSpeech();return}
+ playSummary()
+};
+$("summaryPause").onclick=()=>{
+ if(readingMode!=="summary"||!synth)return;
+ if(paused){synth.resume();paused=false;$("summaryStatus").textContent="Nastavljeno slušanje."}
+ else{synth.pause();paused=true;$("summaryStatus").textContent="Slušanje pauzirano."}
+ updateSummaryAudioUI();
+};
+$("summaryStop").onclick=()=>{stopSpeech();$("summaryStatus").textContent="Slušanje zaustavljeno."};
+$("summaryTranslate").onclick=()=>{
+ const next=$("summarySerbian").hidden;
+ $("summarySerbian").hidden=!next;
+ $("summaryTranslate").textContent=next?"Sakrij prevod":"Prevod";
+ $("summaryTranslate").setAttribute("aria-pressed",String(next));
+ if(next&&summaryEdited)$("summaryStatus").textContent="Prevod je izvorni AI prevod, pre izmena nemačkog teksta.";
+};
+$("summaryPlus").onclick=()=>{summaryFontScale=Math.min(1.5,Math.round((summaryFontScale+.1)*10)/10);updateSummaryFont()};
+$("summaryMinus").onclick=()=>{summaryFontScale=Math.max(.8,Math.round((summaryFontScale-.1)*10)/10);updateSummaryFont()};
+$("summaryGerman").addEventListener("input",()=>{
+ summaryEdited=true;
+ if(readingMode==="summary")stopSpeech();
+ $("summaryStatus").textContent="Tekst se može uređivati. Prevod odgovara originalnom tekstu.";
+});
+$("summaryBack").onclick=()=>view(0);
+$("summaryDetail").onclick=()=>view(2);
+$("backFromFull").onclick=()=>view(1);
+$("goDialogue").onclick=()=>{view(3);if(dialogRows.length)playRows("dialog")};
+$("backToDescription").onclick=()=>view(2);
+$("restart").onclick=()=>{stopSpeech();view(0);$("file").value="";$("analyze").disabled=true;imageData="";for(let i=0;i<4;i++){$("photo"+i).style.display="none"}$("photoReveal").classList.remove("ready");document.querySelector(".upload").classList.remove("has-photo");document.querySelector(".upload-title").textContent="Izaberi fotografiju";$("uploadHeading").textContent="Ubaci sliku za opis";setStatus("Izaberi novu sliku.");};
 
 </script></body></html>
