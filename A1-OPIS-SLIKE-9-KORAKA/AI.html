@@ -687,6 +687,26 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
   height:clamp(75px,16dvh,108px)!important;
  }
 }
+
+/* DE-MAX V58 — detailed photo has more height; title sits directly at its lower divider. */
+#screen2 .full-photo-line{
+ flex-basis:clamp(112px,21dvh,207px)!important;
+ height:clamp(112px,21dvh,207px)!important;
+ margin-bottom:0!important;
+ padding-bottom:0!important;
+}
+#screen2 .detail-title{
+ margin:-1px 0 0!important;
+ padding:0 0 2px!important;
+ line-height:1.05!important;
+ border-bottom:1px solid #d7e5f4!important;
+}
+@media(max-height:650px){
+ #screen2 .full-photo-line{
+  flex-basis:clamp(82px,17.5dvh,120px)!important;
+  height:clamp(82px,17.5dvh,120px)!important;
+ }
+}
 </style></head><body><main class="app">
 <header class="header"><h1>Opis slike</h1></header>
 <section class="screen active" id="screen0"><div class="scroll"><div class="panel"><h2 class="title" id="uploadHeading">Ubaci sliku za opis</h2><label class="upload"><span class="upload-icon">📷</span><span class="upload-title">Izaberi fotografiju</span><span class="upload-sub">Dodirni ovde za galeriju ili kameru</span><input id="file" type="file" accept="image/*"></label><div class="photo-reveal" id="photoReveal"><span class="photo-glow" aria-hidden="true"></span><img class="picture" id="photo0" alt="Izabrana slika"><span class="photo-success" aria-hidden="true">✓</span><span class="sparkle sp1" aria-hidden="true">✦</span><span class="sparkle sp2" aria-hidden="true">✧</span><span class="sparkle sp3" aria-hidden="true">✦</span></div><p class="status" id="status">Prvo izaberi sliku.</p></div><div class="demax-a1-brand" aria-label="A1 – De-Max A1"><strong>A1</strong><span>De-Max</span></div><input id="endpoint" type="hidden" value="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev"></div><div class="footer upload-footer"><button class="action pale" id="resumeAfterGeneration" type="button" hidden>Nastavi opis ❯</button><button class="action green" id="analyze" disabled>Automatski opiši sliku</button></div></section>
