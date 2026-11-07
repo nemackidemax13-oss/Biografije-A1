@@ -1785,3 +1785,34 @@ body:not(.summary-mode) .separate-header h1#wizardTitle{
  }
  body:not(.summary-mode) .separate-header .demax-folder{height:19px!important;min-height:19px!important}
 }
+
+/* v61: DE-MAX A1 · OPIS SLIKE desni gornji ugao; Moje rečenice centrirane ispod. */
+body:not(.summary-mode) .separate-header{
+ display:grid!important;
+ grid-template-columns:minmax(0,1fr)!important;
+ grid-template-rows:18px 22px minmax(0,1fr)!important;
+ justify-items:stretch!important;
+}
+body:not(.summary-mode) .separate-header .separate-brand{
+ grid-column:1!important;grid-row:1!important;
+ justify-self:end!important;align-self:center!important;
+ text-align:right!important;width:auto!important;max-width:100%!important;
+ white-space:nowrap!important;
+}
+body:not(.summary-mode) .separate-header .demax-folder{
+ grid-column:1!important;grid-row:2!important;
+ position:static!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;
+ justify-self:center!important;align-self:center!important;
+ width:max-content!important;max-width:100%!important;min-width:0!important;
+ transform:none!important;
+}
+body:not(.summary-mode) .separate-header h1#wizardTitle{
+ grid-column:1!important;grid-row:3!important;
+ justify-self:center!important;align-self:center!important;
+ text-align:center!important;
+ width:100%!important;
+ font-size:clamp(11px,3.3vw,15px)!important;
+}
+@media(max-height:670px){
+ body:not(.summary-mode) .separate-header{grid-template-rows:17px 20px minmax(0,1fr)!important}
+}
