@@ -1661,3 +1661,17 @@ html,body{height:100dvh;max-height:100dvh;overflow:hidden!important}
 @media(max-width:380px){.demax-folder{padding:3px 4px;gap:2px}.demax-folder-label{font-size:9px}.panel.compose .paneltitle .small{font-size:10px!important}}
 @media(max-height:680px){.demax-folder-icon{font-size:14px}.demax-folder{padding:2px 4px}.demax-folder-count{height:16px;min-width:16px}}
 @media(prefers-reduced-motion:reduce){.demax-folder-pop,.demax-folder-open #selectedArea{animation:none}}
+
+/* Folder sa izabranim rečenicama gore desno, iznad lupe. */
+.separate-header{position:relative!important}
+.separate-header .demax-folder{
+ position:absolute!important;top:2px!important;right:5px!important;
+ z-index:8!important;max-width:122px!important;
+ padding:2px 5px!important;min-height:21px!important;
+ font-size:10px!important;gap:3px!important;
+ box-shadow:0 2px 7px #22456c23!important
+}
+.separate-header .demax-folder .demax-folder-icon{font-size:14px!important}
+.separate-header .demax-folder .demax-folder-count{height:16px!important;min-width:16px!important;font-size:10px!important}
+.separate-header .separate-brand{max-width:calc(100% - 128px)!important;justify-self:start!important;overflow:hidden!important}
+@media(max-width:350px){.separate-header .demax-folder{right:3px!important;padding:2px 3px!important;max-width:111px!important}}
