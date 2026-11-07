@@ -1,0 +1,11 @@
+entrypoint = "server.py"
+run = "python3 server.py"
+modules = ["python-3.11"]
+hidden = [".git", ".cache", "__pycache__"]
+[deployment]
+run = ["sh", "-c", "python3 server.py"]
+deploymentTarget = "autoscale"
+
+[[ports]]
+localPort = 3000
+externalPort = 80
