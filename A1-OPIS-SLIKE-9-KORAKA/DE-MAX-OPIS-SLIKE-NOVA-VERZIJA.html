@@ -222,7 +222,7 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
 "use strict";
 const DEFAULT_WORKER_URL="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev";
 const $=id=>document.getElementById(id);
-const labels=["Opis osoba na slici","Razgovor osoba","Mesto osoba na slici","Izgled osoba na slici","Odeća osoba na slici","Kosa osoba na slici","Godine osoba na slici","Detalji na slici","Završne rečenice","Moj opis slike"];
+const labels=["Opis osoba na slici","Mesto osoba na slici","Razgovor osoba","Izgled osoba na slici","Odeća osoba na slici","Kosa osoba na slici","Godine osoba na slici","Detalji na slici","Završne rečenice","Moj opis slike"];
 const scenes=[...(window.DEMAX_SCENES||[]),...(window.DEMAX_NEW_SCENES||[])].sort((a,b)=>a.n-b.n);
 let fullFontScale=1,fullSteps=[],fullTranslated=false,fullAudioIndex=-1,fullAudioAuto=false,fullAudioLines=[];let imageData="",bank=[],descRows=[],dialogRows=[],currentPage=0,voiceToken=0,paused=false,readingMode="",readingIndex=0;
 const synth=window.speechSynthesis;
@@ -232,7 +232,30 @@ function setStatus(t,bad=false){$("status").textContent=t;$("status").className=
 function view(n){stopSpeech();currentPage=n;for(let i=0;i<3;i++){$("screen"+i).classList.toggle("active",i===n);$("progress"+i).classList.toggle("active",i===n)}if(n===2)$("dialogueScroll").scrollTop=0;if(n===1)requestAnimationFrame(fitFullDescription)}
 function add(el,cls,txt){let d=document.createElement("div");d.className=cls;d.textContent=txt;el.append(d);return d}
 function norm(s){return String(s||"").toLocaleLowerCase("de").replace(/[^a-zäöüß0-9 ]/g,"").replace(/\s+/g," ").trim()}
-function sampleBank(){if(!bank.length)return [];const quotas={start:24,extra:38,places:30,mann:25,frau:25,kind:25,closing:18},out=[];for(const [cat,limit] of Object.entries(quotas)){let items=bank.filter(x=>x.cat===cat&&x.de&&x.sr);let step=Math.max(1,Math.floor(items.length/limit));for(let i=0;i<items.length&&out.filter(x=>x.cat===cat).length<limit;i+=step)out.push({cat,de:items[i].de,sr:items[i].sr})}return out.slice(0,180)}
+function sampleBank(){
+ if(!bank.length)return [];
+ const out=[],seen=new Set();
+ const add=x=>{if(!x?.de||!x?.sr||seen.has(x.de))return;seen.add(x.de);out.push({cat:x.cat,de:x.de,sr:x.sr})};
+ const spread=(rows,n)=>{
+  if(!rows.length||n<=0)return;
+  const first=out.length;
+  for(let i=0;i<n;i++)add(rows[Math.min(rows.length-1,Math.floor((i+.5)*rows.length/n))]);
+  if(out.length-first<n)for(const x of rows){if(out.length-first>=n)break;add(x)}
+ };
+ const start=bank.filter(x=>x.cat==="start");
+ spread(start.filter(x=>/^Auf dem Bild sehe ich/.test(x.de)),12);
+ spread(start.filter(x=>/Die Personen sprechen über/.test(x.de)),28);
+ spread(start.filter(x=>!/Die Personen sprechen über/.test(x.de)&&!/^Auf dem Bild sehe ich/.test(x.de)),2);
+ spread(bank.filter(x=>x.cat==="places"),35);
+ spread(bank.filter(x=>x.cat==="extra"),27);
+ for(const cat of ["mann","frau","kind"]){
+  const rows=bank.filter(x=>x.cat===cat);
+  spread(rows.filter(x=>/Haare|Bart|Schnurrbart|Armbanduhr|Gesicht|lacht|lächelt|Brille|trägt/.test(x.de)),13);
+  spread(rows.filter(x=>!/Haare|Bart|Schnurrbart|Armbanduhr|Gesicht|lacht|lächelt|Brille|trägt/.test(x.de)),8);
+ }
+ spread(bank.filter(x=>x.cat==="closing"),13);
+ return out.slice(0,180);
+}
 
 function pageRows(mode){return mode==="desc"?descRows:mode==="dialog"?dialogRows:[]}
 function cleanHighlight(){document.querySelectorAll(".sentence.playing").forEach(el=>el.classList.remove("playing"))}
