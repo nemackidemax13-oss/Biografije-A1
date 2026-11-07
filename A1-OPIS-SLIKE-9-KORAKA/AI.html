@@ -1258,7 +1258,25 @@ $("file").onchange=async e=>{
 $("analyze").onclick=async()=>{
  if(generatedLocked&&!reachedDialogue){setStatus("Novu sliku možeš generisati tek kada dođeš do dijaloga.",true);return}
  if(!imageData){setStatus("Izaberi sliku.",true);return}if(!bank.length){setStatus("Baza opisa slike se još učitava. Pokušaj ponovo.",true);return}let url=$("endpoint").value.trim();if(!/^https:\/\//.test(url)){setStatus("Podesi Cloudflare Worker adresu.",true);return}$("analyze").disabled=true;setStatus("AI analizira sliku i priprema opis i dijalog…");
-try{let res=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({image:imageData,scenes:scenes.map(s=>({n:s.n,sr:s.sr,de:s.de,roles:s.roles||"",dialog:(Array.isArray(s.dialog)?s.dialog:[]).map(pair=>({de:String(pair[0]||""),sr:String(pair[1]||"")})),extra:(Array.isArray(s.extra)?s.extra:[]).map(pair=>({de:String(pair[0]||""),sr:String(pair[1]||"")}))})),bankExamples:sampleBank(),visualAccuracyInstructions:"Obavezno prouči ORIGINALNU fotografiju pre izbora situacije, opisa i dijaloga. Prepoznaj šta osobe zaista rade, koje predmete drže, pokazuju ili kupuju, i koja odeća ili roba je stvarno vidljiva. Ne zamenjuj haljinu jaknom, košuljom ili drugim artiklom. Ne izmišljaj sadržaj, mesto, radnje, boje ni namere koje se ne vide. Ako je predmet nejasan, napiši opštu tačnu rečenicu. Svi koraci opisa i dijalog moraju odgovarati ISTOJ fotografiji.",dialogueAccuracyInstructions:"Dijalog napravi specifično prema fotografiji, nikada generički po unapred izabranoj temi. Primer: ako u butiku žena bira ili kupuje HALJINU, prodavačica i kupac razgovaraju o HALJINI, njenoj boji, veličini, ceni ili isprobavanju samo kada takve okolnosti odgovaraju slici. Ne govori da kupuje JAKNU ako nije jakna. Isto važi za svaku drugu sliku: prepoznaj stvarne ljude, mesto, predmet, aktivnost i uloge i napiši prirodan A1 razgovor vezan za baš taj prizor. Ne dodaj nevidljive činjenice kao potvrđene. Svaka replika mora biti u skladu sa prepoznatom situacijom, a sceneNumber i sceneName takođe moraju odgovarati slici."})});let data=await res.json().catch(()=>({}));if(!res.ok)throw Error(data.error||"HTTP "+res.status);if(!Array.isArray(data.steps)||data.steps.length!==10)throw Error("Nema 10 koraka opisa.");
+try{const requestBody=JSON.stringify({image:imageData,scenes:scenes.map(s=>({n:s.n,sr:s.sr,de:s.de,roles:s.roles||"",dialog:(Array.isArray(s.dialog)?s.dialog:[]).map(pair=>({de:String(pair[0]||""),sr:String(pair[1]||"")})),extra:(Array.isArray(s.extra)?s.extra:[]).map(pair=>({de:String(pair[0]||""),sr:String(pair[1]||"")}))})),bankExamples:sampleBank(),visualAccuracyInstructions:"Obavezno prouči ORIGINALNU fotografiju pre izbora situacije, opisa i dijaloga. Prepoznaj šta osobe zaista rade, koje predmete drže, pokazuju ili kupuju, i koja odeća ili roba je stvarno vidljiva. Ne zamenjuj haljinu jaknom, košuljom ili drugim artiklom. Ne izmišljaj sadržaj, mesto, radnje, boje ni namere koje se ne vide. Ako je predmet nejasan, napiši opštu tačnu rečenicu. Svi koraci opisa i dijalog moraju odgovarati ISTOJ fotografiji.",dialogueAccuracyInstructions:"Dijalog napravi specifično prema fotografiji, nikada generički po unapred izabranoj temi. Primer: ako u butiku žena bira ili kupuje HALJINU, prodavačica i kupac razgovaraju o HALJINI, njenoj boji, veličini, ceni ili isprobavanju samo kada takve okolnosti odgovaraju slici. Ne govori da kupuje JAKNU ako nije jakna. Isto važi za svaku drugu sliku: prepoznaj stvarne ljude, mesto, predmet, aktivnost i uloge i napiši prirodan A1 razgovor vezan za baš taj prizor. Ne dodaj nevidljive činjenice kao potvrđene. Svaka replika mora biti u skladu sa prepoznatom situacijom, a sceneNumber i sceneName takođe moraju odgovarati slici."});
+let data=null;
+for(let attempt=1;attempt<=2;attempt++){
+ if(attempt===2)setStatus("AI nije poslao sve korake. Pokušavam ponovo (2/2)…");
+ const res=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:requestBody});
+ const candidate=await res.json().catch(()=>({}));
+ if(!res.ok){if(attempt===2)throw Error(candidate.error||"HTTP "+res.status);continue}
+ const steps=Array.isArray(candidate.steps)?candidate.steps:[];
+ // Some Worker versions return nine numbered steps, with "Moj opis" as description.
+ if(steps.length===9){
+  const de=String(candidate.description||candidate.summaryDE||steps.map(x=>x.de||"").join(" ")).trim();
+  const sr=String(candidate.descriptionSR||candidate.summarySR||steps.map(x=>x.sr||"").join(" ")).trim();
+  if(de)steps.push({de,sr});
+ }
+ if(steps.length>=10&&steps.slice(0,10).every(x=>x&&typeof x.de==="string"&&x.de.trim())){
+  candidate.steps=steps.slice(0,10);data=candidate;break;
+ }
+}
+if(!data)throw Error("AI nije vratio kompletnih 10 koraka ni nakon ponovnog pokušaja. Izaberi ponovo generisanje.");
 $("dialogue").replaceChildren();dialogRows=[];
 $("dialogue").classList.add("hide-translation");
 $("translationDialogue").textContent="Prevod";$("translationDialogue").setAttribute("aria-pressed","false");
