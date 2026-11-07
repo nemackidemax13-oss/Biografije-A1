@@ -950,6 +950,61 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
  color:#bc344b!important;font-weight:500!important;
  margin-top:8px!important;
 }
+
+/* DE-MAX V70 — photo-added start screen completely fits viewport, no page scroll. */
+#screen0.photo-added .scroll{
+ display:flex!important;flex-direction:column!important;
+ overflow:hidden!important;min-height:0!important;
+ padding:3px 6px 2px!important;
+}
+#screen0.photo-added .panel{
+ display:flex!important;flex-direction:column!important;
+ flex:1 1 auto!important;min-height:0!important;
+ margin:0!important;padding:4px!important;gap:2px!important;
+ overflow:hidden!important;
+}
+#screen0.photo-added #uploadHeading{
+ flex:0 0 auto!important;margin:0!important;
+ padding:1px 0 2px!important;font-size:clamp(12px,2dvh,16px)!important;
+ line-height:1.15!important;
+}
+#screen0.photo-added .photo-reveal{
+ display:flex!important;flex:1 1 auto!important;
+ align-items:center!important;justify-content:center!important;
+ width:100%!important;max-width:100%!important;
+ height:auto!important;min-height:0!important;
+ margin:2px auto!important;padding:3px!important;
+ overflow:hidden!important;
+}
+#screen0.photo-added .photo-reveal .picture,
+#screen0.photo-added #photo0{
+ display:block!important;width:auto!important;height:auto!important;
+ max-width:100%!important;max-height:100%!important;
+ object-fit:contain!important;margin:0 auto!important;
+}
+#screen0.photo-added #status{
+ flex:0 0 auto!important;min-height:0!important;
+ margin:1px 0!important;font-size:10px!important;line-height:1.15!important;
+}
+#screen0.photo-added .demax-text-brand{
+ flex:0 0 75px!important;min-height:0!important;
+ height:75px!important;margin:1px auto 2px!important;
+ padding:0!important;gap:0!important;
+}
+#screen0.photo-added .demax-text-brand span{
+ font-size:clamp(24px,5.3dvh,34px)!important;line-height:1.05!important;
+}
+#screen0.photo-added .demax-text-brand strong{
+ font-size:clamp(21px,4.4dvh,29px)!important;
+ line-height:1!important;margin-top:1px!important;
+}
+#screen0.photo-added .upload-footer{flex:0 0 auto!important}
+@media(max-height:600px){
+ #screen0.photo-added .demax-text-brand{flex-basis:51px!important;height:51px!important}
+ #screen0.photo-added .demax-text-brand span{font-size:23px!important}
+ #screen0.photo-added .demax-text-brand strong{font-size:19px!important}
+ #screen0.photo-added #status{font-size:9px!important}
+}
 </style></head><body><main class="app">
 <header class="header"><h1>Opis slike</h1></header>
 <section class="screen active" id="screen0"><div class="scroll"><div class="panel"><h2 class="title" id="uploadHeading">Ubaci sliku za opis</h2><label class="upload"><span class="upload-icon">📷</span><span class="upload-title">Izaberi fotografiju</span><span class="upload-sub">Dodirni ovde za galeriju ili kameru</span><input id="file" type="file" accept="image/*"></label><div class="photo-reveal" id="photoReveal"><span class="photo-glow" aria-hidden="true"></span><img class="picture" id="photo0" alt="Izabrana slika"><span class="photo-success" aria-hidden="true">✓</span><span class="sparkle sp1" aria-hidden="true">✦</span><span class="sparkle sp2" aria-hidden="true">✧</span><span class="sparkle sp3" aria-hidden="true">✦</span></div><p class="status" id="status">Prvo izaberi sliku.</p></div><div class="demax-text-brand" aria-label="De-Max A1"><span>De-Max</span><strong>A1</strong></div><input id="endpoint" type="hidden" value="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev"></div><div class="footer upload-footer"><button class="action pale" id="resumeAfterGeneration" type="button" hidden>Nastavi opis ❯</button><button class="action green" id="analyze" disabled>Automatski opiši sliku</button></div></section>
@@ -1121,7 +1176,7 @@ $("dialogueFontPlus").onclick=()=>changeDialogueFont(.1);
 $("dialogueFontMinus").onclick=()=>changeDialogueFont(-.1);
 $("file").onchange=async e=>{
  if(generatedLocked&&!reachedDialogue){$("file").value="";setStatus("Prvo završi korake i dođi do dijaloga.",true);return}
- let f=e.target.files[0];if(!f)return;if(!f.type.startsWith("image/")||f.size>12e6){setStatus("Izaberi JPG/PNG/WebP sliku manju od 12 MB.",true);return}try{const bmp=await createImageBitmap(f),cv=document.createElement("canvas"),scale=Math.min(1,1280/Math.max(bmp.width,bmp.height));cv.width=Math.round(bmp.width*scale);cv.height=Math.round(bmp.height*scale);cv.getContext("2d").drawImage(bmp,0,0,cv.width,cv.height);bmp.close();imageData=cv.toDataURL("image/jpeg",.8);for(let i=0;i<4;i++){let img=$("photo"+i);img.src=imageData;img.style.display="block"}const reveal=$("photoReveal");reveal.classList.remove("ready");void reveal.offsetWidth;reveal.classList.add("ready");document.querySelector(".upload").classList.add("has-photo");document.querySelector(".upload-title").textContent="✓ Fotografija dodata";$("uploadHeading").textContent="Dodata slika za opis";$("analyze").disabled=false;setStatus("✓ Fotografija je uspešno dodata.")}catch(err){setStatus("Nije moguće otvoriti sliku.",true)}};
+ let f=e.target.files[0];if(!f)return;if(!f.type.startsWith("image/")||f.size>12e6){setStatus("Izaberi JPG/PNG/WebP sliku manju od 12 MB.",true);return}try{const bmp=await createImageBitmap(f),cv=document.createElement("canvas"),scale=Math.min(1,1280/Math.max(bmp.width,bmp.height));cv.width=Math.round(bmp.width*scale);cv.height=Math.round(bmp.height*scale);cv.getContext("2d").drawImage(bmp,0,0,cv.width,cv.height);bmp.close();imageData=cv.toDataURL("image/jpeg",.8);for(let i=0;i<4;i++){let img=$("photo"+i);img.src=imageData;img.style.display="block"}const reveal=$("photoReveal");reveal.classList.remove("ready");void reveal.offsetWidth;reveal.classList.add("ready");document.querySelector(".upload").classList.add("has-photo");$("screen0").classList.add("photo-added");document.querySelector(".upload-title").textContent="✓ Fotografija dodata";$("uploadHeading").textContent="Dodata slika za opis";$("analyze").disabled=false;setStatus("✓ Fotografija je uspešno dodata.")}catch(err){setStatus("Nije moguće otvoriti sliku.",true)}};
 $("analyze").onclick=async()=>{
  if(generatedLocked&&!reachedDialogue){setStatus("Novu sliku možeš generisati tek kada dođeš do dijaloga.",true);return}
  if(!imageData){setStatus("Izaberi sliku.",true);return}if(!bank.length){setStatus("Baza opisa slike se još učitava. Pokušaj ponovo.",true);return}let url=$("endpoint").value.trim();if(!/^https:\/\//.test(url)){setStatus("Podesi Cloudflare Worker adresu.",true);return}$("analyze").disabled=true;setStatus("AI analizira sliku i priprema opis i dijalog…");
@@ -1470,6 +1525,6 @@ $("backToDescription").onclick=()=>view(2);
 $("restart").onclick=()=>{
  if(!reachedDialogue){return}
  generatedLocked=false;reachedDialogue=false;
- stopSpeech();view(0);$("file").value="";$("analyze").disabled=true;imageData="";for(let i=0;i<4;i++){$("photo"+i).style.display="none"}$("photoReveal").classList.remove("ready");document.querySelector(".upload").classList.remove("has-photo");document.querySelector(".upload-title").textContent="Izaberi fotografiju";$("uploadHeading").textContent="Ubaci sliku za opis";setStatus("Izaberi novu sliku.");};
+ stopSpeech();view(0);$("file").value="";$("analyze").disabled=true;imageData="";for(let i=0;i<4;i++){$("photo"+i).style.display="none"}$("photoReveal").classList.remove("ready");document.querySelector(".upload").classList.remove("has-photo");$("screen0").classList.remove("photo-added");document.querySelector(".upload-title").textContent="Izaberi fotografiju";$("uploadHeading").textContent="Ubaci sliku za opis";setStatus("Izaberi novu sliku.");};
 
 </script></body></html>
