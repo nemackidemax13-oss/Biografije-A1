@@ -1,0 +1,885 @@
+<!doctype html><html lang="sr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#eaf3ff"><title>Opis slike | Powered By De-Max</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden}body{font-family:system-ui,Arial,sans-serif;background:#e8f1ff;color:#174576}.app{height:100vh;height:100dvh;width:min(100%,580px);margin:auto;display:flex;flex-direction:column;background:#fff;overflow:hidden}.header{flex:none;position:relative;background:#ecf5ff;border-bottom:1px solid #d5e5f7;text-align:center;padding:10px 75px 8px 8px;min-height:62px}.brand{position:absolute;right:12px;top:14px;font-size:18px;font-style:italic;font-weight:1000;color:#c92744}.header h1{font-size:clamp(16px,2.3vh,21px);margin:0;font-weight:950;color:#17518e}.header small{font-size:11px;color:#5c7d9a}.top-progress{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;padding:6px 6px;background:#fff;border-bottom:1px solid #e0eaf5}.progress{font-size:11px;text-align:center;font-weight:850;padding:7px 2px;background:#edf3fa;border-radius:8px;color:#6b839d}.progress.active{background:#1c64b0;color:white}.screen{display:none;min-height:0;flex:1;flex-direction:column}.screen.active{display:flex}.scroll{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:10px 11px 16px}.panel{background:white;border:1px solid #dae7f6;border-radius:13px;padding:11px;margin:0 0 10px}.title{text-align:center;font-size:17px;font-weight:900;margin:3px 0 10px;color:#184d88}.upload{display:block;border:2px dashed #9dbde2;background:#f2f8ff;border-radius:12px;padding:16px 9px;text-align:center;color:#17538f;font-weight:850;cursor:pointer}#file{display:none}.picture{display:none;object-fit:contain;border-radius:11px;max-width:100%;max-height:25vh;margin:6px auto 10px}.picture.small{max-height:18vh}.action{min-height:43px;border:0;border-radius:10px;font:800 14px system-ui,Arial;padding:9px 12px;background:#2064b4;color:#fff;cursor:pointer}.action:disabled{opacity:.5}.green{background:#14904e}.red{background:#d32e47}.gold{background:#f0b43c;color:#3c2b10}.pale{background:#e7f1fd;color:#225f9e;border:1px solid #b9d2f0}.controls{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:7px 0}.controls .action{flex:1}.toggle{min-height:40px;background:#f1f6ff;border:1px solid #bbd1ee;border-radius:10px;color:#225b9e;padding:8px 10px;font-weight:850}.toggle.on{background:#ffe9ae;border-color:#e7bd4f;color:#684500}.status{text-align:center;font-size:12px;min-height:18px;color:#617b95;margin:8px 0}.status.error{color:#be283e}.sentence{padding:9px 10px;border:1px solid #dae6f5;background:#f7faff;border-radius:10px;margin:7px 0}.sentence.playing{border:2px solid #e02848;background:#fff1f3}.sentence h3{margin:0 0 5px;text-align:center;font-size:13px;color:#235a9b}.de{font-size:14px;font-weight:760;line-height:1.55;color:#173d70}.sr{font-size:12px;line-height:1.5;color:#677c97;margin-top:4px}.hide-translation .sr{display:none}.pill{text-align:center;background:#fff2d4;color:#755114;font-size:12px;font-weight:850;border-radius:8px;padding:7px;margin-bottom:8px}.speaker{font-size:11px;font-weight:950;color:#a15b19;margin-bottom:3px}.dialog{border-left:3px solid #307fcb}.dialog:nth-child(even){border-left-color:#efaa51}.mine{width:100%;min-height:132px;resize:vertical;border:1px solid #bcd1e9;border-radius:10px;padding:10px;font:14px/1.65 system-ui;color:#174576}.footer{flex:none;display:flex;gap:7px;padding:9px 10px calc(9px + env(safe-area-inset-bottom));border-top:1px solid #dce8f7;background:#fff}.footer .action{flex:1}.muted{font-size:12px;color:#617d99;line-height:1.55}.setting{width:100%;padding:10px;border:1px solid #aac5e5;border-radius:9px;font-size:13px}details{padding:10px 2px}summary{cursor:pointer;font-weight:800;color:#215991}.links{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;padding:5px;font-size:12px}a{color:#1b60aa}.sr[hidden]{display:none!important}
+ .header{padding:12px 10px;min-height:49px;background:linear-gradient(110deg,#e9f3ff,#ffffff)}.header h1{font-size:22px;letter-spacing:.15px}.upload{display:flex;flex-direction:column;align-items:center;gap:7px;padding:23px 13px;background:linear-gradient(135deg,#e7f2ff,#d6e9ff);border:2px dashed #6da6e9;box-shadow:0 4px 14px #3373ba18;transition:transform .15s,background .15s}.upload:active{transform:scale(.985)}.upload-icon{font-size:38px;line-height:1.2}.upload-title{font-size:19px;font-weight:950;color:#1355a0}.upload-sub{font-size:12px;color:#567fa9;font-weight:650}.powered{flex:none;text-align:center;background:#f5f9ff;border-top:1px solid #e0eaf6;color:#557da5;font-weight:850;font-size:11px;padding:6px 4px calc(6px + env(safe-area-inset-bottom))} 
+/* DE-MAX photo upload celebration */
+.photo-reveal{display:none;position:relative;isolation:isolate;width:fit-content;max-width:100%;margin:9px auto 12px;padding:5px;border-radius:16px;background:linear-gradient(130deg,#b9d8ff,#e1f0ff,#a0cafc);box-shadow:0 8px 24px #2a70b12a}
+.photo-reveal.ready{display:block;animation:picture-arrives .65s cubic-bezier(.19,1.25,.4,1) both}
+.photo-reveal .picture{display:block!important;position:relative;z-index:2;max-height:25vh;margin:0;border-radius:12px}
+.photo-glow{position:absolute;inset:-3px;border-radius:18px;pointer-events:none;background:linear-gradient(115deg,transparent 22%,#ffffffdd 45%,transparent 66%);background-size:220% 100%;z-index:3;opacity:0}
+.photo-reveal.ready .photo-glow{animation:photo-shine 1.1s ease .12s 1}
+.photo-success{position:absolute;z-index:4;right:-9px;top:-9px;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#159556;color:#fff;border:3px solid #fff;box-shadow:0 3px 10px #176c4970;font-size:19px;font-weight:1000;transform:scale(0)}
+.photo-reveal.ready .photo-success{animation:success-pop .5s cubic-bezier(.2,1.6,.4,1) .4s both}
+.sparkle{position:absolute;z-index:5;color:#ffc738;text-shadow:0 1px 4px #fff8b7;font-size:25px;opacity:0;pointer-events:none}
+.sp1{top:10%;left:-20px}.sp2{bottom:14%;right:-18px}.sp3{bottom:-13px;left:20%;font-size:19px}
+.photo-reveal.ready .sparkle{animation:sparkle-burst .85s ease-out .36s both}
+.photo-reveal.ready .sp2{animation-delay:.5s}.photo-reveal.ready .sp3{animation-delay:.65s}
+.upload.has-photo{border-style:solid;border-color:#36a973;background:linear-gradient(135deg,#e9fff5,#d9f7e9)}
+.upload.has-photo .upload-title{color:#117648}
+@keyframes picture-arrives{0%{opacity:0;transform:translateY(15px) scale(.91)}65%{opacity:1;transform:translateY(-3px) scale(1.025)}100%{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes photo-shine{0%{opacity:0;background-position:110% 0}30%{opacity:1}100%{opacity:0;background-position:-110% 0}}
+@keyframes success-pop{0%{transform:scale(0) rotate(-35deg)}70%{transform:scale(1.16) rotate(6deg)}100%{transform:scale(1) rotate(0)}}
+@keyframes sparkle-burst{0%{opacity:0;transform:scale(.2) rotate(-35deg)}40%{opacity:1;transform:scale(1.3) rotate(20deg)}100%{opacity:0;transform:translateY(-12px) scale(.75) rotate(75deg)}}
+@media(prefers-reduced-motion:reduce){.photo-reveal.ready,.photo-reveal.ready .photo-glow,.photo-reveal.ready .photo-success,.photo-reveal.ready .sparkle{animation:none}.photo-reveal.ready .photo-success{transform:scale(1)}}
+.upload{padding:11px 8px;gap:3px;border-radius:10px}.upload-icon{font-size:23px}.upload-title{font-size:14px}.upload-sub{font-size:10px}.upload.has-photo{display:none!important}.screen#screen0 .scroll{padding:10px 9px 5px}.screen#screen0 .panel{padding:9px;margin-bottom:5px}.screen#screen0 .picture{max-height:56dvh;max-width:100%;width:auto}.screen#screen0 .photo-reveal{max-width:100%;margin:9px auto 11px}.screen#screen0 .photo-reveal .picture{max-height:56dvh;max-width:calc(100vw - 48px);object-fit:contain}.screen#screen0 .upload-footer{padding:10px 12px calc(10px + env(safe-area-inset-bottom))}.screen#screen0 .upload-footer .action{font-size:16px;min-height:51px;box-shadow:0 4px 11px #16824930}.screen#screen0 .status{margin:6px 0}.screen#screen0 .title{margin:3px 0 10px}
+html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
+.app,.screen,.scroll,.panel,.top-progress,.footer{max-width:100%;min-width:0;overflow-x:hidden}
+.screen#screen0 .scroll{display:flex;flex-direction:column;overflow-x:hidden;overflow-y:auto}
+.screen#screen0 .photo-reveal{width:fit-content;max-width:calc(100% - 18px)}
+.screen#screen0 .photo-reveal .picture{max-width:min(100%,calc(100vw - 65px));max-height:49dvh}
+.demax-a1-brand{flex:1;min-height:52px;display:flex;align-items:center;justify-content:center;gap:8px;text-align:center;padding:10px 4px 14px;font-family:Georgia,"Times New Roman",serif;font-style:italic;font-size:clamp(30px,6vw,43px);font-weight:900;letter-spacing:-1.3px;line-height:1.1;color:#c91f3e;text-shadow:0 1px 0 #fff,0 3px 11px #c91f3e25}
+.demax-a1-brand strong{font-size:.86em;font-weight:950;color:#e12840}
+@media(max-height:620px){.demax-a1-brand{font-size:28px;min-height:42px;padding:6px}.screen#screen0 .photo-reveal .picture{max-height:39dvh}}
+
+/* A1 description: all nine steps visible within one mobile screen */
+#screen3 .description-no-scroll{overflow:hidden!important;display:flex;flex-direction:column;gap:3px;padding:5px 7px;min-height:0}
+#screen3 .description-top{flex:none;display:flex;flex-direction:column;align-items:stretch;min-height:0}
+#screen3 .description-top .title{margin:0 0 3px;font-size:15px}
+#screen3 .description-top .picture.small{display:block!important;height:auto;max-height:11dvh;max-width:68%;width:auto;object-fit:contain;margin:0 auto 4px}
+#screen3 .description-controls{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;margin:2px 0}
+#screen3 .description-controls .action,#screen3 .description-controls .toggle{width:100%;min-width:0;min-height:34px;padding:5px 1px;border-radius:7px;font-size:clamp(10px,2.4vw,12px);white-space:nowrap}
+#screen3 #descriptionStatus{font-size:9px;line-height:1.1;margin:1px 0 3px;text-align:center}
+#screen3 #steps{flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column;gap:3px;align-content:start}
+#screen3 #steps .sentence{margin:0;flex:0 0 auto;min-width:0;padding:4px 6px;border-radius:7px;line-height:1.13}
+#screen3 #steps .sentence h3{font-size:11px;line-height:1.12;margin:0 0 2px}
+#screen3 #steps .de{font-size:11.5px;line-height:1.2;overflow-wrap:anywhere}
+#screen3 #steps .sr{font-size:10px;line-height:1.16;margin-top:2px;overflow-wrap:anywhere}
+#screen3 .footer{padding:5px 8px calc(5px + env(safe-area-inset-bottom))}
+#screen3 .footer .action{min-height:38px}
+@media(max-height:660px){#screen3 .description-top .picture.small{max-height:8dvh}#screen3 .description-top .title{font-size:13px}#screen3 .description-controls .action,#screen3 .description-controls .toggle{min-height:30px}}
+
+/* Compact second-page header: photo left, controls on the right */
+#screen3 .description-media-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:7px;width:100%;min-width:0;margin-bottom:3px}
+#screen3 .description-image-slot{display:flex;align-items:center;justify-content:center;min-width:0;min-height:0}
+#screen3 .description-image-slot .picture.small{display:block!important;width:auto;max-width:100%;height:auto;max-height:17dvh;margin:0;object-fit:contain;border-radius:8px}
+#screen3 .description-right{display:flex;flex-direction:column;align-items:stretch;justify-content:center;min-width:0}
+#screen3 .description-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;margin:0;width:100%;min-width:0}
+#screen3 .description-controls .action,#screen3 .description-controls .toggle{height:33px;min-height:33px;width:100%;padding:3px 1px;font-size:clamp(9px,2.4vw,11px);line-height:1.05;white-space:nowrap}
+#screen3 #descriptionStatus{font-size:9px;line-height:1.1;text-align:center;margin:3px 0 0}
+@media(max-height:650px){#screen3 .description-image-slot .picture.small{max-height:12dvh}#screen3 .description-controls .action,#screen3 .description-controls .toggle{height:28px;min-height:28px}}
+
+/* Poravnanje svih naslova koraka opisa uz desnu ivicu */
+#screen3 #steps .sentence h3{text-align:right!important;padding-right:1px;margin-left:auto;width:100%;}
+
+/* Complete description shown on a dedicated page in a writing-style field. */
+#screen2 .full-description-scroll{overflow:hidden;display:flex;flex-direction:column;min-height:0;padding:8px}
+#screen2 .full-description-panel{flex:1;min-height:0;display:flex;flex-direction:column;gap:7px;margin:0;padding:10px}
+#screen2 .full-description-panel .title{margin:0;font-size:16px}
+#screen2 .full-photo-line{display:grid;grid-template-columns:1fr 1fr;gap:7px;align-items:center;min-height:0;flex:none}
+#screen2 .full-photo-line .picture{display:block!important;max-width:100%;max-height:19dvh;object-fit:contain;margin:0 auto}
+#screen2 .full-audio-controls{display:flex;flex-direction:column;gap:4px;margin:0}
+#screen2 .full-audio-controls .action{min-height:30px;width:100%;font-size:11px;padding:4px}
+#screen2 .full-description-label{text-align:center;font-weight:850;color:#21558c;font-size:13px}
+#screen2 .full-description-text{display:block;flex:1;min-height:0;width:100%;border:1px solid #b9cbe4;border-radius:10px;background:#fcfdff;resize:none;padding:12px;font:clamp(12px,1.8vh,15px)/1.55 system-ui,Arial;color:#183f70;overflow-y:auto;outline-color:#3d84d5}
+#screen2 #fullStatus{margin:0;text-align:center;font-size:10px}
+@media(max-height:630px){#screen2 .full-photo-line .picture{max-height:13dvh}#screen2 .full-audio-controls .action{min-height:27px}}
+
+/* Full description – wide photo and one-row 3-button toolbar */
+#screen2 .full-photo-line{display:flex!important;align-items:center;justify-content:center;width:100%;min-width:0;flex:none}
+#screen2 .full-photo-line .picture{display:block!important;width:100%;max-width:100%;max-height:30dvh;height:auto;object-fit:contain;border-radius:10px;margin:0}
+#screen2 .full-audio-controls{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));width:100%;gap:5px;margin:0;flex:none}
+#screen2 .full-audio-controls .action{width:100%;min-width:0;min-height:39px;padding:5px 2px;font-size:clamp(11px,2.8vw,13px);white-space:nowrap;border-radius:9px}
+#screen2 .full-description-label{font-size:14px}
+#screen2 .full-description-panel{gap:6px}
+#screen2 .full-description-text:read-only{background:#f1f7ff;color:#24588a}
+@media(max-height:620px){#screen2 .full-photo-line .picture{max-height:22dvh}#screen2 .full-audio-controls .action{min-height:33px}}
+
+/* Three-screen layout: compact full description, large remaining reading area. */
+#screen2 .full-description-scroll{padding:4px 6px!important;overflow:hidden!important}
+#screen2 .full-description-panel{padding:6px!important;gap:3px!important;margin:0;min-height:0}
+#screen2 .full-description-panel .title{font-size:13px!important;margin:0!important}
+#screen2 .full-photo-line .picture{max-height:14dvh!important;max-width:100%;object-fit:contain}
+#screen2 .full-description-label{font-size:12px!important;margin:0}
+#screen2 .full-audio-controls{gap:4px!important}
+#screen2 .full-audio-controls .action{min-height:29px!important;height:29px!important;padding:2px 2px!important;font-size:11px!important;border-radius:7px!important}
+#screen2 #translateFull{background:#f0b43c!important;color:#37280c!important;border:1px solid #d89d22!important}
+#screen2 .full-description-text{padding:6px!important;line-height:1.28!important;min-height:0;resize:none;overflow:hidden!important;font-size:12px}
+#screen2 #fullStatus{font-size:9px!important;line-height:1!important}
+#screen2 .footer .action{min-height:33px;font-size:12px;padding:5px}
+@media(max-height:650px){#screen2 .full-photo-line .picture{max-height:10dvh!important}#screen2 .full-description-panel{gap:2px!important}}
+
+/* Color-coded 1–9 description: green heading, larger blue German, red Serbian below. */
+#screen2 .full-photo-line .picture{max-height:9dvh!important}
+#screen2 .full-description-panel{padding:4px 5px!important;gap:2px!important}
+#screen2 .full-description-panel .title{font-size:12px!important}
+#screen2 .full-description-label{font-size:11px!important}
+#screen2 .full-audio-controls .action{min-height:25px!important;height:25px!important;font-size:10px!important;padding:1px 2px!important}
+#screen2 .full-structured-description{flex:1;display:block;width:100%;overflow:hidden!important;padding:4px 6px!important;min-height:0;border:1px solid #bfd1e5;border-radius:9px;background:#fbfdff;line-height:1.18!important}
+#screen2 .full-step{padding:1px 0 2px;margin:0;border-bottom:1px solid #e1eaf3}
+#screen2 .full-step:last-child{border-bottom:0}
+#screen2 .full-step-title{color:#138448!important;font-size:12.5px;font-weight:900;line-height:1.18;text-align:left}
+#screen2 .full-step-de{color:#1556ac!important;font-size:15px;font-weight:700;line-height:1.22;overflow-wrap:anywhere;outline-offset:1px}
+#screen2 .full-step-sr{display:none;color:#d02c40!important;font-size:12.3px;font-weight:600;line-height:1.2;overflow-wrap:anywhere;margin:1px 0 2px}
+#screen2 .show-serbian .full-step-sr{display:block}
+#screen2 #fullStatus{display:none}
+#screen2 .footer{padding:3px 6px calc(3px + env(safe-area-inset-bottom))}
+#screen2 .footer .action{min-height:30px;font-size:11px;padding:3px}
+@media(max-height:610px){#screen2 .full-photo-line .picture{max-height:7dvh!important}#screen2 .full-structured-description{padding:3px!important}}
+
+/* Larger image; audio controls sit beside every individual German sentence. */
+#screen2 .full-photo-line .picture{max-height:20dvh!important;max-width:100%!important;width:auto!important;object-fit:contain!important}
+#screen2 .full-list-toolbar{display:flex;align-items:center;justify-content:space-between;gap:5px;width:100%;min-width:0}
+#screen2 .full-list-toolbar .full-description-label{font-size:12px!important;white-space:nowrap;flex:1;text-align:left}
+#screen2 .full-mini-auto,#screen2 .full-mini-translate{border:0;border-radius:7px;min-height:27px;white-space:nowrap;padding:4px 7px;font:800 10px system-ui,Arial;cursor:pointer}
+#screen2 .full-mini-auto{background:#d9eafa;color:#165da5}
+#screen2 .full-mini-auto[aria-pressed="true"]{background:#d12c48;color:white}
+#screen2 .full-mini-translate{background:#f0b43c;color:#34230b}
+#screen2 .full-step-lines{display:flex;flex-direction:column;gap:1px;min-width:0}
+#screen2 .full-line{display:flex;align-items:flex-start;gap:5px;min-width:0;border-radius:4px}
+#screen2 .full-line.audio-active{background:#e2f1ff}
+#screen2 .full-line .full-step-de{flex:1;min-width:0;outline-offset:1px}
+#screen2 .full-line-play{flex:0 0 23px;width:23px;height:23px;min-height:23px;padding:0;border:1px solid #b5cde9;border-radius:6px;background:#e3f0ff;color:#135ca8;font-weight:900;font-size:12px;line-height:20px;cursor:pointer}
+#screen2 .full-line-play[aria-pressed="true"]{background:#d32e47;color:white;border-color:#d32e47}
+#screen2 .full-structured-description{gap:0}
+@media(max-height:640px){#screen2 .full-photo-line .picture{max-height:15dvh!important}#screen2 .full-mini-auto,#screen2 .full-mini-translate{min-height:23px;padding:2px 5px;font-size:9px}}
+
+/* Requested colors: black step headings, green German sentences and listen controls */
+#screen2 .full-step-title{color:#161616!important}
+#screen2 .full-step-de{color:#168447!important}
+#screen2 .full-mini-auto{background:#168447!important;color:#fff!important}
+#screen2 .full-mini-auto[aria-pressed="true"]{background:#116b38!important;color:#fff!important}
+#screen2 .full-line-play{background:#e0f4e8!important;color:#147a41!important;border-color:#90cdaa!important}
+#screen2 .full-line-play[aria-pressed="true"]{background:#168447!important;color:#fff!important;border-color:#168447!important}
+#screen2 .full-line.audio-active{background:#ecf9ef!important}
+
+/* Strong yellow for all nine description step headings */
+#screen2 .full-step-title{color:#E3AC00!important;font-weight:950!important;text-shadow:0 0 0.3px #B87C00;}
+
+/* Compact font size + / - beside Prevod. */
+#screen2 .full-right-tools{display:flex;align-items:center;gap:3px;flex:none;min-width:0}
+#screen2 .full-list-toolbar{justify-content:space-between;gap:3px}
+#screen2 .full-mini-auto{font-size:10px}
+#screen2 .full-mini-translate{padding:4px 6px}
+#screen2 .full-font-btn{border:1px solid #b9cce3;border-radius:6px;background:#e9f2ff;color:#1d568c;font:900 15px system-ui,Arial;min-width:26px;height:27px;line-height:23px;padding:0 4px;cursor:pointer}
+#screen2 .full-font-btn:active{background:#cce4ff}
+#screen2 .full-structured-description{--font-scale:1;overflow-x:hidden!important}
+#screen2 .full-step-title{font-size:calc(12.5px * var(--font-scale))!important}
+#screen2 .full-step-de{font-size:calc(15px * var(--font-scale))!important}
+#screen2 .full-step-sr{font-size:calc(12.3px * var(--font-scale))!important}
+@media(max-width:360px){#screen2 .full-font-btn{min-width:23px;height:25px;font-size:14px}#screen2 .full-mini-auto,#screen2 .full-mini-translate{font-size:9px!important;padding:3px 4px}}
+
+/* Elegant headings and slightly richer green sentence color */
+#screen2 .full-step-title{
+  color:#D7A000!important;
+  font-family:"Trebuchet MS","Segoe UI",Arial,sans-serif!important;
+  font-weight:500!important;
+  letter-spacing:.12px;
+  text-shadow:none!important;
+}
+#screen2 .full-step-de{
+  color:#087E3B!important;
+  font-family:"Segoe UI",system-ui,Arial,sans-serif!important;
+  font-weight:650!important;
+  letter-spacing:.02px;
+}
+
+/* Wider and lower full-description photo, reaching the bottom separator. */
+#screen2 .full-description-panel{padding:3px 2px!important;gap:2px!important}
+#screen2 .full-photo-line{
+  display:flex!important;
+  align-items:flex-end!important;
+  justify-content:center!important;
+  width:100%!important;
+  height:clamp(130px,27dvh,245px)!important;
+  min-height:0!important;
+  flex:none!important;
+  margin:0!important;
+  padding:0 0 1px!important;
+  border-bottom:1px solid #d7e3f0;
+  overflow:hidden;
+}
+#screen2 .full-photo-line .picture{
+  display:block!important;
+  width:100%!important;
+  max-width:100%!important;
+  height:100%!important;
+  max-height:none!important;
+  object-fit:contain!important;
+  object-position:center bottom!important;
+  margin:0!important;
+  border-radius:6px 6px 0 0!important;
+}
+@media(max-height:650px){
+ #screen2 .full-photo-line{height:clamp(100px,22dvh,160px)!important}
+ #screen2 .full-photo-line .picture{max-height:none!important}
+}
+
+/* Sentence-by-sentence faithful Serbian beneath each matching German sentence. */
+#screen2 .full-line-copy{flex:1;min-width:0;display:flex;flex-direction:column}
+#screen2 .full-line-copy .full-step-sr{margin:1px 0 2px;color:#d02c40!important}
+#screen2 .full-legacy-translation{margin:2px 0 4px;padding-top:2px;border-top:1px dotted #e1bfc4}
+
+.full-step-empty{padding:4px 2px;font:italic 500 10px/1.3 system-ui,Arial;color:#7187a1}
+/* DE-MAX mobile v43 — slightly smaller picture and compact Auto/Prevod controls;
+   reclaimed photo height is available to the description, without cropping image. */
+#screen2 .full-photo-line{
+  height:clamp(105px,22dvh,190px)!important;
+}
+#screen2 .full-photo-line .picture{
+  height:100%!important;
+  width:100%!important;
+  max-height:100%!important;
+  object-fit:contain!important;
+}
+#screen2 .full-list-toolbar{gap:3px!important;min-height:23px!important}
+#screen2 .full-mini-auto,
+#screen2 .full-mini-translate{
+  min-height:22px!important;
+  height:22px!important;
+  padding:2px 5px!important;
+  font-size:9px!important;
+  line-height:17px!important;
+  border-radius:5px!important;
+}
+#screen2 .full-right-tools{gap:3px!important}
+#screen2 .full-font-btn{
+  min-width:23px!important;
+  height:23px!important;
+  line-height:21px!important;
+  font-size:13px!important;
+  padding:0 3px!important;
+}
+@media(max-height:650px){
+ #screen2 .full-photo-line{height:clamp(86px,18dvh,135px)!important}
+ #screen2 .full-mini-auto,#screen2 .full-mini-translate{
+  min-height:21px!important;height:21px!important;font-size:8.5px!important;padding:2px 4px!important
+ }
+}
+
+/* DE-MAX mobile dialogue page: framed illustrated speaker portraits and compact playback. */
+#screen3 .dialogue-top{padding:6px 8px 4px;margin:0 0 4px}
+#screen3 .dialogue-top .title{font-size:14px;margin:0 0 3px;text-align:center}
+#screen3 .dialogue-top .picture.small{max-height:12dvh;margin:2px auto 4px;object-fit:contain}
+#screen3 .dialogue-top .pill{font-size:11px;padding:4px 6px;margin:3px 0}
+#screen3 .dialogue-top #dialogueStatus{margin:3px 0 0;font-size:10px;min-height:0}
+#screen3 .dialogue-toolbar{display:flex;gap:3px;align-items:center;justify-content:center;flex-wrap:nowrap;min-width:0}
+#screen3 .dialogue-toolbar button{border:0;border-radius:6px;padding:2px 4px;min-height:25px;font:800 clamp(9px,2.4vw,11px)/1.25 system-ui,Arial;white-space:nowrap;cursor:pointer}
+#screen3 .dialogue-auto{flex:1 1 auto;background:#168447;color:#fff}
+#screen3 .dialogue-pause{flex:1 1 auto;background:#e9effa;color:#215e9b}
+#screen3 .dialogue-stop{flex:1 1 auto;background:#d83049;color:#fff}
+#screen3 .dialogue-translate{flex:1 1 auto;background:#efb334;color:#3b280a}
+#screen3 .dialogue-translate[aria-pressed="true"]{background:#e2a42c;color:#33210b}
+#screen3 .dialogue-size{flex:0 0 24px;max-width:24px;background:#e4effd;color:#225f9b;border:1px solid #b9d2f0!important;font-size:16px!important}
+#screen3 #dialogue{padding:0 6px 7px;--dialogue-font-scale:1}
+#screen3 .dialogue-card{display:flex;align-items:center;gap:7px;padding:6px 7px;margin:5px 0;border:1px solid #d6e4f4;border-left:3px solid #3c83c6;background:#fafdff;border-radius:9px;min-width:0}
+#screen3 .dialogue-card:nth-child(even){border-left-color:#e6a948;background:#fffdf9}
+#screen3 .dialogue-card.playing{border-color:#e23654;background:#fff2f4}
+#screen3 .dialogue-portrait{flex:0 0 46px;width:46px;height:52px;border:2px solid #a1c3e5;border-radius:10px;background:#eaf2fc;overflow:hidden;display:flex;align-items:center;justify-content:center}
+#screen3 .dialogue-card:nth-child(even) .dialogue-portrait{border-color:#e9bf78;background:#fff0dc}
+#screen3 .dialogue-portrait svg{display:block;width:100%;height:100%;object-fit:contain}
+#screen3 .dialogue-copy{flex:1 1 auto;min-width:0;overflow-wrap:anywhere}
+#screen3 .dialogue-speaker{font:800 calc(9px * var(--dialogue-font-scale)) system-ui,Arial;color:#a36820;margin-bottom:2px}
+#screen3 .dialogue-copy .de{color:#168447;font:650 calc(12px * var(--dialogue-font-scale))/1.27 system-ui,Arial}
+#screen3 .dialogue-copy .sr{color:#d03749;font:500 calc(10.5px * var(--dialogue-font-scale))/1.25 system-ui,Arial;margin-top:2px}
+#screen3 #dialogue.hide-translation .sr{display:none!important}
+#screen3 .dialogue-play{flex:0 0 27px;width:27px;height:29px;border:1px solid #a6d1b8;border-radius:7px;background:#e1f5e9;color:#168447;font:900 14px system-ui,Arial;cursor:pointer}
+#screen3 .dialogue-play[aria-pressed="true"]{background:#168447;color:white}
+@media(max-width:350px){#screen3 .dialogue-card{gap:4px;padding:5px 4px}#screen3 .dialogue-portrait{width:38px;flex-basis:38px;height:45px}#screen3 .dialogue-toolbar button{padding:2px 3px;font-size:9px}#screen3 .dialogue-size{flex-basis:21px;max-width:21px}}
+
+/* DE-MAX mobile v46: more space for all picture-description sentences. */
+#screen2 .full-description-panel{gap:1px!important}
+#screen2 .full-photo-line{
+  height:clamp(78px,17dvh,148px)!important;
+  padding:0!important;
+}
+#screen2 .full-photo-line .picture{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  max-height:100%!important;
+  object-fit:contain!important;
+}
+#screen2 .full-list-toolbar{gap:2px!important;min-height:20px!important;margin:0!important}
+#screen2 .full-mini-auto,#screen2 .full-mini-translate{
+  min-height:19px!important;
+  height:19px!important;
+  padding:1px 4px!important;
+  border-radius:4px!important;
+  font-size:8px!important;
+  line-height:16px!important;
+}
+#screen2 .full-right-tools{gap:2px!important}
+#screen2 .full-font-btn{
+  min-width:20px!important;
+  height:20px!important;
+  line-height:18px!important;
+  font-size:12px!important;
+  padding:0 2px!important;
+  border-radius:4px!important;
+}
+@media(max-height:650px){
+ #screen2 .full-photo-line{height:clamp(64px,13dvh,104px)!important}
+ #screen2 .full-mini-auto,#screen2 .full-mini-translate{height:18px!important;min-height:18px!important;font-size:7.5px!important;padding:1px 3px!important}
+ #screen2 .full-font-btn{height:19px!important;min-width:19px!important;line-height:17px!important}
+}
+
+/* V47 mobile: the picture is at LEFT and description uses RIGHT full height. */
+#screen2 .full-description-scroll{display:flex!important;flex:1;min-height:0;padding:3px 4px!important;overflow:hidden!important}
+#screen2 .full-description-panel{display:flex!important;flex:1;flex-direction:column;min-height:0;min-width:0;margin:0!important;padding:4px!important;gap:3px!important;overflow:hidden!important}
+#screen2 .full-list-toolbar{flex:0 0 auto;min-height:22px!important}
+#screen2 .full-description-body{display:grid;grid-template-columns:minmax(82px,27%) minmax(0,1fr);gap:5px;flex:1 1 auto;min-width:0;min-height:0;overflow:hidden}
+#screen2 .full-description-body .full-photo-line{display:flex!important;align-items:flex-start!important;justify-content:center!important;width:100%!important;min-width:0!important;max-width:100%!important;height:100%!important;min-height:0!important;padding:4px 2px!important;margin:0!important;border-right:1px solid #d8e4f1!important;border-bottom:none!important;background:#f3f8ff;border-radius:7px;overflow:hidden!important}
+#screen2 .full-description-body .full-photo-line .picture{display:block!important;width:100%!important;height:auto!important;max-height:min(55dvh,340px)!important;max-width:100%!important;object-fit:contain!important;object-position:top center!important;margin:0!important;border-radius:5px!important}
+#screen2 .full-description-body #fullDescription{display:block!important;flex:1 1 auto;min-height:0!important;min-width:0!important;height:100%!important;overflow-y:auto;overflow-x:hidden;padding:5px!important;margin:0!important;overscroll-behavior-y:contain}
+#screen2 #fullStatus{display:none!important}
+#screen2 .full-step-title{font-size:clamp(10px,2.45vw,13px)!important;line-height:1.18!important}
+#screen2 .full-step-de{overflow-wrap:anywhere}
+@media(max-width:360px){#screen2 .full-description-body{grid-template-columns:minmax(68px,24%) minmax(0,1fr);gap:3px}#screen2 .full-description-body #fullDescription{padding:3px!important}}
+@media(orientation:landscape) and (max-height:500px){#screen2 .full-description-body{grid-template-columns:minmax(90px,23%) minmax(0,1fr)}#screen2 .full-description-body .full-photo-line .picture{max-height:65dvh!important}}
+/* V47 dialogue: no portraits, no vertical scrolling; pages show full A/B turns. */
+#screen3 .scroll#dialogueScroll{display:flex!important;flex-direction:column!important;flex:1 1 auto;min-height:0!important;padding:4px 6px!important;overflow:hidden!important;gap:3px}
+#screen3 .dialogue-top{flex:0 0 auto;margin:0!important;padding:4px 5px 3px!important;border-radius:8px}
+#screen3 .dialogue-top .title{font-size:12px!important;line-height:1.15;margin:0 0 2px!important}
+#screen3 .dialogue-top #photo2{display:none!important}
+#screen3 .dialogue-top .pill{font-size:9px!important;padding:3px 5px!important;margin:2px 0!important;min-height:0}
+#screen3 .dialogue-toolbar button{min-height:21px!important;font-size:9px!important;padding:2px 3px!important}
+#screen3 .dialogue-top #dialogueStatus{font-size:9px;margin:2px 0 0!important;line-height:1.1}
+#screen3 #dialogue{flex:1 1 auto!important;min-height:0!important;min-width:0;overflow:hidden!important;padding:0 2px!important;display:flex;flex-direction:column;gap:1px}
+#screen3 .dialogue-card{display:grid!important;grid-template-columns:24px minmax(0,1fr) 26px;align-items:center;gap:4px;flex:0 0 auto;margin:1px 0!important;padding:3px 4px!important;min-height:30px;border-radius:6px!important}
+#screen3 .dialogue-card[hidden]{display:none!important}
+#screen3 .dialogue-role{display:grid;place-items:center;border:1.5px solid #a1c6ed;border-radius:6px;width:23px;min-height:25px;background:#e8f3ff;color:#175c9c;font:900 13px/1 system-ui,Arial}
+#screen3 .dialogue-role.role-b{background:#fff0d9;color:#946010;border-color:#f1c781}
+#screen3 .dialogue-copy{min-width:0}
+#screen3 .dialogue-copy .de{font-size:calc(11.5px * var(--dialogue-font-scale))!important;line-height:1.21!important;overflow-wrap:anywhere}
+#screen3 .dialogue-copy .sr{font-size:calc(9.7px * var(--dialogue-font-scale))!important;line-height:1.18!important;margin-top:2px!important}
+#screen3 .dialogue-play{width:25px!important;height:25px!important;min-height:25px!important;font-size:12px!important}
+#screen3 .dialogue-page-nav{flex:0 0 25px;height:25px;display:flex;gap:7px;align-items:center;justify-content:center;background:#f6faff;border:1px solid #dce8f5;border-radius:7px}
+#screen3 .dialogue-page-nav button{min-height:22px;min-width:44px;border:1px solid #b1ceeb;border-radius:5px;background:#e5f1ff;color:#175a98;font-weight:850;cursor:pointer}
+#screen3 .dialogue-page-nav button:disabled{opacity:.25;cursor:default}
+#screen3 #dialoguePageLabel{font:750 10px system-ui,Arial;color:#396487;font-variant-numeric:tabular-nums}
+@media(max-height:650px){#screen3 .dialogue-card{min-height:25px;padding:2px 3px!important}#screen3 .dialogue-role{min-height:22px}#screen3 .dialogue-play{height:22px!important;min-height:22px!important}}
+
+/* DE-MAX A1 v48: V46 photo-above-text layout; exact 1–6 / 7–9 visible groups. */
+#screen2 .scroll.full-description-scroll{display:flex!important;flex:1 1 auto!important;min-height:0!important;overflow:hidden!important;padding:3px 5px!important}
+#screen2 .full-description-panel{display:flex!important;flex-direction:column!important;flex:1 1 auto!important;min-height:0!important;padding:4px!important;margin:0!important;gap:2px!important;overflow:hidden!important}
+#screen2 .full-photo-line{display:flex!important;justify-content:center!important;align-items:center!important;flex:0 0 clamp(66px,12.5dvh,116px)!important;height:clamp(66px,12.5dvh,116px)!important;width:100%!important;min-height:0!important;max-width:100%!important;background:#f5f9ff;border:0!important;border-bottom:1px solid #e1eaf6!important;border-radius:7px;padding:2px!important;overflow:hidden!important}
+#screen2 .full-photo-line .picture{display:block!important;max-height:100%!important;height:100%!important;width:auto!important;max-width:100%!important;object-fit:contain!important;object-position:center!important;margin:0!important}
+#screen2 .full-list-toolbar{min-height:21px!important;flex:0 0 auto;gap:3px!important;margin:0!important}
+#screen2 #fullDescription{display:block!important;flex:1 1 auto!important;min-height:0!important;height:auto!important;width:100%!important;overflow-x:hidden!important;overflow-y:hidden;max-width:100%!important;padding:4px 7px!important;margin:0!important;overscroll-behavior:contain}
+#screen2 #fullDescription .full-step[hidden]{display:none!important}
+#screen2 #fullDescription .full-step-title{font-size:clamp(11px,2.7vw,14px)!important;line-height:1.18!important}
+#screen2 #fullDescription .full-step-lines{gap:1px!important}
+#screen2 .desc-page-nav,#screen3 .dialogue-page-nav{display:flex!important;align-items:center;justify-content:space-between!important;gap:8px;flex:0 0 30px!important;height:30px!important;background:#fff7f7;border:1px solid #f5d0d5;border-radius:8px;padding:2px 6px;margin:2px 0!important;visibility:visible!important}
+#screen2 .desc-page-nav button,#screen3 .dialogue-page-nav button{flex:0 0 54px;min-height:26px;min-width:54px;border:0!important;border-radius:6px!important;background:#d82543!important;color:#fff!important;font:900 18px/1 system-ui,Arial;cursor:pointer;box-shadow:0 1px 3px #a1243644}
+#screen2 .desc-page-nav button:disabled,#screen3 .dialogue-page-nav button:disabled{opacity:.28!important;cursor:default;box-shadow:none}
+#screen2 #descPageLabel,#screen3 #dialoguePageLabel{font:800 11px/1.2 system-ui,Arial!important;color:#9d2435!important;white-space:nowrap;text-align:center}
+#screen2 #fullStatus{display:none!important}
+#screen3 .dialogue-page-nav{margin:1px 0!important}
+#screen3 .dialogue-card[hidden]{display:none!important}
+@media(max-height:660px){#screen2 .full-photo-line{flex-basis:clamp(52px,10dvh,78px)!important;height:clamp(52px,10dvh,78px)!important}#screen2 .desc-page-nav,#screen3 .dialogue-page-nav{height:27px!important;flex-basis:27px!important}}
+
+/* DE-MAX A1 V49 — more room by removing the top 1/2/3 navigation. 
+   Progress now fills in GOLD at the very bottom: 0 -> 33 -> 67 -> 100. */
+.journey-progress{
+ flex:0 0 8px;height:8px;min-height:8px;width:100%;background:#f0e8cb;
+ border-top:1px solid #e9dbad;overflow:hidden;position:relative;
+}
+.journey-progress-fill{
+ display:block;width:0;height:100%;border-radius:0 8px 8px 0;
+ background:linear-gradient(90deg,#ffe05d 0%,#f8c42b 68%,#efb70d 100%);
+ box-shadow:0 0 7px #e8a00060;transition:width .32s ease;
+}
+#screen3 .dialogue-top{padding:4px 6px 3px!important}
+#screen3 .dialogue-head-row{
+ display:grid;grid-template-columns:minmax(76px,29%) minmax(0,1fr);
+ align-items:center;gap:7px;min-width:0;margin:0 0 4px;
+}
+#screen3 .dialogue-top .dialogue-head-row #photo2{
+ display:block!important;position:static!important;
+ width:100%!important;max-width:100%!important;
+ height:clamp(58px,10dvh,88px)!important;max-height:88px!important;
+ min-height:0!important;object-fit:contain!important;
+ object-position:center!important;background:#f4f8ff;
+ border-radius:8px;border:1px solid #d9e7f6;margin:0!important;padding:2px;
+}
+#screen3 .dialogue-head-copy{min-width:0;display:flex;flex-direction:column;gap:3px}
+#screen3 .dialogue-head-copy .title{
+ font-size:clamp(11px,2.6vw,14px)!important;
+ line-height:1.18!important;text-align:left!important;margin:0!important;
+}
+#screen3 .dialogue-head-copy .pill{
+ text-align:left!important;min-height:0!important;padding:3px 5px!important;
+ margin:0!important;font-size:10px!important;overflow-wrap:anywhere;
+}
+#screen3 #dialogue{min-height:0!important}
+@media(max-height:640px){
+ #screen3 .dialogue-top .dialogue-head-row #photo2{
+  height:clamp(46px,8.5dvh,65px)!important;max-height:65px!important;
+ }
+ #screen3 .dialogue-head-row{grid-template-columns:minmax(65px,25%) minmax(0,1fr);gap:5px}
+ #screen3 .dialogue-top #dialogueStatus{display:none}
+}
+@media(prefers-reduced-motion:reduce){.journey-progress-fill{transition:none}}
+
+/* DE-MAX v50: Step 2 is a full-text mail-style picture description, 
+   Step 3 preserves the original detailed steps 1–9 with audio and translation. */
+#screen1 .summary-scroll{
+ display:flex;flex:1 1 auto;min-height:0;overflow:hidden!important;padding:4px 6px!important;
+}
+#screen1 .summary-panel{
+ display:flex;flex-direction:column;flex:1 1 auto;min-height:0;overflow:hidden!important;
+ margin:0!important;padding:6px!important;gap:4px!important;border-radius:10px;
+}
+#screen1 .summary-image-wrap{
+ flex:0 0 clamp(75px,17dvh,165px);height:clamp(75px,17dvh,165px);
+ display:flex;justify-content:center;align-items:center;min-height:0;
+ background:#f3f8ff;border:1px solid #d7e5f5;border-radius:9px;padding:2px;
+}
+#screen1 .summary-image-wrap .picture{
+ display:block!important;width:auto!important;height:100%!important;
+ max-width:100%!important;max-height:100%!important;object-fit:contain!important;
+ margin:0!important;object-position:center;
+}
+#screen1 .summary-title{text-align:center;font:850 13px/1.1 system-ui,Arial;color:#b88713;margin:0}
+#screen1 .summary-controls{display:flex;flex:0 0 auto;align-items:center;gap:3px;min-width:0;width:100%}
+#screen1 .summary-controls button{
+ min-height:25px;padding:3px 4px;border:0;border-radius:5px;white-space:nowrap;
+ font:800 clamp(8px,2.1vw,11px)/1.15 system-ui,Arial;cursor:pointer;
+}
+#screen1 .summary-auto{background:#168447;color:#fff;flex:1 1 auto}
+#screen1 .summary-pause{background:#e7effb;color:#225f9e;flex:0 0 30px}
+#screen1 .summary-stop{background:#cf2c47;color:#fff;flex:1 1 auto}
+#screen1 .summary-translate{background:#f3ba36;color:#35260e;flex:1 1 auto}
+#screen1 .summary-size{background:#e7effd;border:1px solid #b2ccea!important;color:#1e5b9c;font-size:15px!important;flex:0 0 24px}
+#screen1 .summary-label{
+ font:800 10px/1.2 system-ui,Arial;color:#1f568b;flex:0 0 auto;
+}
+#screen1 .summary-editor{
+ display:block;width:100%;flex:1 1 auto;min-height:0;resize:none;overflow-y:auto;
+ border:1px solid #c6d7ec;border-radius:9px;padding:9px 10px;background:#fbfdff;
+ font:600 13px/1.52 system-ui,Arial;color:#117740;
+ outline-color:#4f96d5;overscroll-behavior:contain;
+}
+#screen1 .summary-serbian{
+ max-height:36%;flex:0 1 auto;min-height:40px;overflow-y:auto;
+ border:1px solid #f1d4da;border-radius:8px;padding:7px 8px;background:#fff7f8;
+ color:#b42d46;font:500 11px/1.43 system-ui,Arial;white-space:pre-wrap;
+ overscroll-behavior:contain;
+}
+#screen1 .summary-serbian[hidden]{display:none!important}
+#screen1 .summary-status{
+ font:500 10px/1.25 system-ui,Arial;min-height:0;flex:0 0 auto;
+ color:#5e7997;text-align:center;margin:0;padding:0;
+}
+@media(max-height:640px){
+ #screen1 .summary-image-wrap{flex-basis:clamp(57px,12dvh,95px);height:clamp(57px,12dvh,95px)}
+ #screen1 .summary-controls button{min-height:22px;padding:2px 3px}
+ #screen1 .summary-title{font-size:12px}
+}
+/* Highlight actual fourth screen after the old dialogue selectors were moved. */
+#screen3 .dialogue-head-row #photo3{
+ display:block!important;width:100%!important;max-width:100%!important;
+ height:clamp(58px,10dvh,88px)!important;max-height:88px!important;
+ object-fit:contain!important;margin:0!important;
+ border:1px solid #d9e7f6;border-radius:8px;background:#f4f8ff;padding:2px;
+}
+@media(max-height:640px){#screen3 .dialogue-head-row #photo3{height:clamp(46px,8.5dvh,65px)!important;max-height:65px!important}}
+
+#screen2 .detail-title{flex:0 0 auto;margin:0;text-align:center;color:#B18B20;font:800 11px/1.1 system-ui,Arial;padding:0}
+</style></head><body><main class="app">
+<header class="header"><h1>Opis slike</h1></header>
+<section class="screen active" id="screen0"><div class="scroll"><div class="panel"><h2 class="title" id="uploadHeading">Ubaci sliku za opis</h2><label class="upload"><span class="upload-icon">📷</span><span class="upload-title">Izaberi fotografiju</span><span class="upload-sub">Dodirni ovde za galeriju ili kameru</span><input id="file" type="file" accept="image/*"></label><div class="photo-reveal" id="photoReveal"><span class="photo-glow" aria-hidden="true"></span><img class="picture" id="photo0" alt="Izabrana slika"><span class="photo-success" aria-hidden="true">✓</span><span class="sparkle sp1" aria-hidden="true">✦</span><span class="sparkle sp2" aria-hidden="true">✧</span><span class="sparkle sp3" aria-hidden="true">✦</span></div><p class="status" id="status">Prvo izaberi sliku.</p></div><div class="demax-a1-brand" aria-label="De-Max A1"><span>De-Max</span> <strong>A1</strong></div><input id="endpoint" type="hidden" value="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev"></div><div class="footer upload-footer"><button class="action green" id="analyze" disabled>Automatski opiši sliku</button></div></section>
+
+<section class="screen" id="screen1"><div class="scroll summary-scroll"><div class="panel summary-panel">
+ <div class="summary-image-wrap"><img class="picture small" id="photo1" alt="Fotografija koju učenik opisuje"></div>
+ <h2 class="summary-title">2. Moj opis slike</h2>
+ <div class="summary-controls" role="group" aria-label="Slušanje, prevod i veličina celog opisa">
+  <button type="button" id="summaryAuto" class="summary-auto" aria-pressed="false" title="Slušaj kompletan opis">▶ Auto</button>
+  <button type="button" id="summaryPause" class="summary-pause" title="Pauziraj ili nastavi slušanje">⏸</button>
+  <button type="button" id="summaryStop" class="summary-stop" title="Zaustavi slušanje">■ Stop</button>
+  <button type="button" id="summaryTranslate" class="summary-translate" aria-pressed="false">Prevod</button>
+  <button type="button" id="summaryMinus" class="summary-size" title="Smanji tekst" aria-label="Smanji veličinu teksta">−</button>
+  <button type="button" id="summaryPlus" class="summary-size" title="Uvećaj tekst" aria-label="Uvećaj veličinu teksta">+</button>
+ </div>
+ <label class="summary-label" for="summaryGerman">Moj kompletan opis na nemačkom</label>
+ <textarea id="summaryGerman" class="summary-editor" lang="de" spellcheck="false" aria-label="Kompletan opis slike na nemačkom koji možeš uređivati"></textarea>
+ <div id="summarySerbian" class="summary-serbian" lang="sr" hidden aria-label="Srpski prevod kompletnog opisa"></div>
+ <p id="summaryStatus" class="summary-status" role="status" aria-live="polite">▶ Auto čita ceo tekst na nemačkom.</p>
+</div></div><div class="footer"><button class="action pale" type="button" id="summaryBack">❮ Slika</button><button class="action green" type="button" id="summaryDetail">Detaljan opis ❯</button></div></section>
+<section class="screen" id="screen2"><div class="scroll full-description-scroll"><div class="panel full-description-panel">
+ <h2 class="detail-title">3. Detaljan opis slike</h2><div class="full-photo-line"><img class="picture small" id="photo2" alt="Slika za detaljan opis"></div>
+ <div class="full-list-toolbar"><button class="full-mini-auto" id="autoFull" type="button" aria-label="Automatsko slušanje trenutne stranice opisa" aria-pressed="false">▶ Auto</button><div class="full-right-tools"><button class="full-mini-translate" id="translateFull" type="button" aria-pressed="false">Prevod</button><button class="full-font-btn" id="fontPlus" type="button" aria-label="Uvećaj tekst" title="Uvećaj tekst">+</button><button class="full-font-btn" id="fontMinus" type="button" aria-label="Smanji tekst" title="Smanji tekst">−</button></div></div>
+ <div id="fullDescription" class="full-description-text full-structured-description" role="region" aria-label="Moj opis slike na nemačkom jeziku: koraci 1 do 6 ili 7 do 9"></div>
+ <nav class="desc-page-nav" aria-label="Listanje koraka opisa"><button type="button" id="descPrev" aria-label="Prethodna stranica opisa">❮</button><span id="descPageLabel" aria-live="polite">1–6 · Strana 1/2</span><button type="button" id="descNext" aria-label="Sledeća stranica opisa">❯</button></nav>
+ <p class="muted" id="fullStatus">Kompletan tekst na nemačkom.</p></div></div><div class="footer"><button class="action pale" id="backFromFull">❮ Moj opis</button><button class="action green" id="goDialogue">Dijalog ❯</button></div></section>
+<section class="screen" id="screen3"><div class="scroll" id="dialogueScroll"><div class="panel dialogue-top"><div class="dialogue-head-row"><img class="picture small" id="photo3" alt="Fotografija za vežbu dijaloga"><div class="dialogue-head-copy"><h2 class="title">4. Dijalog A i B · Učenici</h2><div id="scene" class="pill">Situacija prema slici</div></div></div><div class="dialogue-toolbar" role="group" aria-label="Slušanje, prevod i veličina teksta"><button class="dialogue-auto" id="readDialogue" type="button" aria-pressed="false">▶ Auto</button><button class="dialogue-pause" id="pauseDialogue" type="button">⏸ Pauza</button><button class="dialogue-stop" id="stopDialogue" type="button">■ Stop</button><button class="dialogue-translate" id="translationDialogue" type="button" aria-pressed="false">Prevod</button><button class="dialogue-size" id="dialogueFontMinus" type="button" aria-label="Smanji tekst dijaloga">−</button><button class="dialogue-size" id="dialogueFontPlus" type="button" aria-label="Uvećaj tekst dijaloga">+</button></div><p class="muted" id="dialogueStatus" style="text-align:center">Dodirni ▶ uz rečenicu ili uključi Auto.</p></div><div id="dialogue" class="hide-translation" aria-label="Dijalog učenika A i B bez skrolovanja"></div><div class="dialogue-page-nav" id="dialoguePager"><button type="button" id="dialoguePrev" aria-label="Prethodne replike">❮</button><span id="dialoguePageLabel" aria-live="polite"></span><button type="button" id="dialogueNext" aria-label="Sledeće replike">❯</button></div></div><div class="footer"><button class="action pale" id="backToDescription">❮ Detaljan opis</button><button class="action green" id="restart">Nova slika ↻</button></div></section>
+<div class="journey-progress" id="journeyProgress" role="progressbar" aria-label="Napredak: slika, moj opis, detaljan opis i dijalog" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="journey-progress-fill" id="journeyFill"></div></div>
+<div class="powered">Powered By De-Max</div></main>
+<script src="../DE_MAX_A1_DIJALOZI_40_DATA_01.js?v=20261018"></script>
+<script src="../DE_MAX_A1_DIJALOZI_40_DATA_02.js?v=recepcija-39-v2"></script>
+<script src="../DE_MAX_A1_DIJALOZI_DODATNE_01.js?v=20261018b"></script>
+<script src="../DE_MAX_A1_DIJALOZI_DODATNE_02.js?v=recepcija-39-v2"></script>
+<script>
+"use strict";
+const DEFAULT_WORKER_URL="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev";
+const $=id=>document.getElementById(id);
+const labels=["Opis osoba na slici","Razgovor osoba","Mesto osoba na slici","Izgled osoba na slici","Odeća osoba na slici","Kosa osoba na slici","Godine osoba na slici","Detalji na slici","Završni deo","Moj opis slike"];
+const scenes=[...(window.DEMAX_SCENES||[]),...(window.DEMAX_NEW_SCENES||[])].sort((a,b)=>a.n-b.n);
+let fullFontScale=1,fullSteps=[],fullTranslated=false,fullAudioIndex=-1,fullAudioAuto=false,fullAudioLines=[],summaryFontScale=1,summaryEdited=false,dialogueFontScale=1,dialogueAuto=false,dialoguePages=[],dialoguePageIndex=0,descriptionPage=0;let imageData="",bank=[],descRows=[],dialogRows=[],currentPage=0,voiceToken=0,paused=false,readingMode="",readingIndex=0;
+const synth=window.speechSynthesis;
+$("endpoint").value=DEFAULT_WORKER_URL;
+fetch("./shared.js").then(r=>r.text()).then(t=>{let p=t.indexOf("const BANK=");if(p<0)return;let a=p+11,b=t.indexOf("];",a);if(b<0)return;let data=JSON.parse(t.slice(a,b+1));if(Array.isArray(data))bank=data.filter(x=>x?.de&&x?.sr)}).catch(()=>{});
+function setStatus(t,bad=false){$("status").textContent=t;$("status").className="status"+(bad?" error":"")}
+function updateJourneyProgress(){
+ const amount=currentPage===0?0:currentPage===1?33:currentPage===2?(descriptionPage===0?66:82):100;
+ $("journeyFill").style.width=amount+"%";
+ $("journeyProgress").setAttribute("aria-valuenow",String(amount));
+ $("journeyProgress").setAttribute("aria-valuetext",currentPage===3?"4. Dijalog":currentPage===2?(descriptionPage===0?"3. Detaljan opis: koraci 1 do 6":"3. Detaljan opis: koraci 7 do 9"):currentPage===1?"2. Moj opis slike":"1. Slika");
+}
+function view(n){
+ stopSpeech();currentPage=n;
+ for(let i=0;i<4;i++)$("screen"+i).classList.toggle("active",i===n);
+ updateJourneyProgress();
+ if(n===3)requestAnimationFrame(()=>paginateDialogue());
+ if(n===2)requestAnimationFrame(fitFullDescription);
+}
+function add(el,cls,txt){let d=document.createElement("div");d.className=cls;d.textContent=txt;el.append(d);return d}
+function norm(s){return String(s||"").toLocaleLowerCase("de").replace(/[^a-zäöüß0-9 ]/g,"").replace(/\s+/g," ").trim()}
+function sampleBank(){
+ // Original DE-MAX opis slike: send every sentence and its category/situation metadata.
+ return bank.map(x=>({cat:x.cat,de:x.de,sr:x.sr,personExample:!!x.personExample,
+  personGroup:x.personGroup||null,sceneDetailIds:x.sceneDetailIds||[],
+  closingSceneIds:x.closingSceneIds||[],closingWeatherGroups:x.closingWeatherGroups||[],
+  closingIndoor:!!x.closingIndoor,closingEnding:!!x.closingEnding}));
+}
+
+function pageRows(mode){return mode==="desc"?descRows:mode==="dialog"?dialogRows:[]}
+function cleanHighlight(){document.querySelectorAll(".sentence.playing").forEach(el=>el.classList.remove("playing"))}
+function stopSpeech(){voiceToken++;paused=false;readingMode="";readingIndex=0;fullAudioIndex=-1;fullAudioAuto=false;dialogueAuto=false;if(synth)synth.cancel();cleanHighlight();updateFullAudioUI();updateDialogueAudioUI();updateSummaryAudioUI()}
+function playRows(mode,index=0,auto=true){
+ if(!synth){alert("Ovaj pregledač ne podržava izgovor.");return}
+ stopSpeech();readingMode=mode;readingIndex=index;dialogueAuto=mode==="dialog"&&auto;
+ const token=voiceToken,rows=pageRows(mode);
+ function next(){
+  if(token!==voiceToken||paused)return;
+  if(readingIndex>=rows.length||(!auto&&readingIndex>index)){
+   cleanHighlight();readingMode="";dialogueAuto=false;updateDialogueAudioUI();return
+  }
+  const r=rows[readingIndex];if(mode==="dialog")revealDialogueIndex(readingIndex);cleanHighlight();
+  if(r.element)r.element.classList.add("playing");
+  updateDialogueAudioUI();
+  let u=new SpeechSynthesisUtterance(r.de);u.lang="de-DE";u.rate=.83;u.pitch=1;
+  u.onend=()=>{if(token!==voiceToken)return;readingIndex++;next()};
+  u.onerror=e=>{if(token!==voiceToken)return;if(e.error==="canceled"||e.error==="interrupted")return;readingIndex++;next()};
+  synth.speak(u)
+ }
+ next()
+}
+
+function showDialoguePage(page){
+ if(!dialoguePages.length)return;
+ dialoguePageIndex=Math.max(0,Math.min(page,dialoguePages.length-1));
+ const visible=new Set(dialoguePages[dialoguePageIndex]);
+ for(let i=0;i<dialogRows.length;i++)dialogRows[i].element.hidden=!visible.has(i);
+ $("dialoguePager").style.visibility=dialoguePages.length>1?"visible":"hidden";
+ $("dialoguePrev").disabled=dialoguePageIndex===0;
+ $("dialogueNext").disabled=dialoguePageIndex>=dialoguePages.length-1;
+ const arr=dialoguePages[dialoguePageIndex];
+ $("dialoguePageLabel").textContent="Replike "+(arr[0]+1)+"–"+(arr[arr.length-1]+1)+" / "+dialogRows.length;
+}
+function revealDialogueIndex(index){
+ const page=dialoguePages.findIndex(arr=>arr.includes(index));
+ if(page>=0&&page!==dialoguePageIndex)showDialoguePage(page);
+}
+function paginateDialogue(anchor=0){
+ if(currentPage!==3)return;
+ const box=$("dialogue");
+ for(const row of dialogRows)row.element.hidden=false;
+ const available=Math.max(65,box.clientHeight-3);
+ const sizes=dialogRows.map(r=>{
+  const style=getComputedStyle(r.element);
+  return r.element.getBoundingClientRect().height+
+   parseFloat(style.marginTop||0)+parseFloat(style.marginBottom||0);
+ });
+ const groups=[];let items=[],height=0;
+ for(let i=0;i<dialogRows.length;){
+  const n=Math.min(2,dialogRows.length-i);
+  const pairHeight=sizes.slice(i,i+n).reduce((sum,x)=>sum+x,0);
+  if(items.length&&(height+pairHeight>available-1||items.length+n>6)){groups.push(items);items=[];height=0}
+  for(let j=0;j<n;j++)items.push(i+j);
+  height+=pairHeight;i+=n;
+ }
+ if(items.length)groups.push(items);
+ dialoguePages=groups;
+ if(!groups.length){$("dialoguePager").style.visibility="hidden";return}
+ const page=groups.findIndex(arr=>arr.includes(anchor));
+ showDialoguePage(page>=0?page:0);
+}
+$("dialoguePrev").onclick=()=>showDialoguePage(dialoguePageIndex-1);
+$("dialogueNext").onclick=()=>showDialoguePage(dialoguePageIndex+1);
+window.addEventListener("resize",()=>{if(currentPage===3)requestAnimationFrame(()=>paginateDialogue(dialoguePages[dialoguePageIndex]?.[0]||0))});
+function updateDialogueAudioUI(){
+ for(let i=0;i<dialogRows.length;i++){
+  const b=dialogRows[i].listen;if(!b)continue;
+  const active=readingMode==="dialog"&&readingIndex===i;
+  b.textContent=active?"■":"▶";b.setAttribute("aria-pressed",String(active));
+ }
+ const auto=$("readDialogue");
+ if(auto){const playing=readingMode==="dialog"&&dialogueAuto;auto.textContent=playing?"■ Auto STOP":"▶ Auto";auto.setAttribute("aria-pressed",String(playing))}
+}
+
+function pauseMode(mode){if(!synth)return;if(readingMode!==mode)return;if(!paused){synth.pause();paused=true;$((mode==="desc"?"descriptionStatus":"dialogueStatus")).textContent="Čitanje pauzirano."}else{synth.resume();paused=false;$((mode==="desc"?"descriptionStatus":"dialogueStatus")).textContent="Čitanje nastavljeno."}}
+function toggleDialogueTranslation(){
+ const area=$("dialogue"),button=$("translationDialogue");
+ const showing=area.classList.toggle("hide-translation")===false;
+ button.textContent=showing?"Sakrij prevod":"Prevod";button.setAttribute("aria-pressed",String(showing));
+ requestAnimationFrame(()=>paginateDialogue(readingMode==="dialog"?readingIndex:dialoguePages[dialoguePageIndex]?.[0]||0));
+}
+$("translationDialogue").onclick=toggleDialogueTranslation;
+function changeDialogueFont(delta){
+ dialogueFontScale=Math.min(1.5,Math.max(.8,Math.round((dialogueFontScale+delta)*10)/10));
+ $("dialogue").style.setProperty("--dialogue-font-scale",String(dialogueFontScale));
+ requestAnimationFrame(()=>paginateDialogue(readingMode==="dialog"?readingIndex:dialoguePages[dialoguePageIndex]?.[0]||0));
+}
+$("dialogueFontPlus").onclick=()=>changeDialogueFont(.1);
+$("dialogueFontMinus").onclick=()=>changeDialogueFont(-.1);
+$("file").onchange=async e=>{let f=e.target.files[0];if(!f)return;if(!f.type.startsWith("image/")||f.size>12e6){setStatus("Izaberi JPG/PNG/WebP sliku manju od 12 MB.",true);return}try{const bmp=await createImageBitmap(f),cv=document.createElement("canvas"),scale=Math.min(1,1280/Math.max(bmp.width,bmp.height));cv.width=Math.round(bmp.width*scale);cv.height=Math.round(bmp.height*scale);cv.getContext("2d").drawImage(bmp,0,0,cv.width,cv.height);bmp.close();imageData=cv.toDataURL("image/jpeg",.8);for(let i=0;i<4;i++){let img=$("photo"+i);img.src=imageData;img.style.display="block"}const reveal=$("photoReveal");reveal.classList.remove("ready");void reveal.offsetWidth;reveal.classList.add("ready");document.querySelector(".upload").classList.add("has-photo");document.querySelector(".upload-title").textContent="✓ Fotografija dodata";$("uploadHeading").textContent="Dodata slika za opis";$("analyze").disabled=false;setStatus("✓ Fotografija je uspešno dodata.")}catch(err){setStatus("Nije moguće otvoriti sliku.",true)}};
+$("analyze").onclick=async()=>{if(!imageData){setStatus("Izaberi sliku.",true);return}if(!bank.length){setStatus("Baza opisa slike se još učitava. Pokušaj ponovo.",true);return}let url=$("endpoint").value.trim();if(!/^https:\/\//.test(url)){setStatus("Podesi Cloudflare Worker adresu.",true);return}$("analyze").disabled=true;setStatus("AI analizira sliku i priprema opis i dijalog…");
+try{let res=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({image:imageData,scenes:scenes.map(s=>({n:s.n,sr:s.sr,de:s.de,roles:s.roles||"",dialog:(Array.isArray(s.dialog)?s.dialog:[]).map(pair=>({de:String(pair[0]||""),sr:String(pair[1]||"")})),extra:(Array.isArray(s.extra)?s.extra:[]).map(pair=>({de:String(pair[0]||""),sr:String(pair[1]||"")}))})),bankExamples:sampleBank()})});let data=await res.json().catch(()=>({}));if(!res.ok)throw Error(data.error||"HTTP "+res.status);if(!Array.isArray(data.steps)||data.steps.length!==10)throw Error("Nema 10 koraka opisa.");
+$("dialogue").replaceChildren();dialogRows=[];
+$("dialogue").classList.add("hide-translation");
+$("translationDialogue").textContent="Prevod";$("translationDialogue").setAttribute("aria-pressed","false");
+dialogueFontScale=1;$("dialogue").style.setProperty("--dialogue-font-scale","1");
+
+(Array.isArray(data.dialogue)?data.dialogue:[]).forEach((l,i)=>{
+ const de=String(l.de||"").trim(),sr=String(l.sr||"").trim();
+ if(!de)return;
+ const role=String(l.speaker||((i%2)?"B":"A")).toUpperCase()==="B"?"B":"A";
+
+ const el=document.createElement("article");el.className="sentence dialog dialogue-card";
+ const roleTag=document.createElement("span");roleTag.className="dialogue-role "+(role==="A"?"role-a":"role-b");
+ roleTag.textContent=role;roleTag.setAttribute("aria-label","Učenik "+role);roleTag.title="Učenik "+role;el.append(roleTag);
+ const content=document.createElement("div");content.className="dialogue-copy";
+
+ add(content,"de",de);if(sr)add(content,"sr",sr);el.append(content);
+ const listen=document.createElement("button");listen.type="button";listen.className="dialogue-play";listen.textContent="▶";
+ listen.setAttribute("aria-pressed","false");listen.setAttribute("aria-label","Poslušaj nemačku repliku "+(i+1));
+ listen.onclick=()=>{
+  if(readingMode==="dialog"&&readingIndex===i&&!dialogueAuto)stopSpeech();
+  else playRows("dialog",i,false)
+ };
+ el.append(listen);$("dialogue").append(el);
+ dialogRows.push({de,element:el,listen})
+});
+dialoguePages=[];dialoguePageIndex=0;
+let scene=scenes.find(s=>s.n===Number(data.sceneNumber));
+$("scene").textContent=scene?"Situacija "+scene.n+": "+scene.sr:String(data.sceneName||"Dijalog prema slici");
+// Druga stranica uvek koristi iste AI recenice kao koraci 1–9.
+fullSteps=data.steps.slice(0,9).map((step,i)=>({title:(i+1)+". "+labels[i],de:String(step.de||"").trim(),sr:String(step.sr||"").trim(),lines:normalizeStepLines(step)}));
+descriptionPage=0;const summarySource=data.steps[9]||{};
+const summaryDE=String(summarySource.de||data.description||data.steps.slice(0,9).map(x=>x.de||"").join(" ")).trim();
+const summarySR=String(summarySource.sr||data.steps.slice(0,9).map(x=>x.sr||"").join(" ")).trim();
+$("summaryGerman").value=summaryDE;
+$("summarySerbian").textContent=summarySR||"Prevod trenutno nije dostupan.";
+$("summarySerbian").hidden=true;
+$("summaryTranslate").textContent="Prevod";
+$("summaryTranslate").setAttribute("aria-pressed","false");
+$("summaryStatus").textContent="▶ Auto čita ceo tekst na nemačkom.";
+summaryFontScale=1;summaryEdited=false;updateSummaryFont();
+fullTranslated=false;renderFullDescription();$("translateFull").textContent="Prevod";$("translateFull").setAttribute("aria-pressed","false");
+setStatus("Moj opis, detaljan opis i dijalog su spremni.");view(1);
+}catch(e){setStatus("Greška: "+e.message,true)}finally{$("analyze").disabled=false}};
+$("readDialogue").onclick=()=>{if(readingMode==="dialog"&&dialogueAuto&&!paused){stopSpeech();return}if(readingMode==="dialog"&&paused){synth.resume();paused=false;updateDialogueAudioUI();return}playRows("dialog",0,true)};
+$("pauseDialogue").onclick=()=>pauseMode("dialog");
+$("stopDialogue").onclick=()=>stopSpeech();
+
+function separateGermanSentences(value){
+ const text=String(value||"").trim();
+ if(!text)return [];
+ return text.split(/(?<=[.!?])\s+(?=[A-ZÄÖÜČĆŠĐŽ„"0-9])/u).map(s=>s.trim()).filter(Boolean);
+}
+function normalizeStepLines(step){
+ const provided=Array.isArray(step.lines)?step.lines.filter(x=>x&&typeof x.de==="string"&&x.de.trim()):[];
+ if(provided.length){
+  return provided.map(x=>({de:String(x.de).trim(),sr:String(x.sr||"").trim()}));
+ }
+ // Support older, already-deployed Cloudflare versions while waiting for the new code.
+ const german=separateGermanSentences(step.de);
+ const serbian=separateGermanSentences(step.sr);
+ const balanced=serbian.length===german.length;
+ return german.map((de,i)=>({de,sr:balanced?serbian[i]:""}));
+}
+function renderFullDescription(){
+ const field=$("fullDescription");field.replaceChildren();field.classList.toggle("show-serbian",fullTranslated);
+ fullAudioLines=[];
+ fullSteps.forEach((step,i)=>{
+  const section=document.createElement("section");section.className="full-step";section.dataset.stepIndex=String(i);
+  const title=document.createElement("div");title.className="full-step-title";title.textContent=step.title;
+  const sentences=document.createElement("div");sentences.className="full-step-lines";
+  if(i>=3&&i<=7&&!step.lines.length){
+   const note=document.createElement("div");note.className="full-step-empty";
+   note.textContent="Nema dovoljno jasno prepoznatih detalja za ovaj korak.";
+   sentences.append(note);
+  }
+  step.lines.forEach((sentence,j)=>{
+   const line=document.createElement("div");line.className="full-line";
+   const lineText=document.createElement("div");lineText.className="full-line-copy";
+   const de=document.createElement("span");de.className="full-step-de";de.textContent=sentence.de;
+   de.contentEditable="true";de.spellcheck=false;de.setAttribute("aria-label","Nemačka rečenica "+(j+1)+" koraka "+(i+1));
+   const sr=document.createElement("div");sr.className="full-step-sr";sr.textContent=sentence.sr;
+   de.addEventListener("input",()=>{
+    const changed=de.innerText.trim();
+    sentence.de=changed;
+    step.de=step.lines.map(x=>x.de).filter(Boolean).join(" ");
+    if(sentence.sr){sr.textContent="Prevod treba obnoviti nakon izmene nemačke rečenice.";sentence.sr="";}
+    requestAnimationFrame(fitFullDescription);
+   });
+   const index=fullAudioLines.length;
+   const listen=document.createElement("button");listen.type="button";listen.className="full-line-play";listen.textContent="▶";listen.setAttribute("aria-label","Slušaj ili zaustavi rečenicu "+(index+1));listen.title="Slušaj / Stop";
+   listen.onclick=()=>toggleFullLine(index);
+   lineText.append(de,sr);
+   line.append(lineText,listen);sentences.append(line);
+   fullAudioLines.push({line,de,listen,section,stepIndex:i});
+  });
+  // Legacy Worker sends one paragraph translation for multiple German sentences.
+  // Never present the paragraph as the exact translation of just the last sentence.
+  if(!Array.isArray(step.lines)||!step.lines.some(x=>x.sr)){
+   const backup=document.createElement("div");backup.className="full-step-sr full-legacy-translation";
+   backup.textContent=step.sr||"";
+   section.append(title,sentences,backup);
+  }else{section.append(title,sentences)}
+  field.append(section);
+ });
+ updateFullAudioUI();showDescriptionPage(descriptionPage,false);
+}
+function showDescriptionPage(page,stopAudio=true){
+ const next=Math.max(0,Math.min(1,Number(page)||0));
+ if(stopAudio&&descriptionPage!==next)stopSpeech();
+ descriptionPage=next;
+ for(const section of $("fullDescription").querySelectorAll(".full-step")){
+  const i=Number(section.dataset.stepIndex);
+  section.hidden=next===0?i>=6:i<6;
+ }
+ $("descPrev").disabled=next===0;
+ $("descNext").disabled=next===1;
+ $("descPageLabel").textContent=next===0?"Koraci 1–6 · 1/2":"Koraci 7–9 · 2/2";
+ updateJourneyProgress();
+ $("fullDescription").scrollTop=0;
+ requestAnimationFrame(fitFullDescription);
+}
+$("descPrev").onclick=()=>showDescriptionPage(descriptionPage-1);
+$("descNext").onclick=()=>showDescriptionPage(descriptionPage+1);
+function fitFullDescription(){
+ const field=$("fullDescription");if(!field||currentPage!==2)return;
+ field.style.zoom="1";field.style.overflowY="hidden";
+ field.style.setProperty("--font-scale",String(fullFontScale));
+ let scale=1;
+ for(let i=0;i<80&&field.scrollHeight>field.clientHeight+1;i++){
+  scale=Math.max(.55,scale-.01);field.style.zoom=String(scale);
+  if(scale<=.55)break;
+ }
+ // Very long AI texts remain readable: allow scrolling only when absolutely necessary.
+ if(field.scrollHeight>field.clientHeight+2)field.style.overflowY="auto";
+}
+window.addEventListener("resize",()=>{if(currentPage===2)requestAnimationFrame(fitFullDescription)});
+function updateFullAudioUI(){
+ for(let i=0;i<fullAudioLines.length;i++){
+  const row=fullAudioLines[i],on=readingMode==="full"&&fullAudioIndex===i;
+  row.listen.textContent=on?"■":"▶";row.listen.setAttribute("aria-pressed",String(on));row.line.classList.toggle("audio-active",on);
+ }
+ const auto=$("autoFull");
+ if(auto){auto.textContent=fullAudioAuto?"■ Stop":"▶ Auto";auto.setAttribute("aria-pressed",String(fullAudioAuto))}
+}
+function startFullLine(index,auto=false){
+ if(!synth){alert("Ovaj pregledač ne podržava izgovor.");return}
+ if(index>=fullAudioLines.length){stopSpeech();return}
+ const line=fullAudioLines[index],text=line.de.innerText.trim();
+ if(!text){if(auto)startFullLine(index+1,true);return}
+ stopSpeech();showDescriptionPage(line.stepIndex>=6?1:0,false);readingMode="full";fullAudioIndex=index;fullAudioAuto=auto;
+ const ticket=voiceToken;
+ updateFullAudioUI();
+ const u=new SpeechSynthesisUtterance(text);u.lang="de-DE";u.rate=.83;
+ u.onend=()=>{if(ticket!==voiceToken)return;if(auto)startFullLine(index+1,true);else stopSpeech()};
+ u.onerror=e=>{if(ticket!==voiceToken)return;if(e.error==="canceled"||e.error==="interrupted")return;if(auto)startFullLine(index+1,true);else stopSpeech()};
+ synth.speak(u);
+}
+function toggleFullLine(index){
+ if(readingMode==="full"&&fullAudioIndex===index){stopSpeech();return}
+ startFullLine(index,false);
+}
+$("autoFull").onclick=()=>{
+ if(fullAudioAuto){stopSpeech();return}
+ const target=descriptionPage===0?0:fullAudioLines.findIndex(x=>x.stepIndex>=6);
+ startFullLine(Math.max(0,target),true);
+};
+function changeFullFont(delta){
+ fullFontScale=Math.max(.8,Math.min(1.5,Math.round((fullFontScale+delta)*100)/100));
+ requestAnimationFrame(fitFullDescription);
+}
+$("fontPlus").onclick=()=>changeFullFont(.1);
+$("fontMinus").onclick=()=>changeFullFont(-.1);
+$("translateFull").onclick=()=>{
+ fullTranslated=!fullTranslated;
+ $("fullDescription").classList.toggle("show-serbian",fullTranslated);
+ $("translateFull").textContent=fullTranslated?"Sakrij prevod":"Prevod";
+ $("translateFull").setAttribute("aria-pressed",String(fullTranslated));
+ requestAnimationFrame(fitFullDescription);
+};
+
+/* Complete mail-style student description with German speech, translation and font size. */
+function updateSummaryAudioUI(){
+ const b=$("summaryAuto");if(!b)return;
+ const playing=readingMode==="summary";
+ b.textContent=playing?"■ Auto STOP":"▶ Auto";b.setAttribute("aria-pressed",String(playing));
+ const pause=$("summaryPause");
+ if(pause){pause.textContent=playing&&paused?"▶ Nastavi":"⏸";pause.setAttribute("aria-pressed",String(playing&&paused))}
+}
+function updateSummaryFont(){
+ const scale=summaryFontScale;
+ $("summaryGerman").style.fontSize=(Math.round(13*scale*10)/10)+"px";
+ $("summarySerbian").style.fontSize=(Math.round(11*scale*10)/10)+"px";
+}
+function playSummary(){
+ if(!synth){$("summaryStatus").textContent="Izgovor nije dostupan u ovom pregledaču.";return}
+ const phrases=separateGermanSentences($("summaryGerman").value);
+ if(!phrases.length){$("summaryStatus").textContent="Nema rečenica za slušanje.";return}
+ stopSpeech();readingMode="summary";paused=false;
+ const token=voiceToken;let i=0;
+ updateSummaryAudioUI();
+ function next(){
+  if(token!==voiceToken||readingMode!=="summary"||paused)return;
+  if(i>=phrases.length){stopSpeech();$("summaryStatus").textContent="Završeno čitanje kompletnog opisa.";return}
+  $("summaryStatus").textContent="Izgovor: rečenica "+(i+1)+" / "+phrases.length;
+  const u=new SpeechSynthesisUtterance(phrases[i]);u.lang="de-DE";u.rate=.83;u.pitch=1;
+  u.onend=()=>{if(token!==voiceToken)return;i++;next()};
+  u.onerror=err=>{if(token!==voiceToken)return;
+   if(err.error==="canceled"||err.error==="interrupted")return;
+   i++;next()
+  };
+  synth.speak(u)
+ }
+ next()
+}
+$("summaryAuto").onclick=()=>{
+ if(readingMode==="summary"){if(paused){synth.resume();paused=false;updateSummaryAudioUI()}else stopSpeech();return}
+ playSummary()
+};
+$("summaryPause").onclick=()=>{
+ if(readingMode!=="summary"||!synth)return;
+ if(paused){synth.resume();paused=false;$("summaryStatus").textContent="Nastavljeno slušanje."}
+ else{synth.pause();paused=true;$("summaryStatus").textContent="Slušanje pauzirano."}
+ updateSummaryAudioUI();
+};
+$("summaryStop").onclick=()=>{stopSpeech();$("summaryStatus").textContent="Slušanje zaustavljeno."};
+$("summaryTranslate").onclick=()=>{
+ const next=$("summarySerbian").hidden;
+ $("summarySerbian").hidden=!next;
+ $("summaryTranslate").textContent=next?"Sakrij prevod":"Prevod";
+ $("summaryTranslate").setAttribute("aria-pressed",String(next));
+ if(next&&summaryEdited)$("summaryStatus").textContent="Prevod je izvorni AI prevod, pre izmena nemačkog teksta.";
+};
+$("summaryPlus").onclick=()=>{summaryFontScale=Math.min(1.5,Math.round((summaryFontScale+.1)*10)/10);updateSummaryFont()};
+$("summaryMinus").onclick=()=>{summaryFontScale=Math.max(.8,Math.round((summaryFontScale-.1)*10)/10);updateSummaryFont()};
+$("summaryGerman").addEventListener("input",()=>{
+ summaryEdited=true;
+ if(readingMode==="summary")stopSpeech();
+ $("summaryStatus").textContent="Tekst se može uređivati. Prevod odgovara originalnom tekstu.";
+});
+$("summaryBack").onclick=()=>view(0);
+$("summaryDetail").onclick=()=>view(2);
+$("backFromFull").onclick=()=>view(1);
+$("goDialogue").onclick=()=>{view(3);if(dialogRows.length)playRows("dialog")};
+$("backToDescription").onclick=()=>view(2);
+$("restart").onclick=()=>{stopSpeech();view(0);$("file").value="";$("analyze").disabled=true;imageData="";for(let i=0;i<4;i++){$("photo"+i).style.display="none"}$("photoReveal").classList.remove("ready");document.querySelector(".upload").classList.remove("has-photo");document.querySelector(".upload-title").textContent="Izaberi fotografiju";$("uploadHeading").textContent="Ubaci sliku za opis";setStatus("Izaberi novu sliku.");};
+
+</script></body></html>
