@@ -209,7 +209,7 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
 #screen1 .full-line-copy .full-step-sr{margin:1px 0 2px;color:#d02c40!important}
 #screen1 .full-legacy-translation{margin:2px 0 4px;padding-top:2px;border-top:1px dotted #e1bfc4}
 
-</style></head><body><main class="app">
+.full-step-empty{padding:4px 2px;font:italic 500 10px/1.3 system-ui,Arial;color:#7187a1}</style></head><body><main class="app">
 <header class="header"><h1>Opis slike</h1></header>
 <div class="top-progress"><div class="progress active" id="progress0">1 · Slika</div><div class="progress" id="progress1">2 · Moj opis</div><div class="progress" id="progress2">3 · Dijalog</div></div>
 <section class="screen active" id="screen0"><div class="scroll"><div class="panel"><h2 class="title" id="uploadHeading">Ubaci sliku za opis</h2><label class="upload"><span class="upload-icon">📷</span><span class="upload-title">Izaberi fotografiju</span><span class="upload-sub">Dodirni ovde za galeriju ili kameru</span><input id="file" type="file" accept="image/*"></label><div class="photo-reveal" id="photoReveal"><span class="photo-glow" aria-hidden="true"></span><img class="picture" id="photo0" alt="Izabrana slika"><span class="photo-success" aria-hidden="true">✓</span><span class="sparkle sp1" aria-hidden="true">✦</span><span class="sparkle sp2" aria-hidden="true">✧</span><span class="sparkle sp3" aria-hidden="true">✦</span></div><p class="status" id="status">Prvo izaberi sliku.</p></div><div class="demax-a1-brand" aria-label="De-Max A1"><span>De-Max</span> <strong>A1</strong></div><input id="endpoint" type="hidden" value="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev"></div><div class="footer upload-footer"><button class="action green" id="analyze" disabled>Automatski opiši sliku</button></div></section>
@@ -287,6 +287,11 @@ function renderFullDescription(){
   const section=document.createElement("section");section.className="full-step";
   const title=document.createElement("div");title.className="full-step-title";title.textContent=step.title;
   const sentences=document.createElement("div");sentences.className="full-step-lines";
+  if(i>=3&&i<=7&&!step.lines.length){
+   const note=document.createElement("div");note.className="full-step-empty";
+   note.textContent="Nema dovoljno jasno prepoznatih detalja za ovaj korak.";
+   sentences.append(note);
+  }
   step.lines.forEach((sentence,j)=>{
    const line=document.createElement("div");line.className="full-line";
    const lineText=document.createElement("div");lineText.className="full-line-copy";
