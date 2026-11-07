@@ -681,8 +681,13 @@ function renderClothing(){
  $("#clothingColor").textContent=CLOTH_COLORS[state.color].label;
  $("#clothingSentence").textContent=row.de;$("#clothingTranslation").textContent=row.sr;
  $("#clothingbar").classList.toggle("is-selected",active);
- $("#clothingAdd").textContent=active?"✓ Izabrano":"❯ Dodaj";
- $("#clothingAdd").setAttribute("aria-pressed",String(active));
+ // Korak 5: dodavanje/uklanjanje pritiskom na rečenicu; oznaka je u okviru kartice.
+ const clothingSelect=$("#clothingAdd"),clothingMark=clothingSelect.querySelector(".clothing-select-mark");
+ if(clothingMark){
+  clothingMark.textContent=active?"✓":"❯";
+  clothingSelect.setAttribute("aria-label",active?"Ukloni rečenicu o odeći iz opisa":"Dodaj rečenicu o odeći u opis");
+ }else clothingSelect.textContent=active?"✓ Izabrano":"❯ Dodaj";
+ clothingSelect.setAttribute("aria-pressed",String(active));
 }
 function toggleClothing(){
  const item=makeClothing(activeRole);
