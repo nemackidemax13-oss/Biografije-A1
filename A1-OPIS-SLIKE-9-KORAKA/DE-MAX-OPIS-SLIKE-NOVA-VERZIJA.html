@@ -57,6 +57,9 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
 #screen1 .description-controls .action,#screen1 .description-controls .toggle{height:33px;min-height:33px;width:100%;padding:3px 1px;font-size:clamp(9px,2.4vw,11px);line-height:1.05;white-space:nowrap}
 #screen1 #descriptionStatus{font-size:9px;line-height:1.1;text-align:center;margin:3px 0 0}
 @media(max-height:650px){#screen1 .description-image-slot .picture.small{max-height:12dvh}#screen1 .description-controls .action,#screen1 .description-controls .toggle{height:28px;min-height:28px}}
+
+/* Poravnanje svih naslova koraka opisa uz desnu ivicu */
+#screen1 #steps .sentence h3{text-align:right!important;padding-right:1px;margin-left:auto;width:100%;}
 </style></head><body><main class="app">
 <header class="header"><h1>Opis slike</h1></header>
 <div class="top-progress"><div class="progress active" id="progress0">1 · Slika</div><div class="progress" id="progress1">2 · Opis slike</div><div class="progress" id="progress2">3 · Dijalog</div></div>
