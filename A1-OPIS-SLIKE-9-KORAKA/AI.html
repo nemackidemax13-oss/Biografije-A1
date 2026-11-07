@@ -763,6 +763,47 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
   margin-top:2px!important;margin-bottom:1px!important;
  }
 }
+
+/* DE-MAX V62 — premium animated logo entrance: spin, pulse and moving shine. */
+#screen0 .demax-logo-container{
+ position:relative!important;isolation:isolate;overflow:hidden!important;
+}
+#screen0 .demax-course-logo{
+ animation:demaxLogoShow62 1.8s cubic-bezier(.2,.8,.2,1) both,
+           demaxLogoBreathe62 4.5s ease-in-out 2s infinite!important;
+ transform-origin:center center!important;will-change:transform,opacity;
+}
+#screen0 .demax-logo-container::after{
+ content:"";position:absolute;z-index:2;pointer-events:none;
+ width:min(48vw,210px);height:min(48vw,210px);max-height:25dvh;
+ border-radius:50%;left:50%;top:50%;transform:translate(-50%,-50%);
+ background:linear-gradient(115deg,transparent 30%,#ffffff00 39%,#ffffffaa 48%,#ffffff30 54%,transparent 63%);
+ background-size:260% 100%;background-position:180% 0;
+ mix-blend-mode:screen;opacity:0;
+ animation:demaxShine62 2.3s ease-in-out 1s both;
+}
+@keyframes demaxLogoShow62{
+ 0%{opacity:0;transform:perspective(600px) rotateY(-80deg) rotate(-24deg) scale(.48);filter:blur(9px) drop-shadow(0 0 0 transparent)}
+ 48%{opacity:1;transform:perspective(600px) rotateY(10deg) rotate(5deg) scale(1.13);filter:blur(0) drop-shadow(0 9px 20px #d72e5660)}
+ 73%{transform:perspective(600px) rotateY(-4deg) rotate(-2deg) scale(.97)}
+ 100%{opacity:1;transform:perspective(600px) rotateY(0) rotate(0) scale(1);filter:blur(0) drop-shadow(0 7px 14px #c02f5140)}
+}
+@keyframes demaxLogoBreathe62{
+ 0%,100%{transform:scale(1)}50%{transform:scale(1.035)}
+}
+@keyframes demaxShine62{
+ 0%,20%{opacity:0;background-position:180% 0}
+ 35%{opacity:.8}
+ 75%{opacity:.7}
+ 100%{opacity:0;background-position:-80% 0}
+}
+@media(max-height:650px){
+ #screen0 .demax-logo-container::after{width:min(35vw,145px);height:min(35vw,145px);max-height:19dvh}
+}
+@media(prefers-reduced-motion:reduce){
+ #screen0 .demax-course-logo{animation:none!important;will-change:auto!important}
+ #screen0 .demax-logo-container::after{animation:none!important;display:none!important}
+}
 </style></head><body><main class="app">
 <header class="header"><h1>Opis slike</h1></header>
 <section class="screen active" id="screen0"><div class="scroll"><div class="panel"><h2 class="title" id="uploadHeading">Ubaci sliku za opis</h2><label class="upload"><span class="upload-icon">📷</span><span class="upload-title">Izaberi fotografiju</span><span class="upload-sub">Dodirni ovde za galeriju ili kameru</span><input id="file" type="file" accept="image/*"></label><div class="photo-reveal" id="photoReveal"><span class="photo-glow" aria-hidden="true"></span><img class="picture" id="photo0" alt="Izabrana slika"><span class="photo-success" aria-hidden="true">✓</span><span class="sparkle sp1" aria-hidden="true">✦</span><span class="sparkle sp2" aria-hidden="true">✧</span><span class="sparkle sp3" aria-hidden="true">✦</span></div><p class="status" id="status">Prvo izaberi sliku.</p></div><div class="demax-logo-container" aria-label="De-Max Tutin logo"><img class="demax-course-logo" src="data:image/jpeg;base64,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" alt="De-Max Tutin — logo kursa" /></div><input id="endpoint" type="hidden" value="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev"></div><div class="footer upload-footer"><button class="action pale" id="resumeAfterGeneration" type="button" hidden>Nastavi opis ❯</button><button class="action green" id="analyze" disabled>Automatski opiši sliku</button></div></section>
