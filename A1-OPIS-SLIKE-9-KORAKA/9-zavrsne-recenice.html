@@ -198,6 +198,7 @@ body[data-step-page="8"] .wizard-footer #wizardForward .next-arrow{
 </main>
 <script src="./shared.js?v=20261107-pretraga-i-cuvanje-opisa-v37"></script>
 <script src="./9-namere-41-situacija.js?v=20261107-zelje-41-situacija-v36"></script>
+<script src="./9-dodatne-zavrsne-recenice.js?v=20261107-dodatne-zavrsne-v1"></script>
 <script>
 (function(){
 const scenes=SCENE_DATA;
@@ -517,17 +518,61 @@ const SCENE_WISH_IDS=new Map(scenes.map(entry=>[entry.id,(WISHES_BY_SCENE[entry.
  ensure("Ich denke, der Mann möchte "+de+".","Mislim da čovek želi da "+sr+".","closing"),
  ensure("Ich denke, die Frau möchte "+de+".","Mislim da žena želi da "+sr+".","closing")
 ])]));
+
+/* Novo: 10 dodatnih, situaciji prilagodjenih A1 zavrsetaka za svaku od 41 slike.
+   Koristimo postojece namere i dve rucno proverene recenice po situaciji. */
+const DMX_END_SCENE_IDS=new Map(scenes.map(entry=>{
+ const ids=[],used=new Set();
+ const add=(de,sr)=>{
+  if(!de||used.has(de)||ids.length>=10)return;
+  used.add(de);ids.push(ensure(de,sr,"closing"));
+ };
+ for(const [de,sr] of (DMX_END_SCENE_DETAILS[entry.id]||[]))add(de,sr);
+ const wishes=WISHES_BY_SCENE[entry.id]||[];
+ const patterns=[
+  ["Vielleicht möchte der Mann ","Možda čovek želi da "],
+  ["Vielleicht möchte die Frau ","Možda žena želi da "],
+  ["Ich glaube, der Mann möchte ","Mislim da čovek želi da "],
+  ["Ich glaube, die Frau möchte ","Mislim da žena želi da "],
+  ["Vielleicht will der Mann ","Možda čovek želi da "],
+  ["Vielleicht will die Frau ","Možda žena želi da "],
+  ["Ich glaube, der Mann will ","Mislim da čovek želi da "],
+  ["Ich glaube, die Frau will ","Mislim da žena želi da "]
+ ];
+ for(let i=0;i<Math.max(8,wishes.length);i++){
+  if(!wishes.length)break;
+  const [de,sr]=wishes[i%wishes.length];
+  const [dePrefix,srPrefix]=patterns[i%patterns.length];
+  add(dePrefix+de+".",srPrefix+sr+".");
+ }
+ for(const [de,sr] of wishes){
+  if(ids.length>=10)break;
+  add("Vielleicht möchte die Frau "+de+".","Možda žena želi da "+sr+".");
+  add("Ich glaube, der Mann möchte "+de+".","Mislim da čovek želi da "+sr+".");
+ }
+ if(ids.length!==10)throw Error("Nedostaju dodatne zavrsne recenice: "+entry.id+" "+ids.length);
+ return [entry.id,ids];
+}));
+const DMX_END_GENERAL_IDS=Object.fromEntries(Object.entries(DMX_END_GENERAL_CATEGORIES).map(([category,rows])=>[
+ category,rows.map(([de,sr])=>ensure(de,sr,"closing"))
+]));
+function closingExtrasForScene(){
+ const cats=["zakljucak","osecanja","namere"];
+ if(outdoor.has(scenes[scene].id)||allScenes)cats.push("vreme");
+ if(buyingIds.has(scenes[scene].id)||allScenes)cats.push("kupovina");
+ return [...new Set([...base[2],...cats.flatMap(cat=>DMX_END_GENERAL_IDS[cat]||[])])];
+}
 const removedSentences=new Set(["Die Personen sprechen miteinander.","Das Foto wurde drinnen aufgenommen."]);
 function sceneOptions(){
  if(group!==2){
-  if(allScenes)return scenes.filter(s=>outdoor.has(s.id)===(group===1)).flatMap(s=>[...(SCENE_WISH_IDS.get(s.id)||[]),...(exampleIndexByScene.get(s.id)||[])]);
+  if(allScenes)return scenes.filter(s=>outdoor.has(s.id)===(group===1)).flatMap(s=>[...(DMX_END_SCENE_IDS.get(s.id)||[]),...(SCENE_WISH_IDS.get(s.id)||[]),...(exampleIndexByScene.get(s.id)||[])]);
   const s=scenes[scene];
-  return outdoor.has(s.id)===(group===1)?[...(SCENE_WISH_IDS.get(s.id)||[]),...(exampleIndexByScene.get(s.id)||[])]:[];
+  return outdoor.has(s.id)===(group===1)?[...(DMX_END_SCENE_IDS.get(s.id)||[]),...(SCENE_WISH_IDS.get(s.id)||[]),...(exampleIndexByScene.get(s.id)||[])]:[];
  }
 
  if(allScenes&&group!==2){const result=new Set(base[group]);for(const [de,sr] of sharedPoses)result.add(ensure(de,sr,"closing"));if(group===1)for(const [de,sr] of weather)result.add(ensure(de,sr,"closing"));for(const s of scenes){if(outdoor.has(s.id)!==(group===1))continue;for(const [de,sr] of customScenes[s.id]||[])result.add(ensure(de,sr,"closing"));for(let i=0;i<BANK.length;i++){const v=BANK[i];if(v.cat==="extra"&&Array.isArray(v.sceneDetailIds)&&v.sceneDetailIds.includes(s.id))result.add(i)}}return [...result]}
 
- if(group===2)return base[2];
+ if(group===2)return closingExtrasForScene();
  const s=scenes[scene],isOutdoor=outdoor.has(s.id);
  const lines=[...base[group]];
 for(const [de,sr] of sharedPoses)lines.push(ensure(de,sr,"closing"));
