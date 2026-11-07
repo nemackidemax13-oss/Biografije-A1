@@ -14,7 +14,7 @@ export default {async fetch(request,env){
  if(request.method==="OPTIONS")return new Response(null,{status:originAllowed?204:403,headers:cors});
  const respond=(body,status=200)=>new Response(JSON.stringify(body),{status,headers:{...HEADERS,...cors}});
  if(!originAllowed)return respond({error:"Origin nije dozvoljen. Dodaj domen u ALLOWED_ORIGINS."},403);
- if(request.method==="GET"&&new URL(request.url).searchParams.get("check")==="1")return respond({ok:true,version:"20261107-zavrsni-deo-v44",mode:"DEMAX_STRICT_TEMPLATES",introFix:true});
+ if(request.method==="GET"&&new URL(request.url).searchParams.get("check")==="1")return respond({ok:true,version:"20261107-manja-slika-lacht-v46",mode:"DEMAX_STRICT_TEMPLATES",introFix:true});
  if(request.method!=="POST")return respond({error:"Samo POST zahtev."},405);
  if(!env.OPENAI_API_KEY)return respond({error:"OPENAI_API_KEY nije podešen na Worker-u."},503);
  try{
@@ -32,7 +32,7 @@ OBAVEZAN REDOSLED IZ ORIGINALNE BAZE 9 KORAKA: steps ima 10 elemenata, za prve 9
 5. ODEĆA: za muškarca, ženu i dete posebno; svaki stvarno vidljiv komad, boja i pravilni član/padež; odobreni A1 šabloni: 'Der Mann trägt eine blaue Jacke.', 'Die Frau trägt ein rotes Kleid.', 'Das Kind trägt schwarze Schuhe.'. Samo ako se vidi.
 6. KOSA: za svakog posebno 'Der Mann hat kurze schwarze Haare.', 'Die Frau hat lange blonde Haare.', 'Das Kind hat lockige braune Haare.' ili tačan drugi fiksni oblik; dužina, boja, kovrdžava/ravna, samo kada se vidi.
 7. GODINE: za svaku osobu samo jedna približna procena, npr. 'Ich denke, der Mann ist ungefähr 35 Jahre alt.', 'Ich denke, die Frau ist ungefähr 30 Jahre alt.', 'Ich denke, das Kind ist ungefähr 7 Jahre alt.' ili bez 'Ich denke'. Broj odgovara približnom izgledu, ne predstavlja se kao sigurna činjenica.
-8. DETALJI SLIKE: odaberi iz BANK extra/start/closing relevantne rečenice o predmetima u rukama, satovima, nakitu, izrazima lica, osmehu, smehu, životinjama, pozadini, levo/desno, unutrašnjem prostoru ili vidljivim vremenskim prilikama i godišnjem dobu SAMO kad je očigledno. Za smeh: 'Beide Personen lachen.' samo kad se obe osobe jasno smeju; za osmeh: 'Beide Personen lächeln.' kad se osmehuju.
+8. DETALJI SLIKE: odaberi iz BANK extra/start/closing relevantne rečenice o predmetima u rukama, satovima, nakitu, izrazima lica, životinjama, pozadini, levo/desno, unutrašnjem prostoru ili vidljivim vremenskim prilikama i godišnjem dobu SAMO kad je očigledno. Učenici vežbaju lakšu reč 'lacht': kada se zaista jasno SMEJU, koristi 'Der Mann lacht.', 'Die Frau lacht.', 'Das Kind lacht.' ili 'Beide Personen lachen.'. Kada se samo osmehuju, NE MENJAJ osmeh u smeh, već koristi 'Der Mann sieht freundlich aus.', 'Die Frau sieht freundlich aus.', 'Das Kind sieht freundlich aus.' iz originalne baze. Izbegavaj reči 'lächelt' i 'lächeln' u izlaznom opisu slike; one ne znače isto što i 'lacht'.
 9. ZAVRŠNI DEO – OPIS NA KRAJU: nakon 8. koraka prvo 1–2 rečenice iz baze o onome što ZAISTA vidiš u POZADINI u obliku 'Im Hintergrund sehe ich noch ...', koristeći tačan postojeći tekst iz baze ili samo strogo dozvoljene gramatičke šablone; zatim ako su NAPOLJU i vreme je jasno vidljivo, koristi postojeću 'Das Wetter ist sonnig.' / 'Das Wetter ist schön.' / 'Es regnet.' / 'Es ist bewölkt.' (ne tvrdi vreme unutra); zatim ako se ZAISTA VIDI kupovina ili plaćanje, primeni odobreni 'Ich denke, die Personen kaufen Brot.' / 'Ich denke, die Frau kauft Blumen.' / 'Ich denke, der Mann kauft Schuhe.' sa pravim predmetom koji je vidljiv. Ako nema kupovine nemoj pisati da kupuju. Zatim eventualno 1–2 prikladne originalne closing rečenice za stvarnu situaciju iz baze. Poslednja rečenica UVEK 'Das war meine Bildbeschreibung.'. Ne ponavljaj isto iz koraka 8. Server proverava svaki opis sa fotografijom i premešta relevantne rečenice o pozadini i vremenu u korak 9.
 10. MOJ OPIS: ostavi prazan, server sklapa identične rečenice iz koraka 1–9.
 
@@ -231,12 +231,12 @@ Odgovori SAMO JSON objektom {steps:[tačno 10 objekata {de,sr:""}],description:"
    put(actor.de+" ist ungefähr "+age+" Jahre alt.",actor.sr+" ima otprilike "+age+" godina.");
    put("Ich denke, "+de,"Mislim da "+actor.srGen+" ima otprilike "+age+" godina.");
   }
-  put(actor.de+" lächelt.",actor.sr+" se osmehuje.");
+  // For A1 learners, prefer original bank "sieht freundlich aus" for a mere smile.
   put(actor.de+" lacht.",actor.sr+" se smeje.");
   put("Ich denke, "+actor.lo+" lacht.","Mislim da se "+actor.srGen+" smeje.");
  }
  put("Beide Personen lachen.","Obe osobe se smeju.");
- put("Beide Personen lächeln.","Obe osobe se osmehuju.");
+ // Two smiling people are not necessarily laughing: do not replace with "lachen".
 
  // Convert already-authored plural location patterns to user-approved singular.
  for(const entry of bankExamples.filter(x=>x.cat==="places")){
@@ -326,6 +326,14 @@ Odgovori SAMO JSON objektom {steps:[tačno 10 objekata {de,sr:""}],description:"
    ...validIds.map(id=>shortlist[id]?.de).filter(Boolean)
   ];
   for(const phrase of candidates){
+   // A smile is not laughter. Preserve photographic accuracy while using easier A1 words.
+   if(/\blächel(?:t|n)\b/i.test(phrase)){rejected++;continue;}
+   if(/\bla(?:cht|chen)\b/i.test(phrase)){
+    const who=phrase.startsWith("Der Mann")?"Mann":phrase.startsWith("Die Frau")?"Frau":phrase.startsWith("Das Kind")?"Kind":null;
+    const visible=Array.isArray(observation.people)?observation.people:[];
+    if(who&&!visible.some(o=>o.kind===who&&o.expression==="lacht")){rejected++;continue;}
+    if(phrase.startsWith("Beide Personen")&&visible.filter(o=>o.expression==="lacht").length<2){rejected++;continue;}
+   }
    const exact=allowed.get(norm(phrase));
    if(!exact){rejected++;continue;}
    if(seen.has(exact.de))continue;
@@ -405,7 +413,7 @@ Odgovori SAMO JSON objektom {steps:[tačno 10 objekata {de,sr:""}],description:"
   if(info.watch===true)append(7,actor.de+" trägt eine Armbanduhr.");
   if(info.earrings===true&&actor.de==="Die Frau")append(7,"Die Frau trägt Ohrringe.");
   if(info.necklace===true&&actor.de==="Die Frau")append(7,"Die Frau trägt eine Halskette.");
-  if(info.expression==="lächelt")append(7,actor.de+" lächelt.");
+  if(info.expression==="lächelt")append(7,actor.de+" sieht freundlich aus.");
   if(info.expression==="lacht")append(7,actor.de+" lacht.");
  }
  // Environment in section 8, but ONLY when confirmed by photo recognition.
