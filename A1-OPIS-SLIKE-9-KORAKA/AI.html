@@ -1349,18 +1349,16 @@ $("translationDialogue").textContent="Prevod";$("translationDialogue").setAttrib
 dialogueFontScale=1;$("dialogue").style.setProperty("--dialogue-font-scale","1");
 
 // Restore dialogue from the original A1 scene database if the AI response lacks it.
-const chosenScene=scenes.find(x=>x.n===Number(data.sceneNumber));
+// V81 — A dialogue must describe the photographed item, not a generic scene script.
 const generatedDialogue=(Array.isArray(data.dialogue)?data.dialogue:[])
- .filter(x=>x&&typeof x.de==="string"&&x.de.trim())
- .map((x,i)=>({speaker:String(x.speaker||((i%2)?"B":"A")),de:String(x.de),sr:String(x.sr||"")}));
-const originalDialogue=Array.isArray(chosenScene?.dialog)?chosenScene.dialog:[];
-const fallbackDialogue=originalDialogue.length>=10
- ?[...originalDialogue.slice(0,10),...(originalDialogue.length>=20?originalDialogue.slice(-2):[])]
-    .map((p,i)=>({speaker:i%2?"B":"A",de:String(p[0]||p.de||""),sr:String(p[1]||p.sr||"")}))
- :[];
-const activeDialogue=generatedDialogue.length>=10?generatedDialogue:
- (fallbackDialogue.length>=10?fallbackDialogue:generatedDialogue);
-if(!activeDialogue.length)$("scene").textContent="AI nije vratio dijalog za prepoznatu situaciju.";
+ .filter(x=>x&&typeof x.de==="string"&&x.de.trim()&&typeof x.sr==="string"&&x.sr.trim())
+ .slice(0,12)
+ .map((x,i)=>({speaker:i%2?"B":"A",de:String(x.de),sr:String(x.sr)}));
+// Never invent a product via fallback to an unrelated original dialogue.
+const activeDialogue=generatedDialogue.length>=10?generatedDialogue:[];
+if(!activeDialogue.length){
+ $("scene").textContent="Dijalog nije pouzdano generisan prema fotografiji. Pokušaj ponovo nakon ažuriranja Cloudflare Worker-a.";
+}
 activeDialogue.forEach((l,i)=>{
  const de=String(l.de||"").trim(),sr=String(l.sr||"").trim();
  if(!de)return;
@@ -1383,7 +1381,7 @@ activeDialogue.forEach((l,i)=>{
 });
 dialoguePages=[];dialoguePageIndex=0;
 let scene=scenes.find(s=>s.n===Number(data.sceneNumber));
-$("scene").textContent=scene?"Situacija "+scene.n+": "+scene.sr:String(data.sceneName||"Dijalog prema slici");
+if(activeDialogue.length)$("scene").textContent="Dijalog prema slici: "+String(data.sceneName||scene?.sr||"situacija");
 // Druga stranica uvek koristi iste AI recenice kao koraci 1–9.
 fullSteps=data.steps.slice(0,9).map((step,i)=>({title:(i+1)+". "+labels[i],de:String(step.de||"").trim(),sr:String(step.sr||"").trim(),lines:normalizeStepLines(step)}));
 descriptionPage=0;const summarySource=data.steps[9]||{};
