@@ -220,13 +220,14 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
 <section class="screen" id="screen1"><div class="scroll full-description-scroll"><div class="panel full-description-panel"><div class="full-photo-line"><img class="picture small" id="photo1" alt="Slika za kompletan opis"></div><div class="full-list-toolbar"><button class="full-mini-auto" id="autoFull" type="button" aria-pressed="false">▶ Auto slušanje</button><div class="full-right-tools"><button class="full-mini-translate" id="translateFull" type="button" aria-pressed="false">Prevod</button><button class="full-font-btn" id="fontPlus" type="button" aria-label="Uvećaj tekst" title="Uvećaj tekst">+</button><button class="full-font-btn" id="fontMinus" type="button" aria-label="Smanji tekst" title="Smanji tekst">−</button></div></div><div id="fullDescription" class="full-description-text full-structured-description" role="region" aria-label="Moj opis slike na nemačkom, po devet koraka"></div><p class="muted" id="fullStatus">Kompletan tekst na nemačkom.</p></div></div><div class="footer"><button class="action pale" id="backFromFull">❮ Slika</button><button class="action green" id="goDialogue">Dijalog ❯</button></div></section>
 <section class="screen" id="screen2"><div class="scroll" id="dialogueScroll"><div class="panel"><h2 class="title">🗣 Dijalog prema slici</h2><img class="picture small" id="photo2" alt="Slika za dijalog"><div id="scene" class="pill">Situacija prema slici</div><div class="controls"><button class="action green" id="readDialogue">▶ Kreni</button><button class="action gold" id="pauseDialogue">⏸ Pauza</button><button class="action red" id="stopDialogue">■ Stop</button><button class="toggle on" id="translationDialogue">Prevod: ON</button></div><p class="muted" id="dialogueStatus" style="text-align:center">Čitanje uloga A i B.</p></div><div id="dialogue"></div><div class="panel"><h2 class="title">📚 Originalni DE-MAX dijalozi</h2><div id="bankLink" class="links"></div><p class="muted">Dijalog je zamišljen kao vežba za situaciju na slici, ne kao doslovan razgovor fotografisanih osoba.</p></div></div><div class="footer"><button class="action pale" id="backToDescription">❮ Moj opis</button><button class="action green" id="restart">Nova slika ↻</button></div></section>
 <div class="powered">Powered By De-Max</div></main>
-<script src="../DE_MAX_A1_DIJALOZI_40_DATA_01.js"></script>
-<script src="../DE_MAX_A1_DIJALOZI_40_DATA_02.js"></script>
-<script src="../DE_MAX_A1_42_NOVE_TEME.js"></script>
+<script src="../DE_MAX_A1_DIJALOZI_40_DATA_01.js?v=20261018"></script>
+<script src="../DE_MAX_A1_DIJALOZI_40_DATA_02.js?v=recepcija-39-v2"></script>
+<script src="../DE_MAX_A1_DIJALOZI_DODATNE_01.js?v=20261018b"></script>
+<script src="../DE_MAX_A1_DIJALOZI_DODATNE_02.js?v=recepcija-39-v2"></script>
 <script>
 "use strict";
 const DEFAULT_WORKER_URL="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev";
-const EXPECTED_DEMAX_WORKER_VERSION="20261107-detaljan-izgled-v37";
+const EXPECTED_DEMAX_WORKER_VERSION="20261107-prava-baza-40-situacija-v38";
 async function checkDemaxWorkerVersion(){
  const box=$("workerWarning");
  try{
@@ -244,7 +245,7 @@ async function checkDemaxWorkerVersion(){
 }
 
 const $=id=>document.getElementById(id);
-const labels=["Opis osoba na slici","Mesto osoba na slici","Razgovor osoba","Izgled osoba na slici","Odeća osoba na slici","Kosa osoba na slici","Godine osoba na slici","Detalji na slici","Završne rečenice","Moj opis slike"];
+const labels=["Opis osoba na slici","Razgovor osoba","Mesto osoba na slici","Izgled osoba na slici","Odeća osoba na slici","Kosa osoba na slici","Godine osoba na slici","Detalji na slici","Završne rečenice","Moj opis slike"];
 const scenes=[...(window.DEMAX_SCENES||[]),...(window.DEMAX_NEW_SCENES||[])].sort((a,b)=>a.n-b.n);
 let fullFontScale=1,fullSteps=[],fullTranslated=false,fullAudioIndex=-1,fullAudioAuto=false,fullAudioLines=[];let imageData="",bank=[],descRows=[],dialogRows=[],currentPage=0,voiceToken=0,paused=false,readingMode="",readingIndex=0;
 const synth=window.speechSynthesis;
@@ -255,26 +256,11 @@ function view(n){stopSpeech();currentPage=n;for(let i=0;i<3;i++){$("screen"+i).c
 function add(el,cls,txt){let d=document.createElement("div");d.className=cls;d.textContent=txt;el.append(d);return d}
 function norm(s){return String(s||"").toLocaleLowerCase("de").replace(/[^a-zäöüß0-9 ]/g,"").replace(/\s+/g," ").trim()}
 function sampleBank(){
- if(!bank.length)return [];
- const out=[],seen=new Set();
- const add=x=>{if(!x?.de||!x?.sr||seen.has(x.de))return;seen.add(x.de);out.push({cat:x.cat,de:x.de,sr:x.sr})};
- const takeAll=cat=>bank.filter(x=>x.cat===cat).forEach(add);
- const spread=(cat,n)=>{
-  const rows=bank.filter(x=>x.cat===cat);
-  if(rows.length<=n){rows.forEach(add);return}
-  for(let i=0;i<n;i++)add(rows[Math.min(rows.length-1,Math.floor((i+.5)*rows.length/n))]);
- };
- // Full DE-MAX visual vocabulary for people, places and conversation,
- // plus a balanced selection of observations and closing statements.
- takeAll("start");takeAll("places");
- takeAll("mann");takeAll("frau");takeAll("kind");
- const extra=bank.filter(x=>x.cat==="extra");
- extra.filter(x=>/Im Hintergrund|Auf dem Tisch|Links |Rechts |hinter|vor |steht |sitzt |hält |kauft |liest |arbeitet |lächelt/i.test(x.de)).slice(0,65).forEach(add);
- spread("extra",85);
- const closing=bank.filter(x=>x.cat==="closing");
- closing.filter(x=>/Wetter|Sonne|Sommer|Winter|Herbst|Frühling|Bildbeschreibung|im Hintergrund|schön|drinnen|draußen/i.test(x.de)).forEach(add);
- spread("closing",65);
- return out.slice(0,650);
+ // Original DE-MAX opis slike: send every sentence and its category/situation metadata.
+ return bank.map(x=>({cat:x.cat,de:x.de,sr:x.sr,personExample:!!x.personExample,
+  personGroup:x.personGroup||null,sceneDetailIds:x.sceneDetailIds||[],
+  closingSceneIds:x.closingSceneIds||[],closingWeatherGroups:x.closingWeatherGroups||[],
+  closingIndoor:!!x.closingIndoor,closingEnding:!!x.closingEnding}));
 }
 
 function pageRows(mode){return mode==="desc"?descRows:mode==="dialog"?dialogRows:[]}
@@ -285,8 +271,8 @@ function pauseMode(mode){if(!synth)return;if(readingMode!==mode)return;if(!pause
 function toggleTranslation(area,button){let hidden=area.classList.toggle("hide-translation");button.textContent="Prevod: "+(hidden?"OFF":"ON");button.classList.toggle("on",!hidden)}
 $("translationDialogue").onclick=()=>toggleTranslation($("screen2"),$("translationDialogue"));
 $("file").onchange=async e=>{let f=e.target.files[0];if(!f)return;if(!f.type.startsWith("image/")||f.size>12e6){setStatus("Izaberi JPG/PNG/WebP sliku manju od 12 MB.",true);return}try{const bmp=await createImageBitmap(f),cv=document.createElement("canvas"),scale=Math.min(1,1280/Math.max(bmp.width,bmp.height));cv.width=Math.round(bmp.width*scale);cv.height=Math.round(bmp.height*scale);cv.getContext("2d").drawImage(bmp,0,0,cv.width,cv.height);bmp.close();imageData=cv.toDataURL("image/jpeg",.8);for(let i=0;i<3;i++){let img=$("photo"+i);img.src=imageData;img.style.display="block"}const reveal=$("photoReveal");reveal.classList.remove("ready");void reveal.offsetWidth;reveal.classList.add("ready");document.querySelector(".upload").classList.add("has-photo");document.querySelector(".upload-title").textContent="✓ Fotografija dodata";$("uploadHeading").textContent="Dodata slika za opis";$("analyze").disabled=false;setStatus("✓ Fotografija je uspešno dodata.")}catch(err){setStatus("Nije moguće otvoriti sliku.",true)}};
-$("analyze").onclick=async()=>{if(!imageData){setStatus("Izaberi sliku.",true);return}let url=$("endpoint").value.trim();if(!/^https:\/\//.test(url)){setStatus("Podesi Cloudflare Worker adresu.",true);return}$("analyze").disabled=true;setStatus("Proveravam Cloudflare AI verziju…");const version=await checkDemaxWorkerVersion();if(version===false){setStatus("Aktivan je STARI Cloudflare kod. To nije greška slike! Otvori TXT ispod i uradi Deploy u Cloudflare-u.",true);$("analyze").disabled=false;return}setStatus("AI analizira sliku i priprema opis i dijalog…");
-try{let res=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({image:imageData,scenes:scenes.map(s=>({n:s.n,sr:s.sr,de:s.de,roles:s.roles||"",dialog:(Array.isArray(s.dialog)&&s.dialog.length?s.dialog.slice(0,30):Array.isArray(window.DEMAX_NEW_DIALOGUE_TOPICS?.[s.n])?window.DEMAX_NEW_DIALOGUE_TOPICS[s.n].slice(0,5).flat().slice(0,30):[]).map(pair=>({de:String(pair[0]||""),sr:String(pair[1]||"")})),extra:(Array.isArray(s.extra)?s.extra.slice(0,8):[]).map(pair=>({de:String(pair[0]||""),sr:String(pair[1]||"")}))})),bankExamples:sampleBank()})});let data=await res.json().catch(()=>({}));if(!res.ok)throw Error(data.error||"HTTP "+res.status);if(!Array.isArray(data.steps)||data.steps.length!==10)throw Error("Nema 10 koraka opisa.");
+$("analyze").onclick=async()=>{if(!imageData){setStatus("Izaberi sliku.",true);return}if(!bank.length){setStatus("Baza opisa slike se još učitava. Pokušaj ponovo.",true);return}let url=$("endpoint").value.trim();if(!/^https:\/\//.test(url)){setStatus("Podesi Cloudflare Worker adresu.",true);return}$("analyze").disabled=true;setStatus("Proveravam Cloudflare AI verziju…");const version=await checkDemaxWorkerVersion();if(version===false){setStatus("Aktivan je STARI Cloudflare kod. To nije greška slike! Otvori TXT ispod i uradi Deploy u Cloudflare-u.",true);$("analyze").disabled=false;return}setStatus("AI analizira sliku i priprema opis i dijalog…");
+try{let res=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({image:imageData,scenes:scenes.map(s=>({n:s.n,sr:s.sr,de:s.de,roles:s.roles||"",dialog:(Array.isArray(s.dialog)?s.dialog:[]).map(pair=>({de:String(pair[0]||""),sr:String(pair[1]||"")})),extra:(Array.isArray(s.extra)?s.extra:[]).map(pair=>({de:String(pair[0]||""),sr:String(pair[1]||"")}))})),bankExamples:sampleBank()})});let data=await res.json().catch(()=>({}));if(!res.ok)throw Error(data.error||"HTTP "+res.status);if(!Array.isArray(data.steps)||data.steps.length!==10)throw Error("Nema 10 koraka opisa.");
 $("dialogue").replaceChildren();dialogRows=[];
 (Array.isArray(data.dialogue)?data.dialogue:[]).forEach((l,i)=>{let el=document.createElement("article");el.className="sentence dialog";add(el,"speaker",String(l.speaker||((i%2)?"B":"A")));add(el,"de",String(l.de||""));add(el,"sr",String(l.sr||""));$("dialogue").append(el);if(l.de)dialogRows.push({de:String(l.de),element:el})});
 let scene=scenes.find(s=>s.n===Number(data.sceneNumber));$("scene").textContent=scene?"Situacija "+scene.n+": "+scene.sr:String(data.sceneName||"Dijalog prema slici");$("bankLink").replaceChildren();if(scene){let a=document.createElement("a");a.href="../DE_MAX_A1_40_SITUACIJA_10_DIJALOGA.html?s="+scene.n+"&d=1";a.target="_blank";a.rel="noopener";a.textContent="Otvori originalnih 10 dijaloga: "+scene.sr;$("bankLink").append(a)}
