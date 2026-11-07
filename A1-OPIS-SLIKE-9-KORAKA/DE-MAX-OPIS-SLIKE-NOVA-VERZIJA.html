@@ -84,7 +84,7 @@ function setStatus(t,bad=false){$("status").textContent=t;$("status").className=
 function view(n){stopSpeech();currentPage=n;for(let i=0;i<3;i++){$("screen"+i).classList.toggle("active",i===n);$("progress"+i).classList.toggle("active",i===n)}if(n===1){$("descriptionScroll").scrollTop=0;requestAnimationFrame(fitDescription)}if(n===2)$("dialogueScroll").scrollTop=0}
 function add(el,cls,txt){let d=document.createElement("div");d.className=cls;d.textContent=txt;el.append(d);return d}
 function norm(s){return String(s||"").toLocaleLowerCase("de").replace(/[^a-zäöüß0-9 ]/g,"").replace(/\s+/g," ").trim()}
-function sampleBank(){if(!bank.length)return [];let every=Math.max(1,Math.floor(bank.length/95)),out=[];for(let i=0;i<bank.length&&out.length<110;i+=every)out.push({de:bank[i].de,sr:bank[i].sr});return out}
+function sampleBank(){if(!bank.length)return [];const quotas={start:24,extra:38,places:30,mann:25,frau:25,kind:25,closing:18},out=[];for(const [cat,limit] of Object.entries(quotas)){let items=bank.filter(x=>x.cat===cat&&x.de&&x.sr);let step=Math.max(1,Math.floor(items.length/limit));for(let i=0;i<items.length&&out.filter(x=>x.cat===cat).length<limit;i+=step)out.push({cat,de:items[i].de,sr:items[i].sr})}return out.slice(0,180)}
 
 function fitDescription(){
  const region=$("descriptionScroll"),list=$("steps");
