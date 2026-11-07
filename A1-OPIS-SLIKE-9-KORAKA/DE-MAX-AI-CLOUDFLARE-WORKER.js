@@ -5,11 +5,15 @@
 const HEADERS={"Content-Type":"application/json","Cache-Control":"no-store"};
 export default {async fetch(request,env){
  const origin=request.headers.get("Origin")||"";
- const allowed=env.ALLOWED_ORIGIN||"https://nemackidemax13-oss.github.io";
- const cors={"Access-Control-Allow-Origin":allowed,"Access-Control-Allow-Methods":"POST, OPTIONS","Access-Control-Allow-Headers":"Content-Type","Vary":"Origin"};
- if(request.method==="OPTIONS")return new Response(null,{status:204,headers:cors});
+ const defaultAllowed=["https://nemackidemax13-oss.github.io"];
+ const extra=String(env.ALLOWED_ORIGINS||env.ALLOWED_ORIGIN||"").split(",").map(s=>s.trim()).filter(Boolean);
+ const allowedOrigins=[...defaultAllowed,...extra];
+ const replitOrigin=/^https:\/\/[a-z0-9-]+(?:\.[a-z0-9-]+)*\.(?:replit\.dev|replit\.app|repl\.co)$/i.test(origin);
+ const originAllowed=!origin||allowedOrigins.includes(origin)||replitOrigin;
+ const cors={"Access-Control-Allow-Origin":originAllowed?(origin||allowedOrigins[0]):allowedOrigins[0],"Access-Control-Allow-Methods":"POST, OPTIONS","Access-Control-Allow-Headers":"Content-Type","Access-Control-Max-Age":"86400","Vary":"Origin"};
+ if(request.method==="OPTIONS")return new Response(null,{status:originAllowed?204:403,headers:cors});
  const respond=(body,status=200)=>new Response(JSON.stringify(body),{status,headers:{...HEADERS,...cors}});
- if(origin && origin!==allowed)return respond({error:"Origin nije dozvoljen."},403);
+ if(!originAllowed)return respond({error:"Origin nije dozvoljen. Dodaj domen u ALLOWED_ORIGINS."},403);
  if(request.method!=="POST")return respond({error:"Samo POST zahtev."},405);
  if(!env.OPENAI_API_KEY)return respond({error:"OPENAI_API_KEY nije podešen na Worker-u."},503);
  try{
@@ -25,7 +29,7 @@ export default {async fetch(request,env){
  const data=await api.json();
  if(!api.ok)return respond({error:"AI servis: "+(data.error?.message||"greška "+api.status)},502);
  const result=JSON.parse(data.choices?.[0]?.message?.content||"{}");
- if(!Array.isArray(result.steps)||typeof result.description!=="string")return respond({error:"AI nije vratio očekivani format. Pokušaj ponovo."},502);
+ if(!Array.isArray(result.steps)||result.steps.length!==10||typeof result.description!=="string")return respond({error:"AI nije vratio očekivani format. Pokušaj ponovo."},502);
  return respond({steps:result.steps.slice(0,10),description:result.description,sceneNumber:Number.isInteger(Number(result.sceneNumber))&&Number(result.sceneNumber)>0?Number(result.sceneNumber):null,sceneName:String(result.sceneName||""),dialogue:Array.isArray(result.dialogue)?result.dialogue.slice(0,12):[]});
  }catch(e){return respond({error:"Greška u obradi zahteva: "+e.message},500)}
 }};
