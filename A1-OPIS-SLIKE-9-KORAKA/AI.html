@@ -1074,7 +1074,7 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
 #screen3 .dialogue-wide-photo #photo3{
  display:block!important;width:100%!important;max-width:100%!important;
  height:100%!important;max-height:100%!important;
- object-fit:cover!important;object-position:center center!important;
+ object-fit:contain!important;object-position:center center!important;
  border-radius:7px!important;
 }
 #screen1 .summary-panel,
@@ -1083,6 +1083,18 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
  padding-left:2px!important;padding-right:2px!important;
 }
 #screen3 #dialogueScroll{padding-left:2px!important;padding-right:2px!important}
+
+/* DE-MAX V80 — show the COMPLETE image in each study-page frame.
+   Maximize width without cropping or stretching people. */
+#screen1 .summary-image-wrap #photo1,
+#screen2 .full-photo-line #photo2,
+#screen3 .dialogue-wide-photo #photo3{
+ object-fit:contain!important;
+ object-position:center center!important;
+ width:100%!important;height:100%!important;
+ max-width:100%!important;max-height:100%!important;
+ background:#f6faff!important;
+}
 </style></head><body><main class="app">
 <header class="header"><h1>Opis slike</h1></header>
 <section class="screen active" id="screen0"><div class="scroll"><div class="panel"><h2 class="title" id="uploadHeading">Ubaci sliku za opis</h2><label class="upload"><span class="upload-icon">📷</span><span class="upload-title">Izaberi fotografiju</span><span class="upload-sub">Dodirni ovde za galeriju ili kameru</span><input id="file" type="file" accept="image/*"></label><div class="photo-reveal" id="photoReveal"><span class="photo-glow" aria-hidden="true"></span><img class="picture" id="photo0" alt="Izabrana slika"><span class="photo-success" aria-hidden="true">✓</span><span class="sparkle sp1" aria-hidden="true">✦</span><span class="sparkle sp2" aria-hidden="true">✧</span><span class="sparkle sp3" aria-hidden="true">✦</span></div><p class="status" id="status">Prvo izaberi sliku.</p></div><div class="demax-text-brand" aria-label="De-Max A1"><span>De-Max</span><strong>A1</strong></div><input id="endpoint" type="hidden" value="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev"></div><div class="footer upload-footer"><button class="action pale" id="resumeAfterGeneration" type="button" hidden>Nastavi opis ❯</button><button class="action green" id="analyze" disabled>Automatski opiši sliku</button></div></section>
