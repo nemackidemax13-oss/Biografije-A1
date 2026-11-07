@@ -14,6 +14,7 @@ export default {async fetch(request,env){
  if(request.method==="OPTIONS")return new Response(null,{status:originAllowed?204:403,headers:cors});
  const respond=(body,status=200)=>new Response(JSON.stringify(body),{status,headers:{...HEADERS,...cors}});
  if(!originAllowed)return respond({error:"Origin nije dozvoljen. Dodaj domen u ALLOWED_ORIGINS."},403);
+ if(request.method==="GET"&&new URL(request.url).searchParams.get("check")==="1")return respond({ok:true,version:"20261107-a1-sablon-start-v36",mode:"DEMAX_STRICT_TEMPLATES",introFix:true});
  if(request.method!=="POST")return respond({error:"Samo POST zahtev."},405);
  if(!env.OPENAI_API_KEY)return respond({error:"OPENAI_API_KEY nije podešen na Worker-u."},503);
  try{
