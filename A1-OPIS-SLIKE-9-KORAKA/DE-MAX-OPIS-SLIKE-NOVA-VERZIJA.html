@@ -203,6 +203,11 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
  #screen1 .full-photo-line{height:clamp(100px,22dvh,160px)!important}
  #screen1 .full-photo-line .picture{max-height:none!important}
 }
+
+/* Sentence-by-sentence faithful Serbian beneath each matching German sentence. */
+#screen1 .full-line-copy{flex:1;min-width:0;display:flex;flex-direction:column}
+#screen1 .full-line-copy .full-step-sr{margin:1px 0 2px;color:#d02c40!important}
+#screen1 .full-legacy-translation{margin:2px 0 4px;padding-top:2px;border-top:1px dotted #e1bfc4}
 </style></head><body><main class="app">
 <header class="header"><h1>Opis slike</h1></header>
 <div class="top-progress"><div class="progress active" id="progress0">1 · Slika</div><div class="progress" id="progress1">2 · Moj opis</div><div class="progress" id="progress2">3 · Dijalog</div></div>
@@ -243,7 +248,7 @@ $("dialogue").replaceChildren();dialogRows=[];
 (Array.isArray(data.dialogue)?data.dialogue:[]).forEach((l,i)=>{let el=document.createElement("article");el.className="sentence dialog";add(el,"speaker",String(l.speaker||((i%2)?"B":"A")));add(el,"de",String(l.de||""));add(el,"sr",String(l.sr||""));$("dialogue").append(el);if(l.de)dialogRows.push({de:String(l.de),element:el})});
 let scene=scenes.find(s=>s.n===Number(data.sceneNumber));$("scene").textContent=scene?"Situacija "+scene.n+": "+scene.sr:String(data.sceneName||"Dijalog prema slici");$("bankLink").replaceChildren();if(scene){let a=document.createElement("a");a.href="../DE_MAX_A1_40_SITUACIJA_10_DIJALOGA.html?s="+scene.n+"&d=1";a.target="_blank";a.rel="noopener";a.textContent="Otvori originalnih 10 dijaloga: "+scene.sr;$("bankLink").append(a)}
 // Druga stranica uvek koristi iste AI recenice kao koraci 1–9.
-fullSteps=data.steps.slice(0,9).map((step,i)=>({title:(i+1)+". "+labels[i],de:String(step.de||"").trim(),sr:String(step.sr||"").trim()}));
+fullSteps=data.steps.slice(0,9).map((step,i)=>({title:(i+1)+". "+labels[i],de:String(step.de||"").trim(),sr:String(step.sr||"").trim(),lines:normalizeStepLines(step)}));
 fullTranslated=false;renderFullDescription();$("translateFull").textContent="Prevod";$("translateFull").setAttribute("aria-pressed","false");
 setStatus("Opis slike i dijalog su spremni.");view(1);requestAnimationFrame(fitFullDescription);
 }catch(e){setStatus("Greška: "+e.message,true)}finally{$("analyze").disabled=false}};
@@ -254,8 +259,18 @@ $("stopDialogue").onclick=()=>stopSpeech();
 function separateGermanSentences(value){
  const text=String(value||"").trim();
  if(!text)return [];
- // Sentence punctuation may occur inside an AI step; keep original order and punctuation.
- return text.match(/[^.!?]+(?:[.!?]+(?=\\s|$)|$)/g)?.map(s=>s.trim()).filter(Boolean)||[text];
+ return text.split(/(?<=[.!?])\s+(?=[A-ZÄÖÜČĆŠĐŽ„"0-9])/u).map(s=>s.trim()).filter(Boolean);
+}
+function normalizeStepLines(step){
+ const provided=Array.isArray(step.lines)?step.lines.filter(x=>x&&typeof x.de==="string"&&x.de.trim()):[];
+ if(provided.length){
+  return provided.map(x=>({de:String(x.de).trim(),sr:String(x.sr||"").trim()}));
+ }
+ // Support older, already-deployed Cloudflare versions while waiting for the new code.
+ const german=separateGermanSentences(step.de);
+ const serbian=separateGermanSentences(step.sr);
+ const balanced=serbian.length===german.length;
+ return german.map((de,i)=>({de,sr:balanced?serbian[i]:""}));
 }
 function renderFullDescription(){
  const field=$("fullDescription");field.replaceChildren();field.classList.toggle("show-serbian",fullTranslated);
@@ -264,19 +279,34 @@ function renderFullDescription(){
   const section=document.createElement("section");section.className="full-step";
   const title=document.createElement("div");title.className="full-step-title";title.textContent=step.title;
   const sentences=document.createElement("div");sentences.className="full-step-lines";
-  const parts=separateGermanSentences(step.de);
-  parts.forEach((sentence,j)=>{
+  step.lines.forEach((sentence,j)=>{
    const line=document.createElement("div");line.className="full-line";
-   const de=document.createElement("span");de.className="full-step-de";de.textContent=sentence;
+   const lineText=document.createElement("div");lineText.className="full-line-copy";
+   const de=document.createElement("span");de.className="full-step-de";de.textContent=sentence.de;
    de.contentEditable="true";de.spellcheck=false;de.setAttribute("aria-label","Nemačka rečenica "+(j+1)+" koraka "+(i+1));
-   de.addEventListener("input",()=>{step.de=Array.from(sentences.querySelectorAll(".full-step-de")).map(el=>el.innerText.trim()).filter(Boolean).join(" ");requestAnimationFrame(fitFullDescription)});
+   const sr=document.createElement("div");sr.className="full-step-sr";sr.textContent=sentence.sr;
+   de.addEventListener("input",()=>{
+    const changed=de.innerText.trim();
+    sentence.de=changed;
+    step.de=step.lines.map(x=>x.de).filter(Boolean).join(" ");
+    if(sentence.sr){sr.textContent="Prevod treba obnoviti nakon izmene nemačke rečenice.";sentence.sr="";}
+    requestAnimationFrame(fitFullDescription);
+   });
    const index=fullAudioLines.length;
    const listen=document.createElement("button");listen.type="button";listen.className="full-line-play";listen.textContent="▶";listen.setAttribute("aria-label","Slušaj ili zaustavi rečenicu "+(index+1));listen.title="Slušaj / Stop";
    listen.onclick=()=>toggleFullLine(index);
-   line.append(de,listen);sentences.append(line);fullAudioLines.push({line,de,listen,section});
+   lineText.append(de,sr);
+   line.append(lineText,listen);sentences.append(line);
+   fullAudioLines.push({line,de,listen,section});
   });
-  const sr=document.createElement("div");sr.className="full-step-sr";sr.textContent=step.sr;
-  section.append(title,sentences,sr);field.append(section);
+  // Legacy Worker sends one paragraph translation for multiple German sentences.
+  // Never present the paragraph as the exact translation of just the last sentence.
+  if(!Array.isArray(step.lines)||!step.lines.some(x=>x.sr)){
+   const backup=document.createElement("div");backup.className="full-step-sr full-legacy-translation";
+   backup.textContent=step.sr||"";
+   section.append(title,sentences,backup);
+  }else{section.append(title,sentences)}
+  field.append(section);
  });
  updateFullAudioUI();requestAnimationFrame(fitFullDescription);
 }
