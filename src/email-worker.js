@@ -1,4 +1,4 @@
-/* DE-MAX TUTIN — ÖSD A1 Worker, 35 mejlova — 01.11.2026.
+/* DE-MAX TUTIN — ÖSD A1 Worker, 35 mejlova — 10.11.2026. v7: pouzdanija provera prirodnih A1 odgovora.
  * Dva obavezna podatka (dan + sat), perspektiva ICH/DU/WIR,
  * obrada SITUATION / primljenog mejla, nula bodova za skroz
  * promašenu temu, tri prihvaćena završna pozdrava.
@@ -346,7 +346,7 @@ function databaseGuard(task, index, i, evidence, answer) {
     cap = absent.length === required.length ? 0 : 1;
     tips.push("Nedostaje " + absent.map((x) => label[x] || x).join(" i ") + ". Pitanje tra\u017Ei " + required.map((x) => label[x] || x).join(" i ") + ".");
   }
-  if (!followsVerbRule(evidence, rule)) {
+  if (!followsVerbRule(evidence, rule) && !a1AcceptMeaningfulParaphrase(task, i, evidence)) {
     cap = Math.min(cap, 1);
     tips.push("Koristi ISTI glagol iz pitanja: " + (rule.perspective === "neutral" ? "" : rule.perspective.toUpperCase() + " ") + rule.answerVerb + (rule.actionVerbs?.length ? " + " + rule.actionVerbs.join(", ") : "") + ".");
   }
@@ -366,6 +366,24 @@ function databaseGuard(task, index, i, evidence, answer) {
   return cap < 2 ? { max: cap, feedback: tips.join(" ") } : null;
 }
 __name(databaseGuard, "databaseGuard");
+/* 10.11.2026: odgovor moze biti ispravan i kada ucenik prirodno parafrazira
+   pitanje. Strogi regex za "kommt ... mit" i "anziehen" je ranije odbacivao
+   pravilne recenice, npr. "Ich komme mit meinem Mann" i "Ich moechte
+   eine Jeanshose tragen". Model i dalje odvojeno proverava smisao i postavku. */
+function a1AcceptMeaningfulParaphrase(task, questionIndex, evidence) {
+  const q = String(task.questions?.[questionIndex] || "").normalize("NFC");
+  const a = String(evidence || "").normalize("NFC");
+  if (/^\s*Wer\s+kommt\s+noch\s+mit\s*\?/iu.test(q)) {
+    return /\bich\s+komme\b[^.!?\n]{0,90}\bmit\s+(?:mein(?:e|em|er|en)?|unser(?:e|em|er|en)?|ein(?:em|er|en)?|de[mrn]|[A-ZÄÖÜ][\p{L}]+)\b/iu.test(a) ||
+      /\b(?:mein(?:e|em|er|en)?|unser(?:e|em|er|en)?)\s+[\p{L}]+[^.!?\n]{0,90}\b(?:kommt|kommen|begleitet|begleiten|geht|gehen)\b/iu.test(a);
+  }
+  if (/^\s*Was\s+möchtest\s+du\s+anziehen\s*\?/iu.test(q)) {
+    return /\bich\s+(?:(?:möchte|will|werde)\b[^.!?\n]{0,110}\b(?:tragen|anziehen)\b|trage\b|ziehe\b[^.!?\n]{0,90}\ban\b)/iu.test(a);
+  }
+  return false;
+}
+__name(a1AcceptMeaningfulParaphrase, "a1AcceptMeaningfulParaphrase");
+
 function questionRequirements(task) {
   return task.questions.map((q, i) => {
     const r = task.checkingRules?.[i];
@@ -396,7 +414,7 @@ function checkCorrectedEmailAgainstDatabase(task, parsed) {
     if (a1NeedsDayAndClock(task.questions[i],rule) && (!A1_DAY.test(fixed) || !A1_HOUR.test(fixed))) {
       issues.push("Pitanje " + (i + 1) + ": ispravka mora sadržati I DAN I SAT. Ako učenik nije naveo neki podatak, u correctedText dodaj konkretan dopušten primer, a u objašnjenju naglasi da je dopuna samo primer, bez novih bodova. Ako je jedan podatak dat i odgovara situaciji, sačuvaj ga.");
     }
-    if (rule && !followsVerbRule(fixed, rule)) {
+    if (rule && !followsVerbRule(fixed, rule) && !a1AcceptMeaningfulParaphrase(task, i, fixed)) {
       issues.push("Pitanje " + (i + 1) + ": ispravljena re\u010Denica nema perspektivu " + rule.perspective + " ili glagol " + rule.answerVerb + (rule.actionVerbs?.length ? " / " + rule.actionVerbs.join(", ") : "") + ".");
     }
   }
@@ -802,7 +820,16 @@ async function grade(body, env) {
     }
   }
   if (correctionIssues.length) {
-    return { status: 502, data: { error: "AI nije pouzdano ispravio nema\u010Dke re\u010Denice prema pitanjima iz baze. Mejlu nisu dodeljeni novi bodovi; poku\u0161aj ponovo." } };
+    // Popravni AI poziv nije uvek u stanju da proizvede DOSLOVAN citat u
+    // correctedEvidence. To nije razlog da odbacimo vec izvrsenu procenu
+    // originalnog rada: bodovi se racunaju iskljucivo iz ORIGINALA, kroz
+    // questionEvidence + databaseGuard + OeSD K/T/L/F.
+    // Nepriznate ispravke izbacujemo iz evidencije, uz iskrenu napomenu.
+    parsed.correctedEvidence = parsed.correctedEvidence.map((value, i) =>
+      parsed.questionEvidence[i] && isRealEvidence(parsed.correctedText, value)
+        ? String(value) : "");
+    parsed.feedback = (String(parsed.feedback || "").trim() +
+      "\nNAPOMENA: Dodatna potvrda pojedinih automatskih ispravki nije uspela. Bodovi su izracunati iz tvog originalnog mejla, a nepotvrdjene ispravke i prevod proveri sa nastavnikom.").trim();
   }
   const points = fullyOffTopic?[0,0,0]:parsed.points.map((x) => clamp(x, 2));
   const ruleWarnings = [];
@@ -1226,7 +1253,7 @@ var email_worker_default = {
   async fetch(request, env) {
     const url = new URL(request.url), origin = request.headers.get("Origin");
     if (request.method === "GET" && url.pathname === "/health")
-      return json({ status: "ok", openaiConfigured: Boolean(env.OPENAI_API_KEY), tasks: 35, provider: "OpenAI", verificationVersion: "a1-osd-schreiben-v6-20261101", workerBuild: "20261101-a1-potpis-ime-pozdrav", attemptsLimitedByWorker: false }, 200, origin);
+      return json({ status: "ok", openaiConfigured: Boolean(env.OPENAI_API_KEY), tasks: 35, provider: "OpenAI", verificationVersion: "a1-osd-schreiben-v6-20261101", workerBuild: "20261110-a1-prirodni-odgovori-v7", attemptsLimitedByWorker: false }, 200, origin);
     if (url.pathname !== "/api/check-email" && url.pathname !== "/api/rafaela-review" && url.pathname !== "/api/check-a2-email")
       return json({ error: "Nepoznata putanja. Koristi /health, /api/check-email ili /api/rafaela-review." }, 404, origin);
     if (!SITE_ORIGINS.has(origin))
