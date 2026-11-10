@@ -424,18 +424,18 @@ Odgovori SAMO JSON objektom {steps:[tačno 10 objekata {de,sr:""}],description:"
  // Unknown visual characteristics must not be guessed from the language bank.
  const personMatches=(de,word)=>new RegExp("^(?:Der |Die |Das |Ich denke, (?:der |die |das ))"+word+"\\b").test(de);
  const guardedPerson=(de)=>{
-  const m=de.match(/^(?:Ich denke, )?(?:Der Mann|Die Frau|Das Kind|der Mann|die Frau|das Kind)\\b/);
+  const m=de.match(/^(?:Ich denke, )?(?:Der Mann|Die Frau|Das Kind|der Mann|die Frau|das Kind)\b/);
   if(!m)return true;
   const kind=/Mann/.test(m[0])?"Mann":/Frau/.test(m[0])?"Frau":"Kind";
   const possibles=peopleObserved.filter(p=>p?.kind===kind);
   if(!possibles.length)return false;
-  if(/\\bsteht\\b/.test(de)&&!possibles.some(p=>p.posture==="steht"))return false;
-  if(/\\bsitzt\\b/.test(de)&&!possibles.some(p=>p.posture==="sitzt"))return false;
-  if(/\\blinks\\b/.test(de)&&!possibles.some(p=>p.position==="links"))return false;
-  if(/\\brechts\\b/.test(de)&&!possibles.some(p=>p.position==="rechts"))return false;
-  if(/\\bBrille\\b/.test(de)&&!possibles.some(p=>p.glasses===true))return false;
-  if(/\\bBart\\b/.test(de)&&!possibles.some(p=>p.beard))return false;
-  if(/\\bSchnurrbart\\b/.test(de)&&!possibles.some(p=>p.moustache===true))return false;
+  if(/\bsteht\b/.test(de)&&!possibles.some(p=>p.posture==="steht"))return false;
+  if(/\bsitzt\b/.test(de)&&!possibles.some(p=>p.posture==="sitzt"))return false;
+  if(/\blinks\b/.test(de)&&!possibles.some(p=>p.position==="links"))return false;
+  if(/\brechts\b/.test(de)&&!possibles.some(p=>p.position==="rechts"))return false;
+  if(/\bBrille\b/.test(de)&&!possibles.some(p=>p.glasses===true))return false;
+  if(/\bBart\b/.test(de)&&!possibles.some(p=>p.beard))return false;
+  if(/\bSchnurrbart\b/.test(de)&&!possibles.some(p=>p.moustache===true))return false;
   return true;
  };
  for(const step of chosen){
@@ -578,9 +578,9 @@ Odgovori SAMO JSON objektom {steps:[tačno 10 objekata {de,sr:""}],description:"
  const introLines=chosen[0].lines.filter(x=>/^Auf (?:diesem|dem) Bild sehe ich /.test(x.de));
  const locationLines=chosen[2].lines.filter(x=>!introLines.some(y=>y.de===x.de));
  const rest=allLines.filter(x=>!introLines.includes(x)&&!locationLines.includes(x)&&x.de!=="Das war meine Bildbeschreibung.");
- const actorPrefix=(line)=>/^(?:Der Mann|Ich denke, der Mann)\\b/.test(line.de)?"Mann":
-  /^(?:Die Frau|Ich denke, die Frau)\\b/.test(line.de)?"Frau":
-  /^(?:Das Kind|Ich denke, das Kind)\\b/.test(line.de)?"Kind":null;
+ const actorPrefix=(line)=>/^(?:Der Mann|Ich denke, der Mann)\b/.test(line.de)?"Mann":
+  /^(?:Die Frau|Ich denke, die Frau)\b/.test(line.de)?"Frau":
+  /^(?:Das Kind|Ich denke, das Kind)\b/.test(line.de)?"Kind":null;
  const actorGroups=["Mann","Frau","Kind"].flatMap(kind=>rest.filter(x=>actorPrefix(x)===kind));
  const otherLines=rest.filter(x=>!actorPrefix(x));
  const end=allLines.find(x=>x.de==="Das war meine Bildbeschreibung.");
