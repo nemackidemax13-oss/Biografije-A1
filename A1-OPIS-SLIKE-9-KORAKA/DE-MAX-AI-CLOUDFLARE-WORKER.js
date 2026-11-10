@@ -14,7 +14,7 @@ export default {async fetch(request,env){
  if(request.method==="OPTIONS")return new Response(null,{status:originAllowed?204:403,headers:cors});
  const respond=(body,status=200)=>new Response(JSON.stringify(body),{status,headers:{...HEADERS,...cors}});
  if(!originAllowed)return respond({error:"Origin nije dozvoljen. Dodaj domen u ALLOWED_ORIGINS."},403);
- if(request.method==="GET"&&new URL(request.url).searchParams.get("check")==="1")return respond({ok:true,version:"20261107-manja-slika-lacht-v46",mode:"DEMAX_STRICT_TEMPLATES",introFix:true});
+ if(request.method==="GET"&&new URL(request.url).searchParams.get("check")==="1")return respond({ok:true,version:"20261110-opis-po-osobi-i-dijalog-v84",mode:"DEMAX_STRICT_TEMPLATES",introFix:true});
  if(request.method!=="POST")return respond({error:"Samo POST zahtev."},405);
  if(!env.OPENAI_API_KEY)return respond({error:"OPENAI_API_KEY nije podešen na Worker-u."},503);
  try{
@@ -38,8 +38,8 @@ OBAVEZAN REDOSLED IZ ORIGINALNE BAZE 9 KORAKA: steps ima 10 elemenata, za prve 9
 
 FIKSNI DODATNI A1 ŠABLONI: dopušteni su samo postojeći početni izrazi 'Auf diesem Bild sehe ich ...', gramatički ispravne rečenice oblika 'Der Mann/Die Frau/Das Kind trägt [odevni predmet i boja]' iz kataloga, '... hat [dužina/boja] Haare.', '... hat [boja] Augen.', '... ist ungefähr [broj] Jahre alt.', 'Ich denke, ... ist ungefähr ... Jahre alt.', 'Der Mann hat einen Bart/Schnurrbart.', i očigledne mimike; to su sistemski unapred generisane dozvoljene varijante. 9. korak dodatno koristi SAMO sistemski dozvoljene fiksne oblike 'Im Hintergrund sehe ich noch ...' i 'Ich denke, die Personen/der Mann/die Frau kauft/kaufen ...', kada su pouzdano potvrđeni vizuelnom analizom, uz tačan prevod; vreme se uzima iz originalnih weather/closing rečenica. NEMOJ slobodno kombinovati nepovezane rečenice, dodavati još jedan nepoznat predmet niti slobodno pisati nove nemačke rečenice.
 
-PRAVILA KVALITETA: pre pisanja u sebi proveri koliko osoba je prisutno, pripadnost odeće, položaj na slici, lice i kosu svake osobe, mesto i objekte. Opisi detaljno kada je slika jasna: 18–35 kratkih rečenica je moguće, ali broj nije cilj. Ako slika nema dovoljno informacija, napiši manje. Izbor scena sceneNumber je najviše 1–40, i to jedna od originalnih 40 situacija, ako postoji odgovarajuća. Ne piši nove dijaloge: izabrani originalni dijalog već postoji i server ga uzima iz baze. Za DODATNU POUZDANOST, pored steps obavezno vrati i stepSentenceIds: objekat sa ključevima "0"..."8" gde je vrednost niz indeksa i iz kataloga context.bankSentences; svaki i mora biti doslovno ID odgovarajuće vidljive rečenice iz DE-MAX baze, nikada tekst koji nisi video. Koraci 4, 5, 6, 7 i 8 treba da imaju rečenice kada su detalji na slici vidljivi. Primenjivaće se i strukturirani vizuelni podaci iz prvog prolaza. Možeš predložiti dialogueIndices kao rastući niz 10 ili 12 CELOBROJNIH indeksa originalnih replika iz context.dialogueOptions za scenu: izaberi replike koje logično idu od pozdrava do oproštaja, očuvaj redosled i smenjivanje A/B. Ako nema odgovarajuće scene, ostavi niz prazan.
-Odgovori SAMO JSON objektom {steps:[tačno 10 objekata {de,sr:""}],description:"",sceneNumber:broj ili null,sceneName:"",dialogueIndices:[indeksi]}. Nema drugog teksta.`;
+PRAVILA KVALITETA: pre pisanja u sebi proveri koliko osoba je prisutno, pripadnost odeće, položaj na slici, lice i kosu svake osobe, mesto i objekte. Opisi detaljno kada je slika jasna: 18–35 kratkih rečenica je moguće, ali broj nije cilj. Ako slika nema dovoljno informacija, napiši manje. Izbor scena sceneNumber je najviše 1–40, i to jedna od originalnih 40 situacija, ako postoji odgovarajuća. Dijalog napisi NOV, stvaran i prirodan A1 razgovor od 10 do 12 kratkih replika izmedju A i B koji odgovara bas fotografiji; originalne dijaloge koristi SAMO kao inspiraciju za nivo jezika, ne kopiraj ih ako ne odgovaraju slici. Bez izmisljanja vidljivih predmeta ili tvrdnji da se radnja zaista desila. Vrati polje dialogue sa objektima {speaker:"A"|"B",de:"...",sr:"..."}, koji se strogo smenjuju; sve replike prevedi tacno na srpski. Za DODATNU POUZDANOST, pored steps obavezno vrati i stepSentenceIds: objekat sa ključevima "0"..."8" gde je vrednost niz indeksa i iz kataloga context.bankSentences; svaki i mora biti doslovno ID odgovarajuće vidljive rečenice iz DE-MAX baze, nikada tekst koji nisi video. Koraci 4, 5, 6, 7 i 8 treba da imaju rečenice kada su detalji na slici vidljivi. Primenjivaće se i strukturirani vizuelni podaci iz prvog prolaza. Možeš predložiti dialogueIndices kao rastući niz 10 ili 12 CELOBROJNIH indeksa originalnih replika iz context.dialogueOptions za scenu: izaberi replike koje logično idu od pozdrava do oproštaja, očuvaj redosled i smenjivanje A/B. Ako nema odgovarajuće scene, ostavi niz prazan.
+Odgovori SAMO JSON objektom {steps:[tačno 10 objekata {de,sr:""}],description:"",sceneNumber:broj ili null,sceneName:"",dialogue:[10 do 12 objekata {speaker:"A"|"B",de:"...",sr:"..."}]}. Nema drugog teksta.`;
  // Data comes from the two exact DE-MAX sources selected by the teacher.
  // "index.html" loads the photo-description BANK from ./shared.js.
  // The 40-dialogue phone page loads DATA_01/02 and DODATNE_01/02.
@@ -59,7 +59,7 @@ Odgovori SAMO JSON objektom {steps:[tačno 10 objekata {de,sr:""}],description:"
   return respond({error:"Nije učitana originalna DE-MAX baza opisa i 40 dijaloga. Osveži stranicu i pokušaj ponovo."},422);
  const sceneLabels=fullScenes.map(s=>({n:s.n,sr:s.sr,de:s.de,roles:s.roles}));
  // Phase 1: visual recognition alone, WITHOUT suggesting arbitrary sentences.
- const visionSystem="Prepoznaj samo ono što se STVARNO VIDI na fotografiji za nemački A1 usmeni ispit. Odgovori ISKLJUČIVO JSON objektom sa sledećim poljima: sceneNumber (broj iz 40 ponuđenih situacija ili null), people (niz za svaku vidljivu osobu, od leve ka desnoj; svaka ima kind: 'Mann'|'Frau'|'Kind'|'unsicher', stature: 'groß'|'klein'|'schlank'|'sportlich'|null, position: 'links'|'rechts'|'Mitte'|null, posture: 'steht'|'sitzt'|null, glasses:boolean|null, beard:'kurzen'|'langen'|'grauen'|'schwarzen'|'braunen'|null samo kod muškarca, moustache:boolean|null samo kod muškarca, faceShape:'oval'|'rund'|null, eyeColor:'blau'|'braun'|'grün'|'grau'|null SAMO AKO JE ZAISTA JASNO, clothes:[{item:'Jacke'|'Hose'|'Jeans'|'Bluse'|'Kleid'|'T-Shirt'|'Hemd'|'Pullover'|'Mantel'|'Rock'|'Anzug'|'Schuhe'|'Stiefel'|'Turnschuhe'|'Sandalen'|'Mütze'|'Schal'|'Hut'|'Arbeitskleidung'|'Schürze'|'Handschuhe'|'Brille'|'Kittel'|'Sakko'|'Uniform',color:'schwarz'|'weiß'|'blau'|'rot'|'grün'|'gelb'|'grau'|'braun'|'rosa'|'beig'|'orangefarben'|'lila'|null}] (do 5 stvari koje se stvarno vide), hair:{length:'kurze'|'lange'|'mittellange'|'lockige'|'glatte'|null,color:'schwarze'|'braune'|'blonde'|'graue'|'weiße'|'rote'|'dunkelbraune'|'hellbraune'|null}|null, ageApprox:ceo broj 2..90 ili null, expression:'lächelt'|'lacht'|null, watch:boolean|null, earrings:boolean|null, necklace:boolean|null, appearance:'kratko samo vidljivo na srpskom', clothesNote:'kratko na srpskom', hairNote:'kratko na srpskom'}), backgroundObjects (niz SAMO jasnih objekata: 'Tisch','Stuhl','Fenster','Baum','Bäume','Blumen','Auto','Brot','Regal','Tür','Straße','Sonne','Buch','Hund','Katze','Wasser'; prazno ako nije jasno), visualFacts:[kratke činjenice na srpskom], interaction:'jasna radnja na srpskom'|null, indoor:boolean|null, weather:'sunny'|'rainy'|'cloudy'|null. NE IZMISLJAJ boje očiju, kosu, sat, garderobu, broj godina ili bilo šta što nije dovoljno jasno. Ako osoba nije sigurno muško/žensko, koristi kind:'unsicher' (bez izmišljanja pola). backgroundObjects sadrži SAMO predmete koji su zaista u POZADINI, ne u rukama ili prvom planu; ako se pozadina ne vidi, backgroundObjects:[]; ako je kosa prekrivena hair:null. DODAJ shopping:{visible:boolean,subject:'personen'|'mann'|'frau'|'kind'|null,item:'Brot'|'Obst'|'Gemüse'|'Blumen'|'Kleidung'|'Schuhe'|'Medikamente'|'Bücher'|'Fleisch'|'Lebensmittel'|'Fahrkarten'|null}; shopping.visible postavi true SAMO ako postoji jasan čin kupovine ili plaćanja na fotografiji, ne samo zato što ljudi stoje u prodavnici. subject:'personen' samo ako obe osobe zaista kupuju, inače pojedinačno. item isključivo ako je to što kupuju jasno vidljivo; ako nije, shopping.item=null. indoor:false SAMO kad su stvarno napolju, a weather definisi SAMO ako to dokazuje slika.";
+ const visionSystem="OBAVEZNO razlikuj sedenje od stajanja: ako osoba sedi posture=sitzt, nikad steht; ako stoji posture=steht, nikad sitzt. Obavezno proveri ko je levo/desno. Ne pripisuj odecu jedne osobe drugoj. Prvo utvrdi stvarne cinjenice, bez dopunjavanja iz primera. Prepoznaj samo ono što se STVARNO VIDI na fotografiji za nemački A1 usmeni ispit. Odgovori ISKLJUČIVO JSON objektom sa sledećim poljima: sceneNumber (broj iz 40 ponuđenih situacija ili null), people (niz za svaku vidljivu osobu, od leve ka desnoj; svaka ima kind: 'Mann'|'Frau'|'Kind'|'unsicher', stature: 'groß'|'klein'|'schlank'|'sportlich'|null, position: 'links'|'rechts'|'Mitte'|null, posture: 'steht'|'sitzt'|null, glasses:boolean|null, beard:'kurzen'|'langen'|'grauen'|'schwarzen'|'braunen'|null samo kod muškarca, moustache:boolean|null samo kod muškarca, faceShape:'oval'|'rund'|null, eyeColor:'blau'|'braun'|'grün'|'grau'|null SAMO AKO JE ZAISTA JASNO, clothes:[{item:'Jacke'|'Hose'|'Jeans'|'Bluse'|'Kleid'|'T-Shirt'|'Hemd'|'Pullover'|'Mantel'|'Rock'|'Anzug'|'Schuhe'|'Stiefel'|'Turnschuhe'|'Sandalen'|'Mütze'|'Schal'|'Hut'|'Arbeitskleidung'|'Schürze'|'Handschuhe'|'Brille'|'Kittel'|'Sakko'|'Uniform',color:'schwarz'|'weiß'|'blau'|'rot'|'grün'|'gelb'|'grau'|'braun'|'rosa'|'beig'|'orangefarben'|'lila'|null}] (do 5 stvari koje se stvarno vide), hair:{length:'kurze'|'lange'|'mittellange'|'lockige'|'glatte'|null,color:'schwarze'|'braune'|'blonde'|'graue'|'weiße'|'rote'|'dunkelbraune'|'hellbraune'|null}|null, ageApprox:ceo broj 2..90 ili null, expression:'lächelt'|'lacht'|null, watch:boolean|null, earrings:boolean|null, necklace:boolean|null, appearance:'kratko samo vidljivo na srpskom', clothesNote:'kratko na srpskom', hairNote:'kratko na srpskom'}), backgroundObjects (niz SAMO jasnih objekata: 'Tisch','Stuhl','Fenster','Baum','Bäume','Blumen','Auto','Brot','Regal','Tür','Straße','Sonne','Buch','Hund','Katze','Wasser'; prazno ako nije jasno), visualFacts:[kratke činjenice na srpskom], interaction:'jasna radnja na srpskom'|null, indoor:boolean|null, weather:'sunny'|'rainy'|'cloudy'|null. NE IZMISLJAJ boje očiju, kosu, sat, garderobu, broj godina ili bilo šta što nije dovoljno jasno. Ako osoba nije sigurno muško/žensko, koristi kind:'unsicher' (bez izmišljanja pola). backgroundObjects sadrži SAMO predmete koji su zaista u POZADINI, ne u rukama ili prvom planu; ako se pozadina ne vidi, backgroundObjects:[]; ako je kosa prekrivena hair:null. DODAJ shopping:{visible:boolean,subject:'personen'|'mann'|'frau'|'kind'|null,item:'Brot'|'Obst'|'Gemüse'|'Blumen'|'Kleidung'|'Schuhe'|'Medikamente'|'Bücher'|'Fleisch'|'Lebensmittel'|'Fahrkarten'|null}; shopping.visible postavi true SAMO ako postoji jasan čin kupovine ili plaćanja na fotografiji, ne samo zato što ljudi stoje u prodavnici. subject:'personen' samo ako obe osobe zaista kupuju, inače pojedinačno. item isključivo ako je to što kupuju jasno vidljivo; ako nije, shopping.item=null. indoor:false SAMO kad su stvarno napolju, a weather definisi SAMO ako to dokazuje slika.";
  let observation={sceneNumber:null,people:[],visualFacts:[]};
  try{
   const vi=await fetch("https://api.openai.com/v1/chat/completions",{
@@ -94,7 +94,7 @@ Odgovori SAMO JSON objektom {steps:[tačno 10 objekata {de,sr:""}],description:"
   method:"POST",headers:{"Authorization":"Bearer "+env.OPENAI_API_KEY,"Content-Type":"application/json"},
   body:JSON.stringify({
    model:env.OPENAI_MODEL||"gpt-4.1-mini",temperature:0,response_format:{type:"json_object"},max_tokens:5500,
-   messages:[{role:"system",content:instructions},{role:"user",content:[{type:"text",text:"Koristi SAMO DE-MAX banku i odobrene šablone prema REALNOJ SLICI. Redosled 1 osoba, 2 razgovor, 3 mesto, 4 izgled obe osobe, 5 odeća, 6 kosa, 7 godine, 8 detalji, 9 završne. Relevantni podaci originalnih baza: "+context},{type:"image_url",image_url:{url:image,detail:"high"}}]}]
+   messages:[{role:"system",content:instructions},{role:"user",content:[{type:"text",text:"Koristi SAMO DE-MAX banku i odobrene šablone za 9 tematskih koraka. Za KOMPLETAN OPIS redosled je UVOD, MESTO, sve o MUSKARCU (polozaj/izgled/naocare/brada/odeca/kosa/godine), sve o ZENI istim redosledom, ostale osobe, PREDMETI I POZADINA, ZAVRSETAK. Nikad nemoj mesati opise osoba. Sedenje i stajanje moraju biti tacni! Napiši i NOV prirodan razgovor sa 10-12 replika o konkretnoj vidljivoj situaciji, originalni dijalozi su samo jezički primeri. Relevantni podaci originalnih baza: "+context},{type:"image_url",image_url:{url:image,detail:"high"}}]}]
   })
  });
  const data=await api.json();
@@ -420,6 +420,29 @@ Odgovori SAMO JSON objektom {steps:[tačno 10 objekata {de,sr:""}],description:"
  const visibleObjs=new Set(Array.isArray(observation.backgroundObjects)?observation.backgroundObjects:[]);
  for(const [word,de] of backgroundTemplates)
   if(visibleObjs.has(word))append(7,de);
+ // Remove unsupported model claims before forming either the detailed or complete description.
+ // Unknown visual characteristics must not be guessed from the language bank.
+ const personMatches=(de,word)=>new RegExp("^(?:Der |Die |Das |Ich denke, (?:der |die |das ))"+word+"\\b").test(de);
+ const guardedPerson=(de)=>{
+  const m=de.match(/^(?:Ich denke, )?(?:Der Mann|Die Frau|Das Kind|der Mann|die Frau|das Kind)\\b/);
+  if(!m)return true;
+  const kind=/Mann/.test(m[0])?"Mann":/Frau/.test(m[0])?"Frau":"Kind";
+  const possibles=peopleObserved.filter(p=>p?.kind===kind);
+  if(!possibles.length)return false;
+  if(/\\bsteht\\b/.test(de)&&!possibles.some(p=>p.posture==="steht"))return false;
+  if(/\\bsitzt\\b/.test(de)&&!possibles.some(p=>p.posture==="sitzt"))return false;
+  if(/\\blinks\\b/.test(de)&&!possibles.some(p=>p.position==="links"))return false;
+  if(/\\brechts\\b/.test(de)&&!possibles.some(p=>p.position==="rechts"))return false;
+  if(/\\bBrille\\b/.test(de)&&!possibles.some(p=>p.glasses===true))return false;
+  if(/\\bBart\\b/.test(de)&&!possibles.some(p=>p.beard))return false;
+  if(/\\bSchnurrbart\\b/.test(de)&&!possibles.some(p=>p.moustache===true))return false;
+  return true;
+ };
+ for(const step of chosen){
+  step.lines=step.lines.filter(x=>guardedPerson(x.de));
+  step.de=step.lines.map(x=>x.de).join(" ");
+  step.sr=step.lines.map(x=>x.sr).join(" ");
+ }
  // DE-MAX bank normally starts "Auf dem Bild sehe ich ...",
  // while the classroom template uses "Auf diesem Bild sehe ich ...".
  // Convert a recognized equivalent rather than rejecting a correct picture description.
@@ -550,32 +573,41 @@ Odgovori SAMO JSON objektom {steps:[tačno 10 objekata {de,sr:""}],description:"
  // A short or unclear photo may have fewer than nine supported sentences;
  // return all verified content rather than fail the whole exercise.
  if(allLines.length<3)return respond({error:"Fotografija nema dovoljno jasno prepoznatih detalja. Pokušaj sa jasnijom slikom.",rejected},502);
- const summary={de:allLines.map(x=>x.de).join(" "),sr:allLines.map(x=>x.sr).join(" "),lines:allLines};
+ // Reader-friendly order, independently of the nine thematic teaching sections.
+ // Keep German and Serbian texts paired while grouping all visible facts per person.
+ const introLines=chosen[0].lines.filter(x=>/^Auf (?:diesem|dem) Bild sehe ich /.test(x.de));
+ const locationLines=chosen[2].lines.filter(x=>!introLines.some(y=>y.de===x.de));
+ const rest=allLines.filter(x=>!introLines.includes(x)&&!locationLines.includes(x)&&x.de!=="Das war meine Bildbeschreibung.");
+ const actorPrefix=(line)=>/^(?:Der Mann|Ich denke, der Mann)\\b/.test(line.de)?"Mann":
+  /^(?:Die Frau|Ich denke, die Frau)\\b/.test(line.de)?"Frau":
+  /^(?:Das Kind|Ich denke, das Kind)\\b/.test(line.de)?"Kind":null;
+ const actorGroups=["Mann","Frau","Kind"].flatMap(kind=>rest.filter(x=>actorPrefix(x)===kind));
+ const otherLines=rest.filter(x=>!actorPrefix(x));
+ const end=allLines.find(x=>x.de==="Das war meine Bildbeschreibung.");
+ const ordered=[...introLines,...locationLines,...actorGroups,...otherLines,...(end?[end]:[])];
+ // Text may contain the same sentence in multiple sections; remove duplicates.
+ const summaryLines=[...new Map(ordered.map(x=>[x.de,x])).values()];
+ const summary={de:summaryLines.map(x=>x.de).join(" "),sr:summaryLines.map(x=>x.sr).join(" "),lines:summaryLines};
  chosen[9]=summary;
 
- // Never synthesize a dialogue: every line must be an ORIGINAL pairing from the
- // 40-scene phone dialogue database. Includes the teacher's additional expressions.
+ // Prefer a new A1 role-play tailored to visible scene facts.
+ // Role-play is a plausible exercise, not a claim about what the people actually said.
  const selectedScene=matched;
- const rawDialogue=selectedScene?.dialog||[];
- const candidate=Array.isArray(result.dialogueIndices)?result.dialogueIndices.map(Number):[];
- const good=candidate.length>=10&&candidate.length<=12&&candidate.length%2===0&&
-   new Set(candidate).size===candidate.length&&candidate[0]===0&&
-   candidate.every((v,i)=>Number.isInteger(v)&&v>=0&&v<rawDialogue.length&&v%2===i%2&&(i===0||v>candidate[i-1]));
- const indices=good?candidate:(rawDialogue.length>=12?
-   [...Array.from({length:10},(_,i)=>i),rawDialogue.length-2,rawDialogue.length-1]:
-   Array.from({length:Math.min(rawDialogue.length,12)},(_,i)=>i));
- const dialogue=indices.map((ix,i)=>({
+ const draftDialogue=Array.isArray(result.dialogue)?result.dialogue:[];
+ const dialogue=draftDialogue.slice(0,12).map((x,i)=>({
   speaker:i%2?"B":"A",
-  de:String(rawDialogue[ix]?.de||"").trim(),
-  sr:String(rawDialogue[ix]?.sr||"").trim()
+  de:String(x?.de||"").trim().slice(0,230),
+  sr:String(x?.sr||"").trim().slice(0,270)
  })).filter(x=>x.de&&x.sr);
+ // Never replace missing scene-specific dialogue with an unrelated generic script.
+ if(dialogue.length<10||dialogue.length%2!==0)dialogue.length=0;
  return respond({
   steps:chosen,
   description:summary.de,
   sceneNumber:selectedScene?Number(selectedScene.n):null,
   sceneName:selectedScene?String(selectedScene.sr||""):String(result.sceneName||""),
   dialogue,
-  sourceMode:"Originalna DE-MAX A1 9-koraka baza + telefonski dijalozi 40 situacija",
+  sourceMode:"DE-MAX A1 provereni opisi + originalni dijalog prema slici, verzija v84",
   filteredSentences:rejected
  });
 
