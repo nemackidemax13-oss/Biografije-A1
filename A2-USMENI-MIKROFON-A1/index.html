@@ -2379,15 +2379,37 @@ $("restart").onclick=()=>{
 window.addEventListener("pagehide",()=>{
  dmInvalidate();dmReleaseStream()
 });
-// Sprečava da kandidat slučajno pređe na drugi ekran pre završetka snimanja.
-for(const id of ["speakNext"]){
- $(id).addEventListener("click",e=>{
-  if(DM_MIC.media||DM_MIC.recognition){
-   e.stopImmediatePropagation();e.preventDefault();
-   dmMicStatus("Sačekajte 10 sekundi tišine da se odgovor sačuva, zatim pritisnite „Dalje”.");
+// Ručni prelazak na narednu temu / pitanje: NE čeka se 10 sekundi tišine.
+// Sačuvaj i poslednji deo snimka, prevedi završeni odgovor i tek onda idi dalje.
+async function dmManualAdvanceSpeaking(){
+ if(DM_MIC.autoEnding||app.screen!=="speaking")return;
+ const key=respondKey(),serial=DM_MIC.serial;
+ DM_MIC.autoEnding=true;
+ dmCancelNoAnswer();dmCancelSilence();dmTickCountdown();
+ const next=$("speakNext");next.disabled=true;
+ dmMicStatus("✓ Završavam snimak i čuvam odgovor. Prelazim na sledeću temu...");
+ try{
+  await handleButton("stop");
+  if(serial!==DM_MIC.serial||respondKey()!==key||app.screen!=="speaking")return;
+  advanceSpeaking();
+ }catch(e){
+  if(serial===DM_MIC.serial&&respondKey()===key){
+   DM_MIC.autoEnding=false;
+   dmMicStatus("Nije uspelo čuvanje odgovora. Pritisnite Nastavi ponovo.");
   }
- },true)
+ }finally{
+  next.disabled=false;
+ }
 }
+$("speakNext").addEventListener("click",e=>{
+ if(DM_MIC.autoEnding){
+  e.preventDefault();e.stopImmediatePropagation();return;
+ }
+ if(DM_MIC.media||DM_MIC.recognition||DM_MIC.mediaSession||DM_MIC.wantListening){
+  e.preventDefault();e.stopImmediatePropagation();
+  dmManualAdvanceSpeaking();
+ }
+},true);
 // Do not revoke permission while Android/iOS is showing a mic permission prompt.
 // A1 retains the granted stream when the tab temporarily loses visibility.
 document.addEventListener("visibilitychange",()=>{
