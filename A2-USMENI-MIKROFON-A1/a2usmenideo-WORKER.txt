@@ -1,7 +1,7 @@
 /**
  * DE-MAX TUTIN — A2 USMENI DEO
  * Cloudflare Worker: a2usmenideo
- * Version: 2026-11-11-v8
+ * Version: 2026-11-11-v9
  *
  * SECRET in Cloudflare > Settings > Variables and Secrets:
  *   OPENAI_API_KEY = your OpenAI API key (Secret type)
@@ -14,7 +14,7 @@
  * Supported endpoints:
  *   GET  /api/a2-usmeni         health/status for existing application
  *   POST /api/a2-usmeni         evaluate / translate / match_topics /
- *                              generate_questions / correct_transcript
+ *                              generate_questions / correct_transcript / finalize_answer
  *   POST /api/a1-transcribe     German audio -> text (old app compatibility)
  *   POST /api/a2-transcribe     German audio -> text (recommended)
  *   GET  /health               same health/status
@@ -29,7 +29,7 @@
  * cannot run paid AI transcription or evaluations.
  */
 
-const VERSION = '2026-11-11-a2usmenideo-v8';
+const VERSION = '2026-11-11-a2usmenideo-v9';
 const DEFAULT_ORIGIN = 'https://nemackidemax13-oss.github.io';
 const API_BASE = 'https://api.openai.com/v1';
 const MAX_JSON_BYTES = 32_000;
@@ -168,6 +168,7 @@ async function processAI(request, env, cors) {
   else if (type === 'generate_questions') result = await questions(body, env);
   else if (type === 'match_topics') result = await matchTopics(body, env);
   else if (type === 'correct_transcript') result = await correctTranscript(body, env);
+  else if (type === 'finalize_answer') result = await finalizeAnswer(body, env);
   else fail('Nepoznata operacija: ' + type, 400);
 
   // Existing A2 app accepts either an object or an object inside {result:...}.
@@ -254,6 +255,49 @@ async function translate(body, env) {
   const translated = string(result.translationSr, 10000);
   if (!translated) fail('AI nije vratio potpun prevod.', 502);
   return { translationSr: translated };
+}
+
+/** One AI request to correct clear ASR mistakes AND translate the full final turn.
+ *  This avoids sequential correction then translation after five seconds of silence.
+ */
+async function finalizeAnswer(body, env) {
+  const original = string(body.transcript || body.text || body.answer, 8000);
+  if (!original) return { original: '', corrected: '', changed: false, uncertain: false, translationSr: '', suggestions: [] };
+  const topic = string(body.topic, 150);
+  const question = string(body.question, 500);
+  const result = await callJSON(env,
+    'Ti si precizan prevodilac i OPREZAN korektor transkripcije nemačkog govora A2. ' +
+    'Korisnik je upravo završio svoj govor. U JEDNOM odgovoru vrati: ' +
+    '1) corrected: minimalno korigovan nemački transkript SAMO gde je greška ASR-a sasvim očigledna, ' +
+    '2) uncertain: true ako bi ispravljanje zahtevalo nagađanje, ' +
+    '3) translationSr: veran i POTPUN prevod izgovorenog nemačkog na srpski latinicom, ' +
+    '4) suggestions: najviše tri moguće ispravke kada postoji neizvesnost. ' +
+    'NEMOJ dopunjavati rečenice, menjati negacije, gradove, imena, brojeve, ' +
+    'datum, godine, pol niti menjati ono što učenik jeste rekao. ' +
+    'Očigledne pravopisne greške imena mesta (Tutin, Novi Pazar, Sjenica) ' +
+    'ispravi samo kada postoji dovoljno konteksta. ' +
+    'Primer "Ich komme auszuziehen" možda znači "Ich komme aus Tutin", ' +
+    'ali SAMO tekst nije dokaz; ako je neizvesno, vrati uncertain=true ' +
+    'i corrected identičan izvornom transkriptu. ' +
+    'TranslationSr treba da odgovara corrected samo ako je izmena sigurna, ' +
+    'inače originalu. Ako je neka reč nerazumljiva, zadrži je u navodnicima ' +
+    'umesto izmišljanja. Nijedan uzorni ispitni odgovor ne sme da se ubaci. ' +
+    'Vrati JSON {"corrected":"...","uncertain":false,"translationSr":"...","suggestions":[]}.',
+    { original, topic, question, places: ['Tutin','Novi Pazar','Sjenica','Rožaje','Prijepolje'] },
+    1900);
+  const uncertain = result.uncertain === true;
+  const proposed = string(result.corrected, 8000) || original;
+  const safe = !uncertain && Math.abs(proposed.length - original.length) <= Math.max(45, original.length * 0.35);
+  const corrected = safe ? proposed : original;
+  const suggestions = arrayOfStrings(result.suggestions, 3);
+  const translationSr = string(result.translationSr, 8000);
+  if (!translationSr) fail('AI nije vratio prevod završnog odgovora.', 502);
+  // Never keep Serbian translation of an unsafe German rewrite.
+  if (!safe && proposed !== original && !uncertain) {
+    const strict = await translate({ text: original }, env);
+    return { original, corrected: original, changed: false, uncertain: true, suggestions, translationSr: strict.translationSr };
+  }
+  return { original, corrected, changed: corrected !== original, uncertain, suggestions, translationSr };
 }
 
 async function evaluate(body, env) {
@@ -404,13 +448,15 @@ async function transcribe(request, env, cors) {
     ? extension : (content.includes('mp4') ? 'mp4' : 'webm');
   form.append('file', file, 'nemacki-odgovor.' + ext);
   form.append('model', string(env.TRANSCRIBE_MODEL, 80) || 'gpt-transcribe');
+  const context = string(body.get('context'), 240);
   form.append('prompt',
     'ÖSD A2, mündliche Prüfung auf Deutsch. Schreibe genau die tatsächlich ' +
     'gesprochenen Wörter, auch mit Grammatikfehlern. Mögliche Ortsnamen: ' +
     'Tutin, Novi Pazar, Sjenica, Rožaje, Prijepolje, Serbien, ' +
     'Frankfurt am Main. Beispielsatz: "Ich komme aus Tutin." ' +
     'Verwechsle "aus Tutin" nicht mit "auszuziehen", wenn der Ortsname ' +
-    'im Audio zu hören ist. Erfinde niemals Wörter oder Sätze.');
+    'im Audio zu hören ist. Erfinde niemals Wörter oder Sätze.' +
+    (context ? ' Aktuelles Prüfungsthema: ' + context.replace(/[<>\r\n]/g, ' ') + '.' : ''));
   // gpt-transcribe: use languages[] (not language), optionally keywords[].
   // Older Whisper models use the legacy singular language field.
   const model = string(env.TRANSCRIBE_MODEL, 80) || 'gpt-transcribe';
