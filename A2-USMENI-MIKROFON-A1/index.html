@@ -1690,7 +1690,7 @@ function dmTickCountdown(){
    if(DM_MIC.noAnswerTimer&&DM_MIC.noAnswerKey===key){
     const ms=Math.max(0,DM_MIC.noAnswerUntil-Date.now());
     state="counting";value=Math.ceil(ms/1000)+"s";
-    caption="Bez govora · ponavljam";
+    caption="Bez govora · sledeće pitanje";
     progress=Math.max(0,Math.min(100,(ms/DM_NO_ANSWER_MS)*100))+"%";
    }else{state="waiting";value="🎙";caption="Slušam vas";}
   }
@@ -1698,11 +1698,11 @@ function dmTickCountdown(){
   else{
    const ms=Math.max(0,DM_SILENCE_LIMIT_MS-(Date.now()-DM_MIC.lastSpeechAt));
    const remaining=Math.ceil(ms/1000);
-   state="counting";value=remaining+"s";caption="Tišina · kraj odgovora";
+   state="counting";value=remaining+"s";caption="Tišina · sledeće pitanje";
    progress=Math.max(0,Math.min(100,(ms/DM_SILENCE_LIMIT_MS)*100))+"%";
   }
  }else if(DM_MIC.finishedKey===key){
-  state="finished";value="✓";caption=app.screen==="introExam"?"Nastavi na teme":"Pritisnite Dalje";
+  state="finished";value="✓";caption=app.screen==="introExam"?"Biranje tema":"Prelazim dalje";
  }
  const tag=[state,value,caption].join("|");
  if(el.dataset.render!==tag){
@@ -1720,6 +1720,26 @@ function dmCancelNoAnswer(){
  DM_MIC.noAnswerTimer=null;
  DM_MIC.noAnswerUntil=0;
 }
+
+/* Automatsko čuvanje i prelazak, bez ručnog pritiskanja Dalje. */
+async function dmAutoCompleteAnswer(key){
+ if(DM_MIC.autoEnding||!DM_MIC.wantListening||respondKey()!==key)return;
+ const serial=DM_MIC.serial;
+ DM_MIC.autoEnding=true;
+ dmCancelNoAnswer();
+ dmTickCountdown();
+ dmMicStatus("✓ Deset sekundi tišine. Čuvam odgovor i prelazim dalje...");
+ try{
+  await handleButton("stop");
+  if(serial!==DM_MIC.serial||respondKey()!==key)return;
+  if(app.screen==="introExam")showChoose();
+  else if(app.screen==="speaking")advanceSpeaking();
+ }catch(e){
+  DM_MIC.autoEnding=false;
+  dmMicStatus("Automatski prelazak nije uspeo. Pritisnite „Dalje”.");
+ }
+}
+
 function dmArmNoAnswer(key){
  if(!DM_MIC.wantListening||DM_MIC.speechStarted||DM_MIC.autoEnding||
   DM_MIC.noAnswerTimer||DM_MIC.noAnswerKey===key)return;
@@ -1731,9 +1751,7 @@ function dmArmNoAnswer(key){
   DM_MIC.noAnswerUntil=0;
   if(serial!==DM_MIC.serial||!DM_MIC.wantListening||DM_MIC.speechStarted||
    DM_MIC.autoEnding||respondKey()!==key||app.screen!=="introExam"&&app.screen!=="speaking")return;
-  dmMicStatus("🔊 Nema odgovora. Ponavljam isto pitanje i ponovo uključujem mikrofon.");
-  // Drži isti korak; speakPrompt zaustavlja prazan snimak i ponavlja pitanje.
-  speakPrompt(true);
+  dmAutoCompleteAnswer(key);
  },DM_NO_ANSWER_MS);
  dmTickCountdown();
 }
@@ -1797,13 +1815,7 @@ function dmScheduleSilence(key){
   if(!DM_MIC.wantListening||DM_MIC.autoEnding||DM_MIC.inSpeech||
    DM_MIC.silenceKey!==key||respondKey()!==key)return;
   if(Date.now()-DM_MIC.lastSpeechAt<DM_SILENCE_LIMIT_MS-50){dmScheduleSilence(key);return}
-  DM_MIC.autoEnding=true;
-  dmTickCountdown();
-  dmMicStatus("✓ Prošlo je 10 sekundi tišine. Automatski čuvam odgovor...");
-  Promise.resolve(handleButton("stop")).catch(()=>{
-   DM_MIC.autoEnding=false;
-   dmMicStatus("Automatsko završavanje nije uspelo. Možete preći dalje ili ponovo uključiti mikrofon.");
-  });
+  dmAutoCompleteAnswer(key);
  },remaining);
 }
 function dmVoiceStart(key){
@@ -2057,6 +2069,7 @@ function dmSpeechRecognize(){
   dmMarkLive(false);return false
  }
 }
+
 async function dmRecordFallback(auto){
  const key=respondKey();
  if(!dmTrackLive()){
@@ -2064,87 +2077,88 @@ async function dmRecordFallback(auto){
   if(!await dmPermit(true))return false;
  }
  if(typeof MediaRecorder!=="function"){
-  dmMicStatus("Telefon ne podržava snimanje zvuka. Odgovor možete napisati.",true);return false;
+  dmMicStatus("Ovaj pregledač ne podržava audio snimanje.",true);return false;
  }
  const serial=DM_MIC.serial;
  let mime="";
  try{mime=["audio/webm;codecs=opus","audio/mp4","audio/webm","audio/ogg;codecs=opus"].find(t=>MediaRecorder.isTypeSupported(t))||""}catch(e){}
- const state={finishing:false,done:false,gotText:false,timer:null,monitorAvailable:false,queue:Promise.resolve(),resolve:null};
- DM_MIC.mediaSession=state;DM_MIC.mediaDiscard=false;DM_MIC.wantListening=true;
+ let rec;
+ try{rec=mime?new MediaRecorder(DM_MIC.stream,{mimeType:mime}):new MediaRecorder(DM_MIC.stream)}
+ catch(e){dmMicStatus("Snimanje ne može da počne. Pokušajte ponovo.",true);return false}
+ const state={finishing:false,done:false,gotText:false,timer:null,monitorAvailable:false,
+  queue:Promise.resolve(),resolve:null,parts:[],lastQueued:0};
+ DM_MIC.mediaSession=state;DM_MIC.mediaDiscard=false;DM_MIC.wantListening=true;DM_MIC.media=rec;
  DM_MIC.mediaPromise=new Promise(resolve=>state.resolve=resolve);
  const valid=()=>serial===DM_MIC.serial&&!DM_MIC.mediaDiscard&&respondKey()===key;
+ const audioType=(rec.mimeType||mime||"audio/webm").split(";")[0];
+ const transcribe=async blob=>{
+  if(blob.size<600||!valid())return;
+  const form=new FormData(),ext=audioType.includes("mp4")?"mp4":audioType.includes("ogg")?"ogg":"webm";
+  form.append("language","de");
+  form.append("file",blob,"odgovor."+ext);
+  const ac=new AbortController(),timeout=setTimeout(()=>ac.abort(),30000);
+  try{
+   const res=await fetch(DM_MIC.transcribeURL,{method:"POST",body:form,signal:ac.signal,mode:"cors"});
+   const data=await res.json().catch(()=>({}));
+   if(!res.ok)throw Error(data.error||"Worker HTTP "+res.status);
+   if(!valid())return;
+   const transcript=clean(data.text||data.transcript||"");
+   if(transcript){
+    // Transkripcija predstavlja CELI snimak od početka tekućeg odgovora.
+    const old=dmDraftText(key);
+    if(transcript.length>=Math.max(0,old.length-12))dmBufferTranscript(key,transcript,false);
+    state.gotText=true;
+    if(!state.monitorAvailable)dmTranscriptActivity(key,dmDraftText(key));
+    if(!state.finishing)dmMicStatus("🔴 Slušam bez prekidanja. Odgovor se dopunjava na nemačkom.");
+   }
+  }catch(e){
+   if(valid()&&!state.finishing)dmMicStatus("🔴 Mikrofon i dalje snima. Prepoznavanje govora kasni.");
+  }finally{clearTimeout(timeout)}
+ };
+ const enqueueCurrent=()=>{
+  if(!valid()||!state.parts.length)return;
+  const blob=new Blob(state.parts.slice(),{type:audioType});
+  if(blob.size<=state.lastQueued)return;
+  state.lastQueued=blob.size;
+  // Pošalji kumulativan WebM/MP4 snimak, ne zaseban nečitljiv fragment.
+  state.queue=state.queue.then(()=>transcribe(blob)).catch(()=>{});
+ };
  const finish=()=>{
-  if(state.done)return;state.done=true;clearTimeout(state.timer);
+  if(state.done)return;
+  state.done=true;
+  if(state.timer){clearInterval(state.timer);state.timer=null}
   dmStopAudioMonitor();
+  if(DM_MIC.media===rec)DM_MIC.media=null;
+  enqueueCurrent();
   state.queue.finally(()=>{
    if(DM_MIC.mediaSession===state)DM_MIC.mediaSession=null;
    if(valid()){
     dmMarkLive(false);
-    dmMicStatus(state.gotText?"✓ Govor je prepoznat na nemačkom. Proverite tekst i nastavite kada želite.":"Nije prepoznat govor. Pritisnite 🎙 Govori ponovo ili napišite odgovor.");
+    dmMicStatus(state.gotText?"✓ Govor je zabeležen.":"✓ Snimanje je završeno.");
    }
    state.resolve(state.gotText);
   });
  };
- const transcribe=(blob,type)=>{
-  if(blob.size<600||!valid())return;
-  state.queue=state.queue.then(async()=>{
-   if(!valid())return;
-   const form=new FormData(),ext=type.includes("mp4")?"mp4":type.includes("ogg")?"ogg":"webm";
-   form.append("language","de");
-   form.append("file",blob,"odgovor."+ext);
-   const ac=new AbortController(),timeout=setTimeout(()=>ac.abort(),30000);
-   try{
-    const res=await fetch(DM_MIC.transcribeURL,{method:"POST",body:form,signal:ac.signal,mode:"cors"});
-    const data=await res.json().catch(()=>({}));
-    if(!res.ok)throw Error(data.error||"Worker HTTP "+res.status);
-    const transcript=clean(data.text||data.transcript||"");
-    if(transcript&&valid()){
-     dmAppendTranscript(key,transcript);state.gotText=true;
-     // Bez AudioContext-a vreme poslednjeg govora približno je
-     // trenutku dolaska transkripta iz Workera.
-     if(!state.monitorAvailable)dmTranscriptActivity(key,dmDraftText(key));
-     if(!state.finishing)dmMicStatus("🔴 Snimam. Nakon 10 sekundi tišine razgovor se završava.");
-    }
-   }catch(e){
-    if(valid()&&!state.finishing)dmMicStatus("🔴 Snimam. Jedan deo nije prepoznat, nastavite da govorite.");
-   }finally{clearTimeout(timeout)}
-  }).catch(()=>{});
+ rec.ondataavailable=ev=>{
+  if(ev.data?.size)state.parts.push(ev.data);
+  if(!state.finishing)enqueueCurrent();
  };
- const next=()=>{
-  if(!valid()||state.finishing){finish();return false}
-  let rec;
-  try{rec=mime?new MediaRecorder(DM_MIC.stream,{mimeType:mime}):new MediaRecorder(DM_MIC.stream)}
-  catch(e){dmMicStatus("Snimanje nije moglo da se nastavi. Pritisnite Govori ponovo.",true);finish();return false}
-  const chunks=[];DM_MIC.media=rec;
-  rec.ondataavailable=ev=>{if(ev.data?.size)chunks.push(ev.data)};
-  rec.onerror=ev=>{DM_MIC.lastError=ev.error?.name||"media-error"};
-  rec.onstop=()=>{
-   clearTimeout(state.timer);state.timer=null;
-   if(DM_MIC.media===rec)DM_MIC.media=null;
-   if(valid()&&chunks.length){
-    const type=(rec.mimeType||mime||"audio/mp4").split(";")[0];
-    transcribe(new Blob(chunks,{type}),type);
-   }
-   if(!valid()||state.finishing){finish();return}
-   next();
-  };
-  try{rec.start(250)}catch(e){
-   if(DM_MIC.media===rec)DM_MIC.media=null;
-   dmMicStatus("Snimanje nije moglo da počne. Dodirnite Govori ponovo.",true);finish();return false
-  }
-  dmMarkLive(true);
-  // Svakih deset sekundi kompletan audio segment ide na postojeći DE-MAX Worker.
-  // Svaki segment je samostalan snimak radi kompatibilnosti sa iOS audio/mp4.
-  state.timer=setTimeout(()=>{if(valid()&&rec.state==="recording")try{rec.stop()}catch(e){}},4500);
-  return true;
- };
- const started=next();
- if(started){
+ rec.onerror=ev=>{DM_MIC.lastError=ev.error?.name||"media-error"};
+ rec.onstop=()=>finish();
+ try{
+  // JEDAN recorder, JEDAN audio stream tokom odgovora; nema stop/start ciklusa.
+  // Timeslice pravi kratke podatkovne segmente BEZ prekidanja snimanja.
+  rec.start(4500);
+  DM_MIC.wantListening=true;dmMarkLive(true);
   dmArmNoAnswer(key);
   state.monitorAvailable=dmStartAudioMonitor(key,DM_MIC.stream);
-  dmMicStatus("🔴 Mikrofon je stalno uključen. Nakon 10 sekundi tišine odgovor se automatski završava.");
+  dmMicStatus("🔴 Mikrofon ostaje uključen. Posle 10 sekundi tišine automatski prelazim dalje.");
+  return true;
+ }catch(e){
+  rec.ondataavailable=rec.onstop=null;
+  DM_MIC.media=null;DM_MIC.mediaSession=null;DM_MIC.wantListening=false;dmMarkLive(false);
+  dmMicStatus("Mikrofon nije mogao da započne snimanje.",true);return false
  }
- return started;
 }
 // A1 AUTO_IFRAME postupak: korisnički klik -> getUserMedia -> Web Speech Recognition.
 // Ako nativno prepoznavanje nije podržano, koristi MediaRecorder + Worker fallback.
@@ -2224,13 +2238,14 @@ async function handleButton(action){
   const key=respondKey();
   await dmFinishAudio();
   dmPublishAnswer(key);
-  saveAnswer();dmReleaseStream();
+  saveAnswer();
+  // Između dva pitanja zadrži audio-stream da ne traži novu dozvolu.
   DM_MIC.finishedKey=key;
   dmTickCountdown();
   if(app.screen==="introExam"){
-   dmMicStatus("✓ Govor je sačuvan. Pročitajte prepoznati tekst i prevod, pa pritisnite „Nastavi na teme”.");
+   dmMicStatus("✓ Odgovor je sačuvan. Sledeći korak se automatski otvara.");
   }else if(app.screen==="speaking"){
-   dmMicStatus("✓ Govor je sačuvan. Ispod su Vaš odgovor i prevod; dalje prelazite ručno.");
+   dmMicStatus("✓ Govor je sačuvan. Automatski prelazim na sledeće pitanje.");
    checkCurrent(false)
   }
   return
