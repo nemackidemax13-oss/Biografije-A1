@@ -1,7 +1,7 @@
 /**
  * DE-MAX TUTIN — A2 USMENI DEO
  * Cloudflare Worker: a2usmenideo
- * Version: 2026-11-11-v2
+ * Version: 2026-11-11-v3
  *
  * SECRET in Cloudflare > Settings > Variables and Secrets:
  *   OPENAI_API_KEY = your OpenAI API key (Secret type)
@@ -28,7 +28,7 @@
  * cannot run paid AI transcription or evaluations.
  */
 
-const VERSION = '2026-11-11-a2usmenideo-v2';
+const VERSION = '2026-11-11-a2usmenideo-v3';
 const DEFAULT_ORIGIN = 'https://nemackidemax13-oss.github.io';
 const API_BASE = 'https://api.openai.com/v1';
 const MAX_JSON_BYTES = 32_000;
@@ -205,12 +205,20 @@ async function openAI(env, path, options) {
     const value = await res.json().catch(() => ({}));
     if (!res.ok) {
       if (res.status === 429) fail('AI kvota je privremeno potrošena.', 429);
-      if (res.status === 401 || res.status === 403) fail('API ključ nije prihvaćen.', 503);
-      fail('AI provajder je vratio grešku.', 502);
+      if (res.status === 401 || res.status === 403) fail('API ključ nije prihvaćen. Proverite OPENAI_API_KEY.', 503);
+      if (res.status === 400 || res.status === 404 || res.status === 422) {
+        // Detalji kao što su nepoznat model ili nepodržan parametar
+        // su potrebni za dijagnostiku. Nikada ne vraćaj API ključ.
+        const raw = string(value?.error?.message, 220);
+        const safe = raw.replace(/sk-(?:proj-)?[A-Za-z0-9_-]{10,}/g, '[redacted]');
+        fail('AI zahtev je odbijen (HTTP ' + res.status + '): ' + (safe || 'Proverite model i parametre.'), 422);
+      }
+      if (res.status >= 500) fail('OpenAI trenutno nije dostupan (HTTP ' + res.status + ').', 503);
+      fail('AI servis je vratio HTTP ' + res.status + '.', 502);
     }
     return value;
   } catch (error) {
-    if (error.name === 'AbortError') fail('AI servis nije odgovorio na vreme.', 504);
+    if (error?.name === 'AbortError') fail('AI servis nije odgovorio na vreme.', 504);
     throw error;
   } finally {
     clearTimeout(timer);
@@ -358,7 +366,13 @@ async function transcribe(request, env, cors) {
   let body;
   try { body = await request.formData(); } catch { fail('Neispravan audio FormData.', 400); }
   const file = body.get('file');
-  if (!(file instanceof File) || file.size < 500) fail('Nedostaje audio fajl ili je snimak prazan.', 400);
+  // Ne koristi instanceof File: u nekim Cloudflare Worker okruženjima
+  // globalni File nije dostupan ili upload koristi drugu implementaciju.
+  // request.formData() vraća File-like podatke sa .size i .stream().
+  if (!file || typeof file === 'string' || typeof file.size !== 'number' ||
+      typeof file.stream !== 'function' || file.size < 500) {
+    fail('Nedostaje audio fajl ili je snimak prazan.', 400);
+  }
   if (file.size > MAX_AUDIO_BYTES) fail('Audio snimak prelazi dozvoljenu veličinu.', 413);
   const extension = String(file.name || '').toLowerCase().split('.').pop();
   const content = String(file.type || '').toLowerCase();
