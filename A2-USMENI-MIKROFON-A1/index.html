@@ -218,6 +218,12 @@ main{min-height:0;flex:1;display:flex;flex-direction:column;overflow:hidden;back
 
 /* DE-MAX A2: jednostavna početna strana i pregledna navigacija. */
 #begin.btn.green{background:#0b855d;color:white;border-color:#0b855d}
+.dm-grammar-status{margin:4px 0 8px;padding:6px 9px;border-radius:9px;font-size:11px;font-weight:800;color:#235384;background:#eff5fd}
+.dm-grammar-label{margin-top:8px;margin-bottom:3px;font-size:10px;letter-spacing:.35px;font-weight:900;color:#3a627f;text-transform:uppercase}
+.dm-grammar-fix{margin-top:7px;padding:9px 10px;border-left:3px solid #15905d;border-radius:8px;background:#edf9f2;color:#145735;overflow-wrap:anywhere;font-size:13px;font-weight:750}
+.dm-grammar-detail{font-size:11px;font-weight:600;color:#376c54;margin-top:4px}
+.dm-grammar-ok{font-size:11px;font-weight:750;color:#168251;margin-top:7px}
+.dm-grammar-pending{font-size:11px;color:#6c7d91;margin-top:7px}
 #introIndex{display:none}
 #introExam>.quick-controls{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
 #introExam>.quick-controls .btn{min-width:0;min-height:38px;padding:6px 3px;font-size:10px}
@@ -632,7 +638,8 @@ function validWorkerUrl(value){
   </section>
   <section id="results" class="screen">
    <div class="scroll"><p class="eyebrow">SIMULACIJA ZAVRŠENA</p><h2>Bravo! Završili ste ÖSD A2 simulaciju</h2>
-    <p class="sub">Rezultati se čuvaju lokalno. Pri AI proveri tekst odgovora šalje se AI servisu radi ocenjivanja.</p>
+    <p class="sub">Pregled predstavljanja, svih pet tema i odgovora na deset pitanja. Originalni odgovori ostaju sačuvani; AI prikazuje samo pouzdane gramatičke ispravke.</p>
+     <p class="dm-grammar-status" id="resultGrammarStatus" aria-live="polite">Pripremam završni pregled…</p>
     <div class="glass" style="margin:12px 0"><div class="bigStat" id="resultScore"></div><div style="text-align:center;color:#53749a;font-weight:850;font-size:12px"><span id="scoreCaption">Orijentacioni bodovi bez AI-ja</span></div></div>
     <div class="resultRows" id="resultRows"></div>
     <div class="dm-result-nav" id="dmResultNav" aria-label="Pregled rezultata po stranama">
@@ -1138,7 +1145,7 @@ function downloadTxt(){
  const blob=new Blob([lines.join("\n")],{type:"text/plain;charset=utf-8"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="DE-MAX-A2-usmeni-odgovori.txt";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000)
 }
 document.querySelectorAll("[data-act]").forEach(b=>b.addEventListener("click",()=>handleButton(b.dataset.act)));
-$("begin").onclick=()=>{app.intro=0;app.responses={};DM_CHOOSE.accepted=false;DM_CHOOSE.heard="";makeOffer();showIntro()};
+$("begin").onclick=()=>{app.intro=0;app.responses={};app.grammarReviews={};app.grammarRun++;DM_CHOOSE.accepted=false;DM_CHOOSE.heard="";makeOffer();showIntro()};
 $("introBack").onclick=backIntro;
  $("introForward").onclick=()=>{saveAnswer();stopEverything();showChoose()};
 $("chooseBack").onclick=()=>{app.intro=INTRO.length-1;showIntro()};
@@ -1158,6 +1165,8 @@ const A2_QUESTION_BANK=[{"name":"Familie","items":[{"q":"Wie heißt Ihr Mann?","
 const forbiddenSpouse=/\b(?:Frau|Mann|Ehefrau|Ehemann|Ehepartner|Ehepartnerin|Partner|Partnerin)\b/i;
 app.evaluations={};
 app.inFlight={};
+app.grammarReviews={};
+app.grammarRun=0;
 app.aiEndpoint="";
 try{app.aiEndpoint=localStorage.getItem("demax_a2_ai_worker_url")||""}catch(e){}
 INTRO.splice(0,INTRO.length,
@@ -1239,7 +1248,7 @@ function chooseQuestions(){
 }
 async function requestWorker(body){
  if(!validWorkerUrl(app.aiEndpoint))throw Error("AI Worker nije povezan");
- const ac=new AbortController(),timer=setTimeout(()=>ac.abort(),["translate","finalize_answer"].includes(body?.type)?29000:16000);
+ const ac=new AbortController(),timer=setTimeout(()=>ac.abort(),["translate","finalize_answer","review_grammar_batch"].includes(body?.type)?29000:16000);
  try{
   const r=await fetch(app.aiEndpoint,{
    method:"POST",headers:{"Content-Type":"application/json"},
@@ -1629,7 +1638,7 @@ function downloadTxt(){
  const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="DE-MAX-A2-rezultati-10-bodova.txt";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)
 }
 const originalRestart=$("restart").onclick;
-$("restart").onclick=()=>{app.evaluations={};app.inFlight={};originalRestart()};
+$("restart").onclick=()=>{app.evaluations={};app.inFlight={};app.grammarReviews={};app.grammarRun++;originalRestart()};
 
 </script>
 <script>
