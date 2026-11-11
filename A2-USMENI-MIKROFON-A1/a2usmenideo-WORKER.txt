@@ -1,0 +1,389 @@
+/**
+ * DE-MAX TUTIN — A2 USMENI DEO
+ * Cloudflare Worker: a2usmenideo
+ * Version: 2026-11-11
+ *
+ * SECRET in Cloudflare > Settings > Variables and Secrets:
+ *   OPENAI_API_KEY = your OpenAI API key (Secret type)
+ *
+ * Optional text variables:
+ *   ALLOWED_ORIGINS = https://nemackidemax13-oss.github.io
+ *   TEXT_MODEL = gpt-5-mini
+ *   TRANSCRIBE_MODEL = gpt-transcribe
+ *
+ * Supported endpoints:
+ *   GET  /api/a2-usmeni         health/status for existing application
+ *   POST /api/a2-usmeni         evaluate / translate / match_topics /
+ *                              generate_questions / correct_transcript
+ *   POST /api/a1-transcribe     German audio -> text (old app compatibility)
+ *   POST /api/a2-transcribe     German audio -> text (recommended)
+ *   GET  /health               same health/status
+ *
+ * Audio is not stored by this Worker. It is sent to OpenAI for transcription.
+ * The 10-second silence countdown and the microphone are controlled by the
+ * browser's HTML/JavaScript, not by the Worker.
+ */
+
+const VERSION = '2026-11-11-a2usmenideo-v1';
+const DEFAULT_ORIGIN = 'https://nemackidemax13-oss.github.io';
+const API_BASE = 'https://api.openai.com/v1';
+const MAX_JSON_BYTES = 32_000;
+const MAX_AUDIO_BYTES = 20 * 1024 * 1024;
+const TIMEOUT_MS = 27_000;
+const KNOWN_PLACES = [
+  'Tutin', 'Novi Pazar', 'Sjenica', 'Prijepolje', 'Nova Varoš',
+  'Raška', 'Rožaje', 'Rojaje', 'Kraljevo', 'Beograd', 'Berlin',
+  'Frankfurt am Main', 'Wien', 'Serbien', 'Deutschland'
+];
+
+export default {
+  async fetch(request, env) {
+    const path = new URL(request.url).pathname.replace(/\/+$/, '') || '/';
+    const cors = corsHeaders(request, env);
+    const origin = request.headers.get('Origin');
+
+    // An Origin header identifies browser requests, not a secure identity.
+    if (origin && !cors) return json({ ok: false, error: 'Origin nije dozvoljen.' }, 403);
+
+    if (request.method === 'OPTIONS') {
+      return new Response(null, {
+        status: 204,
+        headers: { ...cors, 'Access-Control-Max-Age': '86400' }
+      });
+    }
+
+    if (request.method === 'GET' && (path === '/health' || path === '/api/a2-usmeni')) {
+      return json({
+        ok: true,
+        configured: !!env.OPENAI_API_KEY,
+        worker: 'a2usmenideo',
+        version: VERSION,
+        endpoints: ['/api/a2-usmeni', '/api/a1-transcribe', '/api/a2-transcribe']
+      }, 200, cors);
+    }
+
+    if (request.method !== 'POST') {
+      return json({ ok: false, error: 'Nepoznata putanja ili metoda.' }, 404, cors);
+    }
+
+    if (!env.OPENAI_API_KEY) {
+      return json({ ok: false, error: 'Nedostaje OPENAI_API_KEY Secret na Worker-u.' }, 503, cors);
+    }
+
+    try {
+      if (path === '/api/a1-transcribe' || path === '/api/a2-transcribe') {
+        return await transcribe(request, env, cors);
+      }
+      if (path === '/api/a2-usmeni') {
+        return await processAI(request, env, cors);
+      }
+      return json({ ok: false, error: 'Nepoznata API putanja.' }, 404, cors);
+    } catch (error) {
+      // Do not expose OpenAI headers, API keys, or internal request details.
+      const code = Number(error?.status) || 500;
+      const status = [400, 413, 415, 422, 429, 502, 503, 504].includes(code) ? code : 502;
+      return json({ ok: false, error: publicError(error, status) }, status, cors);
+    }
+  }
+};
+
+function corsHeaders(request, env) {
+  const origin = request.headers.get('Origin');
+  const allowed = String(env.ALLOWED_ORIGINS || DEFAULT_ORIGIN)
+    .split(',').map(x => x.trim()).filter(Boolean);
+  if (origin && !allowed.includes(origin)) return null;
+  return {
+    ...(origin ? { 'Access-Control-Allow-Origin': origin } : {}),
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+    'Vary': 'Origin'
+  };
+}
+
+function json(obj, status = 200, cors = {}) {
+  return new Response(JSON.stringify(obj), {
+    status,
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Cache-Control': 'no-store',
+      'X-Content-Type-Options': 'nosniff',
+      ...(cors || {})
+    }
+  });
+}
+
+function fail(message, status = 400) {
+  const e = new Error(message);
+  e.status = status;
+  throw e;
+}
+
+function publicError(error, status) {
+  if (status < 500) return String(error?.message || 'Neispravan zahtev.').slice(0,240);
+  if (status === 503) return 'AI servis nije konfigurisan ili trenutno nije dostupan.';
+  if (status === 504) return 'AI servis nije odgovorio na vreme.';
+  return 'AI servis trenutno nije dostupan. Pokušajte ponovo.';
+}
+
+function string(value, limit = 3500) {
+  return typeof value === 'string' ? value.trim().slice(0, limit) : '';
+}
+
+function arrayOfStrings(value, max = 12) {
+  return Array.isArray(value)
+    ? value.slice(0, max).filter(x => typeof x === 'string').map(x => string(x, 100))
+    : [];
+}
+
+function normal(value) {
+  return String(value || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
+    .toLocaleLowerCase('de').replace(/[^a-z0-9äöüß ]/g, '').replace(/\s+/g, ' ').trim();
+}
+
+async function processAI(request, env, cors) {
+  const contentType = request.headers.get('Content-Type') || '';
+  if (!contentType.includes('application/json')) fail('Očekujem application/json.', 415);
+  if (Number(request.headers.get('Content-Length') || 0) > MAX_JSON_BYTES) {
+    fail('JSON zahtev je prevelik.', 413);
+  }
+  const text = await request.text();
+  if (new TextEncoder().encode(text).length > MAX_JSON_BYTES) fail('JSON zahtev je prevelik.', 413);
+  let body;
+  try { body = JSON.parse(text); } catch { fail('JSON nije ispravan.', 400); }
+  if (!body || typeof body !== 'object' || Array.isArray(body)) fail('Očekujem JSON objekat.', 400);
+
+  const type = string(body.type, 40);
+  let result;
+  if (type === 'evaluate') result = await evaluate(body, env);
+  else if (type === 'translate') result = await translate(body, env);
+  else if (type === 'generate_questions') result = await questions(body, env);
+  else if (type === 'match_topics') result = await matchTopics(body, env);
+  else if (type === 'correct_transcript') result = await correctTranscript(body, env);
+  else fail('Nepoznata operacija: ' + type, 400);
+
+  // Existing A2 app accepts either an object or an object inside {result:...}.
+  return json({ ok: true, result, ...result }, 200, cors);
+}
+
+async function callJSON(env, system, data, maxTokens = 1300) {
+  const model = string(env.TEXT_MODEL, 80) || 'gpt-5-mini';
+  const payload = {
+    model,
+    messages: [
+      { role: 'system', content: system + '\nUVEK vrati samo jedan ispravan JSON objekat.' },
+      { role: 'user', content: JSON.stringify(data) }
+    ],
+    response_format: { type: 'json_object' },
+    max_completion_tokens: maxTokens
+  };
+  if (/^gpt-5/i.test(model)) payload.reasoning_effort = 'low';
+
+  const res = await openAI(env, '/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+  const answer = res.choices?.[0]?.message?.content;
+  if (typeof answer !== 'string' || !answer.trim()) fail('Prazan odgovor AI servisa.', 502);
+  try { return JSON.parse(answer); } catch { fail('AI odgovor nije ispravan JSON.', 502); }
+}
+
+async function openAI(env, path, options) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+  try {
+    const res = await fetch(API_BASE + path, {
+      ...options,
+      signal: controller.signal,
+      headers: { ...options.headers, Authorization: 'Bearer ' + env.OPENAI_API_KEY }
+    });
+    const value = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      if (res.status === 429) fail('AI kvota je privremeno potrošena.', 429);
+      if (res.status === 401 || res.status === 403) fail('API ključ nije prihvaćen.', 503);
+      fail('AI provajder je vratio grešku.', 502);
+    }
+    return value;
+  } catch (error) {
+    if (error.name === 'AbortError') fail('AI servis nije odgovorio na vreme.', 504);
+    throw error;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function translate(body, env) {
+  const answer = string(body.text || body.answer, 8000);
+  if (!answer) return { translationSr: '' };
+  const result = await callJSON(env,
+    'Ti si iskusan prevodilac za početnike nemačkog A2. Prevedi CELOKUPAN učenikov tekst ' +
+    'tačno na srpski latinicom. Sačuvaj činjenice, brojke, imena i redosled. ' +
+    'Ne izmišljaj pol govornika, ne dodaj rečenice i ne pretvaraj prevod u model-odgovor. ' +
+    'Gramatiku prevoda prilagodi srpskom, ali ne izmišljaj značenje. ' +
+    'Vrati JSON {"translationSr":"..."}.',
+    { answer }, 1700);
+  return { translationSr: string(result.translationSr || result.translation || result.translatedText, 8000) };
+}
+
+async function evaluate(body, env) {
+  const answer = string(body.answer, 8000);
+  const question = string(body.question, 800);
+  const topic = string(body.topic, 120);
+  const section = string(body.section, 50);
+  if (!answer) {
+    return {
+      score: 0,
+      feedback: 'Učenik nije odgovorio.',
+      corrected: '',
+      suggestedAnswer: '',
+      translationSr: ''
+    };
+  }
+  const result = await callJSON(env,
+    'Ti si pravedan ispitivač nemačkog A2 za ÖSD usmeni ispit. ' +
+    'Oceni SAMO stvarni odgovor učenika prema pitanju, smislu, gramatici i razumljivosti; ' +
+    'ne kažnjavaj dijalekt ni previše strogo sitne greške. ' +
+    'Nemaš zvuk: ne ocenjuj izgovor. Ne pretpostavljaj pol učenika. ' +
+    'Score je broj 0, 0.5 ili 1. Kada je section=topic ili intro, score služi samo kao orijentir. ' +
+    'feedback piši kratko na srpskom latinicom. corrected je gramatički ispravljen učenikov ' +
+    'odgovor bez dodavanja novih činjenica. suggestedAnswer je kratak A2 primer relevantan pitanju. ' +
+    'translationSr je VERAN PREVOD ISKLJUČIVO izgovorenog/naučenog učenikovog answer, ' +
+    'nikako ispravljenog ili predloženog odgovora. ' +
+    'Vrati JSON {"score":0,"feedback":"","corrected":"","suggestedAnswer":"","translationSr":""}.',
+    { section, topic, question, answer }, 1800);
+  const numeric = Number(result.score);
+  const score = Number.isFinite(numeric) ? Math.max(0, Math.min(1, Math.round(numeric * 2) / 2)) : 0;
+  return {
+    score,
+    feedback: string(result.feedback, 750) || 'Odgovor je pregledan.',
+    corrected: string(result.corrected, 1200),
+    suggestedAnswer: string(result.suggestedAnswer, 1200),
+    translationSr: string(result.translationSr, 8000)
+  };
+}
+
+async function questions(body, env) {
+  const topic = string(body.topic, 120);
+  const avoid = arrayOfStrings(body.avoid, 20);
+  const count = Math.min(5, Math.max(1, Number(body.count) || 2));
+  if (!topic) fail('Nedostaje topic.', 400);
+  const result = await callJSON(env,
+    'Sastavi kratka i prirodna pitanja za usmeni ÖSD A2. ' +
+    'Neka odgovori budu mogući u 1–2 jednostavne rečenice. ' +
+    'Nema pitanja o supružniku ako je na spisku zabranjenih reči. ' +
+    'Ne pretpostavljaj pol, bračni status, roditeljstvo niti činjenice o učeniku. ' +
+    'Nemoj ponavljati isto pitanje. ' +
+    'Vrati JSON {"questions":[{"q":"pitanje na nemačkom",' +
+    '"qt":"prevod pitanja na srpski latinicom",' +
+    '"a":"kratak primer odgovora na nemačkom",' +
+    '"at":"prevod primera na srpski latinicom"}]}.',
+    { topic, count, avoid }, 1800);
+  const all = Array.isArray(result.questions) ? result.questions : [];
+  const unique = new Set();
+  const normalizedAvoid = avoid.map(normal);
+  const questions = all.map(item => ({
+    q: string(item?.q, 350), qt: string(item?.qt, 450),
+    a: string(item?.a, 450), at: string(item?.at, 450)
+  })).filter(item => {
+    const k = normal(item.q);
+    if (!k || unique.has(k)) return false;
+    if (normalizedAvoid.some(word => word && new RegExp('(^| )' + escapeRegex(word) + '( |$)', 'iu').test(k))) return false;
+    unique.add(k); return true;
+  }).slice(0, count);
+  return { questions };
+}
+
+async function matchTopics(body, env) {
+  const transcript = string(body.transcript || body.text, 3000);
+  const candidates = arrayOfStrings(body.candidates, 12);
+  const maxSelections = Math.max(1, Math.min(5, Number(body.maxSelections) || 5));
+  if (!transcript || !candidates.length) return { topics: [] };
+  const result = await callJSON(env,
+    'Razumeš izgovorena imena tema u nemačkom A2 usmenom ispitu. ' +
+    'Vrati samo izgovorene teme iz ponuđenog candidates, u redosledu kojim su pomenute. ' +
+    'Dopuštene su očigledne fonetske varijacije. ' +
+    'Ne dodaj nijednu temu koja nije rečena, i ne dopunjavaj listu do pet. ' +
+    'Vrati JSON {"topics":["tema 1","tema 2"]}.',
+    { transcript, candidates, maxSelections }, 900);
+  const seen = new Set();
+  const topics = (Array.isArray(result.topics) ? result.topics : []).map(item => {
+    const value = typeof item === 'string' ? item : item?.name;
+    return candidates.find(c => normal(c) === normal(value));
+  }).filter(item => {
+    if (!item || seen.has(item)) return false;
+    seen.add(item); return true;
+  }).slice(0, maxSelections);
+  return { topics };
+}
+
+async function correctTranscript(body, env) {
+  const original = string(body.transcript || body.text || body.answer, 8000);
+  if (!original) return { original: '', corrected: '', changed: false, uncertain: false, suggestions: [] };
+  const topic = string(body.topic, 140);
+  const question = string(body.question, 500);
+  const candidates = arrayOfStrings(body.places, 20);
+  const result = await callJSON(env,
+    'Ti si izuzetno oprezan korektor NEMAČKOG automatskog prepoznavanja govora, A2 nivo. ' +
+    'Ispravi SAMO veoma očigledne greške ASR-a. Posebno obrati pažnju na geografska ' +
+    'imena Tutin, Novi Pazar, Sjenica i fraze "Ich komme aus Tutin", "Ich wohne in Tutin". ' +
+    'Primer: "Ich komme auszuziehen" može značiti "Ich komme aus Tutin", ' +
+    'ALI to ne možeš potvrditi bez zvuka; u tom slučaju stavi uncertain=true i ' +
+    'ponudi suggestions umesto da nametneš zamenu kao sigurnu činjenicu. ' +
+    'Ne menjaj ispravni glagol "auszuziehen" u rečenici o selidbi. ' +
+    'Sačuvaj stvarni jezik učenika, čak i ako je gramatički pogrešan. ' +
+    'Ne dodaj ništa i ne prepravljaj ime osobe ili grada bez dokaza. ' +
+    'Vrati JSON {"corrected":"tekst", "uncertain":false, "suggestions":["alternativa"]}.',
+    { original, topic, question, candidatePlaces: candidates.length ? candidates : KNOWN_PLACES }, 1700);
+  const corrected = string(result.corrected, 8000) || original;
+  const uncertain = result.uncertain === true;
+  const suggestions = arrayOfStrings(result.suggestions, 5);
+  // Uncertain meaning must never silently replace the learner's original words.
+  const finalText = uncertain ? original : corrected;
+  return { original, corrected: finalText, changed: finalText !== original, uncertain, suggestions };
+}
+
+async function transcribe(request, env, cors) {
+  const contentType = request.headers.get('Content-Type') || '';
+  if (!contentType.toLowerCase().includes('multipart/form-data')) {
+    fail('Pošaljite FormData sa poljem file.', 415);
+  }
+  if (Number(request.headers.get('Content-Length') || 0) > MAX_AUDIO_BYTES + 200_000) {
+    fail('Audio snimak je prevelik.', 413);
+  }
+  let body;
+  try { body = await request.formData(); } catch { fail('Neispravan audio FormData.', 400); }
+  const file = body.get('file');
+  if (!(file instanceof File) || file.size < 500) fail('Nedostaje audio fajl ili je snimak prazan.', 400);
+  if (file.size > MAX_AUDIO_BYTES) fail('Audio snimak prelazi dozvoljenu veličinu.', 413);
+  const extension = String(file.name || '').toLowerCase().split('.').pop();
+  const content = String(file.type || '').toLowerCase();
+  if (!['webm', 'mp4', 'm4a', 'mp3', 'wav', 'mpeg', 'mpga'].includes(extension)
+      && !/(audio\/(webm|mp4|mpeg|mp3|wav|x-wav|m4a)|video\/mp4)/.test(content)) {
+    fail('Format zvuka nije podržan. Koristite webm, mp4, m4a, mp3 ili wav.', 415);
+  }
+
+  const form = new FormData();
+  const ext = ['webm', 'mp4', 'm4a', 'mp3', 'wav', 'mpeg', 'mpga'].includes(extension)
+    ? extension : (content.includes('mp4') ? 'mp4' : 'webm');
+  form.append('file', file, 'nemacki-odgovor.' + ext);
+  form.append('model', string(env.TRANSCRIBE_MODEL, 80) || 'gpt-transcribe');
+  form.append('prompt',
+    'German A2 oral examination (ÖSD). Transcribe exactly the spoken German words, ' +
+    'not a polished answer. Correct spelling of proper place names where audibly justified: ' +
+    'Tutin, Novi Pazar, Sjenica, Rožaje, Prijepolje, Serbia (Serbien), ' +
+    'Frankfurt am Main. Common phrase: "Ich komme aus Tutin." ' +
+    'Do not invent names, sentences, or words that are not spoken.');
+  form.append('languages[]', 'de');
+  for (const keyword of KNOWN_PLACES) form.append('keywords[]', keyword);
+
+  const upstream = await openAI(env, '/audio/transcriptions', {
+    method: 'POST', body: form
+    // Never set multipart Content-Type manually; fetch generates the boundary.
+  });
+  const raw = string(upstream.text, 12000);
+  return json({ ok: true, text: raw, transcript: raw, language: 'de' }, 200, cors);
+}
+
+function escapeRegex(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
