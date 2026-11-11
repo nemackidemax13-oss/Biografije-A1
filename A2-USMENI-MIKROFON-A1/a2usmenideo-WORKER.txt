@@ -1,7 +1,7 @@
 /**
  * DE-MAX TUTIN — A2 USMENI DEO
  * Cloudflare Worker: a2usmenideo
- * Version: 2026-11-11-v9
+ * Version: 2026-11-11-v10
  *
  * SECRET in Cloudflare > Settings > Variables and Secrets:
  *   OPENAI_API_KEY = your OpenAI API key (Secret type)
@@ -29,17 +29,18 @@
  * cannot run paid AI transcription or evaluations.
  */
 
-const VERSION = '2026-11-11-a2usmenideo-v9';
+const VERSION = '2026-11-11-a2usmenideo-v10';
 const DEFAULT_ORIGIN = 'https://nemackidemax13-oss.github.io';
 const API_BASE = 'https://api.openai.com/v1';
 const MAX_JSON_BYTES = 32_000;
 const MAX_AUDIO_BYTES = 20 * 1024 * 1024;
 const TIMEOUT_MS = 27_000;
-const KNOWN_PLACES = [
-  'Tutin', 'Novi Pazar', 'Sjenica', 'Prijepolje', 'Nova Varoš',
-  'Raška', 'Rožaje', 'Kraljevo', 'Beograd', 'Berlin',
-  'Frankfurt am Main', 'Wien', 'Serbien', 'Deutschland'
-];
+const PRIORITY_NAMES = ["Naida","Ema","Ajlina","Merima"];
+// Česta bošnjačka i srpska lična imena – samo pravopisne smernice, NE obavezne reči u odgovoru.
+const BOSNIAK_NAMES = ["Amina","Amela","Ajla","Aida","Adna","Adela","Azra","Azemina","Alma","Almedina","Almira","Alisa","Almina","Almasa","Ajša","Ajsa","Asja","Asmira","Belma","Berina","Dženana","Dzenana","Džejla","Dzejla","Džana","Dzana","Dina","Dunja","Džemila","Elma","Elmina","Emina","Emira","Enisa","Enida","Esma","Edina","Elvira","Fatima","Fadila","Fahreta","Fata","Hana","Hajra","Hasna","Hava","Hajrija","Hedija","Ilma","Imana","Ilda","Lamija","Lejla","Leila","Lajla","Lara","Medina","Meliha","Melisa","Merjema","Mejrema","Mirela","Mirsada","Nađa","Nadja","Naila","Nejla","Nermina","Nisveta","Nura","Nusreta","Rasema","Rasima","Sabina","Sabaha","Sabiha","Safeta","Samira","Sanela","Selma","Sejla","Šejla","Senada","Sena","Sumeja","Šejma","Zehra","Zejna","Zejneba","Zlata","Zuhra","Abdulah","Adem","Adis","Adnan","Ahmed","Alen","Almir","Amar","Anes","Armin","Asim","Azem","Bekir","Benjamin","Dženan","Dzenan","Džemal","Dzemal","Edin","Edis","Elvedin","Emir","Enes","Ermin","Esmir","Esad","Faris","Faruk","Fikret","Hamza","Haris","Hasan","Husein","Husnija","Ibrahim","Imran","Ismail","Jasmin","Kenan","Mirza","Mirsad","Muhamed","Muhammad","Muamer","Mustafa","Nedžad","Nedzad","Nermin","Nihad","Omer","Osman","Rafet","Rasim","Refik","Said","Salih","Samir","Sanel","Sead","Senad","Tarik","Vedad","Zahid","Zijad"];
+const SERBIAN_NAMES = ["Ana","Anđela","Andjela","Anica","Aleksandra","Anastasia","Anastasija","Biljana","Bojana","Branka","Danica","Darija","Dragana","Dijana","Dušica","Dusica","Ivana","Iva","Isidora","Jelena","Jovana","Jasmina","Katarina","Kristina","Lana","Lena","Lidija","Ljiljana","Marija","Milica","Mina","Maja","Mia","Mila","Milena","Mirjana","Mirela","Nataša","Natasa","Natalija","Nevena","Nina","Olivera","Petra","Sanja","Sara","Sofija","Slavica","Snežana","Snezana","Tamara","Teodora","Tijana","Una","Vanja","Vesna","Zorana","Zorica","Aleksa","Aleksandar","Andrija","Bogdan","Bojan","Branislav","Danijel","Danilo","Dejan","Dimitrije","Dušan","Dusan","Đorđe","Djordje","Filip","Ivan","Jovan","Lazar","Luka","Marko","Milan","Miloš","Milos","Mihajlo","Miodrag","Miroslav","Nemanja","Nenad","Nikola","Novak","Ognjen","Pavle","Petar","Predrag","Rade","Radoslav","Saša","Sasa","Slobodan","Stefan","Strahinja","Svetlana","Uroš","Uros","Vladimir","Vuk","Vukašin","Vukasin","Željko","Zeljko","Zoran"];
+const KNOWN_NAMES = [...new Set([...PRIORITY_NAMES, ...BOSNIAK_NAMES, ...SERBIAN_NAMES])];
+const KNOWN_PLACES = ["Tutin","Novi Pazar","Sjenica","Kraljevo","Belgrad","Beograd","Podgorica","Prijepolje","Priboj","Nova Varoš","Raška","Rožaje","Bijelo Polje","Berane","Pljevlja","Novi Sad","Niš","Kragujevac","Čačak","Užice","Subotica","Sarajevo","Banja Luka","Kruševac","Smederevo","Valjevo","Berlin","Frankfurt am Main","Wien","Serbien","Montenegro","Deutschland"];
 
 export default {
   async fetch(request, env) {
@@ -63,6 +64,7 @@ export default {
         configured: typeof env.OPENAI_API_KEY === 'string' && env.OPENAI_API_KEY.trim().length > 10,
         worker: 'a2usmenideo',
         version: VERSION,
+        vocabulary: { names: KNOWN_NAMES.length, cities: KNOWN_PLACES.length, priorityNames: PRIORITY_NAMES },
         transcription: string(env.TRANSCRIBE_MODEL, 80) || 'gpt-transcribe',
         endpoints: ['/api/a2-usmeni', '/api/a1-transcribe', '/api/a2-transcribe'],
         message: 'De-Max A2 Worker je aktivan. Proverite configured=true za AI funkcije.'
@@ -239,7 +241,8 @@ async function translate(body, env) {
     'Ti si izuzetno precizan prevodilac iz NEMAČKOG u SRPSKI (latinica). ' +
     'Ulaz je ZAVRŠEN transkript stvarnog govora učenika na ÖSD A2 ispitu. ' +
     'Prevedi svaku izgovorenu rečenicu i fragment, redom i potpuno. ' +
-    'Sačuvaj SVA lična imena, nazive mesta (Tutin, Novi Pazar, Sjenica), brojeve, ' +
+    'Sačuvaj SVA lična imena (posebno Naida, Ema, Ajlina, Merima), ' +
+    'nazive mesta (Tutin, Novi Pazar, Sjenica, Kraljevo, Belgrad, Beograd, Podgorica), brojeve, ' +
     'godine, negacije (nicht, kein), vremenske podatke, pitanja i izjave. ' +
     'NEMOJ dodavati objašnjenja, nastavak, odgovor na ispitno pitanje, ' +
     'gramatičke ispravke ili činjenice koje nisu navedene. ' +
@@ -274,7 +277,8 @@ async function finalizeAnswer(body, env) {
     '4) suggestions: najviše tri moguće ispravke kada postoji neizvesnost. ' +
     'NEMOJ dopunjavati rečenice, menjati negacije, gradove, imena, brojeve, ' +
     'datum, godine, pol niti menjati ono što učenik jeste rekao. ' +
-    'Očigledne pravopisne greške imena mesta (Tutin, Novi Pazar, Sjenica) ' +
+    'Očigledne pravopisne greške imena mesta (Tutin, Novi Pazar, Sjenica, Kraljevo, Belgrad, Beograd, Podgorica) ' +
+    'i izgovorenih ličnih imena (Naida, Ema, Ajlina, Merima) ' +
     'ispravi samo kada postoji dovoljno konteksta. ' +
     'Primer "Ich komme auszuziehen" možda znači "Ich komme aus Tutin", ' +
     'ali SAMO tekst nije dokaz; ako je neizvesno, vrati uncertain=true ' +
@@ -283,7 +287,9 @@ async function finalizeAnswer(body, env) {
     'inače originalu. Ako je neka reč nerazumljiva, zadrži je u navodnicima ' +
     'umesto izmišljanja. Nijedan uzorni ispitni odgovor ne sme da se ubaci. ' +
     'Vrati JSON {"corrected":"...","uncertain":false,"translationSr":"...","suggestions":[]}.',
-    { original, topic, question, places: ['Tutin','Novi Pazar','Sjenica','Rožaje','Prijepolje'] },
+    { original, topic, question, candidatePlaces: KNOWN_PLACES,
+      candidateNames: KNOWN_NAMES, priorityNames: PRIORITY_NAMES,
+      note: 'Rečnik su samo mogući zapisi, nisu dokazi da su imena izgovorena.' },
     1900);
   const uncertain = result.uncertain === true;
   const proposed = string(result.corrected, 8000) || original;
@@ -400,7 +406,9 @@ async function correctTranscript(body, env) {
   const result = await callJSON(env,
     'Ti si izuzetno oprezan korektor NEMAČKOG automatskog prepoznavanja govora, A2 nivo. ' +
     'Ispravi SAMO veoma očigledne greške ASR-a. Posebno obrati pažnju na geografska ' +
-    'imena Tutin, Novi Pazar, Sjenica i fraze "Ich komme aus Tutin", "Ich wohne in Tutin". ' +
+    'imena Tutin, Novi Pazar, Sjenica, Kraljevo, Belgrad (Beograd) i Podgorica. ' +
+    'Lična imena Naida, Ema, Ajlina i Merima pišu se ovako kada su zaista izgovorena. ' +
+    'Primer rečenice: "Ich komme aus Tutin" i "Ich wohne in Tutin". ' +
     'Primer: "Ich komme auszuziehen" može značiti "Ich komme aus Tutin", ' +
     'ALI to ne možeš potvrditi bez zvuka; u tom slučaju stavi uncertain=true i ' +
     'ponudi suggestions umesto da nametneš zamenu kao sigurnu činjenicu. ' +
@@ -408,7 +416,9 @@ async function correctTranscript(body, env) {
     'Sačuvaj stvarni jezik učenika, čak i ako je gramatički pogrešan. ' +
     'Ne dodaj ništa i ne prepravljaj ime osobe ili grada bez dokaza. ' +
     'Vrati JSON {"corrected":"tekst", "uncertain":false, "suggestions":["alternativa"]}.',
-    { original, topic, question, candidatePlaces: candidates.length ? candidates : KNOWN_PLACES }, 1700);
+    { original, topic, question, candidatePlaces: candidates.length ? [...new Set([...candidates,...KNOWN_PLACES])] : KNOWN_PLACES,
+      candidateNames: KNOWN_NAMES, priorityNames: PRIORITY_NAMES,
+      note: 'Ispraviti samo ako fonetski ili kontekst jasno potvrđuje ime.' }, 1700);
   const corrected = string(result.corrected, 8000) || original;
   const uncertain = result.uncertain === true;
   const suggestions = arrayOfStrings(result.suggestions, 5);
@@ -449,20 +459,28 @@ async function transcribe(request, env, cors) {
   form.append('file', file, 'nemacki-odgovor.' + ext);
   form.append('model', string(env.TRANSCRIBE_MODEL, 80) || 'gpt-transcribe');
   const context = string(body.get('context'), 240);
-  form.append('prompt',
-    'ÖSD A2, mündliche Prüfung auf Deutsch. Schreibe genau die tatsächlich ' +
-    'gesprochenen Wörter, auch mit Grammatikfehlern. Mögliche Ortsnamen: ' +
-    'Tutin, Novi Pazar, Sjenica, Rožaje, Prijepolje, Serbien, ' +
-    'Frankfurt am Main. Beispielsatz: "Ich komme aus Tutin." ' +
-    'Verwechsle "aus Tutin" nicht mit "auszuziehen", wenn der Ortsname ' +
-    'im Audio zu hören ist. Erfinde niemals Wörter oder Sätze.' +
-    (context ? ' Aktuelles Prüfungsthema: ' + context.replace(/[<>\r\n]/g, ' ') + '.' : ''));
-  // gpt-transcribe: use languages[] (not language), optionally keywords[].
-  // Older Whisper models use the legacy singular language field.
   const model = string(env.TRANSCRIBE_MODEL, 80) || 'gpt-transcribe';
+  // U svakom snimku daj prednost traženim imenima i gradovima.
+  // U porodici/predstavljanju proširi izbor na ravnomerno uzorkovana
+  // bošnjačka i srpska imena. Ne šalji stotine termina u jednom snimku.
+  const nameTopic = /famil|kind|name|vorstell|gebor|person|eltern|tochter|sohn/i.test(context);
+  const names = nameTopic
+    ? [...PRIORITY_NAMES, ...BOSNIAK_NAMES.slice(0, 43), ...SERBIAN_NAMES.slice(0, 43)]
+    : [...PRIORITY_NAMES, ...BOSNIAK_NAMES.slice(0, 13), ...SERBIAN_NAMES.slice(0, 13)];
+  const keywords = [...new Set([...KNOWN_PLACES, ...names])]
+    .filter(item => item && !/[<>\r\n]/.test(item)).slice(0, nameTopic ? 115 : 65);
+  form.append('prompt',
+    'ÖSD A2, mündliche Prüfung auf Deutsch. Schreibe die tatsächlich gesprochenen Wörter ' +
+    'mit den korrekten Namen, ohne etwas hinzuzufügen. Mögliche Vornamen: ' +
+    'Naida, Ema, Ajlina, Merima. Mögliche Ortsnamen: Tutin, Novi Pazar, Sjenica, ' +
+    'Kraljevo, Belgrad, Beograd, Podgorica. ' +
+    'Beispiele: "Ich komme aus Tutin." "Meine Tochter heißt Naida." ' +
+    'Nur Namen verwenden, die im Audio wirklich gesprochen werden. ' +
+    'Grammatikfehler des Lernenden nicht verbessern.' +
+    (context ? ' Prüfungsthema: ' + context.replace(/[<>\r\n]/g, ' ') + '.' : ''));
   if (model === 'gpt-transcribe') {
     form.append('languages[]', 'de');
-    for (const place of KNOWN_PLACES) form.append('keywords[]', place);
+    for (const term of keywords) form.append('keywords[]', term);
   } else {
     form.append('language', 'de');
   }
