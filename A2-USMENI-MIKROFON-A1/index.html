@@ -939,7 +939,7 @@ async function dmChooseRecordFallback(){
  let stream=DM_CHOOSE.stream;
  if(!stream&&DM_CHOOSE.pending)try{stream=await DM_CHOOSE.pending}catch(e){}
  if(!stream){
-  try{stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}})}
+  try{stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true,channelCount:{ideal:1},sampleRate:{ideal:48000}}})}
   catch(e){return false}
  }
  if(serial!==DM_CHOOSE.serial||app.screen!=="choose"){
@@ -1698,7 +1698,7 @@ async function dmPermit(fromTap){
  // Dozvola mora biti zatražena tokom korisničkog klika na telefonu.
  const generation=DM_MIC.permitGeneration;
  let request;
- try{request=navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}})}
+ try{request=navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true,channelCount:{ideal:1},sampleRate:{ideal:48000}}})}
  catch(e){dmMicStatus("Dodirnite 🎙 Govori i dozvolite mikrofon u podešavanjima pregledača.",true);return false}
  DM_MIC.pending=Promise.resolve(request).then(stream=>{
   if(generation!==DM_MIC.permitGeneration){stream.getTracks().forEach(t=>t.stop());return false}
@@ -1738,40 +1738,27 @@ async function dmProbeAudio(){
  return DM_MIC.audioProbe
 }
 
-// Prvo 5 sekundi mirnog čekanja nakon kraja govora, pa 5 s odbrojavanja.
-const DM_SILENCE_GRACE_MS=5000;
-const DM_COUNTDOWN_MS=5000;
-const DM_SILENCE_LIMIT_MS=DM_SILENCE_GRACE_MS+DM_COUNTDOWN_MS;
+// Po prestanku govora odmah pocinje odbrojavanje pet sekundi.
+const DM_SILENCE_LIMIT_MS=5000;
 
 function dmTickCountdown(){
  const key=respondKey();
  if(app.screen!=="introExam"&&app.screen!=="speaking")return;
  const el=app.screen==="introExam"?$("dmIntroCountdown"):$("dmSpeakCountdown");
  if(!el)return;
- let state="waiting",value="🎙",caption="Mikrofon sluša · čekam govor",progress="0%";
+ let state="waiting",value="🎙",caption="Mikrofon sluša",progress="0%";
  if(DM_MIC.autoEnding&&DM_MIC.silenceKey===key){
-  state="finished";value="✓";caption="Čuvam i prevodim odgovor";
+  state="finished";value="✓";caption="AI završava prevod";
  }else if(DM_MIC.wantListening&&DM_MIC.silenceKey===key){
-  if(!DM_MIC.speechStarted){
-   state="waiting";value="🎙";caption="Govorite · bez odbrojavanja";
-  }else if(DM_MIC.inSpeech){
-   state="speaking";value="🎙";caption="Slušam vaš govor";
-  }else{
-   const elapsed=Math.max(0,Date.now()-DM_MIC.lastSpeechAt);
-   if(elapsed<DM_SILENCE_GRACE_MS){
-    // Prvih 5 s bez govora nema odbrojavanja.
-    state="waiting";value="🎙";caption="Pauza · čekam potpunu tišinu";
-   }else{
-    // Zatim vidljivo odbrojavanje 5, 4, 3, 2, 1.
-    const left=Math.max(0,DM_SILENCE_LIMIT_MS-elapsed);
-    state="counting";value=Math.ceil(left/1000)+"s";
-    caption="Potpuna tišina · završavam odgovor";
-    progress=Math.max(0,Math.min(100,(left/DM_COUNTDOWN_MS)*100))+"%";
-   }
+  if(!DM_MIC.speechStarted){state="waiting";value="🎙";caption="Govorite · mikrofon je uključen"}
+  else if(DM_MIC.inSpeech){state="speaking";value="🎙";caption="Slušam i prevodim"}
+  else{
+   const left=Math.max(0,DM_SILENCE_LIMIT_MS-(Date.now()-DM_MIC.lastSpeechAt));
+   state="counting";value=Math.ceil(left/1000)+"s";
+   caption="Tišina · sledeća tema";
+   progress=Math.max(0,Math.min(100,(left/DM_SILENCE_LIMIT_MS)*100))+"%";
   }
- }else if(DM_MIC.finishedKey===key){
-  state="finished";value="✓";caption="Prevod odgovora · sledeća tema";
- }
+ }else if(DM_MIC.finishedKey===key){state="finished";value="✓";caption="Prevod · sledeća tema"}
  const tag=[state,value,caption].join("|");
  if(el.dataset.render!==tag){
   el.dataset.render=tag;el.dataset.state=state;
@@ -1815,7 +1802,7 @@ async function dmAutoCompleteAnswer(key){
    dmMicStatus("Nije prepoznat tekst odgovora. Dodirnite 🎙 Govori i pokušajte ponovo.");
    return;
   }
-  await new Promise(done=>setTimeout(done,4800));
+  await new Promise(done=>setTimeout(done,2300));
   if(serial!==DM_MIC.serial||respondKey()!==key)return;
   if(app.screen==="introExam")showChoose();
   else if(app.screen==="speaking")advanceSpeaking();
@@ -2305,7 +2292,7 @@ async function dmRecordFallback(auto){
  try{
   // JEDAN recorder, JEDAN audio stream tokom odgovora; nema stop/start ciklusa.
   // Timeslice pravi kratke podatkovne segmente BEZ prekidanja snimanja.
-  rec.start(1700);
+  rec.start(1350);
   DM_MIC.wantListening=true;dmMarkLive(true);
   dmArmNoAnswer(key);
   state.monitorAvailable=dmStartAudioMonitor(key,DM_MIC.stream);
@@ -2338,28 +2325,18 @@ async function startMic(fromTap=false){
  // u iframe-u moglo da izazove zabranu ili prekid automatskog slušanja.
  // Posle prve dozvole pokreni govor odmah nakon pitanja, bez novog zahteva.
  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
- if(!fromTap&&!dmMobileRecognizer()&&SR&&DM_MIC.permissionEverGranted&&!DM_MIC.pending){
-  if(dmSpeechRecognize())return;
- }
  const permitted=dmTrackLive() ? true : await dmPermit(fromTap);
  if(serial!==DM_MIC.serial||respondKey()!==key)return;
  if(!permitted){
   dmMicStatus("🎙 Dozvolite mikrofon u Replit prikazu. Ako je blokiran, otvorite ovu A2 vežbu direktno u pregledaču.",true);
   return;
  }
- // Android: prepoznaj govor odmah u polju, uključujući privremene reči.
- // Nativni SpeechRecognition se po potrebi sam nastavlja posle kraće pauze.
- if(dmUseNativeSpeechFirst()&&dmSpeechRecognize()){
-  dmMicStatus("🔴 Prepoznajem nemačke reči uživo. Govorite normalno.");
-  return;
- }
- // Na iPhone-u i bez WebSpeech podrške koristi neprekidni audio recorder.
- if(dmMobileRecognizer()&&window.MediaRecorder){
+ // Jedan audio snimak tokom celog odgovora bez prekidanja mikrofona.
+ // AI prepoznaje govor u delovima i zatim prevodi.
+ if(window.MediaRecorder){
   if(await dmRecordFallback(false))return;
  }
- // Desktop ili browser bez MediaRecorder-a.
  if(SR&&dmSpeechRecognize())return;
- if(window.MediaRecorder)return dmRecordFallback(false);
  dmMicStatus("Ovaj pregledač ne podržava prepoznavanje nemačkog govora. Napišite odgovor.",true);
 }
 async function dmFinishAudio(){
