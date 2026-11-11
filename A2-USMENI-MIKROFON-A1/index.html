@@ -2122,7 +2122,8 @@ function dmSpeechRecognize(){
   if(DM_MIC.wantListening&&(["network","service-not-allowed","language-not-supported","audio-capture"].includes(reason)||
    reason==="not-allowed"||reason==="silent"||
    (dmMobileRecognizer()&&!nativeResult)||(isApple&&!result))){
-   dmMicStatus("Prepoznavanje na ovom telefonu nije dostupno. Prebacujem na rezervno snimanje...");
+   dmMicStatus("Prepoznavanje uživo nije dostupno. Uključujem rezervnu transkripciju...");
+   dmCancelNoAnswer();DM_MIC.noAnswerKey="";
    dmRecordFallback(false);
   }else if(reason==="not-allowed"){
    dmMicStatus(DM_EMBEDDED?"Replit ili druga ugrađena aplikacija nije dozvolila mikrofon. Otvorite vežbu direktno u novoj kartici.":"Pregledač nije dozvolio prepoznavanje govora. Pritisnite 🎙 Govori ili napišite odgovor.",true);
@@ -2203,7 +2204,10 @@ async function dmRecordFallback(auto){
     if(!state.finishing)dmMicStatus("🔴 Slušam bez prekidanja. Odgovor se dopunjava na nemačkom.");
    }
   }catch(e){
-   if(valid()&&!state.finishing)dmMicStatus("🔴 Mikrofon i dalje snima. Prepoznavanje govora kasni.");
+   if(valid()&&!state.finishing){
+    DM_MIC.lastError=String(e?.message||e||"greška").slice(0,100);
+    dmMicStatus("🎙 Zvuk se snima, ali transkripcija kasni ("+DM_MIC.lastError+"). Pokušajte direktno u Chrome/Safari.");
+   }
   }finally{clearTimeout(timeout)}
  };
  const enqueueCurrent=()=>{
@@ -2230,12 +2234,21 @@ async function dmRecordFallback(auto){
   dmStopAudioMonitor();
   if(DM_MIC.media===rec)DM_MIC.media=null;
   enqueueCurrent();
-  state.queue.finally(()=>{
+  // Dovrši i poslednji audio segment; ne preskači zadnje reči.
+  (async()=>{
+   for(let attempt=0;attempt<5;attempt++){
+    await state.queue.catch(()=>{});
+    if(!state.latestBlob||!valid())break;
+    enqueueCurrent();
+   }
    if(DM_MIC.mediaSession===state)DM_MIC.mediaSession=null;
    if(valid()){
     dmMarkLive(false);
-    dmMicStatus(state.gotText?"✓ Govor je zabeležen.":"✓ Snimanje je završeno.");
+    dmMicStatus(state.gotText?"✓ Govor je zabeležen.":"✓ Snimak je sačuvan, ali nema prepoznatog teksta.");
    }
+   state.resolve(state.gotText);
+  })().catch(()=>{
+   if(DM_MIC.mediaSession===state)DM_MIC.mediaSession=null;
    state.resolve(state.gotText);
   });
  };
@@ -2248,7 +2261,7 @@ async function dmRecordFallback(auto){
  try{
   // JEDAN recorder, JEDAN audio stream tokom odgovora; nema stop/start ciklusa.
   // Timeslice pravi kratke podatkovne segmente BEZ prekidanja snimanja.
-  rec.start(2200);
+  rec.start(1700);
   DM_MIC.wantListening=true;dmMarkLive(true);
   dmArmNoAnswer(key);
   state.monitorAvailable=dmStartAudioMonitor(key,DM_MIC.stream);
@@ -2290,13 +2303,17 @@ async function startMic(fromTap=false){
   dmMicStatus("🎙 Dozvolite mikrofon u Replit prikazu. Ako je blokiran, otvorite ovu A2 vežbu direktno u pregledaču.",true);
   return;
  }
- // Mobilni pregledač: mikrofon drži jedan MediaStream otvoren sve vreme.
- // Web Speech na mobilnom ume sam da zatvara prepoznavanje i menja mic indikator.
- // Recorder radi u kratkim segmentima samo radi Worker transkripcije.
+ // Android: prepoznaj govor odmah u polju, uključujući privremene reči.
+ // Nativni SpeechRecognition se po potrebi sam nastavlja posle kraće pauze.
+ if(dmUseNativeSpeechFirst()&&dmSpeechRecognize()){
+  dmMicStatus("🔴 Prepoznajem nemačke reči uživo. Govorite normalno.");
+  return;
+ }
+ // Na iPhone-u i bez WebSpeech podrške koristi neprekidni audio recorder.
  if(dmMobileRecognizer()&&window.MediaRecorder){
   if(await dmRecordFallback(false))return;
  }
- // Na desktopu i tamo gde Recorder nije dostupan zadrži Web Speech.
+ // Desktop ili browser bez MediaRecorder-a.
  if(SR&&dmSpeechRecognize())return;
  if(window.MediaRecorder)return dmRecordFallback(false);
  dmMicStatus("Ovaj pregledač ne podržava prepoznavanje nemačkog govora. Napišite odgovor.",true);
