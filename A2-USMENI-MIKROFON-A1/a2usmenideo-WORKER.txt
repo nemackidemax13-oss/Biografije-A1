@@ -1,7 +1,7 @@
 /**
  * DE-MAX TUTIN — A2 USMENI DEO
  * Cloudflare Worker: a2usmenideo
- * Version: 2026-11-11-v4
+ * Version: 2026-11-11-v5
  *
  * SECRET in Cloudflare > Settings > Variables and Secrets:
  *   OPENAI_API_KEY = your OpenAI API key (Secret type)
@@ -28,7 +28,7 @@
  * cannot run paid AI transcription or evaluations.
  */
 
-const VERSION = '2026-11-11-a2usmenideo-v4';
+const VERSION = '2026-11-11-a2usmenideo-v5';
 const DEFAULT_ORIGIN = 'https://nemackidemax13-oss.github.io';
 const API_BASE = 'https://api.openai.com/v1';
 const MAX_JSON_BYTES = 32_000;
@@ -56,7 +56,7 @@ export default {
       });
     }
 
-    if (request.method === 'GET' && (path === '/health' || path === '/api/a2-usmeni')) {
+    if (request.method === 'GET' && (path === '/' || path === '/health' || path === '/api/a2-usmeni')) {
       return json({
         ok: true,
         configured: !!env.OPENAI_API_KEY,
@@ -393,9 +393,15 @@ async function transcribe(request, env, cors) {
     'Frankfurt am Main. Beispielsatz: "Ich komme aus Tutin." ' +
     'Verwechsle "aus Tutin" nicht mit "auszuziehen", wenn der Ortsname ' +
     'im Audio zu hören ist. Erfinde niemals Wörter oder Sätze.');
-  // Audio transcription API accepts the singular 'language' field.
-  // Location spelling guidance is already included in the prompt above.
-  form.append('language', 'de');
+  // gpt-transcribe: use languages[] (not language), optionally keywords[].
+  // Older Whisper models use the legacy singular language field.
+  const model = string(env.TRANSCRIBE_MODEL, 80) || 'gpt-transcribe';
+  if (model === 'gpt-transcribe') {
+    form.append('languages[]', 'de');
+    for (const place of KNOWN_PLACES) form.append('keywords[]', place);
+  } else {
+    form.append('language', 'de');
+  }
 
   const upstream = await openAI(env, '/audio/transcriptions', {
     method: 'POST', body: form
