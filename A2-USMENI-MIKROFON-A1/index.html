@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#1955b2">
 <meta name="description" content="DE-MAX Tutin: ÖSD A2 simulacija; 6 ponuđenih tema bez skrolovanja, izbor 5 tema, nemački izgovor i 2 pitanja po temi.">
-<title>DE-MAX TUTIN | ÖSD A2 Usmeni ispit – simulacija</title>
+<title>DE-MAX TUTIN | A2 Usmeni ispit – Worker & AI 20261029</title>
 <style>
 :root{--navy:#102b55;--blue:#1957bd;--red:#d92138;--green:#10845e;--muted:#637d9f;--line:#d9e6f7;--pale:#f3f7fe}
 *{box-sizing:border-box}html,body{margin:0;height:100%}body{background:linear-gradient(115deg,#e5efff,#f8fbff 65%,#eaf1ff);font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:var(--navy)}button,input,textarea{font:inherit}button{cursor:pointer;touch-action:manipulation}button:disabled{opacity:.42;cursor:default}button:focus-visible,textarea:focus-visible{outline:3px solid #e5ac35;outline-offset:1px}
@@ -391,6 +391,7 @@ function validWorkerUrl(value){
     <p class="intro-sub">ÖSD A2 · Interaktivna simulacija<br>Predstavljanje → 6 tema → izaberi 5 → po 2 pitanja</p>
     <div class="chips"><span>🎙 Mikrofon</span><span>🔊 Nemački izgovor</span><span>✓ Brza provera</span></div>
     <button class="btn green start" id="begin">Započni simulaciju →</button>
+    <a id="dmDirectMicLink" href="https://nemackidemax13-oss.github.io/Biografije-A1/A2-USMENI-MIKROFON-A1/A2-USMENI-WORKER-AI-20261029.html?v=20261111-replit-mic" target="_blank" rel="noopener noreferrer" style="display:none;max-width:95%;margin:10px auto 0;padding:8px 11px;border:1px solid #b4c9e7;border-radius:10px;color:#1857b5;font-size:12px;font-weight:850;text-decoration:none;text-align:center;background:#f3f8ff">🎙 Otvori u pregledaču za mikrofon ↗</a>
     
   </section>
   <section id="introExam" class="screen">
@@ -1325,6 +1326,10 @@ $("restart").onclick=()=>{app.evaluations={};app.inFlight={};originalRestart()};
  * iOS/Android fallback: MediaRecorder + DE-MAX transcribe Worker.
  * Ne prebacuje učenika na sledeće pitanje samostalno.
  */
+const DM_DIRECT_MIC_URL="https://nemackidemax13-oss.github.io/Biografije-A1/A2-USMENI-MIKROFON-A1/A2-USMENI-WORKER-AI-20261029.html?v=20261111-replit-mic";
+const DM_EMBEDDED=window.self!==window.top;
+const dmDirectMicLink=document.getElementById("dmDirectMicLink");
+if(dmDirectMicLink)dmDirectMicLink.style.display=DM_EMBEDDED?"inline-block":"none";
 const DM_MIC={
  stream:null,pending:null,allowed:false,permitGeneration:0,
  wantListening:false,autoRetries:0,
@@ -1340,7 +1345,7 @@ function dmMicStatus(message,link=false){
  if(link){
   const a=document.createElement("a");
   a.textContent=" Otvori direktno u Safari/Chrome";
-  a.href="https://nemackidemax13-oss.github.io/Biografije-A1/DE-MAX_A2_USMENI_AUTO_IFRAME.html";
+  a.href=DM_DIRECT_MIC_URL;
   a.target="_blank";a.rel="noopener noreferrer";a.style.cssText="display:inline;color:#1657bf;text-decoration:underline;margin-left:3px;font-weight:800";
   target.append(a);
  }
@@ -1382,7 +1387,7 @@ async function dmPermit(fromTap){
   const denied=["NotAllowedError","PermissionDeniedError","SecurityError"].includes(DM_MIC.lastError);
   const busy=["NotFoundError","NotReadableError"].includes(DM_MIC.lastError);
   dmMicStatus(busy?"Telefon ne pronalazi slobodan mikrofon. Zatvorite druge aplikacije koje ga koriste.":
-   denied?"Mikrofon je blokiran. U podešavanjima sajta dozvolite Mikrofon, pa pritisnite 🎙 Govori.":
+   denied?(DM_EMBEDDED?"Mikrofon je blokiran u ugrađenom prikazu. Otvorite A2 vežbu u novoj kartici i dozvolite mikrofon.":"Mikrofon je blokiran. U podešavanjima sajta dozvolite Mikrofon, pa pritisnite 🎙 Govori."):
    "Nije moguće otvoriti mikrofon. Proverite dozvolu i pokušajte preko direktnog linka.",true);
   return false
  }).finally(()=>{DM_MIC.pending=null});
@@ -1499,7 +1504,7 @@ function dmSpeechRecognize(){
    dmMicStatus("Prepoznavanje na ovom telefonu nije dostupno. Prebacujem na rezervno snimanje...");
    dmRecordFallback(false);
   }else if(reason==="not-allowed"){
-   dmMicStatus("Pregledač nije dozvolio prepoznavanje govora. Pritisnite 🎙 Govori ili napišite odgovor.",true);
+   dmMicStatus(DM_EMBEDDED?"Replit ili druga ugrađena aplikacija nije dozvolila mikrofon. Otvorite vežbu direktno u novoj kartici.":"Pregledač nije dozvolio prepoznavanje govora. Pritisnite 🎙 Govori ili napišite odgovor.",true);
   }else if(result){
    dmMicStatus("✓ Govor je zabeležen. Ako niste završili, pritisnite 🎙 Govori ponovo; sledeće pitanje birate ručno.");
   }else dmMicStatus("Govor nije prepoznat. Pritisnite 🎙 Govori ponovo ili napišite odgovor.");
@@ -1573,9 +1578,8 @@ async function dmRecordFallback(auto){
  dmMicStatus("🔴 Snimam nemački. Govorite bez vremenskog ograničenja, zatim pritisnite ■ Završi razgovor.");
  return true
 }
-// Koristi isti Web Speech Recognition postupak kao radni A1 u Chrome/Edge.
-// Ne zavisi od prethodnog getUserMedia dozvoljavanja za nativni SR.
-// Ako SR nije podrzan, pokusava bezbedan MediaRecorder fallback uz dozvolu.
+// A1 AUTO_IFRAME postupak: korisnički klik -> getUserMedia -> Web Speech Recognition.
+// Ako nativno prepoznavanje nije podržano, koristi MediaRecorder + Worker fallback.
 function dmUseNativeSpeechFirst(){
  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
  const isApple=/iPhone|iPad|iPod/i.test(navigator.userAgent||"")||
@@ -1589,24 +1593,18 @@ async function startMic(fromTap=false){
   dmMicStatus("🎙 Mikrofon je vec ukljucen. Kada zavrsite, pritisnite Završi razgovor.");
   return;
  }
- // Ovo je najbitnija razlika: A1 odmah aktivira Web Speech Recognition.
- // A2 ranije trazi getUserMedia pre nego sto dozvoli r.start(), sto
- // unutar zasebnog Replit iframe-a moze da bude odbijeno.
- if(dmUseNativeSpeechFirst()&&dmSpeechRecognize())return;
- // iPhone i uredjaji bez nativnog Web Speech API-ja koriste stari fallback.
- const permitted=await dmPermit(fromTap);
+ // Kao na A1 AUTO_IFRAME: prvo zatraži dozvolu na korisnički dodir.
+ // A2 prethodno pokreće SpeechRecognition pre getUserMedia, što je
+ // u iframe-u moglo da izazove zabranu ili prekid automatskog slušanja.
+ const permitted=dmTrackLive() ? true : await dmPermit(fromTap);
  if(serial!==DM_MIC.serial||respondKey()!==key)return;
  if(!permitted){
-  // Neki WebView-i omogucavaju SpeechRecognition cak i kada
-  // getUserMedia nije dostupan; bez zaobilazenja korisnicke dozvole.
-  if(!dmUseNativeSpeechFirst()&&(window.SpeechRecognition||window.webkitSpeechRecognition)&&
-     !["NotAllowedError","PermissionDeniedError","SecurityError"].includes(DM_MIC.lastError)&&
-     dmSpeechRecognize())return;
-  if(!DM_MIC.lastError||DM_MIC.lastError==="permission"){
-   dmMicStatus("🎙 Mikrofon nije pokrenut. Dozvolite mikrofon na De-Max stranici ili dodirnite Govori.",true);
-  }
+  dmMicStatus("🎙 Dozvolite mikrofon u Replit prikazu. Ako je blokiran, otvorite ovu A2 vežbu direktno u pregledaču.",true);
   return;
  }
+ // Pregledač je već potvrdio pristup. Koristi nativni SR kao na A1;
+ // ako nije dostupan, nastavi preko MediaRecorder + Worker transkripcije.
+ if(dmUseNativeSpeechFirst()&&dmSpeechRecognize())return;
  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
  const isApple=/iPhone|iPad|iPod/i.test(navigator.userAgent||"")||
   (/Macintosh/i.test(navigator.userAgent||"")&&navigator.maxTouchPoints>1);
@@ -1669,13 +1667,13 @@ for(const id of ["begin","introBack","chooseBack","chooseNext","speakNext","spea
  $(id).addEventListener("click",()=>{
   if(id==="introBack"&&app.intro===0)return;
   if(id==="speakNext"&&app.question===1&&app.topic===app.chosen.length-1)return;
-  if(!dmUseNativeSpeechFirst()&&!DM_MIC.allowed&&!DM_MIC.pending)dmPermit(true);
+  if(!dmTrackLive()&&!DM_MIC.pending)dmPermit(true);
   if(id==="begin")dmProbeAudio();
  },true);
 }
 for(const btn of document.querySelectorAll('[data-act="repeat"]')){
  btn.addEventListener("click",()=>{
-  if(!dmUseNativeSpeechFirst()&&!DM_MIC.allowed&&!DM_MIC.pending)dmPermit(true);
+  if(!dmTrackLive()&&!DM_MIC.pending)dmPermit(true);
  },true);
 }
 const oldRestartA2=$("restart").onclick;
@@ -1695,8 +1693,14 @@ for(const id of ["speakNext"]){
   }
  },true)
 }
+// Do not revoke permission while Android/iOS is showing a mic permission prompt.
+// A1 retains the granted stream when the tab temporarily loses visibility.
 document.addEventListener("visibilitychange",()=>{
- if(document.visibilityState==="hidden"){dmInvalidate();dmReleaseStream()}
+ if(document.visibilityState==="hidden"){
+  if(DM_MIC.recognition||DM_MIC.media)dmInvalidate();
+ }else if(dmTrackLive()&&(app.screen==="introExam"||app.screen==="speaking")){
+  dmMicStatus("🎙 Mikrofon je spreman. Posle pitanja govorite, ili dodirnite Govori.");
+ }
 });
 
 </script>
