@@ -1174,20 +1174,36 @@ try{app.aiEndpoint=localStorage.getItem("demax_a2_ai_worker_url")||""}catch(e){}
 INTRO.splice(0,INTRO.length,
  {q:"Können Sie sich vorstellen?",qt:"Možete li da se predstavite?",a:"Ja, gern. Ich heiße ... Ich komme aus Serbien. Ich wohne in ... und ich lerne Deutsch."}
 );
-// AI se povezuje automatski preko Cloudflare Workera bez dodatnih dugmadi.
+// DE-MAX A2 v22: jedan AI Worker za govor, prevod, korekciju i ispit.
 const DEFAULT_A2_WORKER_URL="https://demax-a2-usmeni.nemackidemax13.workers.dev/api/a2-usmeni";
-function autoConnectA2Worker(){
+const NEW_A2_WORKER_URL="https://a2usmenideo.nemackidemax13.workers.dev/api/a2-usmeni";
+const NEW_A2_TRANSCRIBE_URL="https://a2usmenideo.nemackidemax13.workers.dev/api/a2-transcribe";
+let DM_NEW_A2_WORKER_READY=false;
+async function autoConnectA2Worker(){
+ const check=async(url)=>{
+  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),5500);
+  try{
+   const response=await fetch(url,{method:"GET",cache:"no-store",signal:controller.signal});
+   return response.ok?await response.json():null;
+  }catch(e){return null}finally{clearTimeout(timer)}
+ };
+ // Koristi novi Worker samo ako je STVARNO aktivan i ima API ključ.
+ const newer=await check(NEW_A2_WORKER_URL);
+ if(newer?.ok&&newer?.configured&&newer?.worker==="a2usmenideo"){
+  DM_NEW_A2_WORKER_READY=true;
+  app.aiEndpoint=NEW_A2_WORKER_URL;
+  // I izbor tema i svi A2 odgovori automatski koriste isti audio servis.
+  if(typeof DM_MIC!=="undefined"){
+   DM_MIC.transcribeURL=NEW_A2_TRANSCRIBE_URL;
+   DM_MIC.audioReady=null;
+  }
+  return;
+ }
+ DM_NEW_A2_WORKER_READY=false;
+ // Dok novi Worker nije podešen, nastavi da koristi postojeći AI.
  if(app.aiEndpoint)return;
- const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),5000);
- fetch(DEFAULT_A2_WORKER_URL,{method:"GET",cache:"no-store",signal:controller.signal})
-  .then(async response=>response.ok?response.json():null)
-  .then(status=>{
-   if(!app.aiEndpoint&&status?.ok&&status?.configured){
-    app.aiEndpoint=DEFAULT_A2_WORKER_URL;
-   }
-  })
-  .catch(()=>{})
-  .finally(()=>clearTimeout(timeout));
+ const legacy=await check(DEFAULT_A2_WORKER_URL);
+ if(legacy?.ok&&legacy?.configured)app.aiEndpoint=DEFAULT_A2_WORKER_URL;
 }
 setTimeout(autoConnectA2Worker,0);
 
@@ -2585,10 +2601,43 @@ document.addEventListener("visibilitychange",()=>{
  },true);
  const earlierFillAnswer=fillAnswer;
  fillAnswer=function(){earlierFillAnswer();showAnswerReview()};
+ // Po završetku celog odgovora AI proverava SAMO očigledne ASR greške.
+ // Korekcije s oznakom uncertain nikad ne menjaju učenikov odgovor.
+ async function dmCorrectCompletedTranscript(){
+  if(!DM_NEW_A2_WORKER_READY||app.aiEndpoint!==NEW_A2_WORKER_URL)return;
+  const key=respondKey(),original=strip(textarea().value);
+  if(!key||original.length<5)return;
+  const screen=app.screen;
+  const topic=screen==="introExam"?"Predstavljanje":TOPICS[app.chosen[app.topic]]?.title||"";
+  let r;
+  try{
+   r=await Promise.race([
+    requestWorker({
+     type:"correct_transcript",transcript:original,topic,
+     question:getPrompt()?.q||"",places:["Tutin","Novi Pazar","Sjenica","Rožaje","Prijepolje"],
+     instructions:"Ispravi samo očigledne greške prepoznavanja nemačkog govora, bez dodavanja novih reči. Za sumnjive izmene vrati uncertain=true."
+    }).catch(()=>null),
+    new Promise(resolve=>setTimeout(()=>resolve(null),6500))
+   ]);
+  }catch(e){return}
+  if(!r||r.uncertain||!r.changed||respondKey()!==key||
+   strip(textarea().value)!==original||app.screen!==screen)return;
+  const corrected=strip(r.corrected||"");
+  // Zaštita od AI prepisivanja celog odgovora umesto blagih ispravki.
+  if(!corrected||Math.abs(corrected.length-original.length)>Math.max(45,original.length*0.35))return;
+  app.responses[key]=corrected;
+  if(DM_MIC.pendingKey===key)DM_MIC.pendingText=corrected;
+  textarea().value=corrected;
+  delete app.evaluations[key];
+  saveAnswer();
+ }
  const previousHandle=handleButton;
  handleButton=async function(action){
   await previousHandle(action);
-  if(action==="stop")await showAnswerReview(true);
+  if(action==="stop"){
+   await dmCorrectCompletedTranscript();
+   await showAnswerReview(true);
+  }
  };
  for(const id of ["introText","speakText"]){
   const el=document.getElementById(id);
