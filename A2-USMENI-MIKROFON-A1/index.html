@@ -524,6 +524,34 @@ main,.screen{min-height:0!important;overflow:hidden}
  #results>.scroll>.eyebrow{display:none}
 }
 
+
+/* DE-MAX A2 v17: proširen prostor za izgovorene nemačke reči */
+#introExam .answerbox textarea,#introExam.dm-first-intro .answerbox textarea,
+#speaking .answerbox textarea{
+ height:clamp(130px,23dvh,200px)!important;
+ min-height:clamp(130px,23dvh,200px)!important;
+ max-height:clamp(130px,23dvh,200px)!important;
+ font-size:clamp(15px,3.8vw,18px)!important;line-height:1.45!important;
+ padding:7px 3px 8px!important;box-sizing:border-box!important;color:#16365c!important
+}
+#introExam .answerbox,#speaking .answerbox{flex:none!important}
+#introExam .dm-review,#speaking .dm-review{
+ flex:none!important;max-height:clamp(60px,15dvh,130px)!important;overflow-y:auto!important
+}
+#introExam .dm-review-sr,#speaking .dm-review-sr{font-size:clamp(13px,3.5vw,15px)!important;line-height:1.4!important}
+@media(max-height:690px){
+ #introExam .answerbox textarea,#introExam.dm-first-intro .answerbox textarea,#speaking .answerbox textarea{
+  height:clamp(98px,19dvh,134px)!important;min-height:clamp(98px,19dvh,134px)!important;
+  max-height:clamp(98px,19dvh,134px)!important
+ }
+ #introExam .dm-review,#speaking .dm-review{max-height:clamp(53px,13dvh,93px)!important}
+}
+@media(max-height:540px){
+ #introExam .answerbox textarea,#introExam.dm-first-intro .answerbox textarea,#speaking .answerbox textarea{
+  height:90px!important;min-height:90px!important;max-height:90px!important;font-size:14px!important
+ }
+ #introExam .dm-review,#speaking .dm-review{max-height:70px!important}
+}
 </style>
 <script>
 // Minimalna provera A2 AI Workera; izbegava JS gresku pri ocenjivanju.
@@ -1737,6 +1765,8 @@ async function dmAutoCompleteAnswer(key){
  try{
   await handleButton("stop");
   if(serial!==DM_MIC.serial||respondKey()!==key)return;
+  if(clean(app.responses[key]))await new Promise(done=>setTimeout(done,1800));
+  if(serial!==DM_MIC.serial||respondKey()!==key)return;
   if(app.screen==="introExam")showChoose();
   else if(app.screen==="speaking")advanceSpeaking();
  }catch(e){
@@ -2167,8 +2197,8 @@ async function dmRecordFallback(auto){
     state.gotText=true;
     // Ako je AudioContext suspendovan ili nije uspeo da detektuje govor,
     // upotrebi prvi pravi transkript da spreči prerani automatski prelazak.
-    if(!state.monitorAvailable||DM_MIC.audioMonitor?.context?.state!=="running"||
-       !DM_MIC.speechStarted)dmTranscriptActivity(key,dmDraftText(key));
+    // Svaki nov transkript potvrđuje aktivnost govora i kad AudioContext miruje.
+    dmTranscriptActivity(key,dmDraftText(key));
     if(!state.finishing)dmMicStatus("🔴 Slušam bez prekidanja. Odgovor se dopunjava na nemačkom.");
    }
   }catch(e){
@@ -2217,11 +2247,11 @@ async function dmRecordFallback(auto){
  try{
   // JEDAN recorder, JEDAN audio stream tokom odgovora; nema stop/start ciklusa.
   // Timeslice pravi kratke podatkovne segmente BEZ prekidanja snimanja.
-  rec.start(4500);
+  rec.start(2200);
   DM_MIC.wantListening=true;dmMarkLive(true);
   dmArmNoAnswer(key);
   state.monitorAvailable=dmStartAudioMonitor(key,DM_MIC.stream);
-  dmMicStatus("🔴 Mikrofon ostaje uključen. Posle 10 sekundi tišine automatski prelazim dalje.");
+  dmMicStatus("🔴 Mikrofon sluša neprekidno. Odgovor se dopunjava i čuva nakon 10 sekundi tišine.");
   return true;
  }catch(e){
   rec.ondataavailable=rec.onstop=null;
@@ -2453,47 +2483,46 @@ document.addEventListener("visibilitychange",()=>{
   if(label)label.textContent=sr;
   return true;
  }
- async function translateAI(kind,key,value,serial,fallback){
-  if(!app.aiEndpoint)return;
-  try {
-   const p=getPrompt(),section=kind==="intro"?"intro":app.question===-1?"topic":"question";
-   const topic=kind==="intro"?"Predstavljanje":TOPICS[app.chosen[app.topic]].title;
-   const e=await evaluateAnswer(key,p.q,value,topic,section);
-   if(serial!==reviewSerial)return;
-   let sr=strip(e.translationSr||"");
-   if(!sr){
-    try{
-     const r=await requestWorker({type:"translate",text:value,sourceLanguage:"de",targetLanguage:"sr",
-      instructions:"Prevedi isključivo učenikov nemački odgovor na srpski latinicom. Vrati JSON sa translationSr, bez objašnjenja."});
-     sr=strip(r.translationSr||r.translatedText||r.translation||"");
-    }catch(err){}
-   }
-   if(serial===reviewSerial&&sr&&normalize(sr)!==normalize(value)){
-    dmReviewCache.set(value,sr);
-    outputReady(kind,key,value,sr);
-   }else if(serial===reviewSerial&&(!fallback.text||!fallback.complete)){
-    outputReady(kind,key,value,fallback.text?fallback.text+"\n(Ostatak odgovora nije moguće pouzdano automatski prevesti.)":"Za ovaj odgovor prevod trenutno nije dostupan.");
-   }
-  }catch(err){
-   if(serial===reviewSerial&&(!fallback.text||!fallback.complete))
-    outputReady(kind,key,value,fallback.text?fallback.text+"\n(Delimičan prevod – AI trenutno nije dostupan.)":"Prevod nije dostupan. Proverite vezu sa A2 AI Worker-om.");
+ async function translateAI(kind,key,value,serial){
+  if(!app.aiEndpoint)return false;
+  let sr="";
+  const part=kind==="intro"?"intro":app.question===-1?"topic":"question";
+  try{
+   const p=getPrompt(),topic=kind==="intro"?"Predstavljanje":TOPICS[app.chosen[app.topic]].title;
+   const ev=await evaluateAnswer(key,p.q,value,topic,part);
+   sr=strip(ev.translationSr||"");
+  }catch(e){}
+  if(!sr){
+   try{
+    const r=await requestWorker({
+     type:"translate",section:part,text:value,answer:value,
+     sourceLanguage:"de",targetLanguage:"sr",
+     instructions:"Verno prevedi ceo odgovor učenika sa nemačkog na srpski latinicom, od prve do poslednje reči. Bez izmišljanja i bez dodavanja. Vrati JSON {translationSr}."
+    });
+    sr=strip(r.translationSr||r.translation_sr||r.translatedText||r.translation||"");
+   }catch(e){}
   }
+  if(serial!==reviewSerial||!sr||normalize(sr)===normalize(value))return false;
+  dmReviewCache.set(value,sr);
+  return outputReady(kind,key,value,sr);
  }
- function showAnswerReview(){
+ async function showAnswerReview(finalized=false){
   const kind=currentKind();if(!kind)return;
   const key=respondKey(),value=strip(textarea().value);
-  const block=document.getElementById(kind+"Review");
-  if(!block)return;
+  const block=document.getElementById(kind+"Review");if(!block)return;
   if(!value){block.hidden=true;return}
   block.hidden=false;
   document.getElementById(kind+"ReviewDe").textContent=value;
-  const cached=dmReviewCache.get(value);
-  const basic=localTranslation(value);
-  const sr=cached||basic.text+(basic.text&&!basic.complete?"\n(Delimičan prevod.)":"")||
-   (app.aiEndpoint?"Prevod se priprema…":"Za ceo prevod potreban je dostupan A2 AI Worker.");
-  document.getElementById(kind+"ReviewSr").textContent=sr;
+  const cached=dmReviewCache.get(value),basic=localTranslation(value);
+  const exact=basic.complete&&basic.text?basic.text:"";
+  document.getElementById(kind+"ReviewSr").textContent=cached||exact||
+    (app.aiEndpoint?"Prevod celog odgovora se priprema…":"Za pouzdan prevod potreban je AI Worker.");
+  if(cached||exact||!app.aiEndpoint)return;
   const serial=++reviewSerial;
-  if(!cached&&app.aiEndpoint)translateAI(kind,key,value,serial,basic);
+  const job=translateAI(kind,key,value,serial).then(ok=>{
+   if(!ok&&serial===reviewSerial)outputReady(kind,key,value,"Prevod trenutno nije dostupan. Nemački odgovor je sačuvan.");
+  });
+  if(finalized)await job;
  }
  // Ako snimanje traje, sačuvaj kompletan govor pre prelaska na izbor tema.
  document.getElementById("introForward").addEventListener("click",function(event){
@@ -2508,14 +2537,14 @@ document.addEventListener("visibilitychange",()=>{
  const previousHandle=handleButton;
  handleButton=async function(action){
   await previousHandle(action);
-  if(action==="stop")showAnswerReview();
+  if(action==="stop")await showAnswerReview(true);
  };
  for(const id of ["introText","speakText"]){
   const el=document.getElementById(id);
-  let typingTimer=null;
   el.addEventListener("input",()=>{
-   clearTimeout(typingTimer);
-   typingTimer=setTimeout(showAnswerReview,420);
+   reviewSerial++;
+   const kind=currentKind(),block=kind&&document.getElementById(kind+"Review");
+   if(block)block.hidden=true;
   });
  }
 })();
