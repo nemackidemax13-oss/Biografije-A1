@@ -1250,7 +1250,7 @@ function chooseQuestions(){
 }
 async function requestWorker(body){
  if(!validWorkerUrl(app.aiEndpoint))throw Error("AI Worker nije povezan");
- const ac=new AbortController(),timer=setTimeout(()=>ac.abort(),16000);
+ const ac=new AbortController(),timer=setTimeout(()=>ac.abort(),body?.type==="translate"?29000:16000);
  try{
   const r=await fetch(app.aiEndpoint,{
    method:"POST",headers:{"Content-Type":"application/json"},
@@ -2564,27 +2564,24 @@ document.addEventListener("visibilitychange",()=>{
   if(label)label.textContent=sr;
   return true;
  }
+ // Nemački transkript učenika prevodi se direktno, odvojeno od AI ocenjivanja.
  async function translateAI(kind,key,value,serial){
   if(!app.aiEndpoint)return false;
   let sr="";
   const part=kind==="intro"?"intro":app.question===-1?"topic":"question";
   try{
    const p=getPrompt(),topic=kind==="intro"?"Predstavljanje":TOPICS[app.chosen[app.topic]].title;
-   const ev=await evaluateAnswer(key,p.q,value,topic,part);
-   sr=strip(ev.translationSr||"");
+   const r=await requestWorker({
+    type:"translate",section:part,topic,question:p?.q||"",
+    text:value,answer:value,sourceLanguage:"de",targetLanguage:"sr",
+    instructions:"Prevedi ceo završeni nemački odgovor učenika na srpski latinicom. Bez izmišljanja, dopunjavanja, menjanja negacija, imena, datuma i brojeva. Vrati JSON {translationSr}."
+   });
+   sr=strip(r.translationSr||r.translation_sr||r.translatedText||r.translation||"");
   }catch(e){}
-  if(!sr){
-   try{
-    const r=await requestWorker({
-     type:"translate",section:part,text:value,answer:value,
-     sourceLanguage:"de",targetLanguage:"sr",
-     instructions:"Verno prevedi ceo odgovor učenika sa nemačkog na srpski latinicom, od prve do poslednje reči. Bez izmišljanja i bez dodavanja. Vrati JSON {translationSr}."
-    });
-    sr=strip(r.translationSr||r.translation_sr||r.translatedText||r.translation||"");
-   }catch(e){}
-  }
-  if(serial!==reviewSerial||!sr||normalize(sr)===normalize(value))return false;
+  if(!sr||normalize(sr)===normalize(value))return false;
+  // Prevod ostaje u memoriji ako je učenik već prešao na sledeću temu.
   dmReviewCache.set(value,sr);
+  if(serial!==reviewSerial)return false;
   return outputReady(kind,key,value,sr);
  }
  async function showAnswerReview(finalized=false){
@@ -2592,18 +2589,29 @@ document.addEventListener("visibilitychange",()=>{
   const key=respondKey(),value=strip(textarea().value);
   const block=document.getElementById(kind+"Review");if(!block)return;
   if(!value){block.hidden=true;return}
+  // Dok učenik govori, ne prevodi privremene ili nepotpune delove teksta.
+  if(!finalized&&!dmReviewCache.has(value)){
+   block.hidden=true;
+   return
+  }
   block.hidden=false;
   document.getElementById(kind+"ReviewDe").textContent=value;
-  const cached=dmReviewCache.get(value),basic=localTranslation(value);
-  const exact=basic.complete&&basic.text?basic.text:"";
-  document.getElementById(kind+"ReviewSr").textContent=cached||exact||
-    (app.aiEndpoint?"Prevod celog odgovora se priprema…":"Za pouzdan prevod potreban je AI Worker.");
-  if(cached||exact||!app.aiEndpoint)return;
+  const cached=dmReviewCache.get(value);
+  if(cached){
+   document.getElementById(kind+"ReviewSr").textContent=cached;
+   return
+  }
+  if(!app.aiEndpoint){
+   const basic=localTranslation(value);
+   document.getElementById(kind+"ReviewSr").textContent=basic.complete&&basic.text
+    ?basic.text:"AI prevod nije dostupan. Nemački odgovor je sačuvan.";
+   return
+  }
+  document.getElementById(kind+"ReviewSr").textContent="AI prevodi ceo završeni odgovor na srpski…";
   const serial=++reviewSerial;
-  const job=translateAI(kind,key,value,serial).then(ok=>{
-   if(!ok&&serial===reviewSerial)outputReady(kind,key,value,"Prevod trenutno nije dostupan. Nemački odgovor je sačuvan.");
-  });
-  if(finalized)await job;
+  const ok=await translateAI(kind,key,value,serial);
+  if(!ok&&serial===reviewSerial)
+   outputReady(kind,key,value,"Prevod trenutno nije dostupan. Nemački odgovor je sačuvan.");
  }
  // Ako snimanje traje, sačuvaj kompletan govor pre prelaska na izbor tema.
  document.getElementById("introForward").addEventListener("click",function(event){
