@@ -1820,11 +1820,21 @@ function dmCancelSilence(){
 function dmDraftText(key){
  return DM_MIC.pendingKey===key?clean(DM_MIC.pendingText):clean(app.responses[key]||"");
 }
+function dmCorrectTutinSpeech(value,key){
+ let output=clean(value);
+ if(!output)return output;
+ output=output.replace(/\b((?:ich|wir)\s+komme(?:n)?\s+|(?:er|sie)\s+kommt\s+)(?:auszuziehen|aus\s+zu\s+ziehen|ausziehen)\b/giu,
+  (_,prefix)=>prefix+"aus Tutin");
+ if(/^(?:auszuziehen|aus\s+zu\s+ziehen|ausziehen)[.!?]?$/iu.test(output)){
+  output="aus Tutin"+(/[.!?]$/.test(output)?output.slice(-1):"");
+ }
+ return output;
+}
 function dmBufferTranscript(key,value,append=false){
  if(!key||!value||DM_MIC.pendingKey!==key||respondKey()!==key)return;
- const v=clean(value);
+ const v=dmCorrectTutinSpeech(value,key);
  if(!v)return;
- const next=dmCollapseRepeatedSpeech(append?dmUniqueTranscript(DM_MIC.pendingText,v):v);
+ const next=dmCorrectTutinSpeech(dmCollapseRepeatedSpeech(append?dmUniqueTranscript(DM_MIC.pendingText,v):v),key);
  if(!next||next===DM_MIC.pendingText)return;
  DM_MIC.pendingText=next;
  // Tekst ide na ekran odmah, za svaki prepoznati deo nemačkog odgovora.
@@ -2064,14 +2074,15 @@ function dmSpeechRecognize(){
  r.lang="de-DE";
  r.continuous=!dmMobileRecognizer();
  r.interimResults=true;
- r.maxAlternatives=1;
+ r.maxAlternatives=3;
  const baseline=dmDraftText(key);
  let finalText="",interimText="",reason="",nativeResult=false,silenceTimer=null;
  r.onresult=e=>{
   if(serial!==DM_MIC.serial||DM_MIC.recognition!==r)return;
   finalText="";interimText="";
   for(let i=0;i<e.results.length;i++){
-   const val=clean(e.results[i]?.[0]?.transcript);
+   const variants=Array.from(e.results[i]||[]).map(a=>clean(a?.transcript)).filter(Boolean);
+   const val=variants.find(x=>/\baus\s+tutin\b/iu.test(x))||variants[0]||"";
    if(!val)continue;
    nativeResult=true;clearTimeout(silenceTimer);
    if(e.results[i].isFinal)finalText+=(finalText?" ":"")+val;
