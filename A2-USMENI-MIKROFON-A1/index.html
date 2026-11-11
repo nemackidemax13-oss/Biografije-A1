@@ -1675,7 +1675,7 @@ async function dmProbeAudio(){
 }
 
 const DM_SILENCE_LIMIT_MS=7000;
-const DM_NO_ANSWER_MS=10000;
+const DM_NO_ANSWER_MS=7000;
 
 function dmTickCountdown(){
  const key=respondKey();
@@ -1744,8 +1744,8 @@ function dmCancelSilence(){
  DM_MIC.inSpeech=false;
 }
 
-/* Dok učenik govori, samo prikupljaj prepoznati nemački tekst.
-   Objavi ga odjednom tek kada se aktivira automatski završetak. */
+/* Prikazuj prepoznati nemački govor uživo dok je mikrofon uključen.
+   Nakon 7 sekundi tišine poslednji tekst ostaje sačuvan. */
 function dmDraftText(key){
  return DM_MIC.pendingKey===key?clean(DM_MIC.pendingText):clean(app.responses[key]||"");
 }
