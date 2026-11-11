@@ -559,7 +559,7 @@ function validWorkerUrl(value){
 </div>
     <p class="sub" id="introIndex">Govorite polako na nemačkom, mikrofon će Vas saslušati.</p>
     <div class="examiner"><div class="role">PRÜFERIN / PRÜFER</div><div class="de" id="introDe"></div><div class="sr" id="introSr"></div><div class="state" id="introState" hidden></div></div>
-    <div class="answerbox"><div class="dm-answer-heading"><span class="fieldlabel">PREPOZNATI GOVOR · NEMAČKI (UŽIVO)</span><button type="button" class="dm-relisten" data-act="listen">🎙 Govori</button></div><textarea id="introText" lang="de" placeholder="Ovde će biti prikazano ono što mikrofon prepozna. Tekst možete ispraviti."></textarea></div><div id="introReview" class="dm-review" hidden aria-live="polite"><div class="dm-review-label">REKLI STE · NEMAČKI</div><div class="dm-review-de" id="introReviewDe"></div><div class="dm-review-label dm-review-translation-label">PREVOD · SRPSKI</div><div class="dm-review-sr" id="introReviewSr"></div></div>
+    <div class="answerbox"><div class="dm-answer-heading"><span class="fieldlabel">ODGOVOR · NEMAČKI (POSLE 7 SEKUNDI TIŠINE)</span><button type="button" class="dm-relisten" data-act="listen">🎙 Govori</button></div><textarea id="introText" lang="de" placeholder="Slušam vaš odgovor. Tekst se prikazuje nakon 7 sekundi tišine."></textarea></div><div id="introReview" class="dm-review" hidden aria-live="polite"><div class="dm-review-label">REKLI STE · NEMAČKI</div><div class="dm-review-de" id="introReviewDe"></div><div class="dm-review-label dm-review-translation-label">PREVOD · SRPSKI</div><div class="dm-review-sr" id="introReviewSr"></div></div>
     <div class="status" id="introStatus" aria-live="polite"></div>
     
     <div class="hint" id="introHint" hidden></div>
@@ -715,7 +715,8 @@ function makeOffer(){
 const DM_CHOOSE={
  accepted:false,heard:"",rec:null,media:null,stream:null,pending:null,
  serial:0,uploading:false,recordTimer:null,promptTimer:null,
- listening:false,autoRetries:0,workerSegments:0,processing:false
+ listening:false,autoRetries:0,workerSegments:0,processing:false,
+ queuedIds:[],selectionTimer:null,confirmTimer:null,autoConfirming:false,
 };
 function dmChooseMessage(value){
  const el=document.getElementById("dmChooseStatus");if(el)el.textContent=value||"";
@@ -757,28 +758,59 @@ function dmChooseVoiceNames(value){
  }
  return matches.sort((x,y)=>x.first-y.first).map(x=>x.id);
 }
-function dmChooseApplyIds(ids){
- if(app.screen!=="choose"||!Array.isArray(ids))return 0;
- let count=0;
+
+/* Po izgovorenom redosledu označi jednu po jednu temu i potvrdi svih pet. */
+function dmChooseAutoConfirm(){
+ if(app.screen!=="choose"||app.chosen.length!==5||DM_CHOOSE.autoConfirming)return;
+ DM_CHOOSE.autoConfirming=true;
+ DM_CHOOSE.accepted=true;
+ DM_CHOOSE.listening=false;
+ dmChooseMessage("✓ Izabrano svih 5 tema. Automatski potvrđujem izbor...");
+ const current=DM_CHOOSE.rec;
+ if(current)try{current.stop()}catch(e){}
+ DM_CHOOSE.confirmTimer=setTimeout(()=>{
+  DM_CHOOSE.confirmTimer=null;
+  if(app.screen!=="choose"||app.chosen.length!==5)return;
+  dmChooseStop(true);
+  Promise.resolve(beginSpeaking()).catch(()=>{
+   DM_CHOOSE.autoConfirming=false;
+   dmChooseMessage("Nije moguće preći dalje automatski. Pritisnite „Potvrdi 5 tema”.");
+  });
+ },650);
+}
+function dmChooseQueueIds(ids){
+ if(app.screen!=="choose"||DM_CHOOSE.autoConfirming||!Array.isArray(ids))return 0;
+ let added=0;
  for(const id of ids){
-  if(app.chosen.length>=5)break;
-  if(app.offer.includes(id)&&!app.chosen.includes(id)){app.chosen.push(id);count++}
+  if(!app.offer.includes(id)||app.chosen.includes(id)||DM_CHOOSE.queuedIds.includes(id))continue;
+  if(app.chosen.length+DM_CHOOSE.queuedIds.length>=5)break;
+  DM_CHOOSE.queuedIds.push(id);added++;
  }
- if(count)renderChoice();
- if(app.chosen.length===5){
-  DM_CHOOSE.accepted=true;DM_CHOOSE.listening=false;
-  dmChooseMessage("✓ Pet tema je prepoznato. Pritisnite „Potvrdi 5 tema”.");
- }else if(count){
-  dmChooseMessage("✓ Prepoznato "+app.chosen.length+" od 5 tema. Recite i ostale nazive.");
- }
- return count;
+ const consume=()=>{
+  DM_CHOOSE.selectionTimer=null;
+  if(app.screen!=="choose"||DM_CHOOSE.autoConfirming){DM_CHOOSE.queuedIds=[];return}
+  const id=DM_CHOOSE.queuedIds.shift();
+  if(id!==undefined&&app.offer.includes(id)&&!app.chosen.includes(id)){
+   app.chosen.push(id);
+   renderChoice();
+   dmChooseMessage("✓ "+app.chosen.length+" / 5: "+TOPICS[id].title.split(" · ")[0]);
+  }
+  if(app.chosen.length===5){DM_CHOOSE.queuedIds=[];dmChooseAutoConfirm();return}
+  if(DM_CHOOSE.queuedIds.length)DM_CHOOSE.selectionTimer=setTimeout(consume,230);
+ };
+ if(!DM_CHOOSE.selectionTimer&&DM_CHOOSE.queuedIds.length)consume();
+ return added;
+}
+
+function dmChooseApplyIds(ids){
+ return dmChooseQueueIds(ids);
 }
 function dmChooseHeard(value){
  if(app.screen!=="choose")return 0;
  const transcript=String(value||"").trim();if(!transcript)return 0;
  DM_CHOOSE.heard=transcript;
  const n=dmChooseApplyIds(dmChooseVoiceNames(transcript));
- if(!n&&app.chosen.length<5)dmChooseMessage("Možete izgovoriti nazive tema, izabrati ih dodirom ili automatski.");
+ if(!n&&app.chosen.length<5&&!DM_CHOOSE.queuedIds.length)dmChooseMessage("Izgovorite nazive ponuđenih tema. Svaku odmah označavam.");
  dmChooseDisplay();return n;
 }
 // Opciona AI pomoć samo za nazive iz šest stvarno ponuđenih tema.
@@ -814,6 +846,10 @@ async function dmChooseProcessTranscript(transcript,serial){
 }
 function dmChooseStop(discard=true,keepStream=false){
  DM_CHOOSE.listening=false;DM_CHOOSE.serial++;
+ if(DM_CHOOSE.selectionTimer)clearTimeout(DM_CHOOSE.selectionTimer);
+ DM_CHOOSE.selectionTimer=null;DM_CHOOSE.queuedIds=[];
+ if(DM_CHOOSE.confirmTimer)clearTimeout(DM_CHOOSE.confirmTimer);
+ DM_CHOOSE.confirmTimer=null;
  if(DM_CHOOSE.recordTimer){clearTimeout(DM_CHOOSE.recordTimer);DM_CHOOSE.recordTimer=null}
  if(DM_CHOOSE.promptTimer){clearTimeout(DM_CHOOSE.promptTimer);DM_CHOOSE.promptTimer=null}
  const r=DM_CHOOSE.rec;DM_CHOOSE.rec=null;
@@ -843,7 +879,7 @@ function dmChooseSpeechRecognition(){
    finalSeen=full;
    dmChooseHeard(full);
   }
-  if(app.chosen.length===5){DM_CHOOSE.listening=false;try{r.stop()}catch(e){}}
+  if(app.chosen.length===5){dmChooseAutoConfirm()}
  };
  r.onerror=e=>{
   if(serial!==DM_CHOOSE.serial)return;
@@ -855,7 +891,7 @@ function dmChooseSpeechRecognition(){
  r.onend=()=>{
   if(serial!==DM_CHOOSE.serial)return;
   DM_CHOOSE.rec=null;
-  if(app.screen==="choose"&&DM_CHOOSE.listening&&app.chosen.length<5&&DM_CHOOSE.autoRetries<7){
+  if(app.screen==="choose"&&DM_CHOOSE.listening&&app.chosen.length<5&&DM_CHOOSE.autoRetries<15){
    DM_CHOOSE.autoRetries++;
    setTimeout(()=>{
     if(serial===DM_CHOOSE.serial&&app.screen==="choose"&&DM_CHOOSE.listening&&!DM_CHOOSE.rec)
@@ -949,12 +985,24 @@ async function dmChooseRecordFallback(){
  }catch(e){DM_CHOOSE.media=null;return false}
 }
 async function dmChooseStartMic(){
- if(app.screen!=="choose"||app.chosen.length>=5||DM_CHOOSE.rec||DM_CHOOSE.media||DM_CHOOSE.uploading)return;
+ if(app.screen!=="choose"||app.chosen.length>=5||DM_CHOOSE.rec||DM_CHOOSE.media||DM_CHOOSE.uploading||DM_CHOOSE.autoConfirming)return;
  DM_CHOOSE.listening=true;
+ // Web Speech prepoznaje izgovorenu temu odmah, umesto čekanja audio-segmenta od 11,5 s.
+ // Već otvoren getUserMedia stream može blokirati Web Speech na telefonu.
+ if(window.SpeechRecognition||window.webkitSpeechRecognition){
+  if(DM_CHOOSE.stream){
+   try{DM_CHOOSE.stream.getTracks().forEach(t=>t.stop())}catch(e){}
+   DM_CHOOSE.stream=null;
+  }
+  if(dmChooseSpeechRecognition()){
+   dmChooseMessage("🎙 Izgovarajte teme jednu po jednu. Odmah ih označavam.");
+   return;
+  }
+ }
  const ok=await dmChooseRecordFallback();
  if(!ok&&app.screen==="choose"&&DM_CHOOSE.listening&&!dmChooseSpeechRecognition()){
   DM_CHOOSE.listening=false;
-  dmChooseMessage("Dozvolite mikrofon u pregledaču; teme se mogu izabrati dodirom ili automatski.");
+  dmChooseMessage("Dozvolite mikrofon u pregledaču; teme možete izabrati dodirom.");
  }
 }
 // Preduzmi korak za dozvolu još iz dodira na "Nastavi na teme".
@@ -997,7 +1045,7 @@ function dmChooseSpeak(){
 }
 
 function showChoose(){
- stopEverything();if(!app.offer.length)makeOffer();stage("choose","2 / 4 · IZBOR TEMA");DM_CHOOSE.autoRetries=0;DM_CHOOSE.heard="";renderChoice();dmChooseSpeak()
+ stopEverything();if(!app.offer.length)makeOffer();stage("choose","2 / 4 · IZBOR TEMA");DM_CHOOSE.autoRetries=0;DM_CHOOSE.heard="";DM_CHOOSE.autoConfirming=false;DM_CHOOSE.queuedIds=[];renderChoice();dmChooseSpeak()
 }
 function renderChoice(){
  const grid=$("choiceGrid"),bubble=$("bubbleLayer");grid.replaceChildren();bubble.replaceChildren();
@@ -1005,7 +1053,7 @@ function renderChoice(){
  const em=document.createElement("span");em.className="icon";em.textContent=t.icon||"📘";
  const de=document.createElement("span");de.textContent=parts[0];const sr=document.createElement("small");sr.textContent=parts[1]||"";
  const check=document.createElement("span");check.className="check";check.textContent=app.chosen.includes(i)?"✓":"";
- b.append(em,de,sr,check);b.onclick=()=>{if(app.chosen.includes(i))app.chosen=app.chosen.filter(x=>x!==i);else if(app.chosen.length<5)app.chosen.push(i);renderChoice();if(app.chosen.length===5){DM_CHOOSE.accepted=true;DM_CHOOSE.listening=false;dmChooseMessage("✓ Izabrano pet tema. Pritisnite „Potvrdi 5 tema”.");if(DM_CHOOSE.rec)try{DM_CHOOSE.rec.stop()}catch(e){}}};
+ b.append(em,de,sr,check);b.onclick=()=>{if(app.chosen.includes(i))app.chosen=app.chosen.filter(x=>x!==i);else if(app.chosen.length<5)app.chosen.push(i);renderChoice();if(app.chosen.length===5)dmChooseAutoConfirm()};
  const bubbleBtn=document.createElement("button");bubbleBtn.type="button";bubbleBtn.className="portraitBubble portraitBubble"+(app.offer.indexOf(i)+1)+(app.chosen.includes(i)?" selected":"");bubbleBtn.textContent=parts[0];
  bubbleBtn.setAttribute("aria-pressed",String(app.chosen.includes(i)));bubbleBtn.setAttribute("aria-label","Tema "+parts[0]+", "+(app.chosen.includes(i)?"izabrana":"nije izabrana"));bubbleBtn.onclick=b.onclick;bubble.append(bubbleBtn);grid.append(b)});
  text("countChoice",app.chosen.length+" / 5 tema izabrano");$("chooseNext").disabled=app.chosen.length!==5;dmChooseDisplay()
@@ -1077,7 +1125,7 @@ $("introBack").onclick=backIntro;
  $("introForward").onclick=()=>{saveAnswer();stopEverything();showChoose()};
 $("chooseBack").onclick=()=>{app.intro=INTRO.length-1;showIntro()};
 $("changeOffer").onclick=()=>{makeOffer();renderChoice()};
-$("autoChoose").onclick=()=>{dmChooseStop(true);try{speechSynthesis.cancel()}catch(e){}DM_CHOOSE.accepted=true;app.chosen=shuffled(app.offer).slice(0,5);renderChoice();dmChooseMessage("✓ Pet tema je automatski izabrano. Pritisnite „Potvrdi 5 tema”.")};
+$("autoChoose").onclick=()=>{dmChooseStop(true);try{speechSynthesis.cancel()}catch(e){}DM_CHOOSE.accepted=true;app.chosen=shuffled(app.offer).slice(0,5);renderChoice();dmChooseAutoConfirm()};
 $("chooseNext").onclick=()=>{if(app.chosen.length===5)beginSpeaking()};
 $("speakNext").onclick=advanceSpeaking;$("speakBack").onclick=backSpeaking;
 $("download").onclick=downloadTxt;$("restart").onclick=()=>{stopEverything();app.intro=0;app.topic=0;app.question=-1;app.responses={};app.chosen=[];app.questions=[];try{localStorage.removeItem("demax_a2_simulacija_odgovori")}catch(e){}stage("intro","USMENI · A2")};
@@ -1546,6 +1594,7 @@ const DM_MIC={
  silenceTimer:null,silenceKey:"",lastSpeechAt:0,lastSpeechText:"",
  speechStarted:false,inSpeech:false,autoEnding:false,audioMonitor:null,finishedKey:"",
  noAnswerTimer:null,noAnswerKey:"",noAnswerUntil:0,
+ pendingText:"",pendingKey:"",
  recognition:null,media:null,mediaSession:null,mediaResolve:null,mediaPromise:null,permissionEverGranted:false,
  mediaChunks:[],mediaKey:"",mediaDiscard:false,
  serial:0,lastError:"",fileUrl:null,audioReady:null,audioProbe:null,
@@ -1694,10 +1743,33 @@ function dmCancelSilence(){
  DM_MIC.silenceTimer=null;
  DM_MIC.inSpeech=false;
 }
+
+/* Dok učenik govori, samo prikupljaj prepoznati nemački tekst.
+   Objavi ga odjednom tek kada se aktivira automatski završetak. */
+function dmDraftText(key){
+ return DM_MIC.pendingKey===key?clean(DM_MIC.pendingText):clean(app.responses[key]||"");
+}
+function dmBufferTranscript(key,value,append=false){
+ if(!key||!value||DM_MIC.pendingKey!==key||respondKey()!==key)return;
+ const v=clean(value);
+ if(!v)return;
+ DM_MIC.pendingText=append?dmUniqueTranscript(DM_MIC.pendingText,v):v;
+}
+function dmPublishAnswer(key){
+ if(DM_MIC.pendingKey!==key||respondKey()!==key)return;
+ const output=dmCollapseRepeatedSpeech(clean(DM_MIC.pendingText));
+ app.responses[key]=output;
+ const el=textarea();el.value=output;
+ if(el.scrollHeight>el.clientHeight)el.scrollTop=el.scrollHeight;
+ try{localStorage.setItem("demax_a2_simulacija_odgovori",JSON.stringify(app.responses))}catch(e){}
+}
+
 function dmNewSpeechSession(key){
  dmCancelNoAnswer();
  DM_MIC.noAnswerKey="";
  dmCancelSilence();
+ DM_MIC.pendingKey=key;
+ DM_MIC.pendingText=clean(textarea().value);
  DM_MIC.silenceKey=key;
  DM_MIC.lastSpeechAt=0;
  DM_MIC.lastSpeechText="";
@@ -1867,15 +1939,7 @@ function dmUniqueTranscript(previous,incoming){
 }
 function dmAppendTranscript(key,value){
  const val=clean(value);
- if(!val)return;
- const prev=clean(app.responses[key]||"");
- const combined=dmUniqueTranscript(prev,val);
- app.responses[key]=combined;
- if((app.screen==="speaking"||app.screen==="introExam")&&respondKey()===key){
-  const field=textarea();field.value=combined;
-  if(field.scrollHeight>field.clientHeight)field.scrollTop=field.scrollHeight;
- }
- try{localStorage.setItem("demax_a2_simulacija_odgovori",JSON.stringify(app.responses))}catch(e){}
+ if(val)dmBufferTranscript(key,val,true);
 }
 function dmMobileRecognizer(){
  return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent||"")||
@@ -1894,7 +1958,7 @@ function dmSpeechRecognize(){
  r.continuous=!dmMobileRecognizer();
  r.interimResults=true;
  r.maxAlternatives=1;
- const baseline=clean(textarea().value);
+ const baseline=dmDraftText(key);
  let finalText="",interimText="",reason="",nativeResult=false,silenceTimer=null;
  r.onresult=e=>{
   if(serial!==DM_MIC.serial||DM_MIC.recognition!==r)return;
@@ -1911,11 +1975,7 @@ function dmSpeechRecognize(){
   const whole=dmCollapseRepeatedSpeech(dmUniqueTranscript(baseline,current));
   dmTranscriptActivity(key,whole);
   if(finalText)DM_MIC.autoRetries=0;
-  if(respondKey()===key){
-   const field=textarea();field.value=whole;
-   if(field.scrollHeight>field.clientHeight)field.scrollTop=field.scrollHeight;
-   app.responses[key]=whole;
-  }
+  dmBufferTranscript(key,whole);
  };
  r.onspeechstart=()=>{if(serial===DM_MIC.serial&&DM_MIC.recognition===r)dmVoiceStart(key)};
  r.onspeechend=()=>{if(serial===DM_MIC.serial&&DM_MIC.recognition===r)dmVoiceEnd(key)};
@@ -1928,8 +1988,7 @@ function dmSpeechRecognize(){
   if(serial!==DM_MIC.serial||DM_MIC.recognition!==r)return;
   DM_MIC.recognition=null;app.rec=null;
   dmMarkLive(false);
-  const result=clean(app.responses[key]||"");
-  try{localStorage.setItem("demax_a2_simulacija_odgovori",JSON.stringify(app.responses))}catch(e){}
+  const result=dmDraftText(key);
   // Mobilni prepoznavac moze zavrsiti jedan ciklus pre kraja razgovora.
   // Nastavljaj slusanje dok traje govor; zavrsi tek posle 7 s tisine.
   if(DM_MIC.inSpeech)dmVoiceEnd(key);
@@ -2033,7 +2092,7 @@ async function dmRecordFallback(auto){
      dmAppendTranscript(key,transcript);state.gotText=true;
      // Bez AudioContext-a vreme poslednjeg govora približno je
      // trenutku dolaska transkripta iz Workera.
-     if(!state.monitorAvailable)dmTranscriptActivity(key,app.responses[key]);
+     if(!state.monitorAvailable)dmTranscriptActivity(key,dmDraftText(key));
      if(!state.finishing)dmMicStatus("🔴 Snimam. Nakon 7 sekundi tišine razgovor se završava.");
     }
    }catch(e){
@@ -2149,9 +2208,11 @@ async function handleButton(action){
  }
  if(action==="repeat"){speakPrompt(true);return}
  if(action==="stop"){
+  const key=respondKey();
   await dmFinishAudio();
+  dmPublishAnswer(key);
   saveAnswer();dmReleaseStream();
-  DM_MIC.finishedKey=respondKey();
+  DM_MIC.finishedKey=key;
   dmTickCountdown();
   if(app.screen==="introExam"){
    dmMicStatus("✓ Govor je sačuvan. Pročitajte prepoznati tekst i prevod, pa pritisnite „Nastavi na teme”.");
