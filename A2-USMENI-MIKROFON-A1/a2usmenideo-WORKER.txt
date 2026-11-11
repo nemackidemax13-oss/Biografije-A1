@@ -1,7 +1,7 @@
 /**
  * DE-MAX TUTIN — A2 USMENI DEO
  * Cloudflare Worker: a2usmenideo
- * Version: 2026-11-11-v7
+ * Version: 2026-11-11-v8
  *
  * SECRET in Cloudflare > Settings > Variables and Secrets:
  *   OPENAI_API_KEY = your OpenAI API key (Secret type)
@@ -29,7 +29,7 @@
  * cannot run paid AI transcription or evaluations.
  */
 
-const VERSION = '2026-11-11-a2usmenideo-v7';
+const VERSION = '2026-11-11-a2usmenideo-v8';
 const DEFAULT_ORIGIN = 'https://nemackidemax13-oss.github.io';
 const API_BASE = 'https://api.openai.com/v1';
 const MAX_JSON_BYTES = 32_000;
@@ -230,16 +230,30 @@ async function openAI(env, path, options) {
 }
 
 async function translate(body, env) {
+  // Translate only the FINAL transcript that the student actually said.
+  // Never use a corrected or suggested exam answer as the source.
   const answer = string(body.text || body.answer, 8000);
   if (!answer) return { translationSr: '' };
   const result = await callJSON(env,
-    'Ti si iskusan prevodilac za početnike nemačkog A2. Prevedi CELOKUPAN učenikov tekst ' +
-    'tačno na srpski latinicom. Sačuvaj činjenice, brojke, imena i redosled. ' +
-    'Ne izmišljaj pol govornika, ne dodaj rečenice i ne pretvaraj prevod u model-odgovor. ' +
-    'Gramatiku prevoda prilagodi srpskom, ali ne izmišljaj značenje. ' +
-    'Vrati JSON {"translationSr":"..."}.',
-    { answer }, 1700);
-  return { translationSr: string(result.translationSr || result.translation || result.translatedText, 8000) };
+    'Ti si izuzetno precizan prevodilac iz NEMAČKOG u SRPSKI (latinica). ' +
+    'Ulaz je ZAVRŠEN transkript stvarnog govora učenika na ÖSD A2 ispitu. ' +
+    'Prevedi svaku izgovorenu rečenicu i fragment, redom i potpuno. ' +
+    'Sačuvaj SVA lična imena, nazive mesta (Tutin, Novi Pazar, Sjenica), brojeve, ' +
+    'godine, negacije (nicht, kein), vremenske podatke, pitanja i izjave. ' +
+    'NEMOJ dodavati objašnjenja, nastavak, odgovor na ispitno pitanje, ' +
+    'gramatičke ispravke ili činjenice koje nisu navedene. ' +
+    'Ne zamenjuj transkript uzorkom ispravnog A2 odgovora. ' +
+    'Ako je nemačka rečenica nedovršena ili pogrešna, prevedi samo jasno ' +
+    'razumljiv deo i ne izmišljaj nedostajuće reči. ' +
+    'Ne zaključuj pol učenika, supružnika ili trećih osoba ako to nije rečeno. ' +
+    'Ako je deo nerazumljiv, ostavi sporni nemački izraz u navodnicima ' +
+    'umesto nagađanja. Izađi ISKLJUČIVO sa JSON objektom ' +
+    '{"translationSr":"tačan celokupan prevod na srpskom latinicom"}.',
+    { sourceLanguage: 'de', targetLanguage: 'sr-Latn', exactSpokenGerman: answer },
+    2200);
+  const translated = string(result.translationSr, 10000);
+  if (!translated) fail('AI nije vratio potpun prevod.', 502);
+  return { translationSr: translated };
 }
 
 async function evaluate(body, env) {
