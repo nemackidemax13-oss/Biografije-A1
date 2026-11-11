@@ -1359,7 +1359,7 @@ const DM_MIC={
  stream:null,pending:null,allowed:false,permitGeneration:0,
  wantListening:false,autoRetries:0,
  silenceTimer:null,silenceKey:"",lastSpeechAt:0,lastSpeechText:"",
- speechStarted:false,inSpeech:false,autoEnding:false,
+ speechStarted:false,inSpeech:false,autoEnding:false,audioMonitor:null,
  recognition:null,media:null,mediaSession:null,mediaResolve:null,mediaPromise:null,permissionEverGranted:false,
  mediaChunks:[],mediaKey:"",mediaDiscard:false,
  serial:0,lastError:"",fileUrl:null,audioReady:null,audioProbe:null,
@@ -1494,6 +1494,55 @@ function dmTranscriptActivity(key,value){
  if(!DM_MIC.inSpeech)dmScheduleSilence(key);
 }
 
+
+function dmStopAudioMonitor(){
+ const m=DM_MIC.audioMonitor;
+ if(!m)return;
+ DM_MIC.audioMonitor=null;
+ clearInterval(m.interval);
+ try{m.source.disconnect()}catch(e){}
+ try{m.context.close()}catch(e){}
+}
+function dmStartAudioMonitor(key,stream){
+ dmStopAudioMonitor();
+ const Audio=window.AudioContext||window.webkitAudioContext;
+ if(!Audio||!stream)return false;
+ let ctx,source;
+ try{
+  ctx=new Audio();source=ctx.createMediaStreamSource(stream);
+  const analyser=ctx.createAnalyser();analyser.fftSize=1024;
+  source.connect(analyser);
+  const values=new Uint8Array(analyser.fftSize);
+  const monitor={context:ctx,source,interval:null,voice:false,lastLoud:0,strongFrames:0};
+  DM_MIC.audioMonitor=monitor;
+  try{ctx.resume().catch(()=>{})}catch(e){}
+  monitor.interval=setInterval(()=>{
+   if(DM_MIC.audioMonitor!==monitor||!DM_MIC.wantListening||respondKey()!==key)return;
+   analyser.getByteTimeDomainData(values);
+   let power=0;
+   for(let i=0;i<values.length;i++){const v=(values[i]-128)/128;power+=v*v}
+   const rms=Math.sqrt(power/values.length),now=Date.now();
+   if(rms>0.025){
+    monitor.strongFrames++;
+    monitor.lastLoud=now;
+    if(!monitor.voice&&monitor.strongFrames>=2){
+     monitor.voice=true;dmVoiceStart(key);
+    }
+   }else{
+    monitor.strongFrames=0;
+    if(monitor.voice&&now-monitor.lastLoud>550){
+     monitor.voice=false;dmVoiceEnd(key);
+    }
+   }
+  },150);
+  return true;
+ }catch(e){
+  try{source?.disconnect()}catch(x){}
+  try{ctx?.close()}catch(x){}
+  return false;
+ }
+}
+
 function dmMarkLive(on){
  app.recording=!!on;
  $("micLight").classList.toggle("live",!!on);
@@ -1501,6 +1550,7 @@ function dmMarkLive(on){
  $("micLight").textContent=on?"🔴":DM_MIC.allowed?"🎙":"🎙";
 }
 function dmInvalidate(){
+ dmStopAudioMonitor();
  dmCancelSilence();
  DM_MIC.serial++;
  DM_MIC.wantListening=false;
@@ -1692,12 +1742,13 @@ async function dmRecordFallback(auto){
  const serial=DM_MIC.serial;
  let mime="";
  try{mime=["audio/webm;codecs=opus","audio/mp4","audio/webm","audio/ogg;codecs=opus"].find(t=>MediaRecorder.isTypeSupported(t))||""}catch(e){}
- const state={finishing:false,done:false,gotText:false,timer:null,queue:Promise.resolve(),resolve:null};
+ const state={finishing:false,done:false,gotText:false,timer:null,monitorAvailable:false,queue:Promise.resolve(),resolve:null};
  DM_MIC.mediaSession=state;DM_MIC.mediaDiscard=false;DM_MIC.wantListening=true;
  DM_MIC.mediaPromise=new Promise(resolve=>state.resolve=resolve);
  const valid=()=>serial===DM_MIC.serial&&!DM_MIC.mediaDiscard&&respondKey()===key;
  const finish=()=>{
   if(state.done)return;state.done=true;clearTimeout(state.timer);
+  dmStopAudioMonitor();
   state.queue.finally(()=>{
    if(DM_MIC.mediaSession===state)DM_MIC.mediaSession=null;
    if(valid()){
@@ -1722,7 +1773,10 @@ async function dmRecordFallback(auto){
     const transcript=clean(data.text||data.transcript||"");
     if(transcript&&valid()){
      dmAppendTranscript(key,transcript);state.gotText=true;
-     if(!state.finishing)dmMicStatus("🔴 Snimam. Prepoznate reči se dopunjavaju tokom razgovora.");
+     // Bez AudioContext-a vreme poslednjeg govora približno je
+     // trenutku dolaska transkripta iz Workera.
+     if(!state.monitorAvailable)dmTranscriptActivity(key,app.responses[key]);
+     if(!state.finishing)dmMicStatus("🔴 Snimam. Nakon 7 sekundi tišine razgovor se završava.");
     }
    }catch(e){
     if(valid()&&!state.finishing)dmMicStatus("🔴 Snimam. Jedan deo nije prepoznat, nastavite da govorite.");
@@ -1758,7 +1812,10 @@ async function dmRecordFallback(auto){
   return true;
  };
  const started=next();
- if(started)dmMicStatus("🔴 Snimam nemački. Tekst se pojavljuje tokom govora u kraćim delovima.");
+ if(started){
+  state.monitorAvailable=dmStartAudioMonitor(key,DM_MIC.stream);
+  dmMicStatus("🔴 Snimam nemački. Posle 7 sekundi tišine razgovor se automatski završava.");
+ }
  return started;
 }
 // A1 AUTO_IFRAME postupak: korisnički klik -> getUserMedia -> Web Speech Recognition.
@@ -1800,6 +1857,7 @@ async function startMic(fromTap=false){
  dmMicStatus("Ovaj pregledač ne podržava prepoznavanje nemačkog govora. Napišite odgovor.",true);
 }
 async function dmFinishAudio(){
+ dmStopAudioMonitor();
  dmCancelSilence();
  DM_MIC.wantListening=false;
  DM_MIC.autoRetries=0;
