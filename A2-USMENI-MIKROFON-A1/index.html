@@ -559,7 +559,7 @@ function validWorkerUrl(value){
 </div>
     <p class="sub" id="introIndex">Govorite polako na nemačkom, mikrofon će Vas saslušati.</p>
     <div class="examiner"><div class="role">PRÜFERIN / PRÜFER</div><div class="de" id="introDe"></div><div class="sr" id="introSr"></div><div class="state" id="introState" hidden></div></div>
-    <div class="answerbox"><div class="dm-answer-heading"><span class="fieldlabel">ODGOVOR · NEMAČKI (POSLE 7 SEKUNDI TIŠINE)</span><button type="button" class="dm-relisten" data-act="listen">🎙 Govori</button></div><textarea id="introText" lang="de" placeholder="Slušam vaš odgovor. Tekst se prikazuje nakon 7 sekundi tišine."></textarea></div><div id="introReview" class="dm-review" hidden aria-live="polite"><div class="dm-review-label">REKLI STE · NEMAČKI</div><div class="dm-review-de" id="introReviewDe"></div><div class="dm-review-label dm-review-translation-label">PREVOD · SRPSKI</div><div class="dm-review-sr" id="introReviewSr"></div></div>
+    <div class="answerbox"><div class="dm-answer-heading"><span class="fieldlabel">PREPOZNATI GOVOR · NEMAČKI (UŽIVO)</span><button type="button" class="dm-relisten" data-act="listen">🎙 Govori</button></div><textarea id="introText" lang="de" placeholder="Ovde se odmah prikazuje ono što izgovarate na nemačkom."></textarea></div><div id="introReview" class="dm-review" hidden aria-live="polite"><div class="dm-review-label">REKLI STE · NEMAČKI</div><div class="dm-review-de" id="introReviewDe"></div><div class="dm-review-label dm-review-translation-label">PREVOD · SRPSKI</div><div class="dm-review-sr" id="introReviewSr"></div></div>
     <div class="status" id="introStatus" aria-live="polite"></div>
     
     <div class="hint" id="introHint" hidden></div>
@@ -595,7 +595,7 @@ function validWorkerUrl(value){
     <p class="sub" id="speakSub"></p>
     <div class="rowTitle"><div class="circleNo" id="topicNo">1</div><div><div class="tiny" id="qType">TEMA · 2–3 REČENICE</div><div class="titleTopic" id="topicName"></div></div></div>
     <div class="examiner"><div class="role">ISPITIVAČ · PRÜFERIN / PRÜFER</div><div class="de" id="speakDe"></div><div class="sr" id="speakSr"></div><div class="state" id="speakState"></div></div>
-    <div class="answerbox"><div class="dm-answer-heading"><span class="fieldlabel">PREPOZNATI GOVOR · NEMAČKI (UŽIVO)</span><button type="button" class="dm-relisten" data-act="listen">🎙 Govori</button></div><textarea id="speakText" lang="de" placeholder="Ovde će biti prikazano ono što mikrofon prepozna. Tekst možete ispraviti."></textarea></div><div id="speakReview" class="dm-review" hidden aria-live="polite"><div class="dm-review-label">REKLI STE · NEMAČKI</div><div class="dm-review-de" id="speakReviewDe"></div><div class="dm-review-label dm-review-translation-label">PREVOD · SRPSKI</div><div class="dm-review-sr" id="speakReviewSr"></div></div>
+    <div class="answerbox"><div class="dm-answer-heading"><span class="fieldlabel">PREPOZNATI GOVOR · NEMAČKI (UŽIVO)</span><button type="button" class="dm-relisten" data-act="listen">🎙 Govori</button></div><textarea id="speakText" lang="de" placeholder="Ovde se odmah prikazuje ono što izgovarate na nemačkom."></textarea></div><div id="speakReview" class="dm-review" hidden aria-live="polite"><div class="dm-review-label">REKLI STE · NEMAČKI</div><div class="dm-review-de" id="speakReviewDe"></div><div class="dm-review-label dm-review-translation-label">PREVOD · SRPSKI</div><div class="dm-review-sr" id="speakReviewSr"></div></div>
     <div class="status" id="speakStatus" aria-live="polite"></div>
     
     <div class="hint" id="speakHint" hidden></div>
@@ -1753,7 +1753,15 @@ function dmBufferTranscript(key,value,append=false){
  if(!key||!value||DM_MIC.pendingKey!==key||respondKey()!==key)return;
  const v=clean(value);
  if(!v)return;
- DM_MIC.pendingText=append?dmUniqueTranscript(DM_MIC.pendingText,v):v;
+ const next=dmCollapseRepeatedSpeech(append?dmUniqueTranscript(DM_MIC.pendingText,v):v);
+ if(!next||next===DM_MIC.pendingText)return;
+ DM_MIC.pendingText=next;
+ // Tekst ide na ekran odmah, za svaki prepoznati deo nemačkog odgovora.
+ app.responses[key]=next;
+ const field=textarea();
+ field.value=next;
+ if(field.scrollHeight>field.clientHeight)field.scrollTop=field.scrollHeight;
+ try{localStorage.setItem("demax_a2_simulacija_odgovori",JSON.stringify(app.responses))}catch(e){}
 }
 function dmPublishAnswer(key){
  if(DM_MIC.pendingKey!==key||respondKey()!==key)return;
@@ -1987,13 +1995,15 @@ function dmSpeechRecognize(){
   clearTimeout(silenceTimer);
   if(serial!==DM_MIC.serial||DM_MIC.recognition!==r)return;
   DM_MIC.recognition=null;app.rec=null;
-  dmMarkLive(false);
+  // Na telefonu Web Speech može sam zatvoriti jedan ciklus.
+  // Ne prikazuj "isključen" dok automatski vraćamo slušanje.
+  if(!DM_MIC.wantListening)dmMarkLive(false);
   const result=dmDraftText(key);
   // Mobilni prepoznavac moze zavrsiti jedan ciklus pre kraja razgovora.
   // Nastavljaj slusanje dok traje govor; zavrsi tek posle 7 s tisine.
   if(DM_MIC.inSpeech)dmVoiceEnd(key);
   if(DM_MIC.wantListening&&DM_MIC.speechStarted&&(!reason||reason==="no-speech")){
-   dmMicStatus("🎙 Kratka pauza je u redu. Završavam nakon 7 sekundi tišine.");
+   dmMicStatus("🎙 Mikrofon ostaje aktivan. Posle 7 sekundi tišine automatski završavam odgovor.");
    setTimeout(()=>{
     if(serial!==DM_MIC.serial||respondKey()!==key||!DM_MIC.wantListening||
      DM_MIC.autoEnding||DM_MIC.recognition||DM_MIC.media||DM_MIC.mediaSession)return;
@@ -2002,7 +2012,7 @@ function dmSpeechRecognize(){
    },140);
    return;
   }
-  if(DM_MIC.wantListening&&!DM_MIC.speechStarted&&(!reason||reason==="no-speech")&&DM_MIC.autoRetries<1){
+  if(DM_MIC.wantListening&&!DM_MIC.speechStarted&&(!reason||reason==="no-speech")&&DM_MIC.autoRetries<12){
    DM_MIC.autoRetries++;
    setTimeout(()=>{
     if(serial===DM_MIC.serial&&respondKey()===key&&DM_MIC.wantListening&&!DM_MIC.recognition)
