@@ -2086,7 +2086,8 @@ async function dmRecordFallback(auto){
  try{rec=mime?new MediaRecorder(DM_MIC.stream,{mimeType:mime}):new MediaRecorder(DM_MIC.stream)}
  catch(e){dmMicStatus("Snimanje ne može da počne. Pokušajte ponovo.",true);return false}
  const state={finishing:false,done:false,gotText:false,timer:null,monitorAvailable:false,
-  queue:Promise.resolve(),resolve:null,parts:[],lastQueued:0};
+  queue:Promise.resolve(),resolve:null,parts:[],lastQueued:0,
+  latestBlob:null,processing:false};
  DM_MIC.mediaSession=state;DM_MIC.mediaDiscard=false;DM_MIC.wantListening=true;DM_MIC.media=rec;
  DM_MIC.mediaPromise=new Promise(resolve=>state.resolve=resolve);
  const valid=()=>serial===DM_MIC.serial&&!DM_MIC.mediaDiscard&&respondKey()===key;
@@ -2108,7 +2109,10 @@ async function dmRecordFallback(auto){
     const old=dmDraftText(key);
     if(transcript.length>=Math.max(0,old.length-12))dmBufferTranscript(key,transcript,false);
     state.gotText=true;
-    if(!state.monitorAvailable)dmTranscriptActivity(key,dmDraftText(key));
+    // Ako je AudioContext suspendovan ili nije uspeo da detektuje govor,
+    // upotrebi prvi pravi transkript da spreči prerani automatski prelazak.
+    if(!state.monitorAvailable||DM_MIC.audioMonitor?.context?.state!=="running"||
+       !DM_MIC.speechStarted)dmTranscriptActivity(key,dmDraftText(key));
     if(!state.finishing)dmMicStatus("🔴 Slušam bez prekidanja. Odgovor se dopunjava na nemačkom.");
    }
   }catch(e){
@@ -2120,8 +2124,17 @@ async function dmRecordFallback(auto){
   const blob=new Blob(state.parts.slice(),{type:audioType});
   if(blob.size<=state.lastQueued)return;
   state.lastQueued=blob.size;
-  // Pošalji kumulativan WebM/MP4 snimak, ne zaseban nečitljiv fragment.
-  state.queue=state.queue.then(()=>transcribe(blob)).catch(()=>{});
+  // Dok Worker obrađuje jedan snimak, sačuvaj SAMO najnoviji ceo snimak.
+  // Time se ne pravi red od zastarelih transkripcija dugih odgovora.
+  state.latestBlob=blob;
+  if(state.processing)return;
+  state.processing=true;
+  state.queue=(async()=>{
+   while(state.latestBlob&&valid()){
+    const latest=state.latestBlob;state.latestBlob=null;
+    await transcribe(latest);
+   }
+  })().catch(()=>{}).finally(()=>{state.processing=false});
  };
  const finish=()=>{
   if(state.done)return;
