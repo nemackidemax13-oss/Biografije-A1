@@ -1769,7 +1769,7 @@ function dmNameText(text,key){
   (_m,prefix)=>prefix+name
  );
  // Ako ispitivač pita direktno kako se zove, jedno ime je dovoljan odgovor.
- if(/^intro-[12]$/.test(key)&&/^\s*(leider|leida|neida|neda)[.!?]?\s*$/iu.test(out)){
+ if(/^intro-[012]$/.test(key)&&/^\s*(leider|leida|neida|neda)[.!?]?\s*$/iu.test(out)){
   out=name;
  }
  return out;
