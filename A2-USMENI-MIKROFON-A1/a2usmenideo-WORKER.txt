@@ -1,7 +1,7 @@
 /**
  * DE-MAX TUTIN — A2 USMENI DEO
  * Cloudflare Worker: a2usmenideo
- * Version: 2026-11-11-v3
+ * Version: 2026-11-11-v4
  *
  * SECRET in Cloudflare > Settings > Variables and Secrets:
  *   OPENAI_API_KEY = your OpenAI API key (Secret type)
@@ -28,7 +28,7 @@
  * cannot run paid AI transcription or evaluations.
  */
 
-const VERSION = '2026-11-11-a2usmenideo-v3';
+const VERSION = '2026-11-11-a2usmenideo-v4';
 const DEFAULT_ORIGIN = 'https://nemackidemax13-oss.github.io';
 const API_BASE = 'https://api.openai.com/v1';
 const MAX_JSON_BYTES = 32_000;
@@ -300,7 +300,7 @@ async function questions(body, env) {
   })).filter(item => {
     const k = normal(item.q);
     if (!k || unique.has(k)) return false;
-    if (normalizedAvoid.some(word => word && new RegExp('(^| )' + escapeRegex(word) + '( |$)', 'iu').test(k))) return false;
+    if (normalizedAvoid.some(word => word && (' ' + k + ' ').includes(' ' + word + ' '))) return false;
     unique.add(k); return true;
   }).slice(0, count);
   return { questions };
@@ -393,8 +393,9 @@ async function transcribe(request, env, cors) {
     'Frankfurt am Main. Beispielsatz: "Ich komme aus Tutin." ' +
     'Verwechsle "aus Tutin" nicht mit "auszuziehen", wenn der Ortsname ' +
     'im Audio zu hören ist. Erfinde niemals Wörter oder Sätze.');
-  form.append('languages[]', 'de');
-  for (const keyword of KNOWN_PLACES) form.append('keywords[]', keyword);
+  // Audio transcription API accepts the singular 'language' field.
+  // Location spelling guidance is already included in the prompt above.
+  form.append('language', 'de');
 
   const upstream = await openAI(env, '/audio/transcriptions', {
     method: 'POST', body: form
@@ -404,6 +405,3 @@ async function transcribe(request, env, cors) {
   return json({ ok: true, text: raw, transcript: raw, language: 'de' }, 200, cors);
 }
 
-function escapeRegex(value) {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
