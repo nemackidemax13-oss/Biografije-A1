@@ -1,7 +1,7 @@
 /**
  * DE-MAX TUTIN — A2 USMENI DEO
  * Cloudflare Worker: a2usmenideo
- * Version: 2026-11-11-v10
+ * Version: 2026-11-11-v11
  *
  * SECRET in Cloudflare > Settings > Variables and Secrets:
  *   OPENAI_API_KEY = your OpenAI API key (Secret type)
@@ -29,7 +29,7 @@
  * cannot run paid AI transcription or evaluations.
  */
 
-const VERSION = '2026-11-11-a2usmenideo-v10';
+const VERSION = '2026-11-11-a2usmenideo-v11';
 const DEFAULT_ORIGIN = 'https://nemackidemax13-oss.github.io';
 const API_BASE = 'https://api.openai.com/v1';
 const MAX_JSON_BYTES = 32_000;
@@ -233,13 +233,16 @@ async function openAI(env, path, options) {
 }
 
 async function translate(body, env) {
-  // Translate only the FINAL transcript that the student actually said.
-  // Never use a corrected or suggested exam answer as the source.
+  // Delimicni prevod dok ucenik govori; konacni prevod po zavrsetku.
+  // Nikad ne dopunjavaj nedovrseni odgovor niti menjaj prepoznati tekst.
+  const partial = body.partial === true;
   const answer = string(body.text || body.answer, 8000);
   if (!answer) return { translationSr: '' };
   const result = await callJSON(env,
     'Ti si izuzetno precizan prevodilac iz NEMAČKOG u SRPSKI (latinica). ' +
-    'Ulaz je ZAVRŠEN transkript stvarnog govora učenika na ÖSD A2 ispitu. ' +
+    (partial ?
+      'Ulaz je DELIMIČAN transkript dok učenik još govori. Prevedi samo stvarno prisutne reči i završi tamo gde se ulaz završava. ' :
+      'Ulaz je ZAVRŠEN transkript stvarnog govora učenika na ÖSD A2 ispitu. ') +
     'Prevedi svaku izgovorenu rečenicu i fragment, redom i potpuno. ' +
     'Sačuvaj SVA lična imena (posebno Naida, Ema, Ajlina, Merima), ' +
     'nazive mesta (Tutin, Novi Pazar, Sjenica, Kraljevo, Belgrad, Beograd, Podgorica), brojeve, ' +
@@ -253,7 +256,7 @@ async function translate(body, env) {
     'Ako je deo nerazumljiv, ostavi sporni nemački izraz u navodnicima ' +
     'umesto nagađanja. Izađi ISKLJUČIVO sa JSON objektom ' +
     '{"translationSr":"tačan celokupan prevod na srpskom latinicom"}.',
-    { sourceLanguage: 'de', targetLanguage: 'sr-Latn', exactSpokenGerman: answer },
+    { sourceLanguage: 'de', targetLanguage: 'sr-Latn', partial, exactSpokenGerman: answer },
     2200);
   const translated = string(result.translationSr, 10000);
   if (!translated) fail('AI nije vratio potpun prevod.', 502);
@@ -465,17 +468,18 @@ async function transcribe(request, env, cors) {
   // bošnjačka i srpska imena. Ne šalji stotine termina u jednom snimku.
   const nameTopic = /famil|kind|name|vorstell|gebor|person|eltern|tochter|sohn/i.test(context);
   const names = nameTopic
-    ? [...PRIORITY_NAMES, ...BOSNIAK_NAMES.slice(0, 43), ...SERBIAN_NAMES.slice(0, 43)]
-    : [...PRIORITY_NAMES, ...BOSNIAK_NAMES.slice(0, 13), ...SERBIAN_NAMES.slice(0, 13)];
-  const keywords = [...new Set([...KNOWN_PLACES, ...names])]
-    .filter(item => item && !/[<>\r\n]/.test(item)).slice(0, nameTopic ? 115 : 65);
+    ? [...PRIORITY_NAMES, ...BOSNIAK_NAMES.slice(0, 18), ...SERBIAN_NAMES.slice(0, 18)]
+    : [...PRIORITY_NAMES, ...BOSNIAK_NAMES.slice(0, 8), ...SERBIAN_NAMES.slice(0, 8)];
+  const keywords = [...new Set([...KNOWN_PLACES.slice(0, 16), ...names])]
+    .filter(item => item && !/[<>\r\n]/.test(item)).slice(0, nameTopic ? 50 : 36);
   form.append('prompt',
     'ÖSD A2, mündliche Prüfung auf Deutsch. Schreibe die tatsächlich gesprochenen Wörter ' +
     'mit den korrekten Namen, ohne etwas hinzuzufügen. Mögliche Vornamen: ' +
     'Naida, Ema, Ajlina, Merima. Mögliche Ortsnamen: Tutin, Novi Pazar, Sjenica, ' +
     'Kraljevo, Belgrad, Beograd, Podgorica. ' +
-    'Beispiele: "Ich komme aus Tutin." "Meine Tochter heißt Naida." ' +
-    'Nur Namen verwenden, die im Audio wirklich gesprochen werden. ' +
+    'Nur Namen verwenden, die im Audio tatsächlich gesprochen werden. ' +
+    'Bei Stille oder unverständlichen Geräuschen leer transkribieren. ' +
+    'Keine Beispielsätze übernehmen, nichts dazuerfinden, keine Sätze vervollständigen. ' +
     'Grammatikfehler des Lernenden nicht verbessern.' +
     (context ? ' Prüfungsthema: ' + context.replace(/[<>\r\n]/g, ' ') + '.' : ''));
   if (model === 'gpt-transcribe') {
