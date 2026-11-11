@@ -368,6 +368,30 @@ main{min-height:0;flex:1;display:flex;flex-direction:column;overflow:hidden;back
   letter-spacing:.12px!important;
 }
 
+
+/* Veći odgovor na početku i samo jedan nemački ispis, prevod ispod. */
+#introExam .answerbox textarea{
+ height:clamp(92px,19dvh,140px)!important;
+ min-height:clamp(92px,19dvh,140px)!important;
+ max-height:clamp(92px,19dvh,140px)!important;
+ font-size:15px;line-height:1.4;overflow-y:auto;
+}
+#introExam.dm-first-intro .answerbox textarea{
+ height:clamp(120px,26dvh,185px)!important;
+ min-height:clamp(120px,26dvh,185px)!important;
+ max-height:clamp(120px,26dvh,185px)!important;
+ font-size:16px;line-height:1.45;
+}
+#introReview>.dm-review-label:first-child,
+#introReview>.dm-review-de,
+#speakReview>.dm-review-label:first-child,
+#speakReview>.dm-review-de{display:none!important}
+#introReview .dm-review-translation-label,
+#speakReview .dm-review-translation-label{border-top:0;padding-top:0}
+@media(max-height:650px){
+ #introExam .answerbox textarea{height:92px!important;min-height:92px!important;max-height:92px!important}
+ #introExam.dm-first-intro .answerbox textarea{height:clamp(105px,22dvh,145px)!important;min-height:clamp(105px,22dvh,145px)!important;max-height:clamp(105px,22dvh,145px)!important}
+}
 </style>
 <script>
 // Minimalna provera A2 AI Workera; izbegava JS gresku pri ocenjivanju.
@@ -525,6 +549,7 @@ function showHint(){
 }
 function showIntro(){
  stage("introExam","1 / 4 · UVOD");
+ document.getElementById("introExam").classList.toggle("dm-first-intro",app.intro===0);
  text("introIndex","Pitanje "+(app.intro+1)+" / "+INTRO.length+" · Mikrofon se sam uključuje posle pitanja.");
  const p=INTRO[app.intro];text("introDe",p.q);text("introSr",p.qt);text("introState","");
  $("introBack").textContent=app.intro===0?"‹ Početna":"‹ Nazad";
@@ -1121,7 +1146,7 @@ function speakPrompt(autoMic){
  const token=app.sayToken;
  const key=respondKey();
  statusSet("🔊 Pripremam pitanje na nemačkom...");
- const listenAfter=(delay=400)=>{
+ const listenAfter=(delay=120)=>{
   if(!autoMic||token!==app.sayToken||respondKey()!==key)return;
   if(A2_VOICE.micTimer)clearTimeout(A2_VOICE.micTimer);
   A2_VOICE.micTimer=setTimeout(()=>{
@@ -1154,7 +1179,7 @@ function speakPrompt(autoMic){
     }
     if(spoken){
      statusSet("✓ Pitanje je izgovoreno. Odgovorite na nemačkom.");
-     listenAfter(400);
+     listenAfter(120);
     }else{
      statusSet("🔊 Zvuk je blokiran. Dodirnite Ponovi pitanje; zatim odgovorite.");
     }
@@ -1187,7 +1212,7 @@ function speakPrompt(autoMic){
   statusSet("🎙 Proveravam dozvolu mikrofona, zatim izgovaram pitanje...");
   DM_MIC.pending.then(()=>{
    if(token!==app.sayToken||respondKey()!==key)return;
-   setTimeout(sayNow,120);
+   setTimeout(sayNow,50);
   }).catch(()=>{
    if(token===app.sayToken&&respondKey()===key)setTimeout(sayNow,120);
   });
@@ -1333,7 +1358,7 @@ if(dmDirectMicLink)dmDirectMicLink.style.display=DM_EMBEDDED?"inline-block":"non
 const DM_MIC={
  stream:null,pending:null,allowed:false,permitGeneration:0,
  wantListening:false,autoRetries:0,
- recognition:null,media:null,mediaSession:null,mediaResolve:null,mediaPromise:null,
+ recognition:null,media:null,mediaSession:null,mediaResolve:null,mediaPromise:null,permissionEverGranted:false,
  mediaChunks:[],mediaKey:"",mediaDiscard:false,
  serial:0,lastError:"",fileUrl:null,audioReady:null,audioProbe:null,
  transcribeURL:"https://usmenia1prvideo.nemackidemax13.workers.dev/api/a1-transcribe"
@@ -1379,6 +1404,7 @@ async function dmPermit(fromTap){
   if(DM_MIC.stream&&DM_MIC.stream!==stream){DM_MIC.stream.getTracks().forEach(t=>t.stop())}
   DM_MIC.stream=stream;
   DM_MIC.allowed=true;
+  DM_MIC.permissionEverGranted=true;
   DM_MIC.lastError="";
   for(const track of stream.getAudioTracks())track.onended=()=>{DM_MIC.allowed=false;if(DM_MIC.stream===stream)DM_MIC.stream=null};
   return true
@@ -1442,19 +1468,36 @@ function endMic(){
  dmInvalidate();
 }
 // Ukloni samo preklapanje transkripcija, ne ponavljanja kratkih reči u govoru.
+// Mobilni Web Speech moze da vrati potpuno iste fraze u vise delova.
+function dmCollapseRepeatedSpeech(value){
+ const words=clean(value).split(/\s+/).filter(Boolean);
+ const norm=w=>w.toLocaleLowerCase("de").replace(/^[^a-zäöüß0-9]+|[^a-zäöüß0-9]+$/gi,"");
+ for(let i=0;i<words.length;i++){
+  let removed=false;
+  for(let k=Math.min(40,Math.floor((words.length-i)/2));k>=3;k--){
+   let same=true;
+   for(let j=0;j<k;j++)if(norm(words[i+j])!==norm(words[i+k+j])){same=false;break}
+   if(same){words.splice(i+k,k);i=Math.max(-1,i-2);removed=true;break}
+  }
+  if(removed)continue;
+ }
+ return clean(words.join(" "));
+}
 function dmUniqueTranscript(previous,incoming){
  const prev=clean(previous),val=clean(incoming);
- if(!prev)return val;
- if(!val)return prev;
+ if(!prev)return dmCollapseRepeatedSpeech(val);
+ if(!val)return dmCollapseRepeatedSpeech(prev);
  const norm=x=>x.toLocaleLowerCase("de").replace(/[.,!?;:„“"']/g,"").replace(/\s+/g," ").trim();
  const p=norm(prev),n=norm(val);
- if(p===n||(n.length>=18&&p.endsWith(n)))return prev;
+ if(p===n||(n.length>=18&&(p.endsWith(n)||p.startsWith(n))))return dmCollapseRepeatedSpeech(prev);
  const pw=prev.split(/\s+/),nw=val.split(/\s+/);
  let overlap=0;
  for(let k=Math.min(18,pw.length,nw.length);k>=3;k--){
   if(norm(pw.slice(-k).join(" "))===norm(nw.slice(0,k).join(" "))){overlap=k;break}
  }
- return clean([prev,nw.slice(overlap).join(" ")].filter(Boolean).join(" "));
+ const addition=nw.slice(overlap).join(" ");
+ const prefix=overlap&&addition?prev.replace(/[.!?]$/,""):prev;
+ return dmCollapseRepeatedSpeech(clean([prefix,addition].filter(Boolean).join(" ")));
 }
 function dmAppendTranscript(key,value){
  const val=clean(value);
@@ -1482,7 +1525,7 @@ function dmSpeechRecognize(){
  try{r=new SR()}catch(e){return false}
  DM_MIC.recognition=r;app.rec=r;
  r.lang="de-DE";
- r.continuous=!isApple;
+ r.continuous=!dmMobileRecognizer();
  r.interimResults=true;
  r.maxAlternatives=1;
  const baseline=clean(textarea().value);
@@ -1497,7 +1540,9 @@ function dmSpeechRecognize(){
    if(e.results[i].isFinal)finalText+=(finalText?" ":"")+val;
    else interimText+=(interimText?" ":"")+val;
   }
-  const whole=clean([baseline,finalText,interimText].filter(Boolean).join(" "));
+  // Prepoznate privremene/konačne rezultate spoji bez ponavljanja.
+  const current=dmUniqueTranscript(finalText,interimText);
+  const whole=dmCollapseRepeatedSpeech(dmUniqueTranscript(baseline,current));
   if(finalText)DM_MIC.autoRetries=0;
   if(respondKey()===key){
    const field=textarea();field.value=whole;
@@ -1655,13 +1700,18 @@ function dmUseNativeSpeechFirst(){
 async function startMic(fromTap=false){
  if(app.screen!=="introExam"&&app.screen!=="speaking")return;
  const key=respondKey(),serial=DM_MIC.serial;
- if(DM_MIC.recognition||DM_MIC.media){
+ if(DM_MIC.recognition||DM_MIC.media||DM_MIC.mediaSession){
   dmMicStatus("🎙 Mikrofon je vec ukljucen. Kada zavrsite, pritisnite Završi razgovor.");
   return;
  }
  // Kao na A1 AUTO_IFRAME: prvo zatraži dozvolu na korisnički dodir.
  // A2 prethodno pokreće SpeechRecognition pre getUserMedia, što je
  // u iframe-u moglo da izazove zabranu ili prekid automatskog slušanja.
+ // Posle prve dozvole pokreni govor odmah nakon pitanja, bez novog zahteva.
+ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!fromTap&&SR&&DM_MIC.permissionEverGranted&&!DM_MIC.pending){
+  if(dmSpeechRecognize())return;
+ }
  const permitted=dmTrackLive() ? true : await dmPermit(fromTap);
  if(serial!==DM_MIC.serial||respondKey()!==key)return;
  if(!permitted){
@@ -1672,7 +1722,6 @@ async function startMic(fromTap=false){
  // sa oslobođenim getUserMedia streamom (kao u A1).
  // Ako pregledač nema Web Speech API ili njegovo pokretanje ne uspe,
  // koristi postojeći MediaRecorder + DE-MAX Worker.
- const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
  if(SR&&dmSpeechRecognize())return;
  if(window.MediaRecorder)return dmRecordFallback(false);
  dmMicStatus("Ovaj pregledač ne podržava prepoznavanje nemačkog govora. Napišite odgovor.",true);
@@ -1703,7 +1752,7 @@ async function dmFinishAudio(){
 async function handleButton(action){
  if(action==="listen"){
   stopAudio();
-  if(DM_MIC.recognition||DM_MIC.media){dmMicStatus("Mikrofon već snima. Pritisnite „Završi razgovor” kad završite.");return}
+  if(DM_MIC.recognition||DM_MIC.media||DM_MIC.mediaSession){dmMicStatus("Mikrofon već snima. Pritisnite „Završi razgovor” kad završite.");return}
   startMic(true);return
  }
  if(action==="repeat"){speakPrompt(true);return}
