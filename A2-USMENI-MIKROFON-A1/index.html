@@ -1762,7 +1762,7 @@ function dmArmNoAnswer(key){
   const audioReliable=monitor?.context?.state==="running"&&monitor.signalSamples>12;
   // Na Safari-ju AudioContext često ostaje suspendovan. Ako mikrofon ima
   // snimak koji Worker još obrađuje, ne preskoči pravi odgovor kao tišinu.
-  if(dmMobileRecognizer()&&DM_MIC.mediaSession&&(!audioReliable||monitor.peak>0.007)){
+  if(dmMobileRecognizer()&&DM_MIC.mediaSession&&(!audioReliable||monitor.peak>0.0045)){
    const recorder=DM_MIC.media;
    try{if(recorder?.state==="recording")recorder.requestData()}catch(e){}
    await new Promise(resolve=>setTimeout(resolve,180));
@@ -1854,7 +1854,7 @@ function dmVoiceEnd(key){
  dmScheduleSilence(key);
 }
 function dmTranscriptActivity(key,value){
- if(DM_MIC.silenceKey!==key||!DM_MIC.wantListening)return;
+ if(DM_MIC.silenceKey!==key||!DM_MIC.wantListening||DM_MIC.visibilityPaused)return;
  const norm=clean(value).toLocaleLowerCase("de").replace(/[^a-z0-9äöüß ]/g,"").replace(/\s+/g," ");
  if(!norm||norm===DM_MIC.lastSpeechText)return;
  DM_MIC.lastSpeechText=norm;
@@ -1903,7 +1903,7 @@ function dmStartAudioMonitor(key,stream){
    lastLoud:0,strongFrames:0,noiseFloor:0.004,signalSamples:0,peak:0};
   DM_MIC.audioMonitor=monitor;
   monitor.interval=setInterval(()=>{
-   if(DM_MIC.audioMonitor!==monitor||!DM_MIC.wantListening||respondKey()!==key)return;
+   if(DM_MIC.audioMonitor!==monitor||!DM_MIC.wantListening||DM_MIC.visibilityPaused||respondKey()!==key)return;
    if(ctx.state!=="running")return;
    analyser.getByteTimeDomainData(values);
    let power=0;
