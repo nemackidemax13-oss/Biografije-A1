@@ -394,7 +394,7 @@ main{min-height:0;flex:1;display:flex;flex-direction:column;overflow:hidden;back
 }
 
 /* A2 · prikaz preostale tišine u gornjem desnom uglu. */
-.dm-step-top{flex:none;display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:48px}
+.dm-step-top{flex:none;display:flex;justify-content:flex-end;align-items:center;gap:8px;min-height:45px}
 #introExam>.scroll .dm-step-top>.eyebrow,
 #speaking>.scroll .dm-step-top>.eyebrow{margin:0;align-self:center;font-size:11px;font-weight:900;letter-spacing:.35px}
 .dm-countdown{
@@ -447,7 +447,6 @@ function validWorkerUrl(value){
   <section id="introExam" class="screen">
    <div class="scroll">
     <div class="dm-step-top">
- <p class="eyebrow">KORAK 1 · A2</p>
  <div class="dm-countdown" id="dmIntroCountdown" aria-label="Status mikrofona i odbrojavanje tišine" aria-live="off">
   <span class="dm-countdown-ring"><span class="dm-countdown-number">🎙</span></span>
   <span class="dm-countdown-caption">Čekam govor</span>
@@ -460,11 +459,7 @@ function validWorkerUrl(value){
     
     <div class="hint" id="introHint" hidden></div>
    </div>
-   <div class="quick-controls">
- <button class="btn green" data-act="stop">■ Završi razgovor</button>
- <button class="btn" data-act="repeat">🔊 Ponovi pitanje</button>
-</div>
-<div class="actions" id="introActions">
+   <div class="actions" id="introActions">
  <button class="btn red" id="introBack">‹ Nazad</button>
  <button class="btn primary" id="introForward">Nastavi na teme ›</button>
 </div>
@@ -500,7 +495,7 @@ function validWorkerUrl(value){
     
     <div class="hint" id="speakHint" hidden></div>
    </div>
-   <div class="quick-controls"><button class="btn green" data-act="stop">■ Završi razgovor</button><button class="btn" data-act="repeat">🔊 Ponovi pitanje</button></div><div class="actions"><button class="btn red" id="speakBack">‹ Nazad</button><button class="btn green" id="speakNext">Dalje · pitanja ›</button></div>
+   <div class="actions"><button class="btn red" id="speakBack">‹ Nazad</button><button class="btn green" id="speakNext">Dalje · pitanja ›</button></div>
   </section>
   <section id="results" class="screen">
    <div class="scroll"><p class="eyebrow">SIMULACIJA ZAVRŠENA</p><h2>Bravo! Završili ste ÖSD A2 simulaciju</h2>
@@ -1398,6 +1393,7 @@ const DM_MIC={
  wantListening:false,autoRetries:0,
  silenceTimer:null,silenceKey:"",lastSpeechAt:0,lastSpeechText:"",
  speechStarted:false,inSpeech:false,autoEnding:false,audioMonitor:null,finishedKey:"",
+ noAnswerTimer:null,noAnswerKey:"",noAnswerUntil:0,
  recognition:null,media:null,mediaSession:null,mediaResolve:null,mediaPromise:null,permissionEverGranted:false,
  mediaChunks:[],mediaKey:"",mediaDiscard:false,
  serial:0,lastError:"",fileUrl:null,audioReady:null,audioProbe:null,
@@ -1478,6 +1474,7 @@ async function dmProbeAudio(){
 }
 
 const DM_SILENCE_LIMIT_MS=7000;
+const DM_NO_ANSWER_MS=10000;
 
 function dmTickCountdown(){
  const key=respondKey();
@@ -1488,7 +1485,14 @@ function dmTickCountdown(){
  if(DM_MIC.autoEnding&&DM_MIC.silenceKey===key){
   state="finished";value="✓";caption="Čuvam odgovor";
  }else if(DM_MIC.wantListening&&DM_MIC.silenceKey===key){
-  if(!DM_MIC.speechStarted){state="waiting";value="🎙";caption="Slušam vas";}
+  if(!DM_MIC.speechStarted){
+   if(DM_MIC.noAnswerTimer&&DM_MIC.noAnswerKey===key){
+    const ms=Math.max(0,DM_MIC.noAnswerUntil-Date.now());
+    state="counting";value=Math.ceil(ms/1000)+"s";
+    caption="Bez govora · ponavljam";
+    progress=Math.max(0,Math.min(100,(ms/DM_NO_ANSWER_MS)*100))+"%";
+   }else{state="waiting";value="🎙";caption="Slušam vas";}
+  }
   else if(DM_MIC.inSpeech){state="speaking";value="🎙";caption="Govorite";}
   else{
    const ms=Math.max(0,DM_SILENCE_LIMIT_MS-(Date.now()-DM_MIC.lastSpeechAt));
@@ -1509,12 +1513,38 @@ function dmTickCountdown(){
 }
 setInterval(dmTickCountdown,200);
 
+
+function dmCancelNoAnswer(){
+ if(DM_MIC.noAnswerTimer)clearTimeout(DM_MIC.noAnswerTimer);
+ DM_MIC.noAnswerTimer=null;
+ DM_MIC.noAnswerUntil=0;
+}
+function dmArmNoAnswer(key){
+ if(!DM_MIC.wantListening||DM_MIC.speechStarted||DM_MIC.autoEnding||
+  DM_MIC.noAnswerTimer||DM_MIC.noAnswerKey===key)return;
+ DM_MIC.noAnswerKey=key;
+ DM_MIC.noAnswerUntil=Date.now()+DM_NO_ANSWER_MS;
+ const serial=DM_MIC.serial;
+ DM_MIC.noAnswerTimer=setTimeout(()=>{
+  DM_MIC.noAnswerTimer=null;
+  DM_MIC.noAnswerUntil=0;
+  if(serial!==DM_MIC.serial||!DM_MIC.wantListening||DM_MIC.speechStarted||
+   DM_MIC.autoEnding||respondKey()!==key||app.screen!=="introExam"&&app.screen!=="speaking")return;
+  dmMicStatus("🔊 Nema odgovora. Ponavljam isto pitanje i ponovo uključujem mikrofon.");
+  // Drži isti korak; speakPrompt zaustavlja prazan snimak i ponavlja pitanje.
+  speakPrompt(true);
+ },DM_NO_ANSWER_MS);
+ dmTickCountdown();
+}
+
 function dmCancelSilence(){
  clearTimeout(DM_MIC.silenceTimer);
  DM_MIC.silenceTimer=null;
  DM_MIC.inSpeech=false;
 }
 function dmNewSpeechSession(key){
+ dmCancelNoAnswer();
+ DM_MIC.noAnswerKey="";
  dmCancelSilence();
  DM_MIC.silenceKey=key;
  DM_MIC.lastSpeechAt=0;
@@ -1537,15 +1567,16 @@ function dmScheduleSilence(key){
   if(Date.now()-DM_MIC.lastSpeechAt<DM_SILENCE_LIMIT_MS-50){dmScheduleSilence(key);return}
   DM_MIC.autoEnding=true;
   dmTickCountdown();
-  dmMicStatus("✓ Prošlo je 7 sekundi tišine. Automatski završavam razgovor...");
+  dmMicStatus("✓ Prošlo je 7 sekundi tišine. Automatski čuvam odgovor...");
   Promise.resolve(handleButton("stop")).catch(()=>{
    DM_MIC.autoEnding=false;
-   dmMicStatus("Automatsko završavanje nije uspelo. Dodirnite ■ Završi razgovor.");
+   dmMicStatus("Automatsko završavanje nije uspelo. Možete preći dalje ili ponovo uključiti mikrofon.");
   });
  },remaining);
 }
 function dmVoiceStart(key){
  if(DM_MIC.silenceKey!==key||!DM_MIC.wantListening)return;
+ dmCancelNoAnswer();
  DM_MIC.speechStarted=true;
  dmCancelSilence();
  DM_MIC.inSpeech=true;
@@ -1562,6 +1593,7 @@ function dmTranscriptActivity(key,value){
  if(!norm||norm===DM_MIC.lastSpeechText)return;
  DM_MIC.lastSpeechText=norm;
  DM_MIC.speechStarted=true;
+ dmCancelNoAnswer();
  DM_MIC.lastSpeechAt=Date.now();
  if(!DM_MIC.inSpeech)dmScheduleSilence(key);
 }
@@ -1622,6 +1654,7 @@ function dmMarkLive(on){
  $("micLight").textContent=on?"🔴":DM_MIC.allowed?"🎙":"🎙";
 }
 function dmInvalidate(){
+ dmCancelNoAnswer();
  dmStopAudioMonitor();
  dmCancelSilence();
  DM_MIC.serial++;
@@ -1774,9 +1807,9 @@ function dmSpeechRecognize(){
   }else if(reason==="not-allowed"){
    dmMicStatus(DM_EMBEDDED?"Replit ili druga ugrađena aplikacija nije dozvolila mikrofon. Otvorite vežbu direktno u novoj kartici.":"Pregledač nije dozvolio prepoznavanje govora. Pritisnite 🎙 Govori ili napišite odgovor.",true);
   }else if(nativeResult){
-   dmMicStatus("✓ Govor je zabeležen. Za ručni završetak pritisnite ■ Završi razgovor.");
+   dmMicStatus("✓ Govor je zabeležen. Nakon 7 sekundi tišine odgovor se sam završava.");
   }else if(result){
-   dmMicStatus("✓ Govor je zabeležen. Ako niste završili, pritisnite 🎙 Govori ponovo; sledeće pitanje birate ručno.");
+   dmMicStatus("✓ Govor je zabeležen. Sledeće pitanje birate dugmetom Dalje.");
   }else dmMicStatus("Govor nije prepoznat. Pritisnite 🎙 Govori ponovo ili napišite odgovor.");
  };
  try{
@@ -1784,7 +1817,8 @@ function dmSpeechRecognize(){
   // stream ostane zauzet. Dozvola je već zatražena prethodnim klikom.
   if(dmMobileRecognizer()&&dmTrackLive())dmReleaseStream();
   r.start();DM_MIC.wantListening=true;dmMarkLive(true);
-  dmMicStatus("🎙 Slušam nemački. Govorite svojim tempom. Tekst se pojavljuje dok govorite.");
+  dmArmNoAnswer(key);
+  dmMicStatus("🎙 Slušam nemački. Ako ne odgovorite, pitanje se automatski ponavlja.");
   if(dmMobileRecognizer()){
    // Ako telefon prijavi "slušam", ali nikad ne pošalje rezultat,
    // pokreni postojeće rezervno snimanje i transkripciju.
@@ -1885,6 +1919,7 @@ async function dmRecordFallback(auto){
  };
  const started=next();
  if(started){
+  dmArmNoAnswer(key);
   state.monitorAvailable=dmStartAudioMonitor(key,DM_MIC.stream);
   dmMicStatus("🔴 Snimam nemački. Posle 7 sekundi tišine razgovor se automatski završava.");
  }
@@ -1902,7 +1937,7 @@ async function startMic(fromTap=false){
  if(app.screen!=="introExam"&&app.screen!=="speaking")return;
  const key=respondKey(),serial=DM_MIC.serial;
  if(DM_MIC.recognition||DM_MIC.media||DM_MIC.mediaSession){
-  dmMicStatus("🎙 Mikrofon već sluša. Sam se završava posle 7 sekundi tišine.");
+  dmMicStatus("🎙 Mikrofon je već aktivan. Sačekajte automatsko završavanje posle 7 sekundi tišine.");
   return;
  }
  dmNewSpeechSession(key);
@@ -1929,6 +1964,7 @@ async function startMic(fromTap=false){
  dmMicStatus("Ovaj pregledač ne podržava prepoznavanje nemačkog govora. Napišite odgovor.",true);
 }
 async function dmFinishAudio(){
+ dmCancelNoAnswer();
  dmStopAudioMonitor();
  dmCancelSilence();
  DM_MIC.wantListening=false;
@@ -1956,7 +1992,7 @@ async function dmFinishAudio(){
 async function handleButton(action){
  if(action==="listen"){
   stopAudio();
-  if(DM_MIC.recognition||DM_MIC.media||DM_MIC.mediaSession){dmMicStatus("Mikrofon već snima. Pritisnite „Završi razgovor” kad završite.");return}
+  if(DM_MIC.recognition||DM_MIC.media||DM_MIC.mediaSession){dmMicStatus("Mikrofon već sluša. Sačekajte 7 sekundi tišine da automatski završi odgovor.");return}
   startMic(true);return
  }
  if(action==="repeat"){speakPrompt(true);return}
@@ -2005,7 +2041,7 @@ for(const id of ["speakNext"]){
  $(id).addEventListener("click",e=>{
   if(DM_MIC.media||DM_MIC.recognition){
    e.stopImmediatePropagation();e.preventDefault();
-   dmMicStatus("Prvo pritisnite ■ Završi razgovor, pa zatim „Dalje”.");
+   dmMicStatus("Sačekajte 7 sekundi tišine da se odgovor sačuva, zatim pritisnite „Dalje”.");
   }
  },true)
 }
@@ -2133,7 +2169,7 @@ document.addEventListener("visibilitychange",()=>{
   if(DM_MIC.recognition||DM_MIC.media){
    event.preventDefault();
    event.stopImmediatePropagation();
-   dmMicStatus("Prvo pritisnite ■ Završi razgovor, zatim Nastavi na teme.");
+   dmMicStatus("Sačekajte automatski kraj odgovora, zatim pritisnite „Nastavi na teme”.");
   }
  },true);
  const earlierFillAnswer=fillAnswer;
