@@ -1349,7 +1349,8 @@ function speakPrompt(autoMic){
  const sayNow=()=>{
   if(token!==app.sayToken||respondKey()!==key)return;
   if(!("speechSynthesis" in window)||!window.SpeechSynthesisUtterance){
-   statusSet("Izgovor nije dostupan u ovom pregledacu. Dodirnite Govori.");
+   statusSet("🎙 Izgovor nije dostupan; uključujem mikrofon za odgovor.");
+   listenAfter(90);
    return;
   }
   try{
@@ -1372,7 +1373,8 @@ function speakPrompt(autoMic){
      statusSet("✓ Pitanje je izgovoreno. Odgovorite na nemačkom.");
      listenAfter(120);
     }else{
-     statusSet("🔊 Zvuk je blokiran. Dodirnite Ponovi pitanje; zatim odgovorite.");
+     statusSet("🎙 Izgovor pitanja nije dostupan. Mikrofon se ipak automatski uključuje.");
+     listenAfter(90);
     }
    };
    u.onstart=()=>{
@@ -1382,7 +1384,9 @@ function speakPrompt(autoMic){
    };
    u.onend=()=>done(true);
    u.onerror=e=>{
-    if(e?.error==="canceled"||e?.error==="interrupted")return;
+    if(token!==app.sayToken)return;
+    // Safari zna da prijavi "interrupted" ili "canceled" bez onend.
+    // Ne ostavljaj učenika bez automatskog mikrofona.
     done(started);
    };
    window.speechSynthesis.speak(u);
@@ -1394,7 +1398,8 @@ function speakPrompt(autoMic){
     done(started);
    },Math.min(19000,Math.max(6500,p.q.length*115)));
   }catch(e){
-   statusSet("🔊 Nije moguce automatsko izgovaranje. Dodirnite Ponovi pitanje.");
+   statusSet("🎙 Automatski govor nije dostupan. Uključujem mikrofon.");
+   listenAfter(90);
   }
  };
  // Kod A1 se glas pusta tek nakon inicijalne pripreme (async).
@@ -1592,7 +1597,7 @@ const DM_MIC={
  stream:null,pending:null,allowed:false,permitGeneration:0,
  wantListening:false,autoRetries:0,
  silenceTimer:null,silenceKey:"",lastSpeechAt:0,lastSpeechText:"",
- speechStarted:false,inSpeech:false,autoEnding:false,audioMonitor:null,finishedKey:"",
+ speechStarted:false,inSpeech:false,autoEnding:false,audioMonitor:null,audioContext:null,finishedKey:"",
  noAnswerTimer:null,noAnswerKey:"",noAnswerUntil:0,
  pendingText:"",pendingKey:"",
  recognition:null,media:null,mediaSession:null,mediaResolve:null,mediaPromise:null,permissionEverGranted:false,
@@ -1843,34 +1848,55 @@ function dmTranscriptActivity(key,value){
 }
 
 
+/* iOS/Safari: AudioContext mora da se otključa tokom stvarnog dodira.
+   Koristi jedan isti kontekst, umesto kreiranja i gašenja za svako pitanje. */
+function dmWarmAudioContext(){
+ const Audio=window.AudioContext||window.webkitAudioContext;
+ if(!Audio)return null;
+ try{
+  if(!DM_MIC.audioContext||DM_MIC.audioContext.state==="closed"){
+   DM_MIC.audioContext=new Audio();
+  }
+  const ctx=DM_MIC.audioContext;
+  if(ctx.state!=="running")try{ctx.resume().catch(()=>{})}catch(e){}
+  return ctx;
+ }catch(e){return null}
+}
 function dmStopAudioMonitor(){
  const m=DM_MIC.audioMonitor;
  if(!m)return;
  DM_MIC.audioMonitor=null;
  clearInterval(m.interval);
  try{m.source.disconnect()}catch(e){}
- try{m.context.close()}catch(e){}
+ try{m.analyser.disconnect()}catch(e){}
+ // Ne zatvaraj AudioContext: iOS ga kasnije ne mora ponovo otključati.
 }
 function dmStartAudioMonitor(key,stream){
  dmStopAudioMonitor();
- const Audio=window.AudioContext||window.webkitAudioContext;
- if(!Audio||!stream)return false;
- let ctx,source;
+ if(!stream)return false;
+ let source;
  try{
-  ctx=new Audio();source=ctx.createMediaStreamSource(stream);
+  const ctx=dmWarmAudioContext();
+  if(!ctx)return false;
+  source=ctx.createMediaStreamSource(stream);
   const analyser=ctx.createAnalyser();analyser.fftSize=1024;
   source.connect(analyser);
   const values=new Uint8Array(analyser.fftSize);
-  const monitor={context:ctx,source,interval:null,voice:false,lastLoud:0,strongFrames:0};
+  const monitor={context:ctx,source,analyser,interval:null,voice:false,
+   lastLoud:0,strongFrames:0,noiseFloor:0.004,signalSamples:0,peak:0};
   DM_MIC.audioMonitor=monitor;
-  try{ctx.resume().catch(()=>{})}catch(e){}
   monitor.interval=setInterval(()=>{
    if(DM_MIC.audioMonitor!==monitor||!DM_MIC.wantListening||respondKey()!==key)return;
+   if(ctx.state!=="running")return;
    analyser.getByteTimeDomainData(values);
    let power=0;
    for(let i=0;i<values.length;i++){const v=(values[i]-128)/128;power+=v*v}
    const rms=Math.sqrt(power/values.length),now=Date.now();
-   if(rms>0.025){
+   monitor.signalSamples++;
+   monitor.peak=Math.max(monitor.peak,rms);
+   // Osetljivija i prilagodljiva granica za tihi govor preko telefona.
+   const threshold=Math.min(0.038,Math.max(0.009,monitor.noiseFloor*2.3));
+   if(rms>threshold){
     monitor.strongFrames++;
     monitor.lastLoud=now;
     if(!monitor.voice&&monitor.strongFrames>=2){
@@ -1878,15 +1904,15 @@ function dmStartAudioMonitor(key,stream){
     }
    }else{
     monitor.strongFrames=0;
-    if(monitor.voice&&now-monitor.lastLoud>550){
+    if(!monitor.voice)monitor.noiseFloor=monitor.noiseFloor*0.94+rms*0.06;
+    if(monitor.voice&&now-monitor.lastLoud>650){
      monitor.voice=false;dmVoiceEnd(key);
     }
    }
-  },150);
+  },130);
   return true;
  }catch(e){
   try{source?.disconnect()}catch(x){}
-  try{ctx?.close()}catch(x){}
   return false;
  }
 }
@@ -2242,6 +2268,7 @@ async function dmFinishAudio(){
 }
 async function handleButton(action){
  if(action==="listen"){
+  dmWarmAudioContext();
   stopAudio();
   if(DM_MIC.recognition||DM_MIC.media||DM_MIC.mediaSession){dmMicStatus("Mikrofon već sluša. Sačekajte 10 sekundi tišine da automatski završi odgovor.");return}
   startMic(true);return
@@ -2271,6 +2298,7 @@ async function handleButton(action){
 // iPhone/Android: tokom korisničkog klika otvori mikrofon, a posle pitanja slušaj automatski.
 for(const id of ["begin","introBack","chooseBack","chooseNext","speakNext","speakBack"]){
  $(id).addEventListener("click",()=>{
+  dmWarmAudioContext();
   if(id==="introBack"&&app.intro===0)return;
   if(id==="speakNext"&&app.question===1&&app.topic===app.chosen.length-1)return;
   if(!dmTrackLive()&&!DM_MIC.pending)dmPermit(true);
