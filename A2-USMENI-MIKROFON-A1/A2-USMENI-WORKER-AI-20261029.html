@@ -418,6 +418,25 @@ main{min-height:0;flex:1;display:flex;flex-direction:column;overflow:hidden;back
  .dm-step-top{min-height:43px}
 }
 
+
+/* Ime se upisuje opciono, samo za ovu sesiju i pouzdanije prepoznavanje. */
+#intro .dm-name-setup{
+ display:flex;flex-direction:column;align-items:stretch;gap:5px;
+ width:100%;max-width:370px;margin:0 auto 10px;text-align:left;
+ color:#173e75;font-size:11px;font-weight:900;
+}
+#intro .dm-name-setup small{display:inline;margin:0;font-size:10px;font-weight:650;color:#6d82a0}
+#intro .dm-name-setup input{
+ width:100%;height:39px;min-height:39px;border:1px solid #c6d9f3;
+ border-radius:11px;background:#f8fbff;color:#1a355a;font-size:15px;
+ padding:7px 12px;outline-offset:2px;
+}
+#intro .dm-name-setup input:focus{border-color:#1e5bc0;outline:2px solid #1e5bc029}
+@media(max-height:650px){
+ #intro .large-logo{width:min(125px,29dvh);height:min(125px,29dvh);margin:6px auto 10px}
+ #intro .chips{margin-bottom:9px}
+ #intro .dm-name-setup{margin-bottom:8px}
+}
 </style>
 <script>
 // Minimalna provera A2 AI Workera; izbegava JS gresku pri ocenjivanju.
@@ -440,6 +459,11 @@ function validWorkerUrl(value){
     <h1>Usmeni ispit<span>Prvi deo · A2</span></h1>
     <p class="intro-sub">ÖSD A2 · Interaktivna simulacija<br>Predstavljanje → 6 tema → izaberi 5 → po 2 pitanja</p>
     <div class="chips"><span>🎙 Mikrofon</span><span>🔊 Nemački izgovor</span><span>✓ Brza provera</span></div>
+    <label class="dm-name-setup" for="dmCandidateName">
+      <span>Ime kandidata <small>opciono · za tačnije prepoznavanje</small></span>
+      <input id="dmCandidateName" type="text" placeholder="npr. Naida" maxlength="55"
+       autocomplete="off" autocapitalize="words" spellcheck="false" inputmode="text">
+    </label>
     <button class="btn green start" id="begin">Započni simulaciju →</button>
     <a id="dmDirectMicLink" href="https://nemackidemax13-oss.github.io/Biografije-A1/A2-USMENI-MIKROFON-A1/A2-USMENI-WORKER-AI-20261029.html?v=20261111-replit-mic" target="_blank" rel="noopener noreferrer" style="display:none;max-width:95%;margin:10px auto 0;padding:8px 11px;border:1px solid #b4c9e7;border-radius:10px;color:#1857b5;font-size:12px;font-weight:850;text-decoration:none;text-align:center;background:#f3f8ff">🎙 Otvori u pregledaču za mikrofon ↗</a>
     
@@ -1714,7 +1738,7 @@ function dmUniqueTranscript(previous,incoming){
  return dmCollapseRepeatedSpeech(clean([prefix,addition].filter(Boolean).join(" ")));
 }
 function dmAppendTranscript(key,value){
- const val=clean(value);
+ const val=dmNameText(clean(value),key);
  if(!val)return;
  const prev=clean(app.responses[key]||"");
  const combined=dmUniqueTranscript(prev,val);
@@ -1725,6 +1749,61 @@ function dmAppendTranscript(key,value){
  }
  try{localStorage.setItem("demax_a2_simulacija_odgovori",JSON.stringify(app.responses))}catch(e){}
 }
+// Kontekst imena se koristi samo za pitanja o predstavljanju.
+// Za drugi sadržaj ostavi nemački tekst onakav kakav je prepoznat.
+function dmCandidateName(){
+ const field=document.getElementById("dmCandidateName");
+ const raw=clean(field?.value||"");
+ return raw.replace(/[^\p{L}\p{M}\s'-]/gu,"").replace(/\s+/g," ").slice(0,55).trim();
+}
+function dmNameQuestion(key){
+ return !!key&&/^intro-[0-2]$/.test(key);
+}
+function dmNameText(text,key){
+ const input=clean(text),expected=dmCandidateName();
+ if(!input||!expected||!dmNameQuestion(key))return input;
+ const name=expected.split(/\s+/)[0];
+ // Ispravka samo na poziciji imena, posle Ich heiße / Mein Name ist.
+ let out=input.replace(
+  /(\b(?:ich\s+hei(?:ß|ss)e|mein\s+(?:vor)?name\s+ist)\s+)(leider|leida|neida|neda)(?=\s|[.!?,;:]|$)/giu,
+  (_m,prefix)=>prefix+name
+ );
+ // Ako ispitivač pita direktno kako se zove, jedno ime je dovoljan odgovor.
+ if(/^intro-[012]$/.test(key)&&/^\s*(leider|leida|neida|neda)[.!?]?\s*$/iu.test(out)){
+  out=name;
+ }
+ return out;
+}
+function dmNameHints(recognition,key){
+ const expected=dmCandidateName();
+ if(!expected||!dmNameQuestion(key))return;
+ try{
+  if(typeof window.SpeechRecognitionPhrase==="function"&&"phrases" in recognition){
+   const P=window.SpeechRecognitionPhrase;
+   recognition.phrases=[
+    new P(expected,5.5),
+    new P("Ich heiße "+expected,4.5),
+    new P("Mein Name ist "+expected,4.5)
+   ];
+  }
+ }catch(e){/* Browser nema podršku, nastavi običan mikrofon. */}
+}
+function dmChooseNameAlternative(result,key){
+ const first=clean(result?.[0]?.transcript||"");
+ if(!dmCandidateName()||!dmNameQuestion(key)||!result||result.length<2)return first;
+ const expected=dmCandidateName().split(/\s+/)[0].toLocaleLowerCase("de");
+ const hasName=t=>t.toLocaleLowerCase("de").split(/[^\p{L}\p{M}'-]+/gu).includes(expected);
+ if(hasName(first))return first;
+ const suspect=/(?:ich\s+hei(?:ß|ss)e|mein\s+(?:vor)?name\s+ist)\s+(?:leider|leida|neida|neda)\b/iu.test(first)||
+  (/^intro-[12]$/.test(key)&&/^\s*(?:leider|leida|neida|neda)[.!?]?\s*$/iu.test(first));
+ if(!suspect)return first;
+ for(let i=1;i<Math.min(result.length,3);i++){
+  const alt=clean(result[i]?.transcript||"");
+  if(hasName(alt))return alt;
+ }
+ return first;
+}
+
 function dmMobileRecognizer(){
  return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent||"")||
   (/Macintosh/i.test(navigator.userAgent||"")&&navigator.maxTouchPoints>1);
@@ -1741,14 +1820,15 @@ function dmSpeechRecognize(){
  r.lang="de-DE";
  r.continuous=!dmMobileRecognizer();
  r.interimResults=true;
- r.maxAlternatives=1;
+ r.maxAlternatives=3;
+ dmNameHints(r,key);
  const baseline=clean(textarea().value);
  let finalText="",interimText="",reason="",nativeResult=false,silenceTimer=null;
  r.onresult=e=>{
   if(serial!==DM_MIC.serial||DM_MIC.recognition!==r)return;
   finalText="";interimText="";
   for(let i=0;i<e.results.length;i++){
-   const val=clean(e.results[i]?.[0]?.transcript);
+   const val=dmNameText(dmChooseNameAlternative(e.results[i],key),key);
    if(!val)continue;
    nativeResult=true;clearTimeout(silenceTimer);
    if(e.results[i].isFinal)finalText+=(finalText?" ":"")+val;
@@ -1756,7 +1836,7 @@ function dmSpeechRecognize(){
   }
   // Prepoznate privremene/konačne rezultate spoji bez ponavljanja.
   const current=dmUniqueTranscript(finalText,interimText);
-  const whole=dmCollapseRepeatedSpeech(dmUniqueTranscript(baseline,current));
+  const whole=dmNameText(dmCollapseRepeatedSpeech(dmUniqueTranscript(baseline,current)),key);
   dmTranscriptActivity(key,whole);
   if(finalText)DM_MIC.autoRetries=0;
   if(respondKey()===key){
