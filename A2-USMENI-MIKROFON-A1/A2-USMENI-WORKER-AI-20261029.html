@@ -441,7 +441,7 @@ main,.screen{min-height:0!important;overflow:hidden}
 #intro .chips{margin:0!important;gap:4px}
 #intro .chips span{font-size:9px;padding:4px 7px}
 #intro .start{flex:none;min-height:clamp(39px,6dvh,50px);padding:6px 10px}
-#intro #dmDirectMicLink{flex:none;margin:2px auto 0!important;padding:4px 7px!important;font-size:10px!important}
+
 #introExam>.scroll,#speaking>.scroll{padding-top:clamp(4px,1dvh,9px);padding-bottom:3px;gap:clamp(3px,.6dvh,6px)}
 #introExam .dm-step-top,#speaking .dm-step-top{min-height:38px}
 #introExam .answerbox,#speaking .answerbox{flex:none;min-height:0}
@@ -547,7 +547,6 @@ function validWorkerUrl(value){
     <p class="intro-sub">ÖSD A2 · Interaktivna simulacija<br>Predstavljanje → 6 tema → izaberi 5 → po 2 pitanja</p>
     <div class="chips"><span>🎙 Mikrofon</span><span>🔊 Nemački izgovor</span><span>✓ Brza provera</span></div>
     <button class="btn green start" id="begin">Započni simulaciju →</button>
-    <a id="dmDirectMicLink" href="https://nemackidemax13-oss.github.io/Biografije-A1/A2-USMENI-MIKROFON-A1/A2-USMENI-WORKER-AI-20261029.html?v=20261111-replit-mic" target="_blank" rel="noopener noreferrer" style="display:none;max-width:95%;margin:10px auto 0;padding:8px 11px;border:1px solid #b4c9e7;border-radius:10px;color:#1857b5;font-size:12px;font-weight:850;text-decoration:none;text-align:center;background:#f3f8ff">🎙 Otvori u pregledaču za mikrofon ↗</a>
     
   </section>
   <section id="introExam" class="screen">
@@ -1541,8 +1540,6 @@ $("restart").onclick=()=>{app.evaluations={};app.inFlight={};originalRestart()};
  */
 const DM_DIRECT_MIC_URL="https://nemackidemax13-oss.github.io/Biografije-A1/A2-USMENI-MIKROFON-A1/A2-USMENI-WORKER-AI-20261029.html?v=20261111-replit-mic";
 const DM_EMBEDDED=window.self!==window.top;
-const dmDirectMicLink=document.getElementById("dmDirectMicLink");
-if(dmDirectMicLink)dmDirectMicLink.style.display=DM_EMBEDDED?"inline-block":"none";
 const DM_MIC={
  stream:null,pending:null,allowed:false,permitGeneration:0,
  wantListening:false,autoRetries:0,
