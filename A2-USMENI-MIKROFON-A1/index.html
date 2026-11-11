@@ -614,7 +614,7 @@ function validWorkerUrl(value){
   <section id="speaking" class="screen">
    <div class="scroll">
     <div class="dm-step-top">
- <p class="eyebrow" id="speakStep">KORAK 3 · ÜBER DAS THEMA SPRECHEN</p>
+ <p class="eyebrow" id="speakStep"></p>
  <div class="dm-countdown" id="dmSpeakCountdown" aria-label="Status mikrofona i odbrojavanje tišine" aria-live="off">
   <span class="dm-countdown-ring"><span class="dm-countdown-number">🎙</span></span>
   <span class="dm-countdown-caption">Čekam govor</span>
@@ -1096,7 +1096,8 @@ function beginSpeaking(){chooseQuestions();app.topic=0;app.question=-1;showSpeak
 function showSpeak(){
  stage("speaking",app.question===-1?"3 / 4 · GOVOR":"4 / 4 · PITANJA");
  const t=TOPICS[app.chosen[app.topic]],name=t.title.split(" · ")[0],p=getPrompt();
- text("speakStep",app.question===-1?"KORAK 3 · ÜBER DAS THEMA SPRECHEN":"KORAK 4 · FRAGEN BEANTWORTEN");
+ text("speakStep",app.question===-1?"":"KORAK 4 · FRAGEN BEANTWORTEN");
+ $("speakStep").style.display=app.question===-1?"none":"";
  text("speakHeading",app.question===-1?"Govorite o temi":"Odgovorite na pitanje");
  text("speakSub","Tema "+(app.topic+1)+" / "+app.chosen.length+(app.question===-1?" · Recite 2–3 rečenice":" · Pitanje "+(app.question+1)+" / 2"));
  text("topicNo",String(app.topic+1));
