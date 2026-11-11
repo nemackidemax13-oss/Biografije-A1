@@ -1721,18 +1721,41 @@ function getExampleForTopic(id){
  const topic=TOPICS[id];return topic.items.filter(x=>neutralQuestion(topic,x.q)&&!forbiddenSpouse.test(x.a||"")).slice(0,2).map(x=>x.a).join(" ")
 }
 function downloadTxt(){
- const lines=["DE-MAX TUTIN | ÖSD A2 · REZULTATI",new Date().toLocaleString("sr-RS"),
- "Bodovi: "+$("resultScore").textContent,"Provera: "+($("scoreCaption")?.textContent||"Orijentaciona"),""];
- INTRO.forEach((p,i)=>lines.push("PREDSTAVLJANJE: "+p.q,"ODGOVOR: "+(app.responses["intro-"+i]||"(bez odgovora)"),""));
+ const lines=["DE-MAX TUTIN | ÖSD A2 · KOMPLETAN ZAVRŠNI PREGLED",
+  new Date().toLocaleString("sr-RS"),
+  "Rezultat: "+$("resultScore").textContent,
+  "Provera: "+($("scoreCaption")?.textContent||"Orijentaciona"),""];
+ const add=(heading,key,question,hasPoints)=>{
+  const original=clean(app.responses[key]),review=app.grammarReviews?.[key];
+  lines.push(heading,"PITANJE: "+question,
+   "UČENIK JE REKAO (PREPOZNATI NEMAČKI TEKST): "+(original||"(bez odgovora)"));
+  if(original){
+   if(review?.source===original&&review.state==="checked"){
+    if(review.hasError&&review.corrected){
+     lines.push("GRAMATIČKA ISPRAVKA: "+review.corrected);
+     if(review.explanation)lines.push("OBJAŠNJENJE GREŠKE: "+review.explanation);
+    }else if(review.uncertain)lines.push("GRAMATIKA: Nema pouzdane ispravke na osnovu prepoznatog teksta.");
+    else lines.push("GRAMATIKA: Nisu uočene jasne gramatičke greške.");
+   }else lines.push("GRAMATIKA: AI provera nije dostupna ili nije završena.");
+  }
+  if(hasPoints){
+   const ev=app.evaluations[key]||localEvaluate(original);
+   lines.push("BODOVI: "+ev.score+" / 1","PROVERA: "+ev.kind);
+  }
+  lines.push("");
+ };
+ INTRO.forEach((p,i)=>add("PREDSTAVLJANJE","intro-"+i,p.q,false));
  app.chosen.forEach((id,ti)=>{
-  lines.push("TEMA: "+TOPICS[id].title,"GOVOR: "+(app.responses["theme-"+id+"-q--1"]||"(bez odgovora)"));
-  [0,1].forEach(q=>{
-   const p=app.questions[ti]?.[q],key="theme-"+id+"-q-"+q,e=app.evaluations[key]||localEvaluate(app.responses[key]);
-   lines.push("PITANJE: "+(p?.q||""),"ODGOVOR: "+(app.responses[key]||"(bez odgovora)"),"BODOVI: "+e.score+"/1","PROVERA: "+e.kind,"KOMENTAR: "+e.feedback,...(e.corrected?["ISPRAVKA: "+e.corrected]:[]),"")
-  })
+  add("TEMA "+(ti+1)+": "+TOPICS[id].title,
+   "theme-"+id+"-q--1","Govorite o temi.",false);
+  [0,1].forEach(q=>add("TEMA "+(ti+1)+" · PITANJE "+(q+1),
+   "theme-"+id+"-q-"+q,app.questions[ti]?.[q]?.q||"Pitanje nije dostupno.",true));
  });
  const blob=new Blob([lines.join("\n")],{type:"text/plain;charset=utf-8"});
- const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="DE-MAX-A2-rezultati-10-bodova.txt";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)
+ const url=URL.createObjectURL(blob),a=document.createElement("a");
+ a.href=url;a.download="DE-MAX-A2-zavrsni-pregled-i-ispravke.txt";
+ document.body.append(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
 const originalRestart=$("restart").onclick;
 $("restart").onclick=()=>{app.evaluations={};app.inFlight={};app.grammarReviews={};app.grammarRun++;originalRestart()};
