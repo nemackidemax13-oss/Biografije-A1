@@ -399,7 +399,7 @@ function validWorkerUrl(value){
     <p class="eyebrow">KORAK 1</p><h2>Predstavljanje kandidata</h2>
     <p class="sub" id="introIndex">Govorite polako na nemačkom, mikrofon će Vas saslušati.</p>
     <div class="examiner"><div class="role">PRÜFERIN / PRÜFER</div><div class="de" id="introDe"></div><div class="sr" id="introSr"></div><div class="state" id="introState" hidden></div></div>
-    <div class="answerbox"><div class="dm-answer-heading"><span class="fieldlabel">PREPOZNATI GOVOR · NEMAČKI</span><button type="button" class="dm-relisten" data-act="listen">🎙 Govori</button></div><textarea id="introText" lang="de" placeholder="Ovde će biti prikazano ono što mikrofon prepozna. Tekst možete ispraviti."></textarea></div><div id="introReview" class="dm-review" hidden aria-live="polite"><div class="dm-review-label">REKLI STE · NEMAČKI</div><div class="dm-review-de" id="introReviewDe"></div><div class="dm-review-label dm-review-translation-label">PREVOD · SRPSKI</div><div class="dm-review-sr" id="introReviewSr"></div></div>
+    <div class="answerbox"><div class="dm-answer-heading"><span class="fieldlabel">PREPOZNATI GOVOR · NEMAČKI (UŽIVO)</span><button type="button" class="dm-relisten" data-act="listen">🎙 Govori</button></div><textarea id="introText" lang="de" placeholder="Ovde će biti prikazano ono što mikrofon prepozna. Tekst možete ispraviti."></textarea></div><div id="introReview" class="dm-review" hidden aria-live="polite"><div class="dm-review-label">REKLI STE · NEMAČKI</div><div class="dm-review-de" id="introReviewDe"></div><div class="dm-review-label dm-review-translation-label">PREVOD · SRPSKI</div><div class="dm-review-sr" id="introReviewSr"></div></div>
     <div class="status" id="introStatus" aria-live="polite"></div>
     
     <div class="hint" id="introHint" hidden></div>
@@ -433,7 +433,7 @@ function validWorkerUrl(value){
     <p class="sub" id="speakSub"></p>
     <div class="rowTitle"><div class="circleNo" id="topicNo">1</div><div><div class="tiny" id="qType">TEMA · 2–3 REČENICE</div><div class="titleTopic" id="topicName"></div></div></div>
     <div class="examiner"><div class="role">ISPITIVAČ · PRÜFERIN / PRÜFER</div><div class="de" id="speakDe"></div><div class="sr" id="speakSr"></div><div class="state" id="speakState"></div></div>
-    <div class="answerbox"><div class="dm-answer-heading"><span class="fieldlabel">PREPOZNATI GOVOR · NEMAČKI</span><button type="button" class="dm-relisten" data-act="listen">🎙 Govori</button></div><textarea id="speakText" lang="de" placeholder="Ovde će biti prikazano ono što mikrofon prepozna. Tekst možete ispraviti."></textarea></div><div id="speakReview" class="dm-review" hidden aria-live="polite"><div class="dm-review-label">REKLI STE · NEMAČKI</div><div class="dm-review-de" id="speakReviewDe"></div><div class="dm-review-label dm-review-translation-label">PREVOD · SRPSKI</div><div class="dm-review-sr" id="speakReviewSr"></div></div>
+    <div class="answerbox"><div class="dm-answer-heading"><span class="fieldlabel">PREPOZNATI GOVOR · NEMAČKI (UŽIVO)</span><button type="button" class="dm-relisten" data-act="listen">🎙 Govori</button></div><textarea id="speakText" lang="de" placeholder="Ovde će biti prikazano ono što mikrofon prepozna. Tekst možete ispraviti."></textarea></div><div id="speakReview" class="dm-review" hidden aria-live="polite"><div class="dm-review-label">REKLI STE · NEMAČKI</div><div class="dm-review-de" id="speakReviewDe"></div><div class="dm-review-label dm-review-translation-label">PREVOD · SRPSKI</div><div class="dm-review-sr" id="speakReviewSr"></div></div>
     <div class="status" id="speakStatus" aria-live="polite"></div>
     
     <div class="hint" id="speakHint" hidden></div>
@@ -1333,7 +1333,7 @@ if(dmDirectMicLink)dmDirectMicLink.style.display=DM_EMBEDDED?"inline-block":"non
 const DM_MIC={
  stream:null,pending:null,allowed:false,permitGeneration:0,
  wantListening:false,autoRetries:0,
- recognition:null,media:null,mediaResolve:null,mediaPromise:null,
+ recognition:null,media:null,mediaSession:null,mediaResolve:null,mediaPromise:null,
  mediaChunks:[],mediaKey:"",mediaDiscard:false,
  serial:0,lastError:"",fileUrl:null,audioReady:null,audioProbe:null,
  transcribeURL:"https://usmenia1prvideo.nemackidemax13.workers.dev/api/a1-transcribe"
@@ -1425,6 +1425,7 @@ function dmInvalidate(){
   rec.onresult=rec.onerror=rec.onend=null;
   try{rec.abort()}catch(e){try{rec.stop()}catch(x){}}
  }
+ if(DM_MIC.mediaSession)DM_MIC.mediaSession.finishing=true;
  if(DM_MIC.media){
   const r=DM_MIC.media;
   DM_MIC.media=null;DM_MIC.mediaDiscard=true;
@@ -1446,7 +1447,10 @@ function dmAppendTranscript(key,value){
  const prev=clean(app.responses[key]||"");
  const combined=clean([prev,val].filter(Boolean).join(" "));
  app.responses[key]=combined;
- if((app.screen==="speaking"||app.screen==="introExam")&&respondKey()===key)textarea().value=combined;
+ if((app.screen==="speaking"||app.screen==="introExam")&&respondKey()===key){
+  const field=textarea();field.value=combined;
+  if(field.scrollHeight>field.clientHeight)field.scrollTop=field.scrollHeight;
+}
  try{localStorage.setItem("demax_a2_simulacija_odgovori",JSON.stringify(app.responses))}catch(e){}
 }
 function dmSpeechRecognize(){
@@ -1460,7 +1464,7 @@ function dmSpeechRecognize(){
  DM_MIC.recognition=r;app.rec=r;
  r.lang="de-DE";
  r.continuous=!isApple;
- r.interimResults=!isApple;
+ r.interimResults=true;
  r.maxAlternatives=1;
  const baseline=clean(textarea().value);
  let finalText="",interimText="",reason="";
@@ -1476,7 +1480,8 @@ function dmSpeechRecognize(){
   const whole=clean([baseline,finalText,interimText].filter(Boolean).join(" "));
   if(finalText)DM_MIC.autoRetries=0;
   if(respondKey()===key){
-   textarea().value=whole;
+   const field=textarea();field.value=whole;
+   if(field.scrollHeight>field.clientHeight)field.scrollTop=field.scrollHeight;
    app.responses[key]=whole;
   }
  };
@@ -1500,7 +1505,7 @@ function dmSpeechRecognize(){
    return;
   }
   if(DM_MIC.wantListening&&(["network","service-not-allowed","language-not-supported","audio-capture"].includes(reason)||
-   (reason==="not-allowed"&&DM_MIC.allowed))){
+   (reason==="not-allowed"&&DM_MIC.allowed)||(isApple&&!result))){
    dmMicStatus("Prepoznavanje na ovom telefonu nije dostupno. Prebacujem na rezervno snimanje...");
    dmRecordFallback(false);
   }else if(reason==="not-allowed"){
@@ -1524,59 +1529,80 @@ async function dmRecordFallback(auto){
   if(auto){dmMicStatus("Dodirnite 🎙 Govori da dozvolite mikrofon.");return false}
   if(!await dmPermit(true))return false;
  }
- if(typeof window.MediaRecorder!=="function"){
-  dmMicStatus("Telefon ne podržava ni prepoznavanje govora ni snimanje zvuka u ovom pregledaču. Odgovor možete napisati.",true);
-  return false
+ if(typeof MediaRecorder!=="function"){
+  dmMicStatus("Telefon ne podržava snimanje zvuka. Odgovor možete napisati.",true);return false;
  }
  const serial=DM_MIC.serial;
  let mime="";
- try{mime=["audio/webm;codecs=opus","audio/mp4","audio/webm","audio/ogg;codecs=opus"].find(x=>MediaRecorder.isTypeSupported(x))||""}
- catch(e){}
- let recorder;
- try{recorder=mime?new MediaRecorder(DM_MIC.stream,{mimeType:mime}):new MediaRecorder(DM_MIC.stream)}
- catch(e){dmMicStatus("Snimanje zvuka nije podržano. Napišite odgovor ili otvorite u Safari/Chrome.",true);return false}
- DM_MIC.media=recorder;DM_MIC.mediaKey=key;DM_MIC.mediaDiscard=false;
- const chunks=[];
- DM_MIC.mediaPromise=new Promise(resolve=>{
-  DM_MIC.mediaResolve=resolve;
-  recorder.ondataavailable=e=>{if(e.data?.size)chunks.push(e.data)};
-  recorder.onerror=e=>{DM_MIC.lastError=e.error?.name||"media-error"};
-  recorder.onstop=async()=>{
-   const discarded=DM_MIC.mediaDiscard||serial!==DM_MIC.serial||!chunks.length;
-   if(DM_MIC.media===recorder)DM_MIC.media=null;
-   dmMarkLive(false);
-   if(discarded){resolve(false);return}
-   const type=(recorder.mimeType||mime||"audio/mp4").split(";")[0];
-   const blob=new Blob(chunks,{type});
-   if(blob.size<600){dmMicStatus("Snimak je prazan. Pritisnite 🎙 Govori i pokušajte ponovo.");resolve(false);return}
-   const form=new FormData();
-   const ext=type.includes("mp4")?"mp4":type.includes("ogg")?"ogg":"webm";
+ try{mime=["audio/webm;codecs=opus","audio/mp4","audio/webm","audio/ogg;codecs=opus"].find(t=>MediaRecorder.isTypeSupported(t))||""}catch(e){}
+ const state={finishing:false,done:false,gotText:false,timer:null,queue:Promise.resolve(),resolve:null};
+ DM_MIC.mediaSession=state;DM_MIC.mediaDiscard=false;DM_MIC.wantListening=true;
+ DM_MIC.mediaPromise=new Promise(resolve=>state.resolve=resolve);
+ const valid=()=>serial===DM_MIC.serial&&!DM_MIC.mediaDiscard&&respondKey()===key;
+ const finish=()=>{
+  if(state.done)return;state.done=true;clearTimeout(state.timer);
+  state.queue.finally(()=>{
+   if(DM_MIC.mediaSession===state)DM_MIC.mediaSession=null;
+   if(valid()){
+    dmMarkLive(false);
+    dmMicStatus(state.gotText?"✓ Govor je prepoznat na nemačkom. Proverite tekst i nastavite kada želite.":"Nije prepoznat govor. Pritisnite 🎙 Govori ponovo ili napišite odgovor.");
+   }
+   state.resolve(state.gotText);
+  });
+ };
+ const transcribe=(blob,type)=>{
+  if(blob.size<600||!valid())return;
+  state.queue=state.queue.then(async()=>{
+   if(!valid())return;
+   const form=new FormData(),ext=type.includes("mp4")?"mp4":type.includes("ogg")?"ogg":"webm";
    form.append("language","de");
    form.append("file",blob,"odgovor."+ext);
    const ac=new AbortController(),timeout=setTimeout(()=>ac.abort(),30000);
-   dmMicStatus("🎙 Snimak je završen. Prepoznajem nemački preko DE-MAX Workera...");
    try{
     const res=await fetch(DM_MIC.transcribeURL,{method:"POST",body:form,signal:ac.signal,mode:"cors"});
-    const payload=await res.json().catch(()=>({}));
-    if(!res.ok)throw Error(payload.error||"Worker HTTP "+res.status);
-    const transcript=clean(payload.text||payload.transcript||"");
-    if(!transcript)throw Error("Nema prepoznatog govora");
-    if(serial===DM_MIC.serial&&respondKey()===key){
-     dmAppendTranscript(key,transcript);
-     dmMicStatus("✓ Govor je prepoznat na nemačkom. Možete proveriti odgovor ili ručno nastaviti.");
+    const data=await res.json().catch(()=>({}));
+    if(!res.ok)throw Error(data.error||"Worker HTTP "+res.status);
+    const transcript=clean(data.text||data.transcript||"");
+    if(transcript&&valid()){
+     dmAppendTranscript(key,transcript);state.gotText=true;
+     if(!state.finishing)dmMicStatus("🔴 Snimam. Prepoznate reči se dopunjavaju tokom razgovora.");
     }
-    resolve(true)
    }catch(e){
-    dmMicStatus("Snimak je napravljen, ali transkripcija nije uspela ("+String(e.message).slice(0,65)+"). Napišite odgovor ili pokušajte ponovo.");
-    resolve(false)
+    if(valid()&&!state.finishing)dmMicStatus("🔴 Snimam. Jedan deo nije prepoznat, nastavite da govorite.");
    }finally{clearTimeout(timeout)}
+  }).catch(()=>{});
+ };
+ const next=()=>{
+  if(!valid()||state.finishing){finish();return false}
+  let rec;
+  try{rec=mime?new MediaRecorder(DM_MIC.stream,{mimeType:mime}):new MediaRecorder(DM_MIC.stream)}
+  catch(e){dmMicStatus("Snimanje nije moglo da se nastavi. Pritisnite Govori ponovo.",true);finish();return false}
+  const chunks=[];DM_MIC.media=rec;
+  rec.ondataavailable=ev=>{if(ev.data?.size)chunks.push(ev.data)};
+  rec.onerror=ev=>{DM_MIC.lastError=ev.error?.name||"media-error"};
+  rec.onstop=()=>{
+   clearTimeout(state.timer);state.timer=null;
+   if(DM_MIC.media===rec)DM_MIC.media=null;
+   if(valid()&&chunks.length){
+    const type=(rec.mimeType||mime||"audio/mp4").split(";")[0];
+    transcribe(new Blob(chunks,{type}),type);
+   }
+   if(!valid()||state.finishing){finish();return}
+   next();
   };
- });
- try{recorder.start(250)}
- catch(e){DM_MIC.media=null;DM_MIC.mediaResolve?.(false);dmMicStatus("Snimanje nije moglo da se pokrene.");return false}
- DM_MIC.wantListening=true;dmMarkLive(true);
- dmMicStatus("🔴 Snimam nemački. Govorite bez vremenskog ograničenja, zatim pritisnite ■ Završi razgovor.");
- return true
+  try{rec.start(250)}catch(e){
+   if(DM_MIC.media===rec)DM_MIC.media=null;
+   dmMicStatus("Snimanje nije moglo da počne. Dodirnite Govori ponovo.",true);finish();return false
+  }
+  dmMarkLive(true);
+  // Svakih sedam sekundi kompletan audio segment ide na postojeći DE-MAX Worker.
+  // Svaki segment je samostalan snimak radi kompatibilnosti sa iOS audio/mp4.
+  state.timer=setTimeout(()=>{if(valid()&&rec.state==="recording")try{rec.stop()}catch(e){}},7000);
+  return true;
+ };
+ const started=next();
+ if(started)dmMicStatus("🔴 Snimam nemački. Tekst se pojavljuje tokom govora u kraćim delovima.");
+ return started;
 }
 // A1 AUTO_IFRAME postupak: korisnički klik -> getUserMedia -> Web Speech Recognition.
 // Ako nativno prepoznavanje nije podržano, koristi MediaRecorder + Worker fallback.
@@ -1620,10 +1646,11 @@ async function startMic(fromTap=false){
 async function dmFinishAudio(){
  DM_MIC.wantListening=false;
  DM_MIC.autoRetries=0;
- if(DM_MIC.media){
+ if(DM_MIC.media||DM_MIC.mediaSession){
   const r=DM_MIC.media,p=DM_MIC.mediaPromise;
   DM_MIC.mediaDiscard=false;
-  try{if(r.state!=="inactive")r.stop()}catch(e){}
+  if(DM_MIC.mediaSession)DM_MIC.mediaSession.finishing=true;
+  try{if(r&&r.state!=="inactive")r.stop()}catch(e){}
   if(p)await p;
   return
  }
