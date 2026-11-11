@@ -594,7 +594,7 @@ function validWorkerUrl(value){
    </div>
    <div class="actions" id="introActions">
  <button class="btn red" id="introBack">‹ Nazad</button>
- <button class="btn primary" id="introForward">Nastavi na teme ›</button>
+ <button class="btn green" id="introForward">Nastavi na teme ›</button>
 </div>
   </section>
   <section id="choose" class="screen">
@@ -789,22 +789,11 @@ function dmChooseVoiceNames(value){
 
 /* Po izgovorenom redosledu označi jednu po jednu temu i potvrdi svih pet. */
 function dmChooseAutoConfirm(){
- if(app.screen!=="choose"||app.chosen.length!==5||DM_CHOOSE.autoConfirming)return;
- DM_CHOOSE.autoConfirming=true;
- DM_CHOOSE.accepted=true;
- DM_CHOOSE.listening=false;
- dmChooseMessage("✓ Izabrano svih 5 tema. Automatski potvrđujem izbor...");
- const current=DM_CHOOSE.rec;
- if(current)try{current.stop()}catch(e){}
- DM_CHOOSE.confirmTimer=setTimeout(()=>{
-  DM_CHOOSE.confirmTimer=null;
-  if(app.screen!=="choose"||app.chosen.length!==5)return;
-  dmChooseStop(true);
-  Promise.resolve(beginSpeaking()).catch(()=>{
-   DM_CHOOSE.autoConfirming=false;
-   dmChooseMessage("Nije moguće preći dalje automatski. Pritisnite „Potvrdi 5 tema”.");
-  });
- },650);
+ if(app.screen!=="choose"||app.chosen.length!==5)return;
+ DM_CHOOSE.accepted=true;DM_CHOOSE.listening=false;DM_CHOOSE.autoConfirming=false;
+ dmChooseStop(true);
+ dmChooseMessage("✓ Izabrano 5 tema. Pritisnite „Potvrdi 5 tema” za nastavak.");
+ dmChooseDisplay();
 }
 function dmChooseQueueIds(ids){
  if(app.screen!=="choose"||DM_CHOOSE.autoConfirming||!Array.isArray(ids))return 0;
@@ -1776,40 +1765,39 @@ function dmCancelNoAnswer(){
  DM_MIC.noAnswerUntil=0;
 }
 
-/* Automatsko čuvanje i prelazak, bez ručnog pritiskanja Dalje. */
+/* Nakon 5 sekundi tišine čuvaj i prevedi, ali čekaj klik za sledeći korak. */
 async function dmAutoCompleteAnswer(key){
  if(DM_MIC.autoEnding||!DM_MIC.wantListening||respondKey()!==key)return;
  const serial=DM_MIC.serial;
  DM_MIC.autoEnding=true;
- if(DM_LIVE_TRANSLATE.timer){clearTimeout(DM_LIVE_TRANSLATE.timer);DM_LIVE_TRANSLATE.timer=null}
- dmCancelNoAnswer();
- dmTickCountdown();
- dmMicStatus("✓ Odbrojavanje je završeno. Čuvam govor i pokrećem AI prevod...");
-  // Prikaži stanje prevoda ODMAH po isteku odbrojavanja.
-  const kind=app.screen==="introExam"?"intro":app.screen==="speaking"?"speak":"";
-  if(kind){
-   const block=document.getElementById(kind+"Review"),textDe=document.getElementById(kind+"ReviewDe"),textSr=document.getElementById(kind+"ReviewSr");
-   if(block&&textDe&&textSr){
-    block.hidden=false;
-    textDe.textContent=dmDraftText(key)||"Završavam prepoznavanje nemačkog odgovora…";
-    textSr.textContent="AI prevodi završeni odgovor na srpski…";
-   }
+ dmCancelNoAnswer();dmTickCountdown();
+ dmMicStatus("✓ Govor je završen. Čuvam odgovor i prevodim na srpski...");
+ const kind=app.screen==="introExam"?"intro":app.screen==="speaking"?"speak":"";
+ if(kind){
+  const block=document.getElementById(kind+"Review");
+  const de=document.getElementById(kind+"ReviewDe"),sr=document.getElementById(kind+"ReviewSr");
+  if(block&&de&&sr){
+   block.hidden=false;
+   de.textContent=dmDraftText(key)||"Završavam prepoznavanje nemačkog…";
+   sr.textContent="AI prevodi ceo odgovor na srpski…";
   }
+ }
  try{
   await handleButton("stop");
   if(serial!==DM_MIC.serial||respondKey()!==key)return;
   if(!clean(app.responses[key])){
-   DM_MIC.autoEnding=false;
-   dmMicStatus("Nije prepoznat tekst odgovora. Dodirnite 🎙 Govori i pokušajte ponovo.");
+   dmMicStatus("Govor nije prepoznat. Pritisnite 🎙 Govori i pokušajte ponovo.");
+   if(kind){const block=document.getElementById(kind+"Review");if(block)block.hidden=true}
    return;
   }
-  await new Promise(done=>setTimeout(done,2300));
-  if(serial!==DM_MIC.serial||respondKey()!==key)return;
-  if(app.screen==="introExam")showChoose();
-  else if(app.screen==="speaking")advanceSpeaking();
- }catch(e){
-  DM_MIC.autoEnding=false;
-  dmMicStatus("Automatski prelazak nije uspeo. Pritisnite „Dalje”.");
+  dmMicStatus(app.screen==="introExam"
+   ?"✓ Prevod je prikazan. Pritisnite zeleno „Nastavi na teme” kada želite."
+   :"✓ Prevod je prikazan. Pritisnite „Dalje” kada želite.");
+ }catch(e){dmMicStatus("Prevod nije uspeo. Ostajete na istom koraku.")}
+ finally{
+  if(serial===DM_MIC.serial&&respondKey()===key){
+   DM_MIC.autoEnding=false;dmTickCountdown();
+  }
  }
 }
 
@@ -1837,63 +1825,6 @@ function dmCorrectTutinSpeech(value,key){
  // Rečnik imena u AI transkripciji daje bolji kontekst od prisilne zamene.
  return clean(value);
 }
-// Live prevod AI: jedna aktivna operacija, najmanje 2.9s izmedju poziva.
-// Izgovorene nemačke reči ostaju vidljive bez zaustavljanja mikrofona.
-const DM_LIVE_TRANSLATE={key:"",pending:"",timer:null,busy:false,lastAt:0,lastSent:"",epoch:0};
-function dmResetLiveTranslate(key){
- const t=DM_LIVE_TRANSLATE;
- if(t.timer)clearTimeout(t.timer);
- t.key=key||"";t.pending="";t.timer=null;t.busy=false;
- t.lastAt=0;t.lastSent="";t.epoch++;
-}
-function dmQueueLiveTranslation(key,german){
- if(!key||respondKey()!==key||!DM_MIC.wantListening||DM_MIC.autoEnding)return;
- if(app.screen!=="introExam"&&app.screen!=="speaking")return;
- const kind=app.screen==="introExam"?"intro":"speak";
- const block=document.getElementById(kind+"Review");
- const de=document.getElementById(kind+"ReviewDe");
- const sr=document.getElementById(kind+"ReviewSr");
- if(!block||!de||!sr)return;
- block.hidden=false;de.textContent=german;
- if(!app.aiEndpoint){sr.textContent="AI prevod trenutno nije povezan.";return}
- if(DM_LIVE_TRANSLATE.key!==key)dmResetLiveTranslate(key);
- const t=DM_LIVE_TRANSLATE;t.pending=german;
- if(german.length<7)return;
- if(!sr.textContent||sr.textContent.includes("nije povezan"))
-  sr.textContent="AI prevodi izgovorene reči…";
- dmPlanLiveTranslation(key);
-}
-function dmPlanLiveTranslation(key){
- const t=DM_LIVE_TRANSLATE;
- if(t.key!==key||t.busy||t.timer||!DM_MIC.wantListening||DM_MIC.autoEnding)return;
- t.timer=setTimeout(()=>{t.timer=null;dmRunLiveTranslation(key)},
-  Math.max(500,2900-(Date.now()-t.lastAt)));
-}
-async function dmRunLiveTranslation(key){
- const t=DM_LIVE_TRANSLATE;
- if(t.key!==key||t.busy||!DM_MIC.wantListening||DM_MIC.autoEnding)return;
- const german=t.pending.trim(),epoch=t.epoch,serial=DM_MIC.serial;
- if(!german||german===t.lastSent)return;
- t.busy=true;t.lastSent=german;t.lastAt=Date.now();
- try{
-  const r=await requestWorker({type:"translate",text:german,answer:german,partial:true,
-   instructions:"Prevedi SAMO do sada zaista prepoznat nemački govor na srpski latinicom. Ne dovršavaj nepotpunu rečenicu."});
-  const translation=String(r.translationSr||r.translation||"").trim();
-  if(epoch!==t.epoch||serial!==DM_MIC.serial||respondKey()!==key||
-     !DM_MIC.wantListening||DM_MIC.autoEnding||!translation)return;
-  const kind=app.screen==="introExam"?"intro":"speak";
-  const field=document.getElementById(kind+"ReviewSr");
-  if(field)field.textContent=translation+(t.pending!==german?" … (prevod se dopunjava)":"");
- }catch(e){
-  // Ne izmišljaj rezervni prevod kada AI nije dostupan.
- }finally{
-  if(epoch===t.epoch){
-   t.busy=false;
-   if(t.pending!==t.lastSent&&DM_MIC.wantListening&&!DM_MIC.autoEnding)
-    dmPlanLiveTranslation(key);
-  }
- }
-}
 function dmBufferTranscript(key,value,append=false){
  if(!key||!value||DM_MIC.pendingKey!==key||respondKey()!==key)return;
  const v=dmCorrectTutinSpeech(value,key);
@@ -1907,7 +1838,6 @@ function dmBufferTranscript(key,value,append=false){
  field.value=next;
  if(field.scrollHeight>field.clientHeight)field.scrollTop=field.scrollHeight;
  try{localStorage.setItem("demax_a2_simulacija_odgovori",JSON.stringify(app.responses))}catch(e){}
- dmQueueLiveTranslation(key,next);
 }
 function dmPublishAnswer(key){
  if(DM_MIC.pendingKey!==key||respondKey()!==key)return;
@@ -1923,7 +1853,6 @@ function dmNewSpeechSession(key){
  DM_MIC.noAnswerKey="";
  dmCancelSilence();
  DM_MIC.pendingKey=key;
- dmResetLiveTranslate(key);
  DM_MIC.pendingText=clean(textarea().value);
  DM_MIC.silenceKey=key;
  DM_MIC.lastSpeechAt=0;
@@ -2437,9 +2366,9 @@ async function handleButton(action){
   DM_MIC.finishedKey=key;
   dmTickCountdown();
   if(app.screen==="introExam"){
-   dmMicStatus("✓ Odgovor je sačuvan. Sledeći korak se automatski otvara.");
+   dmMicStatus("✓ Odgovor je sačuvan. Pritisnite zeleno „Nastavi na teme” kada želite.");
   }else if(app.screen==="speaking"){
-   dmMicStatus("✓ Govor je sačuvan. Automatski prelazim na sledeće pitanje.");
+   dmMicStatus("✓ Odgovor je sačuvan. Pritisnite „Dalje” kada želite.");
    // AI prevod već obrađuje odgovor; ne šalji paralelnu ocenu.
   }
   return
@@ -2478,10 +2407,9 @@ async function dmManualAdvanceSpeaking(){
  if(DM_MIC.autoEnding||app.screen!=="speaking")return;
  const key=respondKey(),serial=DM_MIC.serial;
  DM_MIC.autoEnding=true;
- if(DM_LIVE_TRANSLATE.timer){clearTimeout(DM_LIVE_TRANSLATE.timer);DM_LIVE_TRANSLATE.timer=null}
  dmCancelNoAnswer();dmCancelSilence();dmTickCountdown();
  const next=$("speakNext");next.disabled=true;
- dmMicStatus("✓ Završavam snimak i čuvam odgovor. Prelazim na sledeću temu...");
+ dmMicStatus("✓ Pritisnuli ste „Dalje”. Čuvam odgovor i nastavljam...");
  try{
   await handleButton("stop");
   if(serial!==DM_MIC.serial||respondKey()!==key||app.screen!=="speaking")return;
@@ -2625,8 +2553,8 @@ document.addEventListener("visibilitychange",()=>{
   const key=respondKey(),value=strip(textarea().value);
   const block=document.getElementById(kind+"Review");if(!block)return;
   if(!value){block.hidden=true;return}
-  // Dok učenik govori, ne prevodi privremene ili nepotpune delove teksta.
-  if(!finalized&&!dmReviewCache.has(value)){
+  // Prikazuj prevod samo nakon završetka kompletnog govora.
+  if(!finalized){
    block.hidden=true;
    return
   }
@@ -2651,10 +2579,10 @@ document.addEventListener("visibilitychange",()=>{
  }
  // Ako snimanje traje, sačuvaj kompletan govor pre prelaska na izbor tema.
  document.getElementById("introForward").addEventListener("click",function(event){
-  if(DM_MIC.recognition||DM_MIC.media){
+  if(DM_MIC.recognition||DM_MIC.media||DM_MIC.mediaSession||DM_MIC.autoEnding){
    event.preventDefault();
    event.stopImmediatePropagation();
-   dmMicStatus("Sačekajte automatski kraj odgovora, zatim pritisnite „Nastavi na teme”.");
+   dmMicStatus("Sačekajte završetak govora i prevoda pa pritisnite zeleno „Nastavi na teme”.");
   }
  },true);
  const earlierFillAnswer=fillAnswer;
