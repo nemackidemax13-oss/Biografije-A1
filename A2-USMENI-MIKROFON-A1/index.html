@@ -1674,8 +1674,8 @@ async function dmProbeAudio(){
  return DM_MIC.audioProbe
 }
 
-const DM_SILENCE_LIMIT_MS=7000;
-const DM_NO_ANSWER_MS=7000;
+const DM_SILENCE_LIMIT_MS=10000;
+const DM_NO_ANSWER_MS=10000;
 
 function dmTickCountdown(){
  const key=respondKey();
@@ -1745,7 +1745,7 @@ function dmCancelSilence(){
 }
 
 /* Prikazuj prepoznati nemački govor uživo dok je mikrofon uključen.
-   Nakon 7 sekundi tišine poslednji tekst ostaje sačuvan. */
+   Nakon 10 sekundi tišine poslednji tekst ostaje sačuvan. */
 function dmDraftText(key){
  return DM_MIC.pendingKey===key?clean(DM_MIC.pendingText):clean(app.responses[key]||"");
 }
@@ -1799,7 +1799,7 @@ function dmScheduleSilence(key){
   if(Date.now()-DM_MIC.lastSpeechAt<DM_SILENCE_LIMIT_MS-50){dmScheduleSilence(key);return}
   DM_MIC.autoEnding=true;
   dmTickCountdown();
-  dmMicStatus("✓ Prošlo je 7 sekundi tišine. Automatski čuvam odgovor...");
+  dmMicStatus("✓ Prošlo je 10 sekundi tišine. Automatski čuvam odgovor...");
   Promise.resolve(handleButton("stop")).catch(()=>{
    DM_MIC.autoEnding=false;
    dmMicStatus("Automatsko završavanje nije uspelo. Možete preći dalje ili ponovo uključiti mikrofon.");
@@ -2000,10 +2000,10 @@ function dmSpeechRecognize(){
   if(!DM_MIC.wantListening)dmMarkLive(false);
   const result=dmDraftText(key);
   // Mobilni prepoznavac moze zavrsiti jedan ciklus pre kraja razgovora.
-  // Nastavljaj slusanje dok traje govor; zavrsi tek posle 7 s tisine.
+  // Nastavljaj slusanje dok traje govor; zavrsi tek posle 10 s tisine.
   if(DM_MIC.inSpeech)dmVoiceEnd(key);
   if(DM_MIC.wantListening&&DM_MIC.speechStarted&&(!reason||reason==="no-speech")){
-   dmMicStatus("🎙 Mikrofon ostaje aktivan. Posle 7 sekundi tišine automatski završavam odgovor.");
+   dmMicStatus("🎙 Mikrofon ostaje aktivan. Posle 10 sekundi tišine automatski završavam odgovor.");
    setTimeout(()=>{
     if(serial!==DM_MIC.serial||respondKey()!==key||!DM_MIC.wantListening||
      DM_MIC.autoEnding||DM_MIC.recognition||DM_MIC.media||DM_MIC.mediaSession)return;
@@ -2028,7 +2028,7 @@ function dmSpeechRecognize(){
   }else if(reason==="not-allowed"){
    dmMicStatus(DM_EMBEDDED?"Replit ili druga ugrađena aplikacija nije dozvolila mikrofon. Otvorite vežbu direktno u novoj kartici.":"Pregledač nije dozvolio prepoznavanje govora. Pritisnite 🎙 Govori ili napišite odgovor.",true);
   }else if(nativeResult){
-   dmMicStatus("✓ Govor je zabeležen. Nakon 7 sekundi tišine odgovor se sam završava.");
+   dmMicStatus("✓ Govor je zabeležen. Nakon 10 sekundi tišine odgovor se sam završava.");
   }else if(result){
    dmMicStatus("✓ Govor je zabeležen. Sledeće pitanje birate dugmetom Dalje.");
   }else dmMicStatus("Govor nije prepoznat. Pritisnite 🎙 Govori ponovo ili napišite odgovor.");
@@ -2103,7 +2103,7 @@ async function dmRecordFallback(auto){
      // Bez AudioContext-a vreme poslednjeg govora približno je
      // trenutku dolaska transkripta iz Workera.
      if(!state.monitorAvailable)dmTranscriptActivity(key,dmDraftText(key));
-     if(!state.finishing)dmMicStatus("🔴 Snimam. Nakon 7 sekundi tišine razgovor se završava.");
+     if(!state.finishing)dmMicStatus("🔴 Snimam. Nakon 10 sekundi tišine razgovor se završava.");
     }
    }catch(e){
     if(valid()&&!state.finishing)dmMicStatus("🔴 Snimam. Jedan deo nije prepoznat, nastavite da govorite.");
@@ -2133,16 +2133,16 @@ async function dmRecordFallback(auto){
    dmMicStatus("Snimanje nije moglo da počne. Dodirnite Govori ponovo.",true);finish();return false
   }
   dmMarkLive(true);
-  // Svakih sedam sekundi kompletan audio segment ide na postojeći DE-MAX Worker.
+  // Svakih deset sekundi kompletan audio segment ide na postojeći DE-MAX Worker.
   // Svaki segment je samostalan snimak radi kompatibilnosti sa iOS audio/mp4.
-  state.timer=setTimeout(()=>{if(valid()&&rec.state==="recording")try{rec.stop()}catch(e){}},7000);
+  state.timer=setTimeout(()=>{if(valid()&&rec.state==="recording")try{rec.stop()}catch(e){}},4500);
   return true;
  };
  const started=next();
  if(started){
   dmArmNoAnswer(key);
   state.monitorAvailable=dmStartAudioMonitor(key,DM_MIC.stream);
-  dmMicStatus("🔴 Snimam nemački. Posle 7 sekundi tišine razgovor se automatski završava.");
+  dmMicStatus("🔴 Mikrofon je stalno uključen. Nakon 10 sekundi tišine odgovor se automatski završava.");
  }
  return started;
 }
@@ -2158,7 +2158,7 @@ async function startMic(fromTap=false){
  if(app.screen!=="introExam"&&app.screen!=="speaking")return;
  const key=respondKey(),serial=DM_MIC.serial;
  if(DM_MIC.recognition||DM_MIC.media||DM_MIC.mediaSession){
-  dmMicStatus("🎙 Mikrofon je već aktivan. Sačekajte automatsko završavanje posle 7 sekundi tišine.");
+  dmMicStatus("🎙 Mikrofon je već aktivan. Sačekajte automatsko završavanje posle 10 sekundi tišine.");
   return;
  }
  dmNewSpeechSession(key);
@@ -2167,7 +2167,7 @@ async function startMic(fromTap=false){
  // u iframe-u moglo da izazove zabranu ili prekid automatskog slušanja.
  // Posle prve dozvole pokreni govor odmah nakon pitanja, bez novog zahteva.
  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
- if(!fromTap&&SR&&DM_MIC.permissionEverGranted&&!DM_MIC.pending){
+ if(!fromTap&&!dmMobileRecognizer()&&SR&&DM_MIC.permissionEverGranted&&!DM_MIC.pending){
   if(dmSpeechRecognize())return;
  }
  const permitted=dmTrackLive() ? true : await dmPermit(fromTap);
@@ -2176,10 +2176,13 @@ async function startMic(fromTap=false){
   dmMicStatus("🎙 Dozvolite mikrofon u Replit prikazu. Ako je blokiran, otvorite ovu A2 vežbu direktno u pregledaču.",true);
   return;
  }
- // Chrome/Android i Safari/iPhone: prvo probaj prepoznavanje uživo,
- // sa oslobođenim getUserMedia streamom (kao u A1).
- // Ako pregledač nema Web Speech API ili njegovo pokretanje ne uspe,
- // koristi postojeći MediaRecorder + DE-MAX Worker.
+ // Mobilni pregledač: mikrofon drži jedan MediaStream otvoren sve vreme.
+ // Web Speech na mobilnom ume sam da zatvara prepoznavanje i menja mic indikator.
+ // Recorder radi u kratkim segmentima samo radi Worker transkripcije.
+ if(dmMobileRecognizer()&&window.MediaRecorder){
+  if(await dmRecordFallback(false))return;
+ }
+ // Na desktopu i tamo gde Recorder nije dostupan zadrži Web Speech.
  if(SR&&dmSpeechRecognize())return;
  if(window.MediaRecorder)return dmRecordFallback(false);
  dmMicStatus("Ovaj pregledač ne podržava prepoznavanje nemačkog govora. Napišite odgovor.",true);
@@ -2213,7 +2216,7 @@ async function dmFinishAudio(){
 async function handleButton(action){
  if(action==="listen"){
   stopAudio();
-  if(DM_MIC.recognition||DM_MIC.media||DM_MIC.mediaSession){dmMicStatus("Mikrofon već sluša. Sačekajte 7 sekundi tišine da automatski završi odgovor.");return}
+  if(DM_MIC.recognition||DM_MIC.media||DM_MIC.mediaSession){dmMicStatus("Mikrofon već sluša. Sačekajte 10 sekundi tišine da automatski završi odgovor.");return}
   startMic(true);return
  }
  if(action==="repeat"){speakPrompt(true);return}
@@ -2264,7 +2267,7 @@ for(const id of ["speakNext"]){
  $(id).addEventListener("click",e=>{
   if(DM_MIC.media||DM_MIC.recognition){
    e.stopImmediatePropagation();e.preventDefault();
-   dmMicStatus("Sačekajte 7 sekundi tišine da se odgovor sačuva, zatim pritisnite „Dalje”.");
+   dmMicStatus("Sačekajte 10 sekundi tišine da se odgovor sačuva, zatim pritisnite „Dalje”.");
   }
  },true)
 }
