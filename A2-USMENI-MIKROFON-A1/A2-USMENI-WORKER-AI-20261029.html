@@ -1578,9 +1578,8 @@ async function dmRecordFallback(auto){
  dmMicStatus("🔴 Snimam nemački. Govorite bez vremenskog ograničenja, zatim pritisnite ■ Završi razgovor.");
  return true
 }
-// Koristi isti Web Speech Recognition postupak kao radni A1 u Chrome/Edge.
-// Ne zavisi od prethodnog getUserMedia dozvoljavanja za nativni SR.
-// Ako SR nije podrzan, pokusava bezbedan MediaRecorder fallback uz dozvolu.
+// A1 AUTO_IFRAME postupak: korisnički klik -> getUserMedia -> Web Speech Recognition.
+// Ako nativno prepoznavanje nije podržano, koristi MediaRecorder + Worker fallback.
 function dmUseNativeSpeechFirst(){
  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
  const isApple=/iPhone|iPad|iPod/i.test(navigator.userAgent||"")||
@@ -1594,24 +1593,18 @@ async function startMic(fromTap=false){
   dmMicStatus("🎙 Mikrofon je vec ukljucen. Kada zavrsite, pritisnite Završi razgovor.");
   return;
  }
- // Ovo je najbitnija razlika: A1 odmah aktivira Web Speech Recognition.
- // A2 ranije trazi getUserMedia pre nego sto dozvoli r.start(), sto
- // unutar zasebnog Replit iframe-a moze da bude odbijeno.
- if(dmUseNativeSpeechFirst()&&dmSpeechRecognize())return;
- // iPhone i uredjaji bez nativnog Web Speech API-ja koriste stari fallback.
- const permitted=await dmPermit(fromTap);
+ // Kao na A1 AUTO_IFRAME: prvo zatraži dozvolu na korisnički dodir.
+ // A2 prethodno pokreće SpeechRecognition pre getUserMedia, što je
+ // u iframe-u moglo da izazove zabranu ili prekid automatskog slušanja.
+ const permitted=dmTrackLive() ? true : await dmPermit(fromTap);
  if(serial!==DM_MIC.serial||respondKey()!==key)return;
  if(!permitted){
-  // Neki WebView-i omogucavaju SpeechRecognition cak i kada
-  // getUserMedia nije dostupan; bez zaobilazenja korisnicke dozvole.
-  if(!dmUseNativeSpeechFirst()&&(window.SpeechRecognition||window.webkitSpeechRecognition)&&
-     !["NotAllowedError","PermissionDeniedError","SecurityError"].includes(DM_MIC.lastError)&&
-     dmSpeechRecognize())return;
-  if(!DM_MIC.lastError||DM_MIC.lastError==="permission"){
-   dmMicStatus("🎙 Mikrofon nije pokrenut. Dozvolite mikrofon na De-Max stranici ili dodirnite Govori.",true);
-  }
+  dmMicStatus("🎙 Dozvolite mikrofon u Replit prikazu. Ako je blokiran, otvorite ovu A2 vežbu direktno u pregledaču.",true);
   return;
  }
+ // Pregledač je već potvrdio pristup. Koristi nativni SR kao na A1;
+ // ako nije dostupan, nastavi preko MediaRecorder + Worker transkripcije.
+ if(dmUseNativeSpeechFirst()&&dmSpeechRecognize())return;
  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
  const isApple=/iPhone|iPad|iPod/i.test(navigator.userAgent||"")||
   (/Macintosh/i.test(navigator.userAgent||"")&&navigator.maxTouchPoints>1);
@@ -1674,13 +1667,13 @@ for(const id of ["begin","introBack","chooseBack","chooseNext","speakNext","spea
  $(id).addEventListener("click",()=>{
   if(id==="introBack"&&app.intro===0)return;
   if(id==="speakNext"&&app.question===1&&app.topic===app.chosen.length-1)return;
-  if(!dmUseNativeSpeechFirst()&&!DM_MIC.allowed&&!DM_MIC.pending)dmPermit(true);
+  if(!dmTrackLive()&&!DM_MIC.pending)dmPermit(true);
   if(id==="begin")dmProbeAudio();
  },true);
 }
 for(const btn of document.querySelectorAll('[data-act="repeat"]')){
  btn.addEventListener("click",()=>{
-  if(!dmUseNativeSpeechFirst()&&!DM_MIC.allowed&&!DM_MIC.pending)dmPermit(true);
+  if(!dmTrackLive()&&!DM_MIC.pending)dmPermit(true);
  },true);
 }
 const oldRestartA2=$("restart").onclick;
@@ -1700,8 +1693,14 @@ for(const id of ["speakNext"]){
   }
  },true)
 }
+// Do not revoke permission while Android/iOS is showing a mic permission prompt.
+// A1 retains the granted stream when the tab temporarily loses visibility.
 document.addEventListener("visibilitychange",()=>{
- if(document.visibilityState==="hidden"){dmInvalidate();dmReleaseStream()}
+ if(document.visibilityState==="hidden"){
+  if(DM_MIC.recognition||DM_MIC.media)dmInvalidate();
+ }else if(dmTrackLive()&&(app.screen==="introExam"||app.screen==="speaking")){
+  dmMicStatus("🎙 Mikrofon je spreman. Posle pitanja govorite, ili dodirnite Govori.");
+ }
 });
 
 </script>
