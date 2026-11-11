@@ -391,6 +391,7 @@ function validWorkerUrl(value){
     <p class="intro-sub">ÖSD A2 · Interaktivna simulacija<br>Predstavljanje → 6 tema → izaberi 5 → po 2 pitanja</p>
     <div class="chips"><span>🎙 Mikrofon</span><span>🔊 Nemački izgovor</span><span>✓ Brza provera</span></div>
     <button class="btn green start" id="begin">Započni simulaciju →</button>
+    <a id="dmDirectMicLink" href="https://nemackidemax13-oss.github.io/Biografije-A1/A2-USMENI-MIKROFON-A1/A2-USMENI-WORKER-AI-20261029.html?v=20261111-replit-mic" target="_blank" rel="noopener noreferrer" style="display:none;max-width:95%;margin:10px auto 0;padding:8px 11px;border:1px solid #b4c9e7;border-radius:10px;color:#1857b5;font-size:12px;font-weight:850;text-decoration:none;text-align:center;background:#f3f8ff">🎙 Otvori u pregledaču za mikrofon ↗</a>
     
   </section>
   <section id="introExam" class="screen">
@@ -1325,6 +1326,10 @@ $("restart").onclick=()=>{app.evaluations={};app.inFlight={};originalRestart()};
  * iOS/Android fallback: MediaRecorder + DE-MAX transcribe Worker.
  * Ne prebacuje učenika na sledeće pitanje samostalno.
  */
+const DM_DIRECT_MIC_URL="https://nemackidemax13-oss.github.io/Biografije-A1/A2-USMENI-MIKROFON-A1/A2-USMENI-WORKER-AI-20261029.html?v=20261111-replit-mic";
+const DM_EMBEDDED=window.self!==window.top;
+const dmDirectMicLink=document.getElementById("dmDirectMicLink");
+if(dmDirectMicLink)dmDirectMicLink.style.display=DM_EMBEDDED?"inline-block":"none";
 const DM_MIC={
  stream:null,pending:null,allowed:false,permitGeneration:0,
  wantListening:false,autoRetries:0,
@@ -1340,7 +1345,7 @@ function dmMicStatus(message,link=false){
  if(link){
   const a=document.createElement("a");
   a.textContent=" Otvori direktno u Safari/Chrome";
-  a.href="https://nemackidemax13-oss.github.io/Biografije-A1/DE-MAX_A2_USMENI_AUTO_IFRAME.html";
+  a.href=DM_DIRECT_MIC_URL;
   a.target="_blank";a.rel="noopener noreferrer";a.style.cssText="display:inline;color:#1657bf;text-decoration:underline;margin-left:3px;font-weight:800";
   target.append(a);
  }
@@ -1382,7 +1387,7 @@ async function dmPermit(fromTap){
   const denied=["NotAllowedError","PermissionDeniedError","SecurityError"].includes(DM_MIC.lastError);
   const busy=["NotFoundError","NotReadableError"].includes(DM_MIC.lastError);
   dmMicStatus(busy?"Telefon ne pronalazi slobodan mikrofon. Zatvorite druge aplikacije koje ga koriste.":
-   denied?"Mikrofon je blokiran. U podešavanjima sajta dozvolite Mikrofon, pa pritisnite 🎙 Govori.":
+   denied?(DM_EMBEDDED?"Mikrofon je blokiran u ugrađenom prikazu. Otvorite A2 vežbu u novoj kartici i dozvolite mikrofon.":"Mikrofon je blokiran. U podešavanjima sajta dozvolite Mikrofon, pa pritisnite 🎙 Govori."):
    "Nije moguće otvoriti mikrofon. Proverite dozvolu i pokušajte preko direktnog linka.",true);
   return false
  }).finally(()=>{DM_MIC.pending=null});
@@ -1499,7 +1504,7 @@ function dmSpeechRecognize(){
    dmMicStatus("Prepoznavanje na ovom telefonu nije dostupno. Prebacujem na rezervno snimanje...");
    dmRecordFallback(false);
   }else if(reason==="not-allowed"){
-   dmMicStatus("Pregledač nije dozvolio prepoznavanje govora. Pritisnite 🎙 Govori ili napišite odgovor.",true);
+   dmMicStatus(DM_EMBEDDED?"Replit ili druga ugrađena aplikacija nije dozvolila mikrofon. Otvorite vežbu direktno u novoj kartici.":"Pregledač nije dozvolio prepoznavanje govora. Pritisnite 🎙 Govori ili napišite odgovor.",true);
   }else if(result){
    dmMicStatus("✓ Govor je zabeležen. Ako niste završili, pritisnite 🎙 Govori ponovo; sledeće pitanje birate ručno.");
   }else dmMicStatus("Govor nije prepoznat. Pritisnite 🎙 Govori ponovo ili napišite odgovor.");
