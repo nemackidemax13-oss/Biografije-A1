@@ -1,7 +1,7 @@
 /**
  * DE-MAX TUTIN — A2 USMENI DEO
  * Cloudflare Worker: a2usmenideo
- * Version: 2026-11-11
+ * Version: 2026-11-11-v2
  *
  * SECRET in Cloudflare > Settings > Variables and Secrets:
  *   OPENAI_API_KEY = your OpenAI API key (Secret type)
@@ -22,9 +22,13 @@
  * Audio is not stored by this Worker. It is sent to OpenAI for transcription.
  * The 10-second silence countdown and the microphone are controlled by the
  * browser's HTML/JavaScript, not by the Worker.
+ * The GitHub A2 app auto-connects to this Worker when GET /api/a2-usmeni
+ * returns {ok:true, configured:true, worker:'a2usmenideo'}.
+ * You MUST configure OPENAI_API_KEY as a Cloudflare Secret; the code alone
+ * cannot run paid AI transcription or evaluations.
  */
 
-const VERSION = '2026-11-11-a2usmenideo-v1';
+const VERSION = '2026-11-11-a2usmenideo-v2';
 const DEFAULT_ORIGIN = 'https://nemackidemax13-oss.github.io';
 const API_BASE = 'https://api.openai.com/v1';
 const MAX_JSON_BYTES = 32_000;
@@ -32,7 +36,7 @@ const MAX_AUDIO_BYTES = 20 * 1024 * 1024;
 const TIMEOUT_MS = 27_000;
 const KNOWN_PLACES = [
   'Tutin', 'Novi Pazar', 'Sjenica', 'Prijepolje', 'Nova Varoš',
-  'Raška', 'Rožaje', 'Rojaje', 'Kraljevo', 'Beograd', 'Berlin',
+  'Raška', 'Rožaje', 'Kraljevo', 'Beograd', 'Berlin',
   'Frankfurt am Main', 'Wien', 'Serbien', 'Deutschland'
 ];
 
@@ -58,6 +62,7 @@ export default {
         configured: !!env.OPENAI_API_KEY,
         worker: 'a2usmenideo',
         version: VERSION,
+        transcription: string(env.TRANSCRIBE_MODEL, 80) || 'gpt-transcribe',
         endpoints: ['/api/a2-usmeni', '/api/a1-transcribe', '/api/a2-transcribe']
       }, 200, cors);
     }
@@ -368,11 +373,12 @@ async function transcribe(request, env, cors) {
   form.append('file', file, 'nemacki-odgovor.' + ext);
   form.append('model', string(env.TRANSCRIBE_MODEL, 80) || 'gpt-transcribe');
   form.append('prompt',
-    'German A2 oral examination (ÖSD). Transcribe exactly the spoken German words, ' +
-    'not a polished answer. Correct spelling of proper place names where audibly justified: ' +
-    'Tutin, Novi Pazar, Sjenica, Rožaje, Prijepolje, Serbia (Serbien), ' +
-    'Frankfurt am Main. Common phrase: "Ich komme aus Tutin." ' +
-    'Do not invent names, sentences, or words that are not spoken.');
+    'ÖSD A2, mündliche Prüfung auf Deutsch. Schreibe genau die tatsächlich ' +
+    'gesprochenen Wörter, auch mit Grammatikfehlern. Mögliche Ortsnamen: ' +
+    'Tutin, Novi Pazar, Sjenica, Rožaje, Prijepolje, Serbien, ' +
+    'Frankfurt am Main. Beispielsatz: "Ich komme aus Tutin." ' +
+    'Verwechsle "aus Tutin" nicht mit "auszuziehen", wenn der Ortsname ' +
+    'im Audio zu hören ist. Erfinde niemals Wörter oder Sätze.');
   form.append('languages[]', 'de');
   for (const keyword of KNOWN_PLACES) form.append('keywords[]', keyword);
 
