@@ -1453,6 +1453,10 @@ function dmAppendTranscript(key,value){
 }
  try{localStorage.setItem("demax_a2_simulacija_odgovori",JSON.stringify(app.responses))}catch(e){}
 }
+function dmMobileRecognizer(){
+ return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent||"")||
+  (/Macintosh/i.test(navigator.userAgent||"")&&navigator.maxTouchPoints>1);
+}
 function dmSpeechRecognize(){
  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
  if(!SR)return false;
@@ -1467,13 +1471,14 @@ function dmSpeechRecognize(){
  r.interimResults=true;
  r.maxAlternatives=1;
  const baseline=clean(textarea().value);
- let finalText="",interimText="",reason="";
+ let finalText="",interimText="",reason="",nativeResult=false,silenceTimer=null;
  r.onresult=e=>{
   if(serial!==DM_MIC.serial||DM_MIC.recognition!==r)return;
   finalText="";interimText="";
   for(let i=0;i<e.results.length;i++){
    const val=clean(e.results[i]?.[0]?.transcript);
    if(!val)continue;
+   nativeResult=true;clearTimeout(silenceTimer);
    if(e.results[i].isFinal)finalText+=(finalText?" ":"")+val;
    else interimText+=(interimText?" ":"")+val;
   }
@@ -1486,10 +1491,11 @@ function dmSpeechRecognize(){
   }
  };
  r.onerror=e=>{
-  reason=e.error||"unknown";
+  if(reason!=="silent")reason=e.error||"unknown";
   DM_MIC.lastError=reason;
  };
  r.onend=()=>{
+  clearTimeout(silenceTimer);
   if(serial!==DM_MIC.serial||DM_MIC.recognition!==r)return;
   DM_MIC.recognition=null;app.rec=null;
   dmMarkLive(false);
@@ -1505,7 +1511,8 @@ function dmSpeechRecognize(){
    return;
   }
   if(DM_MIC.wantListening&&(["network","service-not-allowed","language-not-supported","audio-capture"].includes(reason)||
-   (reason==="not-allowed"&&DM_MIC.allowed)||(isApple&&!result))){
+   reason==="not-allowed"||reason==="silent"||
+   (dmMobileRecognizer()&&!nativeResult)||(isApple&&!result))){
    dmMicStatus("Prepoznavanje na ovom telefonu nije dostupno. Prebacujem na rezervno snimanje...");
    dmRecordFallback(false);
   }else if(reason==="not-allowed"){
@@ -1515,10 +1522,24 @@ function dmSpeechRecognize(){
   }else dmMicStatus("Govor nije prepoznat. Pritisnite 🎙 Govori ponovo ili napišite odgovor.");
  };
  try{
+  // Mobilni browseri mogu da blokiraju Web Speech kada drugi audio
+  // stream ostane zauzet. Dozvola je već zatražena prethodnim klikom.
+  if(dmMobileRecognizer()&&dmTrackLive())dmReleaseStream();
   r.start();DM_MIC.wantListening=true;dmMarkLive(true);
-  dmMicStatus("🎙 Slušam nemački. Govorite svojim tempom. Zaustavite sami kada završite.");
+  dmMicStatus("🎙 Slušam nemački. Govorite svojim tempom. Tekst se pojavljuje dok govorite.");
+  if(dmMobileRecognizer()){
+   // Ako telefon prijavi "slušam", ali nikad ne pošalje rezultat,
+   // pokreni postojeće rezervno snimanje i transkripciju.
+   silenceTimer=setTimeout(()=>{
+    if(serial!==DM_MIC.serial||DM_MIC.recognition!==r||nativeResult||!DM_MIC.wantListening)return;
+    reason="silent";
+    dmMicStatus("🎙 Telefon ne šalje prepoznate reči. Prebacujem na rezervno prepoznavanje...");
+    try{r.abort()}catch(e){try{r.stop()}catch(x){}}
+   },8500);
+  }
   return true
  }catch(e){
+  clearTimeout(silenceTimer);
   DM_MIC.recognition=null;app.rec=null;
   dmMarkLive(false);return false
  }
