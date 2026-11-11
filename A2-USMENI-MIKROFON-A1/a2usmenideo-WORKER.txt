@@ -1,7 +1,7 @@
 /**
  * DE-MAX TUTIN — A2 USMENI DEO
  * Cloudflare Worker: a2usmenideo
- * Version: 2026-11-11-v6
+ * Version: 2026-11-11-v7
  *
  * SECRET in Cloudflare > Settings > Variables and Secrets:
  *   OPENAI_API_KEY = your OpenAI API key (Secret type)
@@ -29,7 +29,7 @@
  * cannot run paid AI transcription or evaluations.
  */
 
-const VERSION = '2026-11-11-a2usmenideo-v6';
+const VERSION = '2026-11-11-a2usmenideo-v7';
 const DEFAULT_ORIGIN = 'https://nemackidemax13-oss.github.io';
 const API_BASE = 'https://api.openai.com/v1';
 const MAX_JSON_BYTES = 32_000;
@@ -120,9 +120,9 @@ function json(obj, status = 200, cors = {}) {
 }
 
 function fail(message, status = 400) {
-  const e = new Error(message);
-  e.status = status;
-  throw e;
+  // Object.assign types the error with the HTTP status property.
+  // Avoids Cloudflare editor TS2339 (Property 'status' does not exist on type 'Error').
+  throw Object.assign(new Error(message), { status });
 }
 
 function publicError(error, status) {
