@@ -1649,20 +1649,14 @@ async function startMic(fromTap=false){
   dmMicStatus("🎙 Dozvolite mikrofon u Replit prikazu. Ako je blokiran, otvorite ovu A2 vežbu direktno u pregledaču.",true);
   return;
  }
- // Pregledač je već potvrdio pristup. Koristi nativni SR kao na A1;
- // ako nije dostupan, nastavi preko MediaRecorder + Worker transkripcije.
- if(dmUseNativeSpeechFirst()&&dmSpeechRecognize())return;
+ // Chrome/Android i Safari/iPhone: prvo probaj prepoznavanje uživo,
+ // sa oslobođenim getUserMedia streamom (kao u A1).
+ // Ako pregledač nema Web Speech API ili njegovo pokretanje ne uspe,
+ // koristi postojeći MediaRecorder + DE-MAX Worker.
  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
- const isApple=/iPhone|iPad|iPod/i.test(navigator.userAgent||"")||
-  (/Macintosh/i.test(navigator.userAgent||"")&&navigator.maxTouchPoints>1);
- if(isApple&&window.MediaRecorder){
-  const route=await dmProbeAudio();
-  if(serial!==DM_MIC.serial||respondKey()!==key)return;
-  if(route)return dmRecordFallback(false);
- }
  if(SR&&dmSpeechRecognize())return;
  if(window.MediaRecorder)return dmRecordFallback(false);
- dmMicStatus("Ovaj pregledac ne podrzava prepoznavanje nemackog govora. Napisite odgovor.",true);
+ dmMicStatus("Ovaj pregledač ne podržava prepoznavanje nemačkog govora. Napišite odgovor.",true);
 }
 async function dmFinishAudio(){
  DM_MIC.wantListening=false;
