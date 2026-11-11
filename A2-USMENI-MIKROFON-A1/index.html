@@ -513,6 +513,18 @@ main,.screen{min-height:0!important;overflow:hidden}
  flex:none;margin:0;font-size:9px;line-height:1.2;color:#657b99;
  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
 }
+/* Ceo učenikov govor i sve AI ispravke su dostupni na mobilnom.
+   Skroluje se samo kartica, bez skrolovanja celog ekrana. */
+#results .resultEntry{overflow-y:auto!important;overscroll-behavior:contain;scrollbar-width:thin}
+#results .resultEntry .q,
+#results .resultEntry .a,
+#results .resultEntry .tip{display:block!important;-webkit-line-clamp:unset!important;overflow:visible!important;flex-shrink:0!important}
+#results .resultEntry .dm-grammar-fix{flex:none;white-space:pre-wrap;overflow-wrap:anywhere}
+#results .resultEntry .dm-grammar-label,
+#results .resultEntry .dm-grammar-ok,
+#results .resultEntry .dm-grammar-pending,
+#results .resultEntry .dm-grammar-detail{flex:none}
+
 @media(max-height:640px){
  #intro .chips{display:none}
  #intro .large-logo{width:min(130px,23dvh)!important;height:min(130px,23dvh)!important}
