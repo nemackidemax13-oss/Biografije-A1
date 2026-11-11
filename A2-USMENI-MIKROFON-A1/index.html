@@ -1616,23 +1616,51 @@ async function dmReviewFinalGrammar(){
  await Promise.allSettled([checkGroup(),checkGroup()]);
  update();
 }
-function newResultRow(box,title,answer,assessment,prompt){
+function newResultRow(box,title,answer,assessment,prompt,key){
  const row=document.createElement("div");row.className="resultEntry";
- const line=document.createElement("div");line.className="q";line.textContent=title;
+ const heading=document.createElement("div");heading.className="q";heading.textContent=title;
  if(assessment){
   const points=document.createElement("span");points.className="points "+(assessment.kind==="ai"?"ai":"provisional");
-  points.textContent=assessment.score.toLocaleString("sr-RS")+" / 1";line.append(points)
+  points.textContent=assessment.score.toLocaleString("sr-RS")+" / 1";heading.append(points);
  }
- const a=document.createElement("div");a.className="a"+(answer?"":" empty");
- a.textContent=answer||"Bez odgovora";
- row.append(line,a);
+ row.append(heading);
+ const label=document.createElement("div");label.className="dm-grammar-label";
+ label.textContent="UČENIK JE REKAO · PREPOZNATI NEMAČKI TEKST";row.append(label);
+ const orig=document.createElement("div");orig.className="a"+(answer?"":" empty");
+ orig.textContent=answer||"Bez odgovora";row.append(orig);
+ if(answer){
+  const review=app.grammarReviews?.[key];
+  if(review?.source===answer&&review.state==="checked"){
+   if(review.hasError&&review.corrected){
+    const fix=document.createElement("div");fix.className="dm-grammar-fix";
+    fix.textContent="ISPRAVNO BI BILO: "+review.corrected;row.append(fix);
+    if(review.explanation){
+     const note=document.createElement("div");note.className="dm-grammar-detail";
+     note.textContent="Greška: "+review.explanation;row.append(note);
+    }
+   }else{
+    const ok=document.createElement("div");
+    ok.className=review.uncertain?"dm-grammar-pending":"dm-grammar-ok";
+    ok.textContent=review.uncertain
+     ?"Nema pouzdane ispravke bez provere izvornog zvuka."
+     :"✓ AI nije uočio jasnu gramatičku grešku.";
+    row.append(ok);
+   }
+  }else{
+   const pending=document.createElement("div");pending.className="dm-grammar-pending";
+   pending.textContent=review?.state==="unavailable"||!app.aiEndpoint
+    ?"AI gramatička provera nije dostupna; originalni odgovor je sačuvan."
+    :"AI proverava gramatičke greške…";
+   row.append(pending);
+  }
+ }
  if(assessment){
-  const t=document.createElement("div");t.className="tip";
-  t.textContent=(assessment.kind==="ai"?"AI provera: ":"Osnovna procena: ")+assessment.feedback;row.append(t);
-  if(assessment.corrected){const d=document.createElement("div");d.className="tip";const fixed=document.createElement("span");fixed.className="fixed";fixed.textContent="Ispravka: "+assessment.corrected;d.append(fixed);row.append(d)}
+  const note=document.createElement("div");note.className="tip";
+  note.textContent=(assessment.kind==="ai"?"AI ocena: ":"Orijentaciona procena: ")+assessment.feedback;
+  row.append(note);
  }
- if(prompt&&prompt.a){const t=document.createElement("div");t.className="tip";t.textContent="Primer iz baze: "+prompt.a;row.append(t)}
- box.append(row)
+ // Bez model-odgovora: u pregledu je samo učenikov govor i njegova ispravka.
+ box.append(row);
 }
 function resultSection(box,heading,explain){
  const h=document.createElement("div");h.className="resultHeading";h.textContent=heading;
@@ -1643,6 +1671,7 @@ function showResults(){
  stopEverything();stage("results","ZAVRŠENO");
  dmResultsPage=0;
  renderFinalReport();
+ dmReviewFinalGrammar();
  if(app.aiEndpoint){
   // Ocenjujemo neproverene odgovore i osvežavamo prikaz, bez menjanja redosleda pitanja.
   const jobs=[];
@@ -1671,11 +1700,11 @@ function renderFinalReport(){
  cap.textContent=ais===10?"AI pregled svih 10 pitanja":ais>0?"Mešovita procena · AI "+ais+" od 10 pitanja":"Orijentaciona procena bez AI-ja";
  $("resultDisclaimer").textContent=ais===10?"AI rezultat služi za vežbu, nije zvanična ÖSD ocena.":"Bez potpune AI provere bodovi se računaju prema dužini i prepoznatim oblicima, a ne prema pouzdanoj gramatičkoj ili sadržajnoj tačnosti. Nije zvaničan ÖSD rezultat.";
  resultSection(box,"1. Predstavljanje","bez bodova");
- INTRO.forEach((p,k)=>newResultRow(box,p.q,clean(app.responses["intro-"+k]),null,p));
+ INTRO.forEach((p,k)=>newResultRow(box,p.q,clean(app.responses["intro-"+k]),null,p,"intro-"+k));
  resultSection(box,"2. Govor o temama","po 2–3 rečenice, bez bodova");
  app.chosen.forEach((id,ti)=>{
   const name=TOPICS[id].title.split(" · ")[0],p={a:getExampleForTopic(id)};
-  newResultRow(box,(ti+1)+". "+name,clean(app.responses["theme-"+id+"-q--1"]),null,p)
+  newResultRow(box,(ti+1)+". "+name,clean(app.responses["theme-"+id+"-q--1"]),null,p,"theme-"+id+"-q--1")
  });
  resultSection(box,"3. Dodatna pitanja","10 pitanja × najviše 1 bod");
  app.chosen.forEach((id,ti)=>{
@@ -1683,7 +1712,7 @@ function renderFinalReport(){
   [0,1].forEach(q=>{
    const p=app.questions[ti]?.[q]||{q:"Pitanje nije dostupno.",a:""},key="theme-"+id+"-q-"+q,answer=clean(app.responses[key]);
    let ev=app.evaluations[key];if(!ev||ev.answer!==answer)ev=localEvaluate(answer);
-   newResultRow(box,name+" · "+(q+1)+". "+p.q,answer,ev,p)
+   newResultRow(box,name+" · "+(q+1)+". "+p.q,answer,ev,p,key)
   })
  })
  dmPaginateResults();
