@@ -1157,7 +1157,7 @@ function downloadTxt(){
  const blob=new Blob([lines.join("\n")],{type:"text/plain;charset=utf-8"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="DE-MAX-A2-usmeni-odgovori.txt";document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000)
 }
 document.querySelectorAll("[data-act]").forEach(b=>b.addEventListener("click",()=>handleButton(b.dataset.act)));
-$("begin").onclick=()=>{app.intro=0;app.responses={};app.grammarReviews={};app.grammarRun++;DM_CHOOSE.accepted=false;DM_CHOOSE.heard="";makeOffer();showIntro()};
+$("begin").onclick=()=>{app.intro=0;app.responses={};app.originalTranscripts={};app.grammarReviews={};app.grammarRun++;DM_CHOOSE.accepted=false;DM_CHOOSE.heard="";makeOffer();showIntro()};
 $("introBack").onclick=backIntro;
  $("introForward").onclick=()=>{saveAnswer();stopEverything();showChoose()};
 $("chooseBack").onclick=()=>{app.intro=INTRO.length-1;showIntro()};
@@ -1179,6 +1179,7 @@ app.evaluations={};
 app.inFlight={};
 app.grammarReviews={};
 app.grammarRun=0;
+app.originalTranscripts={};
 app.aiEndpoint="";
 try{app.aiEndpoint=localStorage.getItem("demax_a2_ai_worker_url")||""}catch(e){}
 INTRO.splice(0,INTRO.length,
@@ -1561,18 +1562,22 @@ document.getElementById("dmResultNext").addEventListener("click",()=>{
 });
 
 // Završna gramatička provera prepoznatih reči, bez izmene originalnih odgovora.
+function dmReportOriginal(key){
+ const raw=app.originalTranscripts?.[key];
+ return clean(typeof raw==="string"?raw:app.responses[key]);
+}
 function dmCollectFinalSpeech(){
  const items=[];
  INTRO.forEach((p,i)=>{
-  const id="intro-"+i,text=clean(app.responses[id]);
+  const id="intro-"+i,text=dmReportOriginal(id);
   if(text)items.push({id,text,question:p.q,topic:"Predstavljanje"});
  });
  app.chosen.forEach((topicId,ti)=>{
   const topic=TOPICS[topicId]?.title||"A2";
-  const id="theme-"+topicId+"-q--1",text=clean(app.responses[id]);
+  const id="theme-"+topicId+"-q--1",text=dmReportOriginal(id);
   if(text)items.push({id,text,question:"Govorite o temi.",topic});
   [0,1].forEach(q=>{
-   const id="theme-"+topicId+"-q-"+q,text=clean(app.responses[id]);
+   const id="theme-"+topicId+"-q-"+q,text=dmReportOriginal(id);
    if(text)items.push({id,text,question:app.questions[ti]?.[q]?.q||"",topic});
   });
  });
@@ -1712,11 +1717,11 @@ function renderFinalReport(){
  cap.textContent=ais===10?"AI pregled svih 10 pitanja":ais>0?"Mešovita procena · AI "+ais+" od 10 pitanja":"Orijentaciona procena bez AI-ja";
  $("resultDisclaimer").textContent=ais===10?"AI rezultat služi za vežbu, nije zvanična ÖSD ocena.":"Bez potpune AI provere bodovi se računaju prema dužini i prepoznatim oblicima, a ne prema pouzdanoj gramatičkoj ili sadržajnoj tačnosti. Nije zvaničan ÖSD rezultat.";
  resultSection(box,"1. Predstavljanje","bez bodova");
- INTRO.forEach((p,k)=>newResultRow(box,p.q,clean(app.responses["intro-"+k]),null,p,"intro-"+k));
+ INTRO.forEach((p,k)=>newResultRow(box,p.q,dmReportOriginal("intro-"+k),null,p,"intro-"+k));
  resultSection(box,"2. Govor o temama","po 2–3 rečenice, bez bodova");
  app.chosen.forEach((id,ti)=>{
   const name=TOPICS[id].title.split(" · ")[0],p={a:getExampleForTopic(id)};
-  newResultRow(box,(ti+1)+". "+name,clean(app.responses["theme-"+id+"-q--1"]),null,p,"theme-"+id+"-q--1")
+  newResultRow(box,(ti+1)+". "+name,dmReportOriginal("theme-"+id+"-q--1"),null,p,"theme-"+id+"-q--1")
  });
  resultSection(box,"3. Dodatna pitanja","10 pitanja × najviše 1 bod");
  app.chosen.forEach((id,ti)=>{
@@ -1724,7 +1729,7 @@ function renderFinalReport(){
   [0,1].forEach(q=>{
    const p=app.questions[ti]?.[q]||{q:"Pitanje nije dostupno.",a:""},key="theme-"+id+"-q-"+q,answer=clean(app.responses[key]);
    let ev=app.evaluations[key];if(!ev||ev.answer!==answer)ev=localEvaluate(answer);
-   newResultRow(box,name+" · "+(q+1)+". "+p.q,answer,ev,p,key)
+   newResultRow(box,name+" · "+(q+1)+". "+p.q,dmReportOriginal(key),ev,p,key)
   })
  })
  dmPaginateResults();
@@ -1738,7 +1743,7 @@ function downloadTxt(){
   "Rezultat: "+$("resultScore").textContent,
   "Provera: "+($("scoreCaption")?.textContent||"Orijentaciona"),""];
  const add=(heading,key,question,hasPoints)=>{
-  const original=clean(app.responses[key]),review=app.grammarReviews?.[key];
+  const original=dmReportOriginal(key),review=app.grammarReviews?.[key];
   lines.push(heading,"PITANJE: "+question,
    "UČENIK JE REKAO (PREPOZNATI NEMAČKI TEKST): "+(original||"(bez odgovora)"));
   if(original){
@@ -1770,7 +1775,7 @@ function downloadTxt(){
  setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
 const originalRestart=$("restart").onclick;
-$("restart").onclick=()=>{app.evaluations={};app.inFlight={};app.grammarReviews={};app.grammarRun++;originalRestart()};
+$("restart").onclick=()=>{app.evaluations={};app.inFlight={};app.grammarReviews={};app.originalTranscripts={};app.grammarRun++;originalRestart()};
 
 </script>
 <script>
@@ -2733,6 +2738,9 @@ document.addEventListener("visibilitychange",()=>{
  async function dmFinalizeAndTranslate(){
   const kind=currentKind();if(!kind)return;
   const key=respondKey(),original=strip(textarea().value);
+  // Sačuvaj PRVI prepoznati transkript pre bilo kakve AI korekcije.
+  if(original&&!Object.prototype.hasOwnProperty.call(app.originalTranscripts,key))
+   app.originalTranscripts[key]=original;
   const block=document.getElementById(kind+"Review");
   const de=document.getElementById(kind+"ReviewDe");
   const sr=document.getElementById(kind+"ReviewSr");
@@ -2785,6 +2793,9 @@ document.addEventListener("visibilitychange",()=>{
   const el=document.getElementById(id);
   el.addEventListener("input",()=>{
    reviewSerial++;
+   // Ručno uređivanje započinje novi originalni tekst; snimak se ne prepisuje automatski.
+   const currentKey=respondKey();
+   if(currentKey)delete app.originalTranscripts[currentKey];
    const kind=currentKind(),block=kind&&document.getElementById(kind+"Review");
    if(block)block.hidden=true;
   });
