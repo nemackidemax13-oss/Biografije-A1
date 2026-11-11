@@ -1876,7 +1876,7 @@ async function dmRunLiveTranslation(key){
  if(!german||german===t.lastSent)return;
  t.busy=true;t.lastSent=german;t.lastAt=Date.now();
  try{
-  const r=await requestWorker({type:"translate",text:german,answer:german,
+  const r=await requestWorker({type:"translate",text:german,answer:german,partial:true,
    instructions:"Prevedi SAMO do sada zaista prepoznat nemački govor na srpski latinicom. Ne dovršavaj nepotpunu rečenicu."});
   const translation=String(r.translationSr||r.translation||"").trim();
   if(epoch!==t.epoch||serial!==DM_MIC.serial||respondKey()!==key||
@@ -2351,7 +2351,7 @@ async function dmRecordFallback(auto){
   DM_MIC.wantListening=true;dmMarkLive(true);
   dmArmNoAnswer(key);
   state.monitorAvailable=dmStartAudioMonitor(key,DM_MIC.stream);
-  dmMicStatus("🔴 Mikrofon sluša neprekidno. Govorite slobodno; posle pauze od 5 s uključuje se odbrojavanje od 5 s.");
+  dmMicStatus("🔴 Mikrofon je stalno uključen dok govorite. Posle potpune tišine odbrojava 5 sekundi.");
   return true;
  }catch(e){
   rec.ondataavailable=rec.onstop=null;
@@ -2371,7 +2371,7 @@ async function startMic(fromTap=false){
  if(app.screen!=="introExam"&&app.screen!=="speaking")return;
  const key=respondKey(),serial=DM_MIC.serial;
  if(DM_MIC.recognition||DM_MIC.media||DM_MIC.mediaSession){
-  dmMicStatus("🎙 Mikrofon je već aktivan. Sačekajte automatsko završavanje posle 5 sekundi tišine.");
+  dmMicStatus("🎙 Mikrofon je stalno uključen tokom odgovora. Posle 5 sekundi tišine automatski završavam.");
   return;
  }
  dmNewSpeechSession(key);
@@ -2424,7 +2424,7 @@ async function handleButton(action){
  if(action==="listen"){
   dmWarmAudioContext();
   stopAudio();
-  if(DM_MIC.recognition||DM_MIC.media||DM_MIC.mediaSession){dmMicStatus("Mikrofon već sluša. Mikrofon sluša. Po završetku govora sledi 5 s pauze i 5 s odbrojavanja.");return}
+  if(DM_MIC.recognition||DM_MIC.media||DM_MIC.mediaSession){dmMicStatus("🎙 Mikrofon već sluša. Posle potpunog prestanka govora odbrojavam 5 sekundi.");return}
   startMic(true);return
  }
  if(action==="repeat"){speakPrompt(true);return}
