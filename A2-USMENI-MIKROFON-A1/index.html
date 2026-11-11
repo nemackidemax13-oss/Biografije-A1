@@ -2236,6 +2236,10 @@ async function dmRecordFallback(auto){
   const form=new FormData(),ext=audioType.includes("mp4")?"mp4":audioType.includes("ogg")?"ogg":"webm";
   form.append("language","de");
   form.append("file",blob,"odgovor."+ext);
+  // Kontekst za tacnije AI prepoznavanje nemackih A2 izraza.
+  const speakingTopic=app.screen==="introExam"?"Vorstellung, Herkunft, Wohnort, Name, Beruf":
+   app.screen==="speaking"?(TOPICS[app.chosen[app.topic]]?.title||"A2 mündliche Prüfung"):"A2 mündliche Prüfung";
+  form.append("context",String(speakingTopic).slice(0,180));
   const ac=new AbortController(),timeout=setTimeout(()=>ac.abort(),25000);
   try{
    const res=await fetch(DM_MIC.transcribeURL,{method:"POST",body:form,signal:ac.signal,mode:"cors"});
