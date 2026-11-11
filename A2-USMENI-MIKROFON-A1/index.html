@@ -392,6 +392,32 @@ main{min-height:0;flex:1;display:flex;flex-direction:column;overflow:hidden;back
  #introExam .answerbox textarea{height:92px!important;min-height:92px!important;max-height:92px!important}
  #introExam.dm-first-intro .answerbox textarea{height:clamp(105px,22dvh,145px)!important;min-height:clamp(105px,22dvh,145px)!important;max-height:clamp(105px,22dvh,145px)!important}
 }
+
+/* A2 · prikaz preostale tišine u gornjem desnom uglu. */
+.dm-step-top{flex:none;display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:48px}
+#introExam>.scroll .dm-step-top>.eyebrow,
+#speaking>.scroll .dm-step-top>.eyebrow{margin:0;align-self:center;font-size:11px;font-weight:900;letter-spacing:.35px}
+.dm-countdown{
+ --dm-progress:0%;display:flex;flex-direction:row;align-items:center;gap:7px;flex:none;
+ min-width:125px;max-width:53%;border:1px solid #c7daf0;border-radius:15px;
+ background:#f2f7ff;padding:4px 8px 4px 5px;color:#25538e;
+}
+.dm-countdown-ring{flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:#e1ebfa}
+.dm-countdown-number{display:grid;place-items:center;width:29px;height:29px;border-radius:50%;background:#fff;font-size:15px;font-weight:950;font-variant-numeric:tabular-nums}
+.dm-countdown-caption{font-weight:900;font-size:10px;line-height:1.18;max-width:91px}
+.dm-countdown[data-state="speaking"]{background:#e9f8ef;border-color:#a8ddba;color:#126a43}
+.dm-countdown[data-state="counting"]{background:#fff7e9;border-color:#e9c98e;color:#754e0d}
+.dm-countdown[data-state="counting"] .dm-countdown-ring{background:conic-gradient(#f09b20 var(--dm-progress),#f4e1bb 0)}
+.dm-countdown[data-state="counting"] .dm-countdown-number{font-size:14px}
+.dm-countdown[data-state="finished"]{background:#e9f8ef;border-color:#a8ddba;color:#126a43}
+@media(max-width:370px){
+ .dm-countdown{min-width:114px;padding-right:5px;gap:5px}
+ .dm-countdown-caption{font-size:9px}
+ .dm-countdown-ring{width:32px;height:32px}
+ .dm-countdown-number{width:26px;height:26px}
+ .dm-step-top{min-height:43px}
+}
+
 </style>
 <script>
 // Minimalna provera A2 AI Workera; izbegava JS gresku pri ocenjivanju.
@@ -420,7 +446,13 @@ function validWorkerUrl(value){
   </section>
   <section id="introExam" class="screen">
    <div class="scroll">
-    <p class="eyebrow">KORAK 1</p><h2>Predstavljanje kandidata</h2>
+    <div class="dm-step-top">
+ <p class="eyebrow">KORAK 1 · A2</p>
+ <div class="dm-countdown" id="dmIntroCountdown" aria-label="Status mikrofona i odbrojavanje tišine" aria-live="off">
+  <span class="dm-countdown-ring"><span class="dm-countdown-number">🎙</span></span>
+  <span class="dm-countdown-caption">Čekam govor</span>
+ </div>
+</div>
     <p class="sub" id="introIndex">Govorite polako na nemačkom, mikrofon će Vas saslušati.</p>
     <div class="examiner"><div class="role">PRÜFERIN / PRÜFER</div><div class="de" id="introDe"></div><div class="sr" id="introSr"></div><div class="state" id="introState" hidden></div></div>
     <div class="answerbox"><div class="dm-answer-heading"><span class="fieldlabel">PREPOZNATI GOVOR · NEMAČKI (UŽIVO)</span><button type="button" class="dm-relisten" data-act="listen">🎙 Govori</button></div><textarea id="introText" lang="de" placeholder="Ovde će biti prikazano ono što mikrofon prepozna. Tekst možete ispraviti."></textarea></div><div id="introReview" class="dm-review" hidden aria-live="polite"><div class="dm-review-label">REKLI STE · NEMAČKI</div><div class="dm-review-de" id="introReviewDe"></div><div class="dm-review-label dm-review-translation-label">PREVOD · SRPSKI</div><div class="dm-review-sr" id="introReviewSr"></div></div>
@@ -453,7 +485,13 @@ function validWorkerUrl(value){
   </section>
   <section id="speaking" class="screen">
    <div class="scroll">
-    <p class="eyebrow" id="speakStep">KORAK 3 · ÜBER DAS THEMA SPRECHEN</p><h2 id="speakHeading">Govorite o temi</h2>
+    <div class="dm-step-top">
+ <p class="eyebrow" id="speakStep">KORAK 3 · ÜBER DAS THEMA SPRECHEN</p>
+ <div class="dm-countdown" id="dmSpeakCountdown" aria-label="Status mikrofona i odbrojavanje tišine" aria-live="off">
+  <span class="dm-countdown-ring"><span class="dm-countdown-number">🎙</span></span>
+  <span class="dm-countdown-caption">Čekam govor</span>
+ </div>
+</div><h2 id="speakHeading">Govorite o temi</h2>
     <p class="sub" id="speakSub"></p>
     <div class="rowTitle"><div class="circleNo" id="topicNo">1</div><div><div class="tiny" id="qType">TEMA · 2–3 REČENICE</div><div class="titleTopic" id="topicName"></div></div></div>
     <div class="examiner"><div class="role">ISPITIVAČ · PRÜFERIN / PRÜFER</div><div class="de" id="speakDe"></div><div class="sr" id="speakSr"></div><div class="state" id="speakState"></div></div>
@@ -1359,7 +1397,7 @@ const DM_MIC={
  stream:null,pending:null,allowed:false,permitGeneration:0,
  wantListening:false,autoRetries:0,
  silenceTimer:null,silenceKey:"",lastSpeechAt:0,lastSpeechText:"",
- speechStarted:false,inSpeech:false,autoEnding:false,audioMonitor:null,
+ speechStarted:false,inSpeech:false,autoEnding:false,audioMonitor:null,finishedKey:"",
  recognition:null,media:null,mediaSession:null,mediaResolve:null,mediaPromise:null,permissionEverGranted:false,
  mediaChunks:[],mediaKey:"",mediaDiscard:false,
  serial:0,lastError:"",fileUrl:null,audioReady:null,audioProbe:null,
@@ -1440,6 +1478,37 @@ async function dmProbeAudio(){
 }
 
 const DM_SILENCE_LIMIT_MS=7000;
+
+function dmTickCountdown(){
+ const key=respondKey();
+ if(app.screen!=="introExam"&&app.screen!=="speaking")return;
+ const el=app.screen==="introExam"?$("dmIntroCountdown"):$("dmSpeakCountdown");
+ if(!el)return;
+ let state="waiting",value="🎙",caption="Čekam govor",progress="0%";
+ if(DM_MIC.autoEnding&&DM_MIC.silenceKey===key){
+  state="finished";value="✓";caption="Čuvam odgovor";
+ }else if(DM_MIC.wantListening&&DM_MIC.silenceKey===key){
+  if(!DM_MIC.speechStarted){state="waiting";value="🎙";caption="Slušam vas";}
+  else if(DM_MIC.inSpeech){state="speaking";value="🎙";caption="Govorite";}
+  else{
+   const ms=Math.max(0,DM_SILENCE_LIMIT_MS-(Date.now()-DM_MIC.lastSpeechAt));
+   const remaining=Math.ceil(ms/1000);
+   state="counting";value=remaining+"s";caption="Tišina · kraj odgovora";
+   progress=Math.max(0,Math.min(100,(ms/DM_SILENCE_LIMIT_MS)*100))+"%";
+  }
+ }else if(DM_MIC.finishedKey===key){
+  state="finished";value="✓";caption=app.screen==="introExam"?"Nastavi na teme":"Pritisnite Dalje";
+ }
+ const tag=[state,value,caption].join("|");
+ if(el.dataset.render!==tag){
+  el.dataset.render=tag;el.dataset.state=state;
+  el.querySelector(".dm-countdown-number").textContent=value;
+  el.querySelector(".dm-countdown-caption").textContent=caption;
+ }
+ el.style.setProperty("--dm-progress",progress);
+}
+setInterval(dmTickCountdown,200);
+
 function dmCancelSilence(){
  clearTimeout(DM_MIC.silenceTimer);
  DM_MIC.silenceTimer=null;
@@ -1452,6 +1521,8 @@ function dmNewSpeechSession(key){
  DM_MIC.lastSpeechText="";
  DM_MIC.speechStarted=false;
  DM_MIC.autoEnding=false;
+ DM_MIC.finishedKey="";
+ dmTickCountdown();
 }
 function dmScheduleSilence(key){
  clearTimeout(DM_MIC.silenceTimer);
@@ -1465,6 +1536,7 @@ function dmScheduleSilence(key){
    DM_MIC.silenceKey!==key||respondKey()!==key)return;
   if(Date.now()-DM_MIC.lastSpeechAt<DM_SILENCE_LIMIT_MS-50){dmScheduleSilence(key);return}
   DM_MIC.autoEnding=true;
+  dmTickCountdown();
   dmMicStatus("✓ Prošlo je 7 sekundi tišine. Automatski završavam razgovor...");
   Promise.resolve(handleButton("stop")).catch(()=>{
    DM_MIC.autoEnding=false;
@@ -1891,6 +1963,8 @@ async function handleButton(action){
  if(action==="stop"){
   await dmFinishAudio();
   saveAnswer();dmReleaseStream();
+  DM_MIC.finishedKey=respondKey();
+  dmTickCountdown();
   if(app.screen==="introExam"){
    dmMicStatus("✓ Govor je sačuvan. Pročitajte prepoznati tekst i prevod, pa pritisnite „Nastavi na teme”.");
   }else if(app.screen==="speaking"){
