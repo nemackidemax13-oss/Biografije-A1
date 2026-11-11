@@ -1548,6 +1548,74 @@ document.getElementById("dmResultNext").addEventListener("click",()=>{
  if(dmResultsPage<dmResultsCards.length-1){dmResultsPage++;dmShowResultsCard()}
 });
 
+// Završna gramatička provera prepoznatih reči, bez izmene originalnih odgovora.
+function dmCollectFinalSpeech(){
+ const items=[];
+ INTRO.forEach((p,i)=>{
+  const id="intro-"+i,text=clean(app.responses[id]);
+  if(text)items.push({id,text,question:p.q,topic:"Predstavljanje"});
+ });
+ app.chosen.forEach((topicId,ti)=>{
+  const topic=TOPICS[topicId]?.title||"A2";
+  const id="theme-"+topicId+"-q--1",text=clean(app.responses[id]);
+  if(text)items.push({id,text,question:"Govorite o temi.",topic});
+  [0,1].forEach(q=>{
+   const id="theme-"+topicId+"-q-"+q,text=clean(app.responses[id]);
+   if(text)items.push({id,text,question:app.questions[ti]?.[q]?.q||"",topic});
+  });
+ });
+ return items;
+}
+async function dmReviewFinalGrammar(){
+ const entries=dmCollectFinalSpeech(),run=++app.grammarRun;
+ const progress=document.getElementById("resultGrammarStatus");
+ app.grammarReviews={};
+ for(const x of entries)app.grammarReviews[x.id]={state:"pending",source:x.text};
+ const current=()=>app.screen==="results"&&app.grammarRun===run;
+ const update=()=>{
+  if(!current())return;
+  const done=entries.filter(x=>app.grammarReviews[x.id]?.state!=="pending").length;
+  if(progress)progress.textContent=app.aiEndpoint
+   ?(done===entries.length?"✓ Gramatička provera završena: "+done+" odgovora."
+      :"AI proverava gramatiku: "+done+" / "+entries.length+" odgovora…")
+   :"AI Worker nije povezan. Originalni odgovori su sačuvani, ali gramatičke ispravke nisu proverene.";
+  renderFinalReport();
+ };
+ if(!entries.length){if(progress)progress.textContent="Nisu prepoznati odgovori za proveru.";return}
+ if(!app.aiEndpoint){
+  for(const x of entries)app.grammarReviews[x.id]={state:"unavailable",source:x.text};
+  update();return
+ }
+ const groups=[];
+ for(let i=0;i<entries.length;i+=4)groups.push(entries.slice(i,i+4));
+ let cursor=0;
+ async function checkGroup(){
+  while(cursor<groups.length&&current()){
+   const group=groups[cursor++];
+   try{
+    const r=await requestWorker({type:"review_grammar_batch",items:group});
+    if(!current())return;
+    const rows=Array.isArray(r.reviews)?r.reviews:[];
+    for(const item of group){
+     const row=rows.find(x=>x?.id===item.id),corrected=clean(row?.corrected);
+     const hasError=row?.hasError===true&&corrected&&corrected!==item.text;
+     app.grammarReviews[item.id]=row?.checked===true
+      ?{state:"checked",source:item.text,hasError:!!hasError,
+        corrected:hasError?corrected:"",explanation:hasError?clean(row.explanation):"",
+        uncertain:row.uncertain===true}
+      :{state:"unavailable",source:item.text};
+    }
+   }catch(e){
+    if(!current())return;
+    for(const item of group)app.grammarReviews[item.id]={state:"unavailable",source:item.text};
+   }
+   update();
+  }
+ }
+ update();
+ await Promise.allSettled([checkGroup(),checkGroup()]);
+ update();
+}
 function newResultRow(box,title,answer,assessment,prompt){
  const row=document.createElement("div");row.className="resultEntry";
  const line=document.createElement("div");line.className="q";line.textContent=title;
