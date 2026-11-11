@@ -1832,12 +1832,25 @@ function dmScheduleSilence(key){
  if(!DM_MIC.wantListening||DM_MIC.autoEnding||DM_MIC.inSpeech||
   !DM_MIC.speechStarted||DM_MIC.silenceKey!==key||respondKey()!==key)return;
  const remaining=Math.max(30,DM_SILENCE_LIMIT_MS-(Date.now()-DM_MIC.lastSpeechAt));
- DM_MIC.silenceTimer=setTimeout(()=>{
+ DM_MIC.silenceTimer=setTimeout(async()=>{
   DM_MIC.silenceTimer=null;
-  if(!DM_MIC.wantListening||DM_MIC.autoEnding||DM_MIC.inSpeech||
-   DM_MIC.silenceKey!==key||respondKey()!==key)return;
+  const current=()=>DM_MIC.wantListening&&!DM_MIC.autoEnding&&!DM_MIC.inSpeech&&
+   !DM_MIC.visibilityPaused&&DM_MIC.silenceKey===key&&respondKey()===key;
+  if(!current())return;
   if(Date.now()-DM_MIC.lastSpeechAt<DM_SILENCE_LIMIT_MS-50){dmScheduleSilence(key);return}
-  dmAutoCompleteAnswer(key);
+  // iOS ponekad ne isporučuje nivo zvuka iako snimak postoji.
+  // Ako Worker još obrađuje glas, proveri poslednji transkript pre prelaska.
+  const monitor=DM_MIC.audioMonitor,session=DM_MIC.mediaSession;
+  if(dmMobileRecognizer()&&session?.processing&&
+   (monitor?.context?.state!=="running"||monitor?.signalSamples<12)){
+   const lastAt=DM_MIC.lastSpeechAt;
+   try{if(DM_MIC.media?.state==="recording")DM_MIC.media.requestData()}catch(e){}
+   await Promise.race([Promise.resolve(session.queue).catch(()=>{}),
+    new Promise(resolve=>setTimeout(resolve,2400))]);
+   if(!current())return;
+   if(DM_MIC.lastSpeechAt!==lastAt){dmScheduleSilence(key);return}
+  }
+  if(current())dmAutoCompleteAnswer(key);
  },remaining);
 }
 function dmVoiceStart(key){
