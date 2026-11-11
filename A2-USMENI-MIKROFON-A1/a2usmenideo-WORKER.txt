@@ -1,7 +1,7 @@
 /**
  * DE-MAX TUTIN — A2 USMENI DEO
  * Cloudflare Worker: a2usmenideo
- * Version: 2026-11-11-v5
+ * Version: 2026-11-11-v6
  *
  * SECRET in Cloudflare > Settings > Variables and Secrets:
  *   OPENAI_API_KEY = your OpenAI API key (Secret type)
@@ -18,6 +18,7 @@
  *   POST /api/a1-transcribe     German audio -> text (old app compatibility)
  *   POST /api/a2-transcribe     German audio -> text (recommended)
  *   GET  /health               same health/status
+ *   GET  /                    health/status, instead of Hello World
  *
  * Audio is not stored by this Worker. It is sent to OpenAI for transcription.
  * The 10-second silence countdown and the microphone are controlled by the
@@ -28,7 +29,7 @@
  * cannot run paid AI transcription or evaluations.
  */
 
-const VERSION = '2026-11-11-a2usmenideo-v5';
+const VERSION = '2026-11-11-a2usmenideo-v6';
 const DEFAULT_ORIGIN = 'https://nemackidemax13-oss.github.io';
 const API_BASE = 'https://api.openai.com/v1';
 const MAX_JSON_BYTES = 32_000;
@@ -59,11 +60,12 @@ export default {
     if (request.method === 'GET' && (path === '/' || path === '/health' || path === '/api/a2-usmeni')) {
       return json({
         ok: true,
-        configured: !!env.OPENAI_API_KEY,
+        configured: typeof env.OPENAI_API_KEY === 'string' && env.OPENAI_API_KEY.trim().length > 10,
         worker: 'a2usmenideo',
         version: VERSION,
         transcription: string(env.TRANSCRIBE_MODEL, 80) || 'gpt-transcribe',
-        endpoints: ['/api/a2-usmeni', '/api/a1-transcribe', '/api/a2-transcribe']
+        endpoints: ['/api/a2-usmeni', '/api/a1-transcribe', '/api/a2-transcribe'],
+        message: 'De-Max A2 Worker je aktivan. Proverite configured=true za AI funkcije.'
       }, 200, cors);
     }
 
@@ -71,7 +73,7 @@ export default {
       return json({ ok: false, error: 'Nepoznata putanja ili metoda.' }, 404, cors);
     }
 
-    if (!env.OPENAI_API_KEY) {
+    if (!env.OPENAI_API_KEY || !String(env.OPENAI_API_KEY).trim()) {
       return json({ ok: false, error: 'Nedostaje OPENAI_API_KEY Secret na Worker-u.' }, 503, cors);
     }
 
@@ -124,10 +126,12 @@ function fail(message, status = 400) {
 }
 
 function publicError(error, status) {
-  if (status < 500) return String(error?.message || 'Neispravan zahtev.').slice(0,240);
-  if (status === 503) return 'AI servis nije konfigurisan ili trenutno nije dostupan.';
+  const text = String(error?.message || '').slice(0,240)
+    .replace(/sk-(?:proj-)?[A-Za-z0-9_-]{10,}/g, '[REDACTED]');
+  if (status < 500) return text || 'Neispravan zahtev.';
+  if (status === 503) return text || 'API nije konfigurisan ili privremeno nije dostupan.';
   if (status === 504) return 'AI servis nije odgovorio na vreme.';
-  return 'AI servis trenutno nije dostupan. Pokušajte ponovo.';
+  return text || 'AI servis trenutno nije dostupan.';
 }
 
 function string(value, limit = 3500) {
