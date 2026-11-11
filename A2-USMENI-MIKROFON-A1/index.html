@@ -1781,6 +1781,7 @@ async function dmAutoCompleteAnswer(key){
  if(DM_MIC.autoEnding||!DM_MIC.wantListening||respondKey()!==key)return;
  const serial=DM_MIC.serial;
  DM_MIC.autoEnding=true;
+ if(DM_LIVE_TRANSLATE.timer){clearTimeout(DM_LIVE_TRANSLATE.timer);DM_LIVE_TRANSLATE.timer=null}
  dmCancelNoAnswer();
  dmTickCountdown();
  dmMicStatus("✓ Odbrojavanje je završeno. Čuvam govor i pokrećem AI prevod...");
@@ -1832,14 +1833,66 @@ function dmDraftText(key){
  return DM_MIC.pendingKey===key?clean(DM_MIC.pendingText):clean(app.responses[key]||"");
 }
 function dmCorrectTutinSpeech(value,key){
- let output=clean(value);
- if(!output)return output;
- output=output.replace(/\b((?:ich|wir)\s+komme(?:n)?\s+|(?:er|sie)\s+kommt\s+)(?:auszuziehen|aus\s+zu\s+ziehen|ausziehen)\b/giu,
-  (_,prefix)=>prefix+"aus Tutin");
- if(/^(?:auszuziehen|aus\s+zu\s+ziehen|ausziehen)[.!?]?$/iu.test(output)){
-  output="aus Tutin"+(/[.!?]$/.test(output)?output.slice(-1):"");
+ // Nikad ne menjaj "auszuziehen" automatski u "aus Tutin" bez audio dokaza.
+ // Rečnik imena u AI transkripciji daje bolji kontekst od prisilne zamene.
+ return clean(value);
+}
+// Live prevod AI: jedna aktivna operacija, najmanje 2.9s izmedju poziva.
+// Izgovorene nemačke reči ostaju vidljive bez zaustavljanja mikrofona.
+const DM_LIVE_TRANSLATE={key:"",pending:"",timer:null,busy:false,lastAt:0,lastSent:"",epoch:0};
+function dmResetLiveTranslate(key){
+ const t=DM_LIVE_TRANSLATE;
+ if(t.timer)clearTimeout(t.timer);
+ t.key=key||"";t.pending="";t.timer=null;t.busy=false;
+ t.lastAt=0;t.lastSent="";t.epoch++;
+}
+function dmQueueLiveTranslation(key,german){
+ if(!key||respondKey()!==key||!DM_MIC.wantListening||DM_MIC.autoEnding)return;
+ if(app.screen!=="introExam"&&app.screen!=="speaking")return;
+ const kind=app.screen==="introExam"?"intro":"speak";
+ const block=document.getElementById(kind+"Review");
+ const de=document.getElementById(kind+"ReviewDe");
+ const sr=document.getElementById(kind+"ReviewSr");
+ if(!block||!de||!sr)return;
+ block.hidden=false;de.textContent=german;
+ if(!app.aiEndpoint){sr.textContent="AI prevod trenutno nije povezan.";return}
+ if(DM_LIVE_TRANSLATE.key!==key)dmResetLiveTranslate(key);
+ const t=DM_LIVE_TRANSLATE;t.pending=german;
+ if(german.length<7)return;
+ if(!sr.textContent||sr.textContent.includes("nije povezan"))
+  sr.textContent="AI prevodi izgovorene reči…";
+ dmPlanLiveTranslation(key);
+}
+function dmPlanLiveTranslation(key){
+ const t=DM_LIVE_TRANSLATE;
+ if(t.key!==key||t.busy||t.timer||!DM_MIC.wantListening||DM_MIC.autoEnding)return;
+ t.timer=setTimeout(()=>{t.timer=null;dmRunLiveTranslation(key)},
+  Math.max(500,2900-(Date.now()-t.lastAt)));
+}
+async function dmRunLiveTranslation(key){
+ const t=DM_LIVE_TRANSLATE;
+ if(t.key!==key||t.busy||!DM_MIC.wantListening||DM_MIC.autoEnding)return;
+ const german=t.pending.trim(),epoch=t.epoch,serial=DM_MIC.serial;
+ if(!german||german===t.lastSent)return;
+ t.busy=true;t.lastSent=german;t.lastAt=Date.now();
+ try{
+  const r=await requestWorker({type:"translate",text:german,answer:german,
+   instructions:"Prevedi SAMO do sada zaista prepoznat nemački govor na srpski latinicom. Ne dovršavaj nepotpunu rečenicu."});
+  const translation=String(r.translationSr||r.translation||"").trim();
+  if(epoch!==t.epoch||serial!==DM_MIC.serial||respondKey()!==key||
+     !DM_MIC.wantListening||DM_MIC.autoEnding||!translation)return;
+  const kind=app.screen==="introExam"?"intro":"speak";
+  const field=document.getElementById(kind+"ReviewSr");
+  if(field)field.textContent=translation+(t.pending!==german?" … (prevod se dopunjava)":"");
+ }catch(e){
+  // Ne izmišljaj rezervni prevod kada AI nije dostupan.
+ }finally{
+  if(epoch===t.epoch){
+   t.busy=false;
+   if(t.pending!==t.lastSent&&DM_MIC.wantListening&&!DM_MIC.autoEnding)
+    dmPlanLiveTranslation(key);
+  }
  }
- return output;
 }
 function dmBufferTranscript(key,value,append=false){
  if(!key||!value||DM_MIC.pendingKey!==key||respondKey()!==key)return;
@@ -1854,6 +1907,7 @@ function dmBufferTranscript(key,value,append=false){
  field.value=next;
  if(field.scrollHeight>field.clientHeight)field.scrollTop=field.scrollHeight;
  try{localStorage.setItem("demax_a2_simulacija_odgovori",JSON.stringify(app.responses))}catch(e){}
+ dmQueueLiveTranslation(key,next);
 }
 function dmPublishAnswer(key){
  if(DM_MIC.pendingKey!==key||respondKey()!==key)return;
@@ -1869,6 +1923,7 @@ function dmNewSpeechSession(key){
  DM_MIC.noAnswerKey="";
  dmCancelSilence();
  DM_MIC.pendingKey=key;
+ dmResetLiveTranslate(key);
  DM_MIC.pendingText=clean(textarea().value);
  DM_MIC.silenceKey=key;
  DM_MIC.lastSpeechAt=0;
@@ -1982,7 +2037,7 @@ function dmStartAudioMonitor(key,stream){
    monitor.signalSamples++;
    monitor.peak=Math.max(monitor.peak,rms);
    // Osetljivija i prilagodljiva granica za tihi govor preko telefona.
-   const threshold=Math.min(0.038,Math.max(0.009,monitor.noiseFloor*2.3));
+   const threshold=Math.min(0.035,Math.max(0.0065,monitor.noiseFloor*2.0));
    if(rms>threshold){
     monitor.strongFrames++;
     monitor.lastLoud=now;
@@ -2423,6 +2478,7 @@ async function dmManualAdvanceSpeaking(){
  if(DM_MIC.autoEnding||app.screen!=="speaking")return;
  const key=respondKey(),serial=DM_MIC.serial;
  DM_MIC.autoEnding=true;
+ if(DM_LIVE_TRANSLATE.timer){clearTimeout(DM_LIVE_TRANSLATE.timer);DM_LIVE_TRANSLATE.timer=null}
  dmCancelNoAnswer();dmCancelSilence();dmTickCountdown();
  const next=$("speakNext");next.disabled=true;
  dmMicStatus("✓ Završavam snimak i čuvam odgovor. Prelazim na sledeću temu...");
