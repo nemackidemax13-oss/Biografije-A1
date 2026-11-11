@@ -49,6 +49,25 @@ body{height:100dvh}
 .controls{margin-top:4px}
 .controls .btn{padding:7px 4px}
 }
+
+/* Na telefonu: cela Biografie na jednoj stranici, ostale teme po rečenicama. */
+@media(max-width:649px){
+.sheet.bio-all #sentences{display:flex;flex-direction:column;justify-content:space-evenly;gap:1px;min-height:0;overflow:hidden}
+.sheet.bio-all .line,.sheet.bio-all .line.current{display:flex;flex:0 1 auto;min-height:0;flex-direction:row;align-items:center;justify-content:space-between;gap:5px;padding:3px 5px;border:1px solid #e2e8f1;border-radius:8px;overflow:hidden}
+.sheet.bio-all .line>div:first-child{flex:1 1 auto!important;min-height:0;overflow:visible}
+.sheet.bio-all .de{font-size:clamp(11px,3.35vw,14px);line-height:1.19;font-weight:620}
+.sheet.bio-all .sr{font-size:clamp(10px,2.9vw,12px);line-height:1.16;margin-top:2px}
+.sheet.bio-all .say{flex:0 0 auto;align-self:center;padding:5px 6px;font-size:13px;border-radius:7px}
+.sheet.bio-all .sentence-nav{display:none}
+.sheet.bio-all h2{margin-bottom:5px}
+}
+@media(max-width:649px) and (max-height:650px){
+.sheet.bio-all{padding:7px 7px 5px}
+.sheet.bio-all .line,.sheet.bio-all .line.current{padding:2px 4px}
+.sheet.bio-all .de{font-size:clamp(10.5px,3.05vw,12px);line-height:1.16}
+.sheet.bio-all .sr{font-size:clamp(9.5px,2.7vw,11px);line-height:1.15}
+.sheet.bio-all .say{padding:4px}
+}
 </style></head><body><main class="shell">
 <header class="head"><div class="brand">DE-<b>MAX</b> <span class="small">A1 • BIOGRAFIJA</span></div><div class="small">Od 2013. sa Vama!</div></header>
 <div class="hero"><h1>Edin • Biografie A1</h1></div>
@@ -76,6 +95,6 @@ function highlight(i){clearHighlight();showSentence(i);const line=$('sentences')
 function stop(){playToken++;if(synth)synth.cancel();utter=null;clearHighlight();$('pause').textContent='⏸ Pauza'}
 function speakSentence(i,token,auto){if(token!==playToken)return;const sentences=topics[index][2];if(i>=sentences.length){clearHighlight();utter=null;return}highlight(i);utter=new SpeechSynthesisUtterance(sentences[i]);utter.lang='de-DE';utter.rate=selectedRate;utter.pitch=1;const voices=synth.getVoices().filter(v=>v.lang.toLowerCase().startsWith('de'));if(voices.length)utter.voice=voices.find(v=>v.lang==='de-DE')||voices[0];utter.onend=()=>{if(token!==playToken)return;if(auto)speakSentence(i+1,token,true);else clearHighlight()};utter.onerror=()=>{if(token===playToken)clearHighlight()};synth.speak(utter)}
 function speak(i,auto=false){if(!synth){alert('Vaš pregledač ne podržava izgovor.');return}stop();const token=playToken;speakSentence(i,token,auto)}
-function render(){stop();const t=topics[index];$('topCount').textContent=(index+1)+' / '+topics.length;$('topName').textContent=topics[index][0];$('counter').textContent=(index+1)+' / '+topics.length;$('ord').textContent=index===0?'PREDSTAVLJANJE':'TEMA '+index;$('heading').textContent=t[0];const area=$('sentences');area.textContent='';t[2].forEach((s,i)=>{const wrap=document.createElement('div');wrap.className='line';const left=document.createElement('div');left.style.flex='1';const de=document.createElement('div');de.className='de';de.textContent=s;left.append(de);{const sr=document.createElement('div');sr.className='sr';sr.textContent=t[3][i];left.append(sr)}const b=document.createElement('button');b.className='say';b.textContent='🔊';b.setAttribute('aria-label','Izgovori rečenicu '+(i+1));b.onclick=()=>speak(i,false);wrap.append(left,b);area.append(wrap)});$('prev').disabled=index===0;$('next').disabled=index===topics.length-1;$('topPrev').disabled=index===0;$('topNext').disabled=index===topics.length-1;showSentence(0)}
+function render(){stop();document.querySelector('.sheet').classList.toggle('bio-all',index===0);const t=topics[index];$('topCount').textContent=(index+1)+' / '+topics.length;$('topName').textContent=topics[index][0];$('counter').textContent=(index+1)+' / '+topics.length;$('ord').textContent=index===0?'PREDSTAVLJANJE':'TEMA '+index;$('heading').textContent=t[0];const area=$('sentences');area.textContent='';t[2].forEach((s,i)=>{const wrap=document.createElement('div');wrap.className='line';const left=document.createElement('div');left.style.flex='1';const de=document.createElement('div');de.className='de';de.textContent=s;left.append(de);{const sr=document.createElement('div');sr.className='sr';sr.textContent=t[3][i];left.append(sr)}const b=document.createElement('button');b.className='say';b.textContent='🔊';b.setAttribute('aria-label','Izgovori rečenicu '+(i+1));b.onclick=()=>speak(i,false);wrap.append(left,b);area.append(wrap)});$('prev').disabled=index===0;$('next').disabled=index===topics.length-1;$('topPrev').disabled=index===0;$('topNext').disabled=index===topics.length-1;showSentence(0)}
 document.querySelectorAll('.speedbtn').forEach(btn=>btn.addEventListener('click',()=>{selectedRate=Number(btn.dataset.rate);document.querySelectorAll('.speedbtn').forEach(b=>{const on=b===btn;b.classList.toggle('active',on);b.setAttribute('aria-pressed',String(on))});if(synth&&(synth.speaking||synth.paused))stop()}));$('play').onclick=()=>speak(0,true);$('pause').onclick=()=>{if(!synth)return;if(synth.paused){synth.resume();$('pause').textContent='⏸ Pauza'}else if(synth.speaking){synth.pause();$('pause').textContent='▶ Nastavi'}};$('stop').onclick=()=>{stop();$('pause').textContent='⏸ Pauza'};$('prev').onclick=()=>{if(index>0){index--;render()}};$('next').onclick=()=>{if(index<topics.length-1){index++;render()}};$('topPrev').onclick=$('prev').onclick;$('topNext').onclick=$('next').onclick;$('sentencePrev').onclick=()=>{if(sentencePage>0){stop();showSentence(sentencePage-1)}};$('sentenceNext').onclick=()=>{if(sentencePage<topics[index][2].length-1){stop();showSentence(sentencePage+1)}};render();if(synth)synth.getVoices();
 </script></body></html>
