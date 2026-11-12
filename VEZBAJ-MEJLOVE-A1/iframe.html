@@ -2878,6 +2878,235 @@ html body.view-mail.mobile-writing #answerPanel .editorarea .foot button#check.c
  }
 }
 </style>
+
+<style id="demax-a1-mobile-screen-v20261112-1">
+/* DEMAX_A1_MOBILE_SCREEN_V20261112_1
+   Telefoni: jedan ekran za postavku, pisanje ili rezultat.
+   Na postojeći JS (35 mejlova, AI, tajmer, prevod, čuvanje) se ne utiče. */
+@media screen and (max-width:799px){
+ html,body{width:100%!important;max-width:100%!important;overflow-x:hidden!important}
+ body.view-mail:not(.mobile-writing):not(.mobile-review){
+   position:fixed!important;inset:0!important;display:block!important;
+   width:100%!important;height:100vh!important;height:100dvh!important;
+   overflow:hidden!important;overscroll-behavior:none!important;
+ }
+ body.view-mail:not(.mobile-writing):not(.mobile-review) .app{
+   display:flex!important;flex-direction:column!important;
+   width:100%!important;min-width:0!important;max-width:100%!important;
+   height:100vh!important;height:100dvh!important;
+   min-height:0!important;max-height:100dvh!important;overflow:hidden!important;
+   box-shadow:none!important;
+ }
+ body.view-mail:not(.mobile-writing):not(.mobile-review) header{
+   display:block!important;position:relative!important;top:auto!important;
+   flex:0 0 auto!important;z-index:12!important;min-width:0!important;
+ }
+ body.view-mail:not(.mobile-writing):not(.mobile-review) main.workspace{
+   display:flex!important;flex-direction:column!important;flex:1 1 0%!important;
+   width:100%!important;height:0!important;min-height:0!important;
+   max-height:none!important;overflow:hidden!important;padding:0!important;
+ }
+ body.view-mail:not(.mobile-writing):not(.mobile-review) main.workspace>section.panel.prompt{
+   display:flex!important;flex-direction:column!important;flex:1 1 0%!important;
+   height:0!important;min-height:0!important;max-height:none!important;
+   overflow:hidden!important;border:0!important;
+ }
+ body.view-mail:not(.mobile-writing):not(.mobile-review) #answerPanel{
+   display:none!important;
+ }
+ body.view-mail:not(.mobile-writing):not(.mobile-review) #promptScroll.taskscroll{
+   display:flex!important;flex-direction:column!important;flex:1 1 0%!important;
+   min-height:0!important;height:0!important;max-height:none!important;
+   overflow-x:hidden!important;overflow-y:auto!important;
+   touch-action:pan-y!important;overscroll-behavior-y:contain!important;
+   -webkit-overflow-scrolling:touch!important;
+   padding:10px 10px 0!important;
+ }
+ body.view-mail:not(.mobile-writing):not(.mobile-review) #promptScroll .bilingual{
+   display:block!important;position:static!important;flex:0 0 auto!important;
+   width:100%!important;min-width:0!important;max-width:100%!important;
+   height:auto!important;transform:none!important;
+   margin:0!important;padding:0!important;overflow:visible!important;
+ }
+ body.view-mail:not(.mobile-writing):not(.mobile-review) #promptScroll .paired-card{
+   width:100%!important;min-width:0!important;max-width:100%!important;
+   height:auto!important;margin:0 0 10px!important;padding:12px!important;
+   overflow:visible!important;border-radius:12px!important;
+ }
+ body.view-mail:not(.mobile-writing):not(.mobile-review) #promptScroll .sentence-de{
+   font-size:clamp(15px,3.9vw,17px)!important;
+   line-height:1.46!important;overflow-wrap:break-word!important;
+ }
+ body.view-mail:not(.mobile-writing):not(.mobile-review) #promptScroll .sentence-sr{
+   font-size:clamp(13px,3.4vw,15px)!important;
+   line-height:1.42!important;overflow-wrap:break-word!important;
+ }
+ body.view-mail:not(.mobile-writing):not(.mobile-review) #promptScroll .start-writing-wrap{
+   display:block!important;position:sticky!important;left:auto!important;right:auto!important;
+   bottom:0!important;top:auto!important;z-index:15!important;
+   width:calc(100% + 20px)!important;min-width:0!important;max-width:none!important;
+   height:auto!important;flex:0 0 auto!important;
+   margin:auto -10px 0!important;
+   padding:9px 10px max(10px,env(safe-area-inset-bottom))!important;
+   background:linear-gradient(180deg,#f9fbffef,#fff 25%)!important;
+   border-top:1px solid #d5e3f7!important;box-shadow:0 -4px 13px #143b7320!important;
+ }
+ body.view-mail:not(.mobile-writing):not(.mobile-review) #promptScroll .a1-prompt-tools{
+   display:grid!important;width:100%!important;min-width:0!important;
+   grid-template-columns:minmax(0,1.3fr) 39px 39px minmax(0,1.4fr)!important;
+   gap:6px!important;align-items:stretch!important;
+ }
+ body.view-mail:not(.mobile-writing):not(.mobile-review) #promptScroll .a1-prompt-tools>button{
+   display:flex!important;align-items:center!important;justify-content:center!important;
+   width:100%!important;min-width:0!important;
+   min-height:44px!important;height:44px!important;
+   padding:3px 5px!important;font-size:clamp(9px,2.6vw,12px)!important;
+   border-radius:9px!important;white-space:normal!important;line-height:1.05!important;
+ }
+ body.view-mail:not(.mobile-writing):not(.mobile-review) #promptScroll #mobileStartBottom{
+   font-size:clamp(10px,2.8vw,13px)!important;font-weight:900!important;
+ }
+ body.view-mail:not(.mobile-writing):not(.mobile-review) #promptScroll :is(.bilingual,.paired-card,.paired-lines){
+   touch-action:pan-y!important;
+ }
+ body.view-mail:not(.mobile-writing):not(.mobile-review) .panel.prompt>.panel-title{
+   flex:0 0 auto!important;min-height:39px!important;
+ }
+ /* Pisanje: pitanja na vrhu, rastegljivo polje, komande stalno pri dnu. */
+ html body.view-mail.mobile-writing .app,
+ html body.view-mail.mobile-writing main.workspace,
+ html body.view-mail.mobile-writing #answerPanel{
+   min-width:0!important;max-width:100%!important;
+   overflow:hidden!important;
+ }
+ html body.view-mail.mobile-writing header,
+ html body.view-mail.mobile-writing #answerPanel>.panel-title{
+   display:none!important;
+ }
+ html body.view-mail.mobile-writing #answerPanel .editorarea{
+   display:flex!important;flex-direction:column!important;
+   flex:1 1 0%!important;height:0!important;min-height:0!important;
+   width:100%!important;min-width:0!important;overflow:hidden!important;
+   gap:5px!important;padding:7px 8px 6px!important;
+ }
+ html body.view-mail.mobile-writing #answerPanel .editorarea .editor-top{
+   display:none!important;
+ }
+ html body.view-mail.mobile-writing #answerPanel .editorarea .a1-write-whitebar{
+   display:grid!important;order:-1!important;
+   flex:0 0 37px!important;height:37px!important;
+   min-height:37px!important;max-height:37px!important;
+   width:100%!important;grid-template-rows:35px!important;
+   align-items:center!important;
+ }
+ html body.view-mail.mobile-writing #answerPanel .editorarea .task-paired{
+   display:block!important;order:0!important;
+   flex:0 0 auto!important;min-height:0!important;
+   max-height:29%!important;overflow-x:hidden!important;overflow-y:auto!important;
+   touch-action:pan-y!important;overscroll-behavior:contain!important;
+   -webkit-overflow-scrolling:touch!important;
+   padding:9px 10px!important;
+ }
+ html body.view-mail.mobile-writing #answerPanel .editorarea .task-paired .sentence-de{
+   font-size:clamp(13px,3.5vw,15px)!important;line-height:1.35!important;
+ }
+ html body.view-mail.mobile-writing #answerPanel .editorarea #a1DraftFrame.a1-draft-frame{
+   display:flex!important;order:1!important;flex:1 1 0%!important;
+   height:0!important;min-height:55px!important;max-height:none!important;
+   width:100%!important;overflow:hidden!important;
+ }
+ html body.view-mail.mobile-writing #answerPanel .editorarea #a1DraftFrame #answer{
+   display:block!important;width:100%!important;min-width:0!important;
+   height:100%!important;min-height:0!important;max-height:100%!important;
+   flex:1 1 0%!important;overflow-x:hidden!important;overflow-y:auto!important;
+   touch-action:pan-y!important;-webkit-overflow-scrolling:touch!important;
+   font-size:max(16px,var(--a1-write-font,16px))!important;
+   line-height:1.48!important;padding:10px 27px 10px 12px!important;
+   border-radius:10px!important;
+ }
+ html body.view-mail.mobile-writing.keyboardOpen #answerPanel .editorarea #a1DraftFrame #answer{
+   overflow-y:auto!important;touch-action:pan-y!important;
+   -webkit-overflow-scrolling:touch!important;
+ }
+ html body.view-mail.mobile-writing #answerPanel .editorarea .foot{
+   order:3!important;display:grid!important;
+   grid-template-columns:minmax(0,1.25fr) 34px 34px minmax(0,.8fr) minmax(0,1.35fr)!important;
+   grid-template-rows:38px 18px!important;
+   gap:3px!important;align-items:center!important;
+   flex:0 0 calc(60px + env(safe-area-inset-bottom))!important;
+   height:calc(60px + env(safe-area-inset-bottom))!important;
+   min-height:calc(60px + env(safe-area-inset-bottom))!important;
+   max-height:calc(60px + env(safe-area-inset-bottom))!important;
+   width:100%!important;padding:1px 0 max(1px,env(safe-area-inset-bottom))!important;
+ }
+ html body.view-mail.mobile-writing #answerPanel .editorarea .foot #a1WriterSr,
+ html body.view-mail.mobile-writing #answerPanel .editorarea .foot .a1-writer-font button,
+ html body.view-mail.mobile-writing #answerPanel .editorarea .foot #a1FullScreen,
+ html body.view-mail.mobile-writing #answerPanel .editorarea .foot #check.checkbtn{
+   min-width:0!important;width:100%!important;height:38px!important;
+   min-height:38px!important;max-height:38px!important;
+   padding:3px!important;font-size:clamp(9px,2.4vw,12px)!important;
+   line-height:1.05!important;white-space:normal!important;border-radius:8px!important;
+ }
+ html body.view-mail.mobile-writing #answerPanel .editorarea .foot #a1WordTracker{
+   grid-column:1/-1!important;grid-row:2!important;
+   height:18px!important;min-height:18px!important;max-height:18px!important;
+ }
+ /* Rezultat: ostaje veliki i čitljiv; pomera se samo rezultat. */
+ html body.view-mail.mobile-review{
+   position:fixed!important;inset:0!important;width:100%!important;
+   height:100dvh!important;max-height:100dvh!important;overflow:hidden!important;
+ }
+ html body.view-mail.mobile-review .app{
+   display:flex!important;flex-direction:column!important;
+   height:100dvh!important;min-height:0!important;max-height:100dvh!important;overflow:hidden!important;
+ }
+ html body.view-mail.mobile-review header,
+ html body.view-mail.mobile-review main.workspace>.panel.prompt{
+   display:none!important;
+ }
+ html body.view-mail.mobile-review main.workspace{
+   display:flex!important;flex-direction:column!important;
+   flex:1 1 0%!important;height:0!important;min-height:0!important;overflow:hidden!important;
+ }
+ html body.view-mail.mobile-review main.workspace>#answerPanel{
+   display:flex!important;flex-direction:column!important;
+   flex:1 1 0%!important;height:0!important;min-height:0!important;overflow:hidden!important;
+ }
+ html body.view-mail.mobile-review #answerPanel .resultwrap{
+   flex:1 1 0%!important;height:0!important;min-height:0!important;max-height:100%!important;
+   overflow-x:hidden!important;overflow-y:auto!important;
+   touch-action:pan-y!important;-webkit-overflow-scrolling:touch!important;
+   padding:12px 10px max(18px,env(safe-area-inset-bottom))!important;
+ }
+ html body.view-mail.mobile-review #result .review-inner{
+   max-width:100%!important;transform:none!important;overflow:visible!important;
+ }
+ body.view-home #mailHome{max-width:100%!important;overflow-x:hidden!important}
+ body.view-home .mail-home-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ #mailPickerDialog{width:calc(100% - 16px)!important;max-width:calc(100vw - 16px)!important}
+ #mailPickerList{overflow-y:auto!important;-webkit-overflow-scrolling:touch!important}
+}
+@media screen and (max-width:799px) and (max-height:440px){
+ html body.view-mail.mobile-writing #answerPanel .editorarea .task-paired{
+   max-height:22%!important;padding:5px 8px!important;
+ }
+ html body.view-mail.mobile-writing #answerPanel .editorarea .a1-write-whitebar{
+   flex-basis:29px!important;height:29px!important;min-height:29px!important;max-height:29px!important;
+ }
+ html body.view-mail.mobile-writing #answerPanel .editorarea .foot{
+   grid-template-rows:30px 17px!important;flex-basis:51px!important;
+   height:51px!important;min-height:51px!important;max-height:51px!important;
+   padding-bottom:1px!important;
+ }
+ html body.view-mail.mobile-writing #answerPanel .editorarea .foot #a1WriterSr,
+ html body.view-mail.mobile-writing #answerPanel .editorarea .foot .a1-writer-font button,
+ html body.view-mail.mobile-writing #answerPanel .editorarea .foot #a1FullScreen,
+ html body.view-mail.mobile-writing #answerPanel .editorarea .foot #check.checkbtn{
+   height:30px!important;min-height:30px!important;max-height:30px!important;
+ }
+}
+</style>
 </head>
 <body class="view-intro a1-translation-off">
 <div class="app">
