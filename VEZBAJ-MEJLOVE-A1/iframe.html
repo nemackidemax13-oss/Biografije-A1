@@ -2846,6 +2846,37 @@ html body.view-mail.mobile-writing #answerPanel .editorarea .foot button#check.c
  }
 }
 
+
+/* 12.11.2026 — omogućeno listanje kartica na stvarnom Android/iOS telefonu.
+   Ranije touch-action:none na precima blokirao swipe iako je #promptScroll bio scrollable. */
+@media(max-width:799px){
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) .app,
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) main.workspace,
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.prompt,
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) #promptScroll,
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) #promptScroll .bilingual,
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) #promptScroll .paired-card{
+   touch-action:pan-y!important;
+ }
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) #promptScroll{
+   overflow-y:auto!important;
+   overscroll-behavior:contain!important;
+ }
+ html body.view-mail.mobile-writing #answerPanel .editorarea,
+ html body.view-mail.mobile-writing #answerPanel #a1DraftFrame,
+ html body.view-mail.mobile-writing #answerPanel #answer,
+ html body.view-mail.mobile-writing #answerPanel .task-paired{
+   touch-action:pan-y!important;
+ }
+ html body.view-mail.mobile-writing.keyboardOpen #answerPanel #answer{
+   overflow-y:auto!important;
+   -webkit-overflow-scrolling:touch!important;
+ }
+ html body.view-mail.mobile-review #result.resultwrap{
+   touch-action:pan-y!important;
+   overflow-y:auto!important;
+ }
+}
 </style>
 </head>
 <body class="view-intro a1-translation-off">
@@ -3495,7 +3526,7 @@ function render(){
 }
 for(let i=0;i<MAILS.length;i++){const el=document.createElement('option');el.value=i;el.textContent=`${i+1}. mejl — ${FULL_TRANSLATIONS[i].subject}`;$('pick').appendChild(el)}
 $('total').textContent=MAILS.length;
-function jump(n){if(document.body.classList.contains('mobile-writing')||document.body.classList.contains('mobile-review'))closeMobileWriting(false);current=Math.max(0,Math.min(MAILS.length-1,n));render();a1ResetTimer();window.scrollTo({top:0,behavior:'instant'}); }
+function jump(n){if(document.body.classList.contains('mobile-writing')||document.body.classList.contains('mobile-review'))closeMobileWriting(false);current=Math.max(0,Math.min(MAILS.length-1,n));render();a1ResetTimer();document.getElementById('promptScroll')?.scrollTo(0,0);window.scrollTo({top:0,behavior:'instant'}); }
 $('prev').onclick=()=>jump(current-1);$('next').onclick=()=>jump(current+1);$('pick').onchange=e=>jump(Number(e.target.value));
 $('answer').addEventListener('input',()=>{saved.drafts[current]=$('answer').value;delete saved.results[current];delete saved.completed[current];$('answerPanel').classList.remove('has-result');$('result').innerHTML='';updateCount();persist()});
 /* OpenAI provera radi preko privatnog Cloudflare Workera; API kljuc ostaje na serveru. */
@@ -3956,12 +3987,9 @@ window.addEventListener('resize',()=>requestAnimationFrame(updateA1DraftRail));
    dok su pitanja i donja dugmad fiksirani u dostupnoj visini. */
 function a1WriterOutsideScrollBlocked(event){
  if(!document.body.classList.contains('mobile-writing'))return false;
- // Isto kao u A2: kada je Android/iOS tastatura otvorena, nema
- // vertikalnog prevlačenja ni spolja ni unutar napisanog mejla.
- if(document.body.classList.contains('keyboardOpen'))return true;
- // Nakon zatvaranja tastature može se pregledati ceo napisani mejl,
- // ali sama stranica i pitanja ostaju fiksirani.
- if(event.target?.closest?.('#answer, #a1ScrollRail'))return false;
+ // Postavka i editor mogu se listati prstom i sa otvorenom tastaturom.
+ // Ostatak stranice ostaje fiksiran da dugmad i tajmer ne odlaze van ekrana.
+ if(event.target?.closest?.('#answer, #a1ScrollRail, .task-paired'))return false;
  return true;
 }
 document.addEventListener('touchmove',event=>{
@@ -4002,9 +4030,7 @@ function fitMailPromptScreen(){
    content.style.removeProperty(property);
  }
  // Po promeni mejla, jezika ili rotaciji ostaje početak zadatka vidljiv.
- if(holder && document.body.classList.contains('view-mail') &&
-    !document.body.classList.contains('mobile-writing') &&
-    !document.body.classList.contains('mobile-review'))holder.scrollTop=0;
+ // Ne vraćati učenika na vrh dok lista postavku ili menja veličinu fonta.
 }
 window.addEventListener('resize',()=>requestAnimationFrame(fitMailPromptScreen));
 window.visualViewport?.addEventListener('resize',()=>requestAnimationFrame(fitMailPromptScreen));
@@ -4037,6 +4063,7 @@ function openMailFromGrid(index,addHistory=true){
  if(document.body.classList.contains('mobile-writing')||document.body.classList.contains('mobile-review'))closeMobileWriting(false);
  document.body.classList.remove('view-home','view-intro');document.body.classList.add('view-mail');
  current=n;render();a1ResetTimer();
+ document.getElementById('promptScroll')?.scrollTo(0,0);
  requestAnimationFrame(()=>{fitMailPromptScreen();setTimeout(fitMailPromptScreen,160);});
  if(addHistory)history.pushState({demaxMail:n,demaxReturnDepth:(history.state?.demaxReturnDepth||0)+1},'','#mejl-'+(n+1));
  window.scrollTo({top:0,behavior:'instant'});
