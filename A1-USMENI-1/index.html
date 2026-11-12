@@ -4,7 +4,7 @@
 <!-- DE-MAX A1 Usmeni 1: samostalna HTML aplikacija za GitHub Pages; bazirano na prethodnoj DE-MAX verziji. -->
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>DE-MAX A1 Usmeni 1 | GitHub Pages</title>
 <style>
 :root{--ink:#142542;--sub:#63738d;--blue:#2862bf;--blueDark:#123f95;--red:#d81e30;--gold:#ffe334;--paper:#fff;--edge:#e0e8f3}
@@ -202,10 +202,43 @@ button:focus-visible{outline:3px solid #1964e2;outline-offset:3px}
   .introHint{display:none}
 }
 
+
+/* DE-MAX mobilni dizajn v2 – jasniji dodir, navigacija i bolji raspored */
+.mobileAdvance{display:none}
+@media(max-width:700px){
+  html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+  .app{width:100%;max-width:none}
+  .artFrame{touch-action:manipulation}
+  .topic{border-width:2.5px}
+  .topic:focus-visible{outline:3px solid #d61f35;outline-offset:0}
+  .topic.chosen{background:#f0213a25;border-color:#e11b36;box-shadow:0 0 0 3px #e11b3640,inset 0 0 0 1px #e11b36}
+  .slot.filled{border-color:#edb0ba;background:#fff0f2}
+  .pickFooter .status{flex:1;min-width:0;text-align:center}
+  .mobileAdvance:not([hidden]){display:inline-flex;align-items:center;justify-content:center;background:#168153;color:#fff;border:0;border-radius:9px;font-size:11px;font-weight:900;padding:6px 12px;min-height:32px;white-space:nowrap;cursor:pointer}
+  .mobileAdvance:active{background:#09623a}
+  .bioRow.is-speaking{outline:2px solid #d81e30;background:#fff0f2;outline-offset:1px}
+  .example.is-speaking{border-color:#d81e30;background:#fff0f2;box-shadow:0 0 0 2px #f0b0b8}
+  .audioBtn{touch-action:manipulation}
+  .mobileTab:active{transform:scale(.985)}
+  .nextNav{touch-action:manipulation}
+  .bioLines,.examples{-webkit-overflow-scrolling:touch}
+}
+@media(max-width:380px){
+  .pickFooter{gap:4px}
+  .pickFooter .status{font-size:10px}
+  .mobileAdvance:not([hidden]){padding:5px 8px;font-size:10px}
+}
+@media(max-width:700px) and (max-height:600px) and (orientation:portrait){
+  .introHint{display:none}
+  .artTop{height:24px;flex-basis:24px}
+  .pickPanel{gap:3px;padding:5px 8px}
+  .slots{grid-template-rows:repeat(2,26px)}
+  .slot{min-height:26px}
+}
 </style>
 </head>
 <body>
-<main class="app">
+<main class="app" data-mobile-view="topics">
   <header class="header">
     <div class="logo" aria-label="DE-MAX Tutin"><strong>DE-MAX</strong><small>TUTIN</small></div>
     <div class="title"><h1>1. Themen – teme</h1><p>PRVI DEO USMENOG ISPITA · PREDSTAVLJANJE I IZBOR 4 TEME</p></div>
@@ -241,7 +274,7 @@ button:focus-visible{outline:3px solid #1964e2;outline-offset:3px}
         <div class="slot"><span class="slotNum">3</span><span class="slotText">Izaberi temu</span></div>
         <div class="slot"><span class="slotNum">4</span><span class="slotText">Izaberi temu</span></div>
       </div>
-      <div class="pickFooter"><button class="reset" id="reset" type="button">↺ Novi izbor</button><span class="status" id="status" aria-live="polite">Izabrano 0 od 4</span></div>
+      <div class="pickFooter"><button class="reset" id="reset" type="button">↺ Novi izbor</button><span class="status" id="status" aria-live="polite">Izabrano 0 od 4</span><button class="mobileAdvance" id="mobileAdvance" type="button" hidden>Dalje →</button></div>
     </aside>
   </section>
   <section class="bottom" aria-label="Primeri rečenica i izgovor">
@@ -253,7 +286,7 @@ button:focus-visible{outline:3px solid #1964e2;outline-offset:3px}
         <div class="bioRow"><p class="german">Ich komme aus Serbien, aus Tutin.</p><small class="translation">Dolazim iz Srbije, iz Tutina.</small></div>
         <div class="bioRow"><p class="german">Ich bin ledig und ich lebe mit meiner Familie.</p><small class="translation">Neudata sam i živim sa svojom porodicom.</small></div>
       </div>
-      <div class="cardFoot"><button type="button" class="audioBtn" id="playIntro">▶ Slušaj sve rečenice</button><span class="footInfo" id="audioStatus" aria-live="polite">Automatski izgovor svih 6 rečenica</span></div>
+      <div class="cardFoot"><button type="button" class="audioBtn" id="playIntro">▶ Slušaj sve rečenice</button><span class="footInfo" id="audioStatus" aria-live="polite">Izgovor sve 4 rečenice</span></div>
     </article>
     <article class="infoCard">
       <div class="cardHeading"><h2>Themen wählen</h2><span>Dva načina da kažeš izbor</span></div>
@@ -306,6 +339,7 @@ function render(){
   const status=document.getElementById('status');
   status.textContent=chosen.length===4?'Četiri teme izabrane ✓':'Izabrano '+chosen.length+' od 4';
   status.classList.toggle('done',chosen.length===4);
+  document.getElementById('mobileAdvance').hidden=chosen.length!==4;
   setText();
 }
 for(const btn of buttons){
@@ -389,8 +423,7 @@ function playSound(button, first, second, isAutostart=false){
   const parts=first
     ?[document.getElementById(second?'choice2':'choice1').closest('.example')]
     :[
-      ...document.querySelectorAll('.bioLines .bioRow'),
-      ...document.querySelectorAll('.examples .example')
+      ...document.querySelectorAll('.bioLines .bioRow')
     ];
   const getText=el=>el.classList.contains('example')
     ?el.querySelector('b').textContent.trim()
@@ -514,6 +547,24 @@ function showMobileScreen(screen){
   requestAnimationFrame(fitMobileArtwork);
 }
 mobileTabs.forEach(t=>t.addEventListener('click',()=>showMobileScreen(t.dataset.view)));
+document.getElementById('mobileAdvance').addEventListener('click',()=>showMobileScreen('intro'));
+// Promena koraka prevlačenjem ulevo ili udesno, bez ometanja klika na oblačiće.
+const mobileScreens=['topics','intro','choice'];
+let touchStart=null;
+appRoot.addEventListener('touchstart',e=>{
+  if(!mobileBreakpoint.matches||e.touches.length!==1||e.target.closest('.art,.bioLines,.examples,button,a'))return;
+  touchStart={x:e.touches[0].clientX,y:e.touches[0].clientY};
+},{passive:true});
+appRoot.addEventListener('touchend',e=>{
+  if(!touchStart||!mobileBreakpoint.matches)return;
+  const dx=e.changedTouches[0].clientX-touchStart.x;
+  const dy=e.changedTouches[0].clientY-touchStart.y;
+  touchStart=null;
+  if(Math.abs(dx)<65||Math.abs(dx)<Math.abs(dy)*1.5)return;
+  const i=mobileScreens.indexOf(appRoot.dataset.mobileView);
+  const next=i+(dx<0?1:-1);
+  if(next>=0&&next<mobileScreens.length)showMobileScreen(mobileScreens[next]);
+},{passive:true});
 if('ResizeObserver' in window){
   new ResizeObserver(fitMobileArtwork).observe(document.querySelector('.artFrame'));
 }
