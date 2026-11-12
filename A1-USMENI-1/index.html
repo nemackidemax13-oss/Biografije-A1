@@ -87,6 +87,121 @@ button:focus-visible{outline:3px solid #1964e2;outline-offset:3px}
 @media(max-width:959px){html,body{height:auto;min-height:100%;overflow:auto}body{display:block}.app{margin:10px auto;height:auto;grid-template-rows:auto auto auto;min-height:0;padding:12px}.header{height:75px}.hero{grid-template-columns:1fr}.artPanel{min-height:430px}.artFrame{min-height:380px}.pickPanel{min-height:250px}.slots{grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr}.bottom{grid-template-columns:1fr}.bioLines{font-size:18px;padding:12px 18px}.infoCard{min-height:205px}}
 @media(max-width:600px){.header{height:65px;gap:8px}.logo{flex-basis:83px;border-radius:10px}.logo strong{font-size:17px;letter-spacing:-1px}.logo small{font-size:9px;letter-spacing:1px}.title{padding:8px;border-radius:11px}.title h1{font-size:21px}.title p{font-size:10px}.level{display:none}.artPanel{min-height:315px}.artTop span{display:none}.artFrame{min-height:250px;padding:4px}.pickPanel{padding:12px}.pickTitle h2{font-size:19px}.example{grid-template-columns:minmax(0,1fr) 75px}.example .audioBtn{min-width:70px;font-size:12px}.examples{padding:9px}.slotText{font-size:13px}}
 
+
+/* DE-MAX MOBILE 2026-11-12: tri ekrana, bez skrolovanja cele stranice */
+.mobileNav{display:none}
+@media(max-width:700px){
+  html,body{width:100%;height:100%;min-height:0;overflow:hidden;overscroll-behavior:none}
+  body{display:block;background:#f5f8fd}
+  .app{
+    width:100%;height:100vh;height:100dvh;max-height:none;min-height:0;
+    margin:0;padding:calc(7px + env(safe-area-inset-top,0px)) 8px calc(7px + env(safe-area-inset-bottom,0px));
+    display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:57px minmax(0,1fr) 56px;
+    grid-template-areas:"top" "content" "nav";gap:7px;
+    background:linear-gradient(180deg,#f5f9ff 0%,#fff 65%);border:0;border-radius:0;box-shadow:none;overflow:hidden
+  }
+  .header{grid-area:top;height:100%;min-height:0;gap:6px}
+  .logo{flex:0 0 70px;border-radius:11px}
+  .logo strong{font-size:17px;letter-spacing:-1px}
+  .logo small{font-size:8px;letter-spacing:1.5px}
+  .title{border-radius:11px;padding:4px 8px;min-width:0}
+  .title h1{font-size:clamp(16px,4.9vw,21px);line-height:1.08;letter-spacing:-.5px}
+  .title p{font-size:8px;line-height:1.16;letter-spacing:0;margin-top:3px}
+  .level{display:none}
+  .nextNav{flex:0 0 68px;border-radius:11px;gap:2px}
+  .nextNav span{font-size:12px}
+  .nextNav small{font-size:8px;letter-spacing:0}
+  .mobileNav{
+    grid-area:nav;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+    align-items:stretch;gap:5px;padding:5px;border:1px solid #d8e3f2;
+    border-radius:15px;background:#fff;box-shadow:0 3px 15px #1c3e7612;min-height:0
+  }
+  .mobileTab{
+    border:1px solid transparent;background:#f2f6fd;color:#4e6c95;
+    border-radius:11px;cursor:pointer;display:flex;gap:5px;align-items:center;justify-content:center;
+    padding:4px 2px;font-size:clamp(10px,3vw,12px);font-weight:850;white-space:nowrap;touch-action:manipulation
+  }
+  .mobileTab b{
+    display:grid;place-items:center;width:20px;height:20px;flex:0 0 20px;
+    border-radius:50%;background:#dbe6f5;font-size:11px;color:#3463a0
+  }
+  .mobileTab.active{background:#2561bd;color:white;border-color:#1c4fa2;box-shadow:0 3px 8px #2359a52f}
+  .mobileTab.active b{background:#fff;color:#1b53a7}
+  .hero,.bottom{grid-area:content;min-height:0;min-width:0;overflow:hidden}
+  .app[data-mobile-view="topics"] .hero{
+    display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;gap:7px
+  }
+  .app[data-mobile-view="topics"] .bottom,
+  .app[data-mobile-view="intro"] .hero,
+  .app[data-mobile-view="choice"] .hero{display:none}
+  .app[data-mobile-view="intro"] .bottom,
+  .app[data-mobile-view="choice"] .bottom{display:flex;flex-direction:column;height:100%;gap:0}
+  .bottom .infoCard{display:none}
+  .app[data-mobile-view="intro"] .bottom .infoCard:first-child,
+  .app[data-mobile-view="choice"] .bottom .infoCard:nth-child(2){display:flex;height:100%;min-height:0}
+  .artPanel{min-height:0;border-radius:14px}
+  .artTop{height:28px;flex:0 0 28px;padding:0 10px}
+  .artTop b{font-size:13px}
+  .artTop span{display:none}
+  .artFrame{min-height:0;flex:1;overflow:hidden;padding:2px;align-items:center;justify-content:center}
+  .art{width:100%;height:auto;max-height:100%;max-width:100%;aspect-ratio:816/630;flex:none}
+  .art img{width:100%;height:100%;object-fit:fill}
+  .topic{border-width:2px;-webkit-tap-highlight-color:transparent}
+  .topic .order{width:26px;height:26px;right:-7px;top:-9px;border-width:2px;font-size:13px}
+  .pickPanel{min-height:0;flex:none;border-radius:14px;padding:8px 10px;gap:5px}
+  .pickTitle h2{font-size:15px}
+  .counter{font-size:12px;padding:4px 9px}
+  .introHint{font-size:10px;line-height:1.2;margin:0}
+  .slots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(2,32px);gap:5px;flex:none}
+  .slot{min-height:32px;padding:3px 6px;gap:5px}
+  .slotNum{height:22px;width:22px;flex-basis:22px;font-size:11px}
+  .slotText{font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .pickFooter{gap:6px}
+  .reset{font-size:11px;padding:5px 9px;min-height:29px}
+  .status{font-size:11px}
+  .infoCard{border-radius:14px;overflow:hidden}
+  .cardHeading{height:45px;flex:0 0 45px;padding:8px 12px}
+  .cardHeading h2{font-size:18px}
+  .cardHeading span{font-size:11px;max-width:46%;text-align:right}
+  .bioLines{font-size:clamp(17px,4.7vw,20px);line-height:1.3;padding:16px 14px 8px;flex:1;overflow-y:auto;overscroll-behavior:contain}
+  .bioRow{margin-bottom:17px}
+  .bioLines .translation{font-size:13px;line-height:1.28;margin-top:5px}
+  .cardFoot{margin-top:auto;padding:10px 12px 14px;gap:8px;border-top:1px solid #e7edf6}
+  .cardFoot .audioBtn{min-height:43px;font-size:13px;padding:9px 12px}
+  .footInfo{min-width:90px;font-size:11px;line-height:1.3}
+  .examples{padding:13px 11px;gap:12px;justify-content:flex-start;flex:1;overflow-y:auto;overscroll-behavior:contain}
+  .example{grid-template-columns:minmax(0,1fr);gap:9px;padding:15px 13px;border-radius:12px}
+  .example b{font-size:clamp(16px,4.35vw,20px);line-height:1.35}
+  .example small{font-size:13px;line-height:1.33;margin-top:7px}
+  .example .audioBtn{justify-self:start;min-height:38px;min-width:115px;font-size:13px;padding:8px 14px}
+}
+@media(max-width:700px) and (max-height:650px){
+  .app{grid-template-rows:47px minmax(0,1fr) 49px;gap:5px;padding-top:calc(4px + env(safe-area-inset-top,0px));padding-bottom:calc(4px + env(safe-area-inset-bottom,0px))}
+  .logo{flex-basis:60px}.logo strong{font-size:15px}.title h1{font-size:17px}
+  .title p{font-size:7px}.nextNav{flex-basis:63px}
+  .artTop{height:25px;flex-basis:25px}
+  .pickPanel{padding:5px 8px;gap:3px}
+  .introHint{font-size:9px}
+  .slots{grid-template-rows:repeat(2,27px);gap:4px}
+  .slot{min-height:27px}.slotNum{height:19px;width:19px;flex-basis:19px}
+  .reset{min-height:25px;padding:3px 7px}
+  .mobileNav{padding:4px}
+  .bioLines{padding:9px 12px;font-size:17px}
+  .bioRow{margin-bottom:9px}
+  .examples{padding:8px;gap:7px}.example{padding:9px 11px}
+}
+@media(max-width:360px){
+  .mobileTab{gap:3px;font-size:10px}.mobileTab b{width:18px;height:18px;flex-basis:18px}
+  .title h1{font-size:16px}.logo{flex-basis:58px}.nextNav{flex-basis:62px}
+  .status{font-size:10px}
+}
+@media(max-width:700px) and (orientation:landscape){
+  .app{grid-template-rows:45px minmax(0,1fr) 45px}
+  .app[data-mobile-view="topics"] .hero{grid-template-columns:minmax(0,1.45fr) minmax(180px,.7fr);grid-template-rows:minmax(0,1fr)}
+  .pickPanel{overflow-y:auto}.slots{grid-template-rows:repeat(2,28px)}
+  .introHint{display:none}
+}
+
 </style>
 </head>
 <body>
@@ -96,6 +211,12 @@ button:focus-visible{outline:3px solid #1964e2;outline-offset:3px}
     <div class="title"><h1>1. Themen – teme</h1><p>PRVI DEO USMENOG ISPITA · PREDSTAVLJANJE I IZBOR 4 TEME</p></div>
     <a class="nextNav" href="../DE_MAX_A1_USMENI_2_OPIS_SLIKE.html" title="Otvori drugi deo usmenog ispita"><span>2. deo →</span><small>OPIS SLIKE</small></a>
   </header>
+
+  <nav class="mobileNav" aria-label="Mobilna navigacija prvog dela usmenog ispita">
+    <button type="button" class="mobileTab active" data-view="topics" aria-current="page"><b>1</b><span>Teme</span></button>
+    <button type="button" class="mobileTab" data-view="intro" aria-current="false"><b>2</b><span>Predstavljanje</span></button>
+    <button type="button" class="mobileTab" data-view="choice" aria-current="false"><b>3</b><span>Izbor</span></button>
+  </nav>
   <section class="hero" aria-label="Izbor četiri teme">
     <div class="artPanel">
       <div class="artTop"><b>Izaberi 4 od 6 tema</b><span>Klikni na oblačiće na slici</span></div>
@@ -345,10 +466,10 @@ document.getElementById('playChoice2').addEventListener('click',e=>playSound(e.c
 // Autoplay na racunaru; ako mobilni browser blokira zvuk, prvi dodir pokrece ceo niz.
 autoStartTimer=setTimeout(()=>{
   autoStartTimer=null;
-  if(autoNeedsGesture)playSound(document.getElementById('playIntro'),false,false,true);
+  if(autoNeedsGesture&&!window.matchMedia('(max-width:700px)').matches)playSound(document.getElementById('playIntro'),false,false,true);
 },650);
 document.addEventListener('click',e=>{
-  if(!autoNeedsGesture||e.target.closest('.audioBtn,a'))return;
+  if(window.matchMedia('(max-width:700px)').matches||!autoNeedsGesture||e.target.closest('.audioBtn,a'))return;
   // Poziva se unutar korisnickog klika, jer mobilni browser trazi gest za zvuk.
   if(autoStartTimer!==null){clearTimeout(autoStartTimer);autoStartTimer=null;}
   autoNeedsGesture=false;
@@ -360,12 +481,51 @@ document.addEventListener('keydown',e=>{
     if(autoStartTimer!==null){clearTimeout(autoStartTimer);autoStartTimer=null;}
     stopAudio();
   }
-  else if(autoNeedsGesture&&['Enter',' '].includes(e.key)&&!e.target.closest('.audioBtn,a')){
+  else if(!window.matchMedia('(max-width:700px)').matches&&autoNeedsGesture&&['Enter',' '].includes(e.key)&&!e.target.closest('.audioBtn,a')){
     if(autoStartTimer!==null){clearTimeout(autoStartTimer);autoStartTimer=null;}
     autoNeedsGesture=false;
     playSound(document.getElementById('playIntro'),false,false,true);
   }
 });
+
+/* Mobilni prikaz: odvojeni ekrani i precizno uklapanje slike sa aktivnim oblačićima. */
+const appRoot=document.querySelector('.app');
+const mobileTabs=Array.from(document.querySelectorAll('.mobileTab'));
+const mobileBreakpoint=window.matchMedia('(max-width:700px)');
+function fitMobileArtwork(){
+  const frame=document.querySelector('.artFrame');
+  const art=document.getElementById('art');
+  if(!mobileBreakpoint.matches){art.style.removeProperty('width');art.style.removeProperty('height');return;}
+  const bounds=frame.getBoundingClientRect();
+  if(bounds.width<5||bounds.height<5)return;
+  const w=Math.max(1,Math.min(bounds.width-4,(bounds.height-4)*816/630));
+  art.style.width=w+'px';
+  art.style.height=(w*630/816)+'px';
+}
+function showMobileScreen(screen){
+  if(!['topics','intro','choice'].includes(screen))return;
+  appRoot.dataset.mobileView=screen;
+  mobileTabs.forEach(t=>{
+    const selected=t.dataset.view===screen;
+    t.classList.toggle('active',selected);
+    t.setAttribute('aria-current',selected?'page':'false');
+  });
+  stopAudio();
+  requestAnimationFrame(fitMobileArtwork);
+}
+mobileTabs.forEach(t=>t.addEventListener('click',()=>showMobileScreen(t.dataset.view)));
+if('ResizeObserver' in window){
+  new ResizeObserver(fitMobileArtwork).observe(document.querySelector('.artFrame'));
+}
+window.addEventListener('resize',fitMobileArtwork);
+window.addEventListener('orientationchange',()=>requestAnimationFrame(fitMobileArtwork));
+if(mobileBreakpoint.matches){
+  autoNeedsGesture=false;
+  document.getElementById('audioStatus').textContent='Pritisni ▶ za nemački izgovor.';
+}
+appRoot.dataset.mobileView='topics';
+requestAnimationFrame(fitMobileArtwork);
+
 render();
 </script>
 </body>
