@@ -168,6 +168,10 @@ header .brand small{font-size:11px;text-align:center;margin:3px 0 0}
 header .topstat{display:none!important}
 .home-center .home-uploaded-logo{width:min(210px,57vw,33dvh);height:auto;object-fit:contain;display:block;max-width:100%;border-radius:18px;box-shadow:0 8px 22px #152f5830}
 @media(max-height:590px){.home-center .home-uploaded-logo{width:min(145px,35dvh)}}
+
+.osd-select-row{display:grid;grid-template-columns:minmax(0,1fr) 165px;gap:8px;align-items:center;border-bottom:1px solid #e4ecf5;padding:7px 0;font-size:11px;font-weight:750;color:#28486e}
+.osd-select-row .field{font-size:11px;min-width:0;padding:8px}
+@media(max-width:350px){.osd-select-row{grid-template-columns:minmax(0,1fr) 140px;gap:5px}.osd-select-row .field{font-size:10px}}
 </style>
 </head>
 <body>
@@ -430,11 +434,11 @@ function result(){
    '<div class="card">'+
    resultline('Lesen · Aufgabe 1',g.r1,15)+resultline('Lesen · Aufgabe 2',g.r2,10)+
    resultline('Hören · Aufgabe 1',g.w1,10)+resultline('Hören · Aufgabe 2',g.w2,10)+resultline('Hören · Aufgabe 3',g.w3,10)+
-   resultline('Schreiben · E-Mail (Cloudflare AI)',mailDisplay,15)+'</div>'+
+   resultline('Schreiben · E-Mail (ÖSD kriterijumi)',mailDisplay,15)+'</div>'+
    '<div class="card greenish">'+
    resultline('LESEN · ukupno',g.lesen,25)+resultline('HÖREN · ukupno',g.horen,30)+resultline('E-MAIL · ukupno',mailDisplay,15)+
    '<p class="small">Pragovi: Lesen 5/25 · Hören 6/30 · E-Mail 3/15. E-Mail kraći od 26 reči ne dobija bodove.</p></div>'+
-   '<p class="small">Ocena mejla dolazi iz Cloudflare AI servisa. Ovaj Worker koristi DE-MAX rubricu i opseg 26–50 reči, što nije potpuno isto kao zvanični ÖSD kriterijumi.</p>';
+   '<p class="small">Za mejl se primenjuje formula ÖSD TL+A+K+T+L+F. Postojeći Cloudflare AI pruža orijentacioni predlog; kriterijume može potvrditi ili ispraviti nastavnik.</p>';
  }else if(tab==='lesen'){
    area='<div class="card"><h3>Lesen · Aufgabe 1 · '+g.r1+'/15</h3>'+
    ['C','E','K','B','G'].map((v,i)=>solutionRow('Text '+(i+1),st.r1[i],v,st.r1[i]===v?3:0,3)).join('')+'</div>'+
@@ -452,18 +456,36 @@ function result(){
    SPORTSKEY.map((v,i)=>solutionRow((i+1)+'. '+(i%2===0?'Sprecherin':'Sprecher'),st.w3[i].map(k=>SPORTS[k]).join(', '),v.map(k=>SPORTS[k]).join(', '),g.w3rows[i],2)).join('')+'</div>'+
    '<div class="card greenish"><b>Ukupno Hören: '+g.horen+'/30</b><p class="small">Minimum 6 bodova · '+(g.horen>=6?'Prag ostvaren':'Prag nije ostvaren')+'</p></div>';
  }else{
-   const m=g.mail,verified=m.graded&&m.status==='ai',resp=verified?m.feedback:{},rubric=resp.rubric||{};
+   const m=g.mail,verified=Boolean(m.feedback),resp=verified?m.feedback:{},rubric=resp.rubric||{};
    area='<div class="card"><h3>E-Mail · '+(m.graded?m.points:'—')+'/15</h3>'+
-   '<p class="small">Napisano: '+m.count+' reči · Prolaz: 3/15 · Cloudflare prihvata 26–50 reči.</p>'+
+   '<p class="small">Napisano: '+m.count+' reči · Prolaz: 3/15 · ÖSD: bez odbitka od 40 reči.</p>'+
    (m.status==='too_short'?'<p class="bad">Manje od 26 reči: ceo Schreiben se ne ocenjuje (0 bodova).</p>':
-   !verified?'<p class="bad">Mejl još nije AI ocenjen. Pokrenite proveru na prethodnom koraku.</p>':
-   '<p class="ok"><b>AI provera završena.</b> Ocena: '+m.points+'/15.</p>')+'</div>';
+   !m.graded?'<p class="bad">Mejl čeka procenu po ÖSD kriterijumima. Možete pokrenuti AI ili uneti bodove kao nastavnik.</p>':
+   '<p class="ok"><b>'+(m.source==='teacher_adjusted'?'ÖSD bodovi uz korekciju nastavnika':'Orijentacioni ÖSD obračun')+': '+m.points+'/15.</b></p>')+'</div>';
+
+   const fields=[
+     {key:'A',label:'A · Ispunjenost zadatka',choices:[['nb','n.b. – zadatak nije ispunjen'],['1','+1 više od traženog'],['0','0 sva 4 pitanja'],['-1','−1 uglavnom'],['-2','−2 delimično']]},
+     {key:'K',label:'K · Komunikativna primerenost',choices:[['2','2'],['1','1'],['0','0']]},
+     {key:'T',label:'T · Povezanost i organizacija',choices:[['2','2'],['1','1'],['0','0']]},
+     {key:'L',label:'L · Leksika',choices:[['5','5'],['4','4'],['3','3'],['2','2'],['1','1'],['0','0']]},
+     {key:'F',label:'F · Gramatička i pravopisna tačnost',choices:[['5','5'],['4','4'],['3','3'],['2','2'],['1','1'],['0','0']]}
+   ];
+   area+='<div class="card"><h3>ÖSD A2 – kriterijumi</h3>'+
+   '<p class="small"><b>TL:</b> '+esc(m.tl.label)+'</p>'+
+   '<p class="small">Izaberite ili izmenite ÖSD vrednosti. AI predlog nije zvanična ocena, naročito za L i F.</p>'+
+   (m.tl.nb?'<p class="bad">Schreiben n.b. — 0 bodova.</p>':
+    fields.map(field=>'<label class="osd-select-row"><span>'+esc(field.label)+'</span><select class="field" data-osd-field="'+field.key+'">'+
+      '<option value="" '+(m.values[field.key]===null?'selected':'')+'>— Izaberite —</option>'+
+      field.choices.map(pair=>'<option value="'+pair[0]+'" '+(String(m.values[field.key])===pair[0]?'selected':'')+'>'+esc(pair[1])+'</option>').join('')+
+    '</select></label>').join(''))+
+   '<p class="small">Formula: TL + A + K + T + L + F; najmanje 0, najviše 15 bodova. A=n.b. daje 0 bodova.</p></div>';
+
    if(verified){
     const rubricRows=[
      ['Odgovori na 4 pitanja',rubric.questions,8],['Gramatika',rubric.grammar,4],
      ['Obraćanje',rubric.opening,1],['Završni pozdrav',rubric.closing,1],['Povezanost',rubric.coherence,1]
     ];
-    area+='<div class="card"><h3>Cloudflare AI – bodovi</h3>'+
+    area+='<div class="card"><h3>Cloudflare AI – postojeća rubrika (informativno)</h3>'+
       rubricRows.map(row=>'<div class="result-row"><span>'+esc(row[0])+'</span><strong>'+esc(row[1]??'—')+'/'+row[2]+'</strong></div>').join('')+'</div>'+
       '<div class="card"><h3>Odgovori na četiri pitanja</h3>'+
       ['Hast du schon einmal eine Reise gemacht?','Wohin bist du gefahren?','Was gibt es bei dir Neues?','Wann hast du Zeit?']
@@ -633,6 +655,13 @@ main.addEventListener('input',e=>{
 });
 main.addEventListener('change',e=>{
  const t=e.target;
+ if(t.dataset.osdField){
+   const vals=emailScore().values;
+   st.osdMailRubric={answer:String(st.mail||'').trim(),values:{...vals,[t.dataset.osdField]:t.value||null}};
+   save();
+   const oldScroll=main.scrollTop;render();main.scrollTop=oldScroll;
+   return;
+ }
  if(t.dataset.r1!==undefined)st.r1[Number(t.dataset.r1)]=t.value;
  if(t.dataset.r2!==undefined)st.r2[Number(t.dataset.r2)]=t.value;
  if(t.dataset.w1!==undefined){const i=Number(t.dataset.w1);st.w1=t.checked?[...new Set([...st.w1,i])]:st.w1.filter(x=>x!==i);const c=document.getElementById('weatherCount');if(c)c.textContent=st.w1.length+' / 4 izabrano';}
