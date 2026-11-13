@@ -172,6 +172,42 @@ header .topstat{display:none!important}
 .osd-select-row{display:grid;grid-template-columns:minmax(0,1fr) 165px;gap:8px;align-items:center;border-bottom:1px solid #e4ecf5;padding:7px 0;font-size:11px;font-weight:750;color:#28486e}
 .osd-select-row .field{font-size:11px;min-width:0;padding:8px}
 @media(max-width:350px){.osd-select-row{grid-template-columns:minmax(0,1fr) 140px;gap:5px}.osd-select-row .field{font-size:10px}}
+
+/* V15: Michael's questions like VEZBAJ-MEJLOVE-A2, with a compact blue panel
+   and translations revealed in red. Stay above the writing textarea on mobile. */
+main.mail-writing-active{overflow:hidden!important;touch-action:manipulation}
+main.mail-writing-active #pageContent{height:100%;min-height:0;display:flex;flex-direction:column;transform:none!important}
+.a2-mail-writing-layout{height:100%;min-height:0;display:flex;flex-direction:column;gap:7px}
+.a2-mail-writing-layout>.stage-label{flex:0 0 auto}
+.a2-writing-questions{flex:0 0 auto;min-height:0;max-height:44%;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+ background:#edf5ff;border:1px solid #b7d2f6;border-left:4px solid #2b57b0;border-radius:9px;padding:7px 10px}
+.a2-writing-questions-head{display:flex;justify-content:space-between;align-items:center;gap:7px;margin:0 0 5px}
+.a2-writing-questions-head h3{font-size:12px;font-weight:950;line-height:1.2;margin:0;color:#0d3a7a}
+.a2-writing-questions-head h3 span{font-size:10px;font-weight:650;color:#c6223d}
+#a2QuestionTranslate{font-size:10px;white-space:nowrap;font-weight:900;border-radius:7px;border:1px solid #e5b521;background:#ffd43b;color:#332500;padding:7px 9px;min-height:32px}
+#a2QuestionTranslate:focus-visible{outline:2px solid #274d85;outline-offset:2px}
+.a2-writing-questions ol{margin:0;padding-left:21px;list-style-position:outside;display:grid;grid-template-columns:1fr;gap:6px}
+.a2-writing-questions li{font-size:12px;line-height:1.3;font-weight:800;color:#1d4f96;padding-left:1px}
+.a2-writing-questions li>.de{display:block}
+.a2-writing-questions li>.sr{display:none;margin:3px 0 0;color:#c6223d;font-size:10.5px;font-weight:650;line-height:1.3}
+.a2-writing-questions.show-sr li>.sr{display:block}
+.a2-mail-writing-editor{flex:1 1 auto;min-height:95px;display:flex;flex-direction:column;gap:6px;margin:0!important;padding:9px!important}
+.a2-writing-editor-bar{flex:0 0 auto}
+.a2-writing-editor-bar .fieldlabel{font-size:12px;font-weight:900;color:#143f7a;margin:0}
+.a2-mail-writing-editor #emailAnswer{flex:1;display:block;width:100%;min-height:70px;height:auto;resize:none;overflow-y:auto;overscroll-behavior:contain;font-size:16px;line-height:1.42}
+.a2-mail-writing-layout .ai-mail-controls{flex:0 0 auto;margin:0}
+.a2-mail-writing-layout .ai-mail-status{flex:0 0 auto;margin:0;line-height:1.3;padding:6px 8px;font-size:10px;max-height:70px;overflow-y:auto}
+@media(max-height:680px){
+ .a2-mail-writing-layout{gap:4px}
+ .a2-writing-questions{padding:5px 8px;max-height:42%}
+ .a2-writing-questions-head{margin-bottom:3px}
+ .a2-writing-questions ol{gap:3px;padding-left:19px}
+ .a2-writing-questions li{font-size:11px;line-height:1.2}
+ .a2-writing-questions li>.sr{font-size:10px;margin-top:2px}
+ #a2QuestionTranslate{font-size:9px;padding:5px 6px;min-height:28px}
+ .a2-mail-writing-editor{padding:6px!important;min-height:88px}
+ .a2-mail-writing-layout .ai-mail-status{font-size:9px;padding:4px 6px;max-height:48px}
+}
 </style>
 </head>
 <body>
@@ -285,14 +321,32 @@ function mailPrompt(){return '<div class="stage-label">SCHREIBEN · E-Mail</div>
 '<div class="card tinted"><div class="between"><b style="font-size:12px">Von: Michael</b><small class="small">Betreff: Reise</small></div>'+
 '<div class="letter" style="margin-top:6px"><p>Liebe/Lieber …,</p><p>wie geht es dir? Stell dir vor, ich fahre nächste Woche nach Österreich. Dort werde ich Wien, Salzburg und Innsbruck besuchen. Ich freue mich sehr darauf. Hast du schon einmal eine Reise gemacht? Wohin bist du gefahren? Was gibt es bei dir Neues?</p><p>Wir haben uns so lange nicht mehr gesehen. Nach meiner Reise müssen wir uns unbedingt treffen. Dann zeige ich dir auch meine Fotos.</p><p>Wann hast du Zeit?</p><p>Bis bald und liebe Grüße<br>Michael</p></div></div>'+
 '<div class="card goldish"><b style="font-size:12px">Aufgabe</b><p class="small" style="margin:3px 0 0">Napišite odgovor od oko 50 reči, odgovorite na sva 4 pitanja i na kraju dodajte pozdrav.</p></div>'}
-function mailEditor(){return '<div class="stage-label">SCHREIBEN · E-Mail</div><h1 class="stage-title">Tvoj odgovor Michaelu</h1>'+
-'<p class="small" style="margin:0 0 6px">Odgovorite na pitanja iz Michaelovog mejla.</p>'+
-'<div class="card mail-questions" aria-label="Pitanja za pisanje mejla"><b class="fieldlabel">Fragen – odgovori na sledeća pitanja:</b>'+
-'<p>1. Hast du schon einmal eine Reise gemacht?</p>'+
-'<p>2. Wohin bist du gefahren?</p>'+
-'<p>3. Was gibt es bei dir Neues?</p><p>4. Wann hast du Zeit?</p></div>'+
-'<div class="card"><label class="fieldlabel" for="emailAnswer">Deine E-Mail an Michael</label><textarea class="field editor" id="emailAnswer" style="height:min(33dvh,255px);min-height:145px" placeholder="Lieber Michael,&#10;&#10;vielen Dank für deine E-Mail. ...">'+esc(st.mail)+'</textarea><div class="between" style="margin-top:7px"><small class="small">Oko 50 reči.</small><b class="pill" id="wordCount">'+wordCount(st.mail)+' Wörter</b></div></div>'+
-'<div class="ai-mail-controls"><button type="button" id="aiGradeBtn" class="btn primary" style="flex:1">✦ Proveri mejl AI</button><button type="button" id="skipAiBtn" class="btn back">Ostali bodovi</button></div><p id="aiStatus" role="status" class="ai-mail-status">Cloudflare AI proverava mejlove od 26 do 50 reči. Mejl ispod 26 reči dobija 0 bodova.</p>'}
+
+/* Match the writing questions layout of VEZBAJ-MEJLOVE-A2 (Michael / Reise).
+   Original four exam prompts, German blue; optional Serbian translation in red. */
+const MICHAEL_QUESTIONS=[
+  {de:'Wie geht es dir?',sr:'Kako si?'},
+  {de:'Hast du schon einmal eine Reise gemacht? Wohin bist du gefahren?',sr:'Da li si nekada putovao/la? Gde si išao/la?'},
+  {de:'Was gibt es bei dir Neues?',sr:'Šta ima novo kod tebe?'},
+  {de:'Wann hast du Zeit?',sr:'Kada imaš vremena?'}
+];
+function writingQuestions(){
+ const shown=Boolean(st.mailSrVisible);
+ return '<section class="a2-writing-questions'+(shown?' show-sr':'')+'" aria-label="Četiri pitanja i prevodi">'+
+  '<div class="a2-writing-questions-head"><h3>ČETIRI PITANJA'+(shown?' <span>· prevod crveno</span>':'')+'</h3>'+
+  '<button id="a2QuestionTranslate" type="button" aria-label="'+(shown?'Sakrij srpski prevod pitanja':'Prikaži srpski prevod pitanja')+'" aria-pressed="'+shown+'">'+(shown?'🇷🇸 SAKRIJ PREVOD':'🇷🇸 PREVOD SRPSKI')+'</button></div>'+
+  '<ol>'+MICHAEL_QUESTIONS.map(q=>'<li><span class="de">'+esc(q.de)+'</span><span class="sr">'+esc(q.sr)+'</span></li>').join('')+'</ol></section>';
+}
+function mailEditor(){
+ return '<section class="a2-mail-writing-layout">'+
+ '<div class="stage-label">SCHREIBEN · E-Mail</div>'+
+ writingQuestions()+
+ '<div class="card a2-mail-writing-editor"><div class="between a2-writing-editor-bar"><label class="fieldlabel" for="emailAnswer">✎ PIŠI MEJL</label><b class="pill" id="wordCount">'+wordCount(st.mail)+' reči</b></div>'+
+ '<textarea class="field editor" id="emailAnswer" placeholder="Lieber Michael,&#10;&#10;vielen Dank für deine E-Mail. ...">'+esc(st.mail)+'</textarea></div>'+
+ '<div class="ai-mail-controls"><button type="button" id="aiGradeBtn" class="btn primary" style="flex:1">✦ Proveri mejl AI</button><button type="button" id="skipAiBtn" class="btn back">Ostali bodovi</button></div>'+
+ '<p id="aiStatus" role="status" class="ai-mail-status">Cloudflare AI proverava 26–50 reči. Prema ÖSD pravilima, mejl ispod 26 reči ne dobija bodove.</p>'+
+ '</section>';
+}
 
 function wordCount(s){return (String(s||'').match(/[\p{L}\p{N}]+(?:[-’'][\p{L}\p{N}]+)*/gu)||[]).length}
 function digits(s){return String(s||'').replace(/\D/g,'')}
@@ -488,7 +542,7 @@ function result(){
     area+='<div class="card"><h3>Cloudflare AI – postojeća rubrika (informativno)</h3>'+
       rubricRows.map(row=>'<div class="result-row"><span>'+esc(row[0])+'</span><strong>'+esc(row[1]??'—')+'/'+row[2]+'</strong></div>').join('')+'</div>'+
       '<div class="card"><h3>Odgovori na četiri pitanja</h3>'+
-      ['Hast du schon einmal eine Reise gemacht?','Wohin bist du gefahren?','Was gibt es bei dir Neues?','Wann hast du Zeit?']
+      MICHAEL_QUESTIONS.map(q=>q.de)
        .map((question,i)=>'<div class="ai-question"><strong>'+esc((i+1)+'. '+question)+'</strong><span>'+esc(resp.questionPoints?.[i]??'—')+'/2</span><p class="small">'+esc(resp.questionFeedback?.[i]||'Nema dodatnog komentara.')+'</p></div>').join('')+'</div>';
     if(resp.feedback)area+='<div class="card"><h3>Mišljenje AI profesora</h3><p class="mail-result">'+esc(resp.feedback)+'</p></div>';
     if(Array.isArray(resp.grammarCorrections)&&resp.grammarCorrections.length)area+='<div class="card"><h3>Ispravke grešaka</h3>'+
@@ -522,7 +576,7 @@ if(!st.flowV12){if(Number(st.page)>=8)st.page=Math.min(11,Number(st.page)+1);st.
 function fitPage(){
  const content=document.getElementById('pageContent');if(!content)return;
  content.style.transform='';
- if(st.page===2||st.page===3||st.page===7||st.page===LAST)return; // Scrolling tasks and results
+ if(st.page===2||st.page===3||st.page===7||st.page===LAST||st.page===LAST-1)return; // Reading, Hören 3, result and flexible writing
  const h=main.clientHeight,n=content.scrollHeight;
  const ratio=h&&n?Math.min(1,(h-2)/n):1;
  content.style.transform='scale('+Math.max(.5,ratio)+')';
@@ -614,6 +668,7 @@ function render(){
  main.classList.toggle('reading-scroll',st.page===2||st.page===3);
  main.classList.toggle('hearing-three',st.page===7);
  main.classList.toggle('results-scroll',st.page===LAST);
+ main.classList.toggle('mail-writing-active',st.page===LAST-1);
  main.innerHTML='<div id="pageContent">'+PAGES[st.page]()+'</div>';
  main.scrollTop=0;
  document.getElementById('bar').style.width=(st.page/LAST*100)+'%';
@@ -634,6 +689,20 @@ window.visualViewport?.addEventListener('resize',()=>requestAnimationFrame(fitPa
 function notify(s){const el=document.createElement('div');el.className='toast';el.textContent=s;document.body.append(el);setTimeout(()=>el.remove(),2800)}
 
 document.getElementById('app').addEventListener('click',e=>{
+ const translate=e.target.closest('#a2QuestionTranslate');
+ if(translate){
+   st.mailSrVisible=!Boolean(st.mailSrVisible);save();
+   const panel=main.querySelector('.a2-writing-questions');
+   if(panel){
+     panel.classList.toggle('show-sr',Boolean(st.mailSrVisible));
+     const title=panel.querySelector('h3');
+     if(title)title.innerHTML='ČETIRI PITANJA'+(st.mailSrVisible?' <span>· prevod crveno</span>':'');
+     translate.textContent=st.mailSrVisible?'🇷🇸 SAKRIJ PREVOD':'🇷🇸 PREVOD SRPSKI';
+     translate.setAttribute('aria-label',st.mailSrVisible?'Sakrij srpski prevod pitanja':'Prikaži srpski prevod pitanja');
+     translate.setAttribute('aria-pressed',String(st.mailSrVisible));
+   }
+   return;
+ }
  const aiBtn=e.target.closest('#aiGradeBtn, #retryAiResult');
  if(aiBtn){checkEmailAI(aiBtn.id==='retryAiResult');return;}
  const skipBtn=e.target.closest('#skipAiBtn');
@@ -649,7 +718,7 @@ document.getElementById('app').addEventListener('click',e=>{
 });
 main.addEventListener('input',e=>{
  const t=e.target;
- if(t.id==='emailAnswer'){st.mail=t.value;st.aiEmail=null;st.osdMailRubric=null;document.getElementById('wordCount').textContent=wordCount(st.mail)+' Wörter';setAiStatus('Tekst je izmenjen. Proverite ga ponovo preko Cloudflare AI.',false)}
+ if(t.id==='emailAnswer'){st.mail=t.value;st.aiEmail=null;st.osdMailRubric=null;document.getElementById('wordCount').textContent=wordCount(st.mail)+' reči';setAiStatus('Tekst je izmenjen. Proverite ga ponovo preko Cloudflare AI.',false)}
  if(t.dataset.w2!==undefined)st.w2[Number(t.dataset.w2)]=t.value;
  save();
 });
