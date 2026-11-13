@@ -1776,7 +1776,7 @@ $("restart").onclick=()=>{app.evaluations={};app.inFlight={};app.grammarReviews=
  * iOS/Android fallback: MediaRecorder + DE-MAX transcribe Worker.
  * Ne prebacuje učenika na sledeće pitanje samostalno.
  */
-const DM_DIRECT_MIC_URL=location.origin+location.pathname+"?v=20261113-v47-auto-ton";
+const DM_DIRECT_MIC_URL=location.origin+location.pathname+"?v=20261113-v48-v30-webspeech";
 const DM_EMBEDDED=window.self!==window.top;
 const DM_MIC={
  stream:null,pending:null,allowed:false,permitGeneration:0,
@@ -2468,6 +2468,9 @@ async function startMic(fromTap=false){
  // u iframe-u moglo da izazove zabranu ili prekid automatskog slušanja.
  // Posle prve dozvole pokreni govor odmah nakon pitanja, bez novog zahteva.
  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+ // Originalna V30: Android prepoznavanje govora radi pre getUserMedia.
+ // Zato iframe blokada za MediaRecorder ne sprecava nativni Web Speech.
+ if(dmUseNativeSpeechFirst()&&dmSpeechRecognize())return;
  const permitted=dmTrackLive() ? true : await dmPermit(fromTap);
  if(serial!==DM_MIC.serial||respondKey()!==key)return;
  if(!permitted){
@@ -2558,8 +2561,9 @@ for(const id of ["begin","introBack","chooseBack","chooseNext","speakNext","spea
   try{window.speechSynthesis?.resume()}catch(e){}
   if(id==="introBack"&&app.intro===0)return;
   if(id==="speakNext"&&app.question===1&&app.topic===app.chosen.length-1)return;
-  if(!dmTrackLive()&&!DM_MIC.pending)dmPermit(true);
-  if(id==="begin")dmProbeAudio();
+  // Kao V30, Android sa Web Speech ne poziva blokirani getUserMedia.
+  if(!dmUseNativeSpeechFirst()&&!dmTrackLive()&&!DM_MIC.pending)dmPermit(true);
+  if(id==="begin"&&!dmUseNativeSpeechFirst())dmProbeAudio();
  },true);
 }
 for(const btn of document.querySelectorAll('[data-act="repeat"]')){
@@ -2640,7 +2644,7 @@ document.addEventListener("visibilitychange",()=>{
  // iPhone + Android: prepare microphone as soon as the page is opened.
  // If a user tap is required, the green Start button retries during the gesture.
  function dmAutoPrepareMobileMic(){
-  if(!dmMobileRecognizer()||dmTrackLive()||DM_MIC.pending||
+  if(dmUseNativeSpeechFirst()||!dmMobileRecognizer()||dmTrackLive()||DM_MIC.pending||
      document.visibilityState==="hidden")return;
   dmPermit(false).then(ok=>{
    if(window.parent!==window)try{
@@ -2855,5 +2859,5 @@ document.addEventListener("visibilitychange",()=>{
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" async></script>
-<script src="./v40.js?v=20261113-v47-auto-ton"></script>
+<script src="./v40.js?v=20261113-v48-v30-webspeech"></script>
 </body></html>
