@@ -712,6 +712,52 @@ main.mail-writing-active.mail-keyboard .a2-mail-writing-editor #emailAnswer{
  main.mail-writing-active .a2-writing-editor-bar{font-size:10px!important}
 }
 
+
+/* V27: original Michael mail justified across both edges with mobile-readable
+   18px default typography and footer +/- from 14 to 24px. */
+main.mail-prompt-active .mail-prompt-letter{
+ font-size:var(--mail-prompt-size,18px)!important;
+ line-height:1.5!important;
+ text-align:justify!important;
+ text-align-last:left!important;
+ hyphens:auto!important;
+ -webkit-hyphens:auto!important;
+ overflow-wrap:break-word!important;
+ word-break:normal!important;
+}
+main.mail-prompt-active .mail-prompt-letter p{
+ text-align:justify!important;
+ text-align-last:left!important;
+ hyphens:auto!important;
+ -webkit-hyphens:auto!important;
+ line-height:inherit!important;
+ margin-bottom:9px!important;
+}
+main.mail-prompt-active .mail-prompt-sender b,
+main.mail-prompt-active .mail-prompt-sender small{font-size:12px!important}
+@media(max-height:650px){
+ main.mail-prompt-active .mail-prompt-letter{font-size:var(--mail-prompt-size,18px)!important;line-height:1.42!important}
+ main.mail-prompt-active .mail-prompt-letter p{margin-bottom:7px!important}
+}
+/* A very thin writing indicator: fills red from 0–25 words, turns green at 26. */
+main.mail-writing-active .mail-word-meter{
+ flex:0 0 4px!important;height:4px!important;min-height:4px!important;
+ width:100%!important;overflow:hidden!important;
+ margin-top:4px!important;padding:0!important;
+ border-radius:5px!important;background:#e4eaf1!important;
+ box-shadow:none!important;
+}
+main.mail-writing-active .mail-word-fill{
+ display:block!important;height:100%!important;max-width:100%!important;
+ border-radius:5px!important;transition:width .12s linear,background-color .12s linear!important;
+}
+main.mail-writing-active .mail-word-fill.below{background:#e03a43!important}
+main.mail-writing-active .mail-word-fill.met{background:#0a9e65!important}
+main.mail-writing-active.mail-keyboard .mail-word-meter{
+ flex:0 0 3px!important;height:3px!important;min-height:3px!important;
+ margin-top:3px!important;
+}
+
 </style>
 </head>
 <body>
@@ -825,7 +871,7 @@ return '<div class="intro-screen"><div class="intro-cover"><div class="intro-eye
 }
 function mailPrompt(){return '<section class="mail-prompt-full"><div class="stage-label">SCHREIBEN · E-Mail</div><h1 class="stage-title">Eine E-Mail an Michael</h1><p class="small mail-prompt-instructions">Pročitajte celu poruku koju šalje Michael.</p>'+
 '<div class="card tinted mail-prompt-card"><div class="between mail-prompt-sender"><b>Von: Michael</b><small class="small">Betreff: Reise</small></div>'+
-'<div class="letter mail-prompt-letter"><p>Liebe/Lieber …,</p><p>wie geht es dir? Stell dir vor, ich fahre nächste Woche nach Österreich. Dort werde ich Wien, Salzburg und Innsbruck besuchen. Ich freue mich sehr darauf. Hast du schon einmal eine Reise gemacht? Wohin bist du gefahren? Was gibt es bei dir Neues?</p><p>Wir haben uns so lange nicht mehr gesehen. Nach meiner Reise müssen wir uns unbedingt treffen. Dann zeige ich dir auch meine Fotos.</p><p>Wann hast du Zeit?</p><p>Bis bald und liebe Grüße<br>Michael</p></div></div></section>'}
+'<div class="letter mail-prompt-letter" lang="de"><p>Liebe/Lieber …,</p><p>wie geht es dir? Stell dir vor, ich fahre nächste Woche nach Österreich. Dort werde ich Wien, Salzburg und Innsbruck besuchen. Ich freue mich sehr darauf. Hast du schon einmal eine Reise gemacht? Wohin bist du gefahren? Was gibt es bei dir Neues?</p><p>Wir haben uns so lange nicht mehr gesehen. Nach meiner Reise müssen wir uns unbedingt treffen. Dann zeige ich dir auch meine Fotos.</p><p>Wann hast du Zeit?</p><p>Bis bald und liebe Grüße<br>Michael</p></div></div></section>'}
 
 /* Match the writing questions layout of VEZBAJ-MEJLOVE-A2 (Michael / Reise).
    Original four exam prompts, German blue; optional Serbian translation in red. */
@@ -847,7 +893,8 @@ function mailEditor(){
  '<div class="stage-label">SCHREIBEN · E-Mail</div>'+
  writingQuestions()+
  '<div class="card a2-mail-writing-editor"><div class="between a2-writing-editor-bar"><label class="fieldlabel" for="emailAnswer">✎ PIŠI MEJL</label><b class="pill" id="wordCount">'+wordCount(st.mail)+' reči</b></div>'+
- '<textarea class="field editor" id="emailAnswer" placeholder="Lieber Michael,&#10;&#10;vielen Dank für deine E-Mail. ...">'+esc(st.mail)+'</textarea></div>'+
+ '<textarea class="field editor" id="emailAnswer" placeholder="Lieber Michael,&#10;&#10;vielen Dank für deine E-Mail. ...">'+esc(st.mail)+'</textarea>'+ 
+'<div class="mail-word-meter" id="mailWordMeter" role="progressbar" aria-label="Najmanje 26 reči za ocenjivanje" aria-valuemin="0" aria-valuemax="26" aria-valuenow="'+Math.min(26,wordCount(st.mail))+'"><div class="mail-word-fill '+(wordCount(st.mail)>=26?'met':'below')+'" id="mailWordFill" style="width:'+Math.min(100,wordCount(st.mail)/26*100)+'%"></div></div></div>'+
  '<div class="ai-mail-controls"><button type="button" id="aiGradeBtn" class="btn primary" style="flex:1">✦ Proveri mejl AI</button><button type="button" id="skipAiBtn" class="btn back">Ostali bodovi</button></div>'+
  '<p id="aiStatus" role="status" class="ai-mail-status">Cloudflare AI proverava 26–50 reči. Prema ÖSD pravilima, mejl ispod 26 reči ne dobija bodove.</p>'+
  '</section>';
@@ -1198,9 +1245,10 @@ function render(){
  document.getElementById('bar').style.width=(st.page/LAST*100)+'%';
 
  const zoomFooter=document.getElementById('fontFooter');
- zoomFooter.hidden=!(st.page===2||st.page===3);
- const fontNow=Math.max(11,Math.min(24,Number(st.fontSize)||14));
- zoomFooter.querySelectorAll('[data-font-adjust]').forEach(b=>{b.disabled=b.dataset.fontAdjust==='-1'?fontNow<=11:fontNow>=24;});
+ zoomFooter.hidden=!(st.page===2||st.page===3||st.page===9);
+ const fontNow=st.page===9?Math.max(14,Math.min(24,Number(st.mailPromptFontSize)||18)):Math.max(11,Math.min(24,Number(st.fontSize)||14));
+ main.style.setProperty('--mail-prompt-size',Math.max(14,Math.min(24,Number(st.mailPromptFontSize)||18))+'px');
+ zoomFooter.querySelectorAll('[data-font-adjust]').forEach(b=>{b.disabled=b.dataset.fontAdjust==='-1'?fontNow<=(st.page===9?14:11):fontNow>=24;});
  prev.disabled=st.page===0;
  next.textContent=st.page===0?'Počni test →':st.page===LAST-1?'Završi i oceni ✓':st.page===LAST?'Na početak ↺':'Nastavi →';
  requestAnimationFrame(fitPage);
@@ -1325,14 +1373,27 @@ document.getElementById('app').addEventListener('click',e=>{
  if(resultTab){st.resultTab=resultTab.dataset.result;save();render();return;}
  const b=e.target.closest('[data-font-adjust]');
  if(b){
-  const n=Math.max(11,Math.min(24,(Number(st.fontSize)||14)+Number(b.dataset.fontAdjust)));
-  st.fontSize=n;save(); main.style.setProperty('--read-size',n+'px');
-  document.querySelectorAll('#fontFooter [data-font-adjust]').forEach(v=>v.disabled=v.dataset.fontAdjust==='-1'?n<=11:n>=24);
+  const mailPage=st.page===9;
+  const low=mailPage?14:11;
+  const n=Math.max(low,Math.min(24,(mailPage?(Number(st.mailPromptFontSize)||18):(Number(st.fontSize)||14))+Number(b.dataset.fontAdjust)));
+  if(mailPage){st.mailPromptFontSize=n;main.style.setProperty('--mail-prompt-size',n+'px')}
+  else{st.fontSize=n;main.style.setProperty('--read-size',n+'px')}
+  save();
+  document.querySelectorAll('#fontFooter [data-font-adjust]').forEach(v=>v.disabled=v.dataset.fontAdjust==='-1'?n<=low:n>=24);
+  return;
  }
 });
 main.addEventListener('input',e=>{
  const t=e.target;
- if(t.id==='emailAnswer'){st.mail=t.value;st.aiEmail=null;st.osdMailRubric=null;document.getElementById('wordCount').textContent=wordCount(st.mail)+' reči';setAiStatus('Tekst je izmenjen. Proverite ga ponovo preko Cloudflare AI.',false)}
+ if(t.id==='emailAnswer'){
+  st.mail=t.value;st.aiEmail=null;st.osdMailRubric=null;
+  const n=wordCount(st.mail);
+  document.getElementById('wordCount').textContent=n+' reči';
+  const meter=document.getElementById('mailWordMeter'),fill=document.getElementById('mailWordFill');
+  if(fill){fill.style.width=Math.min(100,n/26*100)+'%';fill.classList.toggle('met',n>=26);fill.classList.toggle('below',n<26)}
+  if(meter)meter.setAttribute('aria-valuenow',String(Math.min(n,26)));
+  setAiStatus('Tekst je izmenjen. Proverite ga ponovo preko Cloudflare AI.',false);
+ }
  if(t.dataset.w2!==undefined)st.w2[Number(t.dataset.w2)]=t.value;
  save();
 });
