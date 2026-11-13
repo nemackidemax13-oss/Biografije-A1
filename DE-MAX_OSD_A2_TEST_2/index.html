@@ -1159,29 +1159,32 @@ return '<div class="intro-screen"><div class="intro-cover"><div class="intro-eye
 '<div class="summary-total">Ukupno 15 bodova / Prolaz 3 boda</div>'+
 '<p class="small" style="text-align:center">Mejl mora imati najmanje 26 reči da bi bio ocenjen.</p></div>';
 }
-function mailPrompt(){return '<section class="mail-prompt-full"><div class="stage-label">SCHREIBEN · E-Mail</div><h1 class="stage-title">Eine E-Mail an Michael</h1><p class="small mail-prompt-instructions">Pročitajte celu poruku koju šalje Michael.</p>'+
-'<div class="card tinted mail-prompt-card"><div class="between mail-prompt-sender"><b>Von: Michael</b><small class="small">Betreff: Reise</small></div>'+
-'<div class="letter mail-prompt-letter" lang="de"><p>Liebe/Lieber …,</p><p>wie geht es dir? Stell dir vor, ich fahre nächste Woche nach Österreich. Dort werde ich Wien, Salzburg und Innsbruck besuchen. Ich freue mich sehr darauf. Hast du schon einmal eine Reise gemacht? Wohin bist du gefahren? Was gibt es bei dir Neues?</p><p>Wir haben uns so lange nicht mehr gesehen. Nach meiner Reise müssen wir uns unbedingt treffen. Dann zeige ich dir auch meine Fotos.</p><p>Wann hast du Zeit?</p><p>Bis bald und liebe Grüße<br>Michael</p></div></div></section>'}
 
-/* Match the writing questions layout of VEZBAJ-MEJLOVE-A2 (Michael / Reise).
-   Original four exam prompts, German blue; optional Serbian translation in red. */
-const MICHAEL_QUESTIONS=[
-  {de:'Wie geht es dir?',sr:'Kako si?'},
-  {de:'Hast du schon einmal eine Reise gemacht? Wohin bist du gefahren?',sr:'Da li si nekada putovao/la? Gde si išao/la?'},
-  {de:'Was gibt es bei dir Neues?',sr:'Šta ima novo kod tebe?'},
-  {de:'Wann hast du Zeit?',sr:'Kada imaš vremena?'}
+function mailPrompt(){
+ return '<section class="mail-prompt-full"><div class="stage-label">SCHREIBEN · E-Mail</div><h1 class="stage-title">Eine E-Mail an Klara</h1>'+
+ '<p class="small mail-prompt-instructions">Pročitajte celu poruku koju šalje Klara.</p>'+
+ '<div class="card tinted mail-prompt-card"><div class="between mail-prompt-sender"><b>Von: Klara</b><small class="small">Betreff: kurze Reise</small></div>'+
+ '<div class="letter mail-prompt-letter" lang="de"><p>Liebe/Lieber …,</p>'+
+ '<p>was gibt es bei dir Neues? Bei mir in der Arbeit ist gerade ziemlich viel los. Zum Glück habe ich nächsten Monat Urlaub! Ich möchte gerne eine kurze Reise machen, aber ich habe noch keine Idee, wohin. Wenn du Lust hast, können wir ja zusammen wegfahren. Wohin möchtest du gerne fahren? Und was möchtest du dort machen? Von mir aus können wir fünf bis sechs Tage wegfahren, wie lange hast du Zeit?</p>'+
+ '<p>Schreib mir bald!</p><p>Liebe Grüße<br>Klara</p></div></div></section>';
+}
+const KLARA_QUESTIONS=[
+ {de:'Was gibt es bei dir Neues?'},
+ {de:'Wohin möchtest du gerne fahren?'},
+ {de:'Was möchtest du dort machen?'},
+ {de:'Wie lange hast du Zeit?'}
 ];
 function writingQuestions(){
  return '<section class="a2-writing-questions" aria-label="Četiri pitanja">'+
   '<div class="a2-writing-questions-head"><h3>ČETIRI PITANJA</h3></div>'+
-  '<ol>'+MICHAEL_QUESTIONS.map(q=>'<li><span class="de">'+esc(q.de)+'</span></li>').join('')+'</ol></section>';
+  '<ol>'+KLARA_QUESTIONS.map(q=>'<li><span class="de">'+esc(q.de)+'</span></li>').join('')+'</ol></section>';
 }
 function mailEditor(){
  return '<section class="a2-mail-writing-layout">'+
  '<div class="stage-label">SCHREIBEN · E-Mail</div>'+
  writingQuestions()+
  '<div class="card a2-mail-writing-editor"><div class="between a2-writing-editor-bar"><label class="fieldlabel" for="emailAnswer">✎ PIŠI MEJL</label><b class="pill" id="wordCount">'+wordCount(st.mail)+' reči</b></div>'+
- '<textarea class="field editor" id="emailAnswer" placeholder="Lieber Michael,&#10;&#10;vielen Dank für deine E-Mail. ...">'+esc(st.mail)+'</textarea>'+ 
+ '<textarea class="field editor" id="emailAnswer" placeholder="Liebe Klara,&#10;&#10;vielen Dank für deine E-Mail. ...">'+esc(st.mail)+'</textarea>'+ 
 '<div class="mail-word-meter" id="mailWordMeter" role="progressbar" aria-label="Najmanje 26 reči za ocenjivanje" aria-valuemin="0" aria-valuemax="26" aria-valuenow="'+Math.min(26,wordCount(st.mail))+'"><div class="mail-word-fill '+(wordCount(st.mail)>=26?'met':'below')+'" id="mailWordFill" style="width:'+Math.min(100,wordCount(st.mail)/26*100)+'%"></div></div></div>'+
  '<div class="ai-mail-controls"><button type="button" id="aiGradeBtn" class="btn primary" style="flex:1">✦ Proveri mejl</button><button type="button" id="skipAiBtn" class="btn back">Ostali bodovi</button></div>'+
  '<p id="aiStatus" role="status" class="ai-mail-status">Cloudflare AI proverava 26–50 reči. <span id="aiWorkerConnection" class="ai-worker-connection">Proveravam vezu sa Workerom…</span></p>'+
@@ -1196,7 +1199,7 @@ function normalize(s){return String(s||'').trim().toLocaleLowerCase('de').normal
 const EMAIL_AI_API='https://a2mejlovi.nemackidemax13.workers.dev/api/check-a2-email';
 const EMAIL_AI_HEALTH='https://a2mejlovi.nemackidemax13.workers.dev/health';
 const EMAIL_AI_VERSIONS=['a2-de-max-50-words-rubric-v2','a2-de-max-26-min-50-target-v3','a2-de-max-original-first-v4'];
-const EMAIL_INDEX_MICHAEL=1;
+const EMAIL_INDEX_KLARA=2;
 let aiPending=false;
 
 /* ÖSD ZA2: TL+A+K+T+L+F. Previous Worker speaks another rubric: AI maps to a
@@ -1311,7 +1314,7 @@ async function checkEmailAI(thenShowResult){
    method:'POST',mode:'cors',credentials:'omit',cache:'no-store',
    headers:{'Content-Type':'application/json','Accept':'application/json'},
    signal:controller.signal,
-   body:JSON.stringify({mailIndex:EMAIL_INDEX_MICHAEL,answer})
+   body:JSON.stringify({mailIndex:EMAIL_INDEX_KLARA,answer})
   });
   const data=await response.json().catch(()=>({}));
   if(!response.ok)throw Error(String(data.error||('Cloudflare HTTP '+response.status)));
@@ -1420,7 +1423,7 @@ function result(){
     area+='<div class="card"><h3>Cloudflare AI – postojeća rubrika (informativno)</h3>'+
       rubricRows.map(row=>'<div class="result-row"><span>'+esc(row[0])+'</span><strong>'+esc(row[1]??'—')+'/'+row[2]+'</strong></div>').join('')+'</div>'+
       '<div class="card"><h3>Odgovori na četiri pitanja</h3>'+
-      MICHAEL_QUESTIONS.map(q=>q.de)
+      KLARA_QUESTIONS.map(q=>q.de)
        .map((question,i)=>'<div class="ai-question"><strong>'+esc((i+1)+'. '+question)+'</strong><span>'+esc(resp.questionPoints?.[i]??'—')+'/2</span><p class="small">'+esc(resp.questionFeedback?.[i]||'Nema dodatnog komentara.')+'</p></div>').join('')+'</div>';
     if(resp.feedback)area+='<div class="card"><h3>Mišljenje AI profesora</h3><p class="mail-result">'+esc(resp.feedback)+'</p></div>';
     if(Array.isArray(resp.grammarCorrections)&&resp.grammarCorrections.length)area+='<div class="card"><h3>Ispravke grešaka</h3>'+
