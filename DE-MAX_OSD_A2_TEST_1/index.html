@@ -159,10 +159,19 @@ main.results-scroll .card{margin-bottom:10px}
 .ai-question>strong{font-size:11px;display:inline-block;max-width:85%}
 .ai-question>span{float:right;font-weight:900;color:#1e5a88}
 .ai-question p{margin:5px 0 0}
+
+/* V14 home logo provided by student and centered branding */
+header .headrow{position:relative;justify-content:center}
+header .brand{width:100%;justify-content:center;text-align:center}
+header .brand b{font-size:16px;letter-spacing:.3px;line-height:1.2}
+header .brand small{font-size:11px;text-align:center;margin:3px 0 0}
+header .topstat{display:none!important}
+.home-center .home-uploaded-logo{width:min(210px,57vw,33dvh);height:auto;object-fit:contain;display:block;max-width:100%;border-radius:18px;box-shadow:0 8px 22px #152f5830}
+@media(max-height:590px){.home-center .home-uploaded-logo{width:min(145px,35dvh)}}
 </style>
 </head>
 <body>
-<div id="app"><header><div class="headrow"><div class="brand"><div class="logo">DE<br>MAX</div><div><b>DE-MAX TUTIN</b><small>ÖSD A2 • Test 1 • Od 2013. sa Vama</small></div></div><div class="topstat" id="topstat">0/7<small>vežbanje</small></div></div><div class="progress"><div id="bar"></div></div></header><main id="main"></main><footer><button id="prev" class="btn back" type="button">← Nazad</button><div id="fontFooter" class="footer-font-controls" hidden><button type="button" data-font-adjust="-1" class="footer-font-button" aria-label="Smanji veličinu teksta" title="Smanji tekst">−</button><button type="button" data-font-adjust="1" class="footer-font-button" aria-label="Povećaj veličinu teksta" title="Povećaj tekst">+</button></div><button id="next" class="btn primary" type="button">Nastavi →</button></footer></div>
+<div id="app"><header><div class="headrow"><div class="brand"><div><b>DE-MAX TUTIN</b><small>A2 • Test 1 • Od 2013. sa Vama</small></div></div><div class="topstat" id="topstat">0/7<small>vežbanje</small></div></div><div class="progress"><div id="bar"></div></div></header><main id="main"></main><footer><button id="prev" class="btn back" type="button">← Nazad</button><div id="fontFooter" class="footer-font-controls" hidden><button type="button" data-font-adjust="-1" class="footer-font-button" aria-label="Smanji veličinu teksta" title="Smanji tekst">−</button><button type="button" data-font-adjust="1" class="footer-font-button" aria-label="Povećaj veličinu teksta" title="Povećaj tekst">+</button></div><button id="next" class="btn primary" type="button">Nastavi →</button></footer></div>
 <script>
 'use strict';
 const KEY='demax-osd-a2-model-1-20261113';
@@ -202,7 +211,7 @@ function checked(a,i){return a.includes(i)?'checked':''}
 function heading(k){return '<div class="sub">'+esc(k)+'</div>'}
 function intro(k,name,detail){return heading(k)+'<h1>'+name+'</h1><p class="instructions">'+detail+'</p>'}
 function getSelect(i){return '<select aria-label="Überschrift für Text '+(i+1)+'" class="field" data-r1="'+i+'"><option value="">– Überschrift wählen –</option>'+H.map((h,j)=>'<option value="'+h+'" '+(st.r1[i]===h?'selected':'')+'>'+h+' · '+esc(HEAD[j])+'</option>').join('')+'</select>'}
-function cover(){return '<section class="home-center"><h1>A2 TEST</h1><div class="home-brand-logo" role="img" aria-label="DE-MAX logo"><span>DE</span><span>MAX</span></div></section>'}
+function cover(){return '<section class="home-center"><h1>A2 TEST</h1><img class="home-uploaded-logo" src="./assets/demax-logo-user.webp" width="210" height="210" alt="DE-MAX logo" loading="eager"></section>'}
 
 function lesenIntro(){
 return '<div class="intro-screen"><div class="intro-cover"><div class="intro-eyebrow">LESEN · ÖSD A2</div><h1>Razumevanje</h1><p>Pročitajte zadatke i odaberite tačne odgovore.</p><div class="total-points">25 <small>bodova</small></div><div class="min-points">Minimum 5 bodova za prolaz</div></div>'+
@@ -230,11 +239,11 @@ function r2Item(i){const q=QS[i];return '<div class="stage-label">LESEN · Aufga
 '<div class="card"><div class="qtop"><b>'+esc(q[0])+'</b><span class="pill">2 Punkte</span></div><div class="choices">'+['A','B','C'].map((c,j)=>'<label class="choice"><input type="radio" name="r2-'+i+'" data-r2="'+i+'" value="'+c+'" '+(st.r2[i]===c?'checked':'')+'><b>'+c+'</b> '+esc(q[j+1])+'</label>').join('')+'</div></div>'+
 '<p class="small">Za povratak na originalni tekst koristite „Nazad”.</p>';}
 
-function r1(){return intro('Lesen • Aufgabe 1','Die passende Überschrift','Lesen Sie die 10 Überschriften und die 5 Texte. Wählen Sie pro Text die richtige Überschrift. (15 Punkte)')+
+function r1(){return intro('Lesen • Aufgabe 1','Die passende Überschrift','Pročitajte 10 naslova i 5 tekstova. Za svaki tekst izaberite odgovarajući naslov. (15 bodova)')+
 
 '<details class="card" open><summary>10 Überschriften (A–K)</summary><div class="headings" style="margin-top:11px">'+H.map((h,i)=>'<div><b>'+h+'</b> '+esc(HEAD[i])+'</div>').join('')+'</div></details>'+
 TEXTS.map((t,i)=>'<div class="card"><div class="qtop"><b>Text '+(i+1)+'</b><span class="pill">3 Punkte</span></div><p class="passage">'+esc(t)+'</p>'+getSelect(i)+'</div>').join('')}
-function r2(){return intro('Lesen • Aufgabe 2','65 Jahre ohne ernsten Streit','Lesen Sie zuerst den Text und markieren Sie bei jeder Frage A, B oder C. (10 Punkte)')+
+function r2(){return intro('Lesen • Aufgabe 2','65 Jahre ohne ernsten Streit','Prvo pročitajte tekst, a zatim kod svakog pitanja označite tačan odgovor A, B ili C. (10 bodova)')+
 
 '<details class="card tinted" open><summary>Lesetext anzeigen / ausblenden</summary><div style="margin-top:10px">'+STORY.map(x=>'<p class="passage">'+esc(x)+'</p>').join('')+'</div></details>'+
 '<div class="card goldish"><p class="small" style="margin:0">Beispiel: Herr und Frau Böhm sind seit 65 Jahren ein Ehepaar. (C)</p></div>'+
