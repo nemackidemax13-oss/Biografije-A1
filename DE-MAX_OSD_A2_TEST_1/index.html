@@ -261,12 +261,12 @@ function h3(){return '<section class="h3-screen"><div class="stage-label">HÖREN
 '<div class="speaker-stack">'+[0,1,2,3,4].map(i=>speakerCard(i)).join('')+'</div></section>'}
 function schreibenIntro(){
 return '<div class="intro-screen"><div class="intro-cover"><div class="intro-eyebrow">SCHREIBEN · ÖSD A2</div><h1>Pisanje mejla</h1>'+
-'<p>Pročitajte postavku mejla, odgovorite na sva četiri pitanja i napišite oko 50 reči. Mejl mora imati najmanje 25 reči da bi bio ocenjen.</p>'+
+'<p>Pročitajte postavku mejla, odgovorite na sva četiri pitanja i napišite oko 50 reči. Mejl mora imati najmanje 26 reči da bi bio ocenjen.</p>'+
 '<div class="total-points">15 <small>bodova</small></div><div class="min-points">Minimum 3 boda za prolaz</div></div>'+
 '<div class="summary-task"><b>Četiri pitanja iz mejla</b><span class="pill">12 bodova</span></div>'+
 '<div class="summary-task"><b>Pozdrav, završetak, obim</b><span class="pill">3 boda</span></div>'+
 '<div class="summary-total">Ukupno 15 bodova / Prolaz 3 boda</div>'+
-'<p class="small" style="text-align:center">Mejl mora imati najmanje 25 reči da bi bio ocenjen.</p></div>';
+'<p class="small" style="text-align:center">Mejl mora imati najmanje 26 reči da bi bio ocenjen.</p></div>';
 }
 function mailPrompt(){return '<div class="stage-label">SCHREIBEN · E-Mail</div><h1 class="stage-title">Eine E-Mail an Michael</h1><p class="small">Pročitajte poruku koju šalje Michael.</p>'+
 '<div class="card tinted"><div class="between"><b style="font-size:12px">Von: Michael</b><small class="small">Betreff: Reise</small></div>'+
@@ -394,7 +394,7 @@ function result(){
    resultline('Schreiben · E-Mail (Cloudflare AI)',mailDisplay,15)+'</div>'+
    '<div class="card greenish">'+
    resultline('LESEN · ukupno',g.lesen,25)+resultline('HÖREN · ukupno',g.horen,30)+resultline('E-MAIL · ukupno',mailDisplay,15)+
-   '<p class="small">Pragovi: Lesen 5/25 · Hören 6/30 · E-Mail 3/15. E-Mail kraći od 25 reči ne dobija bodove.</p></div>'+
+   '<p class="small">Pragovi: Lesen 5/25 · Hören 6/30 · E-Mail 3/15. E-Mail kraći od 26 reči ne dobija bodove.</p></div>'+
    '<p class="small">Ocena mejla dolazi iz Cloudflare AI servisa. Ovaj Worker koristi DE-MAX rubricu i opseg 26–50 reči, što nije potpuno isto kao zvanični ÖSD kriterijumi.</p>';
  }else if(tab==='lesen'){
    area='<div class="card"><h3>Lesen · Aufgabe 1 · '+g.r1+'/15</h3>'+
