@@ -605,7 +605,7 @@ function validWorkerUrl(value){
  </div>
 </div>
     <p class="sub" id="introIndex">Govorite polako na nemačkom, mikrofon će Vas saslušati.</p>
-    <div class="examiner"><div class="role">PRÜFERIN / PRÜFER</div><div class="de" id="introDe"></div><div class="sr" id="introSr"></div><div class="state" id="introState" hidden></div></div>
+    <div class="examiner"><div class="role">PRÜFERIN / PRÜFER</div><div class="de" id="introDe"></div><div class="sr" id="introSr"></div><div class="state" id="introState" hidden></div><button type="button" class="btn soft" data-act="repeat" style="margin:8px auto 0;min-height:30px;padding:5px 10px;font-size:11px">🔊 Poslušaj pitanje</button></div>
     <div class="answerbox"><div class="dm-answer-heading"><span class="fieldlabel">PREPOZNATI GOVOR · NEMAČKI (UŽIVO)</span><button type="button" class="dm-relisten" data-act="listen">🎙 Govori</button></div><textarea id="introText" lang="de" placeholder="Ovde se odmah prikazuje ono što izgovarate na nemačkom."></textarea></div><div id="introReview" class="dm-review" hidden aria-live="polite"><div class="dm-review-label">REKLI STE · NEMAČKI</div><div class="dm-review-de" id="introReviewDe"></div><div class="dm-review-label dm-review-translation-label">PREVOD · SRPSKI</div><div class="dm-review-sr" id="introReviewSr"></div></div>
     <div class="status" id="introStatus" aria-live="polite"></div>
     
@@ -641,7 +641,7 @@ function validWorkerUrl(value){
 </div><h2 id="speakHeading">Govorite o temi</h2>
     <p class="sub" id="speakSub"></p>
     <div class="rowTitle"><div class="circleNo" id="topicNo">1</div><div><div class="tiny" id="qType">TEMA · 2–3 REČENICE</div><div class="titleTopic" id="topicName"></div></div></div>
-    <div class="examiner"><div class="role">ISPITIVAČ · PRÜFERIN / PRÜFER</div><div class="de" id="speakDe"></div><div class="sr" id="speakSr"></div><div class="state" id="speakState"></div></div>
+    <div class="examiner"><div class="role">ISPITIVAČ · PRÜFERIN / PRÜFER</div><div class="de" id="speakDe"></div><div class="sr" id="speakSr"></div><div class="state" id="speakState"></div><button type="button" class="btn soft" data-act="repeat" style="margin:8px auto 0;min-height:30px;padding:5px 10px;font-size:11px">🔊 Poslušaj pitanje</button></div>
     <div class="answerbox"><div class="dm-answer-heading"><span class="fieldlabel">PREPOZNATI GOVOR · NEMAČKI (UŽIVO)</span><button type="button" class="dm-relisten" data-act="listen">🎙 Govori</button></div><textarea id="speakText" lang="de" placeholder="Ovde se odmah prikazuje ono što izgovarate na nemačkom."></textarea></div><div id="speakReview" class="dm-review" hidden aria-live="polite"><div class="dm-review-label">REKLI STE · NEMAČKI</div><div class="dm-review-de" id="speakReviewDe"></div><div class="dm-review-label dm-review-translation-label">PREVOD · SRPSKI</div><div class="dm-review-sr" id="speakReviewSr"></div></div>
     <div class="status" id="speakStatus" aria-live="polite"></div>
     
@@ -1473,19 +1473,9 @@ function speakPrompt(autoMic){
    listenAfter(90);
   }
  };
- // Kod A1 se glas pusta tek nakon inicijalne pripreme (async).
- // A2 ceka samo ako je kandidat upravo pokrenuo dijalog za dozvolu mikrofona.
- if(typeof DM_MIC!=="undefined"&&DM_MIC.pending){
-  statusSet("🎙 Proveravam dozvolu mikrofona, zatim izgovaram pitanje...");
-  DM_MIC.pending.then(()=>{
-   if(token!==app.sayToken||respondKey()!==key)return;
-   setTimeout(sayNow,50);
-  }).catch(()=>{
-   if(token===app.sayToken&&respondKey()===key)setTimeout(sayNow,120);
-  });
- }else{
-  sayNow();
- }
+ // V47: pitanja se izgovaraju odmah posle korisnickog klika,
+ // nezavisno od eventualno blokiranog Replit mikrofona.
+ sayNow();
 }
 function buildFeedback(el,result,prompt,section){
  el.replaceChildren();
@@ -1786,7 +1776,7 @@ $("restart").onclick=()=>{app.evaluations={};app.inFlight={};app.grammarReviews=
  * iOS/Android fallback: MediaRecorder + DE-MAX transcribe Worker.
  * Ne prebacuje učenika na sledeće pitanje samostalno.
  */
-const DM_DIRECT_MIC_URL=location.origin+location.pathname+"?v=20261113-v46-v30-mikrofon";
+const DM_DIRECT_MIC_URL=location.origin+location.pathname+"?v=20261113-v47-auto-ton";
 const DM_EMBEDDED=window.self!==window.top;
 const DM_MIC={
  stream:null,pending:null,allowed:false,permitGeneration:0,
@@ -2292,6 +2282,10 @@ function dmSpeechRecognize(){
    },200);
    return;
   }
+  if(!dmTrackLive()&&(reason==="not-allowed"||reason==="service-not-allowed")){
+   dmMicStatus("🎙 Mikrofon nije dozvoljen u ovom prikazu. Izgovor pitanja i unos teksta su dostupni.",true);
+   return;
+  }
   if(DM_MIC.wantListening&&(["network","service-not-allowed","language-not-supported","audio-capture"].includes(reason)||
    reason==="not-allowed"||reason==="silent"||
    (dmMobileRecognizer()&&!nativeResult)||(isApple&&!result))){
@@ -2474,7 +2468,10 @@ async function startMic(fromTap=false){
  const permitted=dmTrackLive() ? true : await dmPermit(fromTap);
  if(serial!==DM_MIC.serial||respondKey()!==key)return;
  if(!permitted){
-  dmMicStatus("🎙 Dozvolite mikrofon u Replit prikazu. Ako je blokiran, otvorite ovu A2 vežbu direktno u pregledaču.",true);
+  // Neki mobilni WebView pregledaci ipak podrzavaju nativni Web Speech.
+  // Pokusaj bez neosnovane tvrdnje da mikrofon radi.
+  if(SR&&dmSpeechRecognize())return;
+  dmMicStatus("🎙 Mikrofon nije dostupan u Replit prikazu. Pitanja imaju zvuk, a odgovor se moze upisati.",true);
   return;
  }
  // Jedan audio snimak tokom celog odgovora bez prekidanja mikrofona.
@@ -2518,7 +2515,7 @@ async function handleButton(action){
   if(DM_MIC.recognition||DM_MIC.media||DM_MIC.mediaSession){dmMicStatus("🎙 Mikrofon već sluša. Posle potpunog prestanka govora odbrojavam 5 sekundi.");return}
   startMic(true);return
  }
- if(action==="repeat"){speakPrompt(true);return}
+ if(action==="repeat"){speakPrompt(false);return}
  if(action==="stop"){
   const key=respondKey();
   await dmFinishAudio();
@@ -2543,7 +2540,19 @@ async function handleButton(action){
 // iPhone/Android: tokom korisničkog klika otvori mikrofon, a posle pitanja slušaj automatski.
 for(const id of ["begin","introBack","chooseBack","chooseNext","speakNext","speakBack"]){
  $(id).addEventListener("click",()=>{
-  dmWarmAudioContext();
+  const audio=dmWarmAudioContext();
+  // Kratak ton od 75ms na prvom dodiru; otkljucava audio u iOS/Android.
+  // Nikada se ne pokrece na ucitavanje stranice bez korisnickog gesta.
+  if(id==="begin"&&audio&&audio.state!=="closed"){
+   try{
+    const osc=audio.createOscillator(),gain=audio.createGain();
+    osc.type="sine";osc.frequency.value=660;gain.gain.value=0.018;
+    osc.connect(gain);gain.connect(audio.destination);
+    osc.start();osc.stop(audio.currentTime+0.075);
+    osc.onended=()=>{try{osc.disconnect();gain.disconnect()}catch(e){}};
+   }catch(e){}
+  }
+  try{window.speechSynthesis?.resume()}catch(e){}
   if(id==="introBack"&&app.intro===0)return;
   if(id==="speakNext"&&app.question===1&&app.topic===app.chosen.length-1)return;
   if(!dmTrackLive()&&!DM_MIC.pending)dmPermit(true);
@@ -2841,5 +2850,5 @@ document.addEventListener("visibilitychange",()=>{
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" async></script>
-<script src="./v40.js?v=20261113-v46-v30-mikrofon"></script>
+<script src="./v40.js?v=20261113-v47-auto-ton"></script>
 </body></html>
