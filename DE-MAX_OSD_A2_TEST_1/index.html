@@ -252,7 +252,7 @@ function h3(){return '<section class="h3-screen"><div class="stage-label">HÖREN
 '<div class="speaker-stack">'+[0,1,2,3,4].map(i=>speakerCard(i)).join('')+'</div></section>'}
 function schreibenIntro(){
 return '<div class="intro-screen"><div class="intro-cover"><div class="intro-eyebrow">SCHREIBEN · ÖSD A2</div><h1>Pisanje mejla</h1>'+
-'<p>Pročitajte postavku mejla, odgovorite na sva četiri pitanja, 50 reči pišete, a minimum da bi bio ocenjen mejl potrebno je 25 reči.</p>'+
+'<p>Pročitajte postavku mejla, odgovorite na sva četiri pitanja i napišite oko 50 reči. Mejl mora imati najmanje 25 reči da bi bio ocenjen.</p>'+
 '<div class="total-points">15 <small>bodova</small></div><div class="min-points">Minimum 3 boda za prolaz</div></div>'+
 '<div class="summary-task"><b>Četiri pitanja iz mejla</b><span class="pill">12 bodova</span></div>'+
 '<div class="summary-task"><b>Pozdrav, završetak, obim</b><span class="pill">3 boda</span></div>'+
@@ -278,7 +278,7 @@ function normalize(s){return String(s||'').trim().toLocaleLowerCase('de').normal
 
 function emailScore(){
  const mail=String(st.mail||''),count=wordCount(mail),valid=count>=25;
- const normalized=normalize(mail);
+ const normalized=mail.toLocaleLowerCase('de').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/ß/g,'ss');
  const has=(re)=>re.test(normalized);
  const coverage=[
   {label:'1. Hast du schon einmal eine Reise gemacht?',found:has(/\b(reise|urlaub|gereist|gefahren|geflogen|verreist|besucht|noch nie)\b/)},
