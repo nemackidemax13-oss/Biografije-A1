@@ -383,10 +383,87 @@ main.hearing2-scroll.h2-keyboard .note-row .field{max-height:30px!important}
 #app:has(main.hearing2-scroll.h2-keyboard) footer .btn{height:28px!important;min-height:28px!important;padding:3px 8px!important}
 @media(max-width:365px){main.hearing2-scroll .note-row .fieldlabel{font-size:9.5px!important}}
 
+
+/* V23 — no top navigation banner on ANY page: keep only the thin progress meter */
+header.only-progress{flex:0 0 3px!important;height:3px!important;min-height:3px!important;
+ margin:0!important;padding:0!important;border:0!important;background:#e0e8f2!important;
+ box-shadow:none!important;display:block!important;overflow:hidden!important}
+header.only-progress .progress{margin:0!important;height:3px!important;border-radius:0!important;
+ background:#d6e2ee!important;width:100%!important;overflow:hidden!important}
+header.only-progress .progress #bar{height:3px!important;display:block!important;
+ background:linear-gradient(90deg,#ffda45,#ffd24d)!important}
+#app.home-mode header.only-progress{display:block!important}
+/* Mini players for listening 1 and 2, in normal document flow — NEVER sticky or floating */
+main.hearing-one .exam-audio,
+main.hearing2-scroll .exam-audio{
+ position:static!important;top:auto!important;z-index:auto!important;
+ display:flex!important;flex-direction:column!important;gap:2px!important;
+ padding:3px 7px!important;margin:0 0 5px!important;min-height:12px!important;
+ background:#1d3968!important;border-radius:6px!important;box-shadow:none!important;
+}
+main.hearing-one .exam-audio .between,
+main.hearing2-scroll .exam-audio .between{display:none!important}
+main.hearing-one .exam-audio .audio-status,
+main.hearing2-scroll .exam-audio .audio-status{
+ font-size:9px!important;line-height:1.1!important;white-space:nowrap;
+ overflow:hidden;text-overflow:ellipsis;margin:0!important;
+ color:#fff2cd!important
+}
+main.hearing-one .exam-audio .audio-progress,
+main.hearing2-scroll .exam-audio .audio-progress{height:3px!important;flex:0 0 3px!important;margin:0!important}
+main.hearing-one .exam-audio .audio-start,
+main.hearing2-scroll .exam-audio .audio-start{
+ margin:2px 0 0!important;min-height:26px!important;padding:4px 6px!important;
+ font-size:10px!important;border-radius:5px!important
+}
+/* Hören 2 maintains five visible answer rows, no audio overlap on navigation or focusing. */
+main.hearing2-scroll{scroll-padding-top:0!important}
+main.hearing2-scroll .hearing2-card{z-index:0!important;position:relative!important}
+main.hearing2-scroll.h2-keyboard .exam-audio{position:static!important;top:auto!important;z-index:auto!important}
+main.hearing2-scroll.h2-keyboard .note-row .field{scroll-margin-top:3px!important}
+@media(max-height:340px){
+ main.hearing2-scroll.h2-keyboard{overflow-y:auto!important;touch-action:pan-y!important}
+ main.hearing2-scroll.h2-keyboard #pageContent{min-height:205px!important;height:auto!important;max-height:none!important;overflow:visible!important}
+ main.hearing2-scroll.h2-keyboard .hearing2-card{min-height:172px!important;overflow:visible!important}
+ main.hearing2-scroll.h2-keyboard .note-grid{min-height:147px!important}
+}
+/* Writing layout: with keyboard open, editor stays directly above keyboard, visible at all times. */
+main.mail-writing-active.mail-keyboard{overflow:hidden!important;touch-action:manipulation!important;padding:4px 8px!important}
+main.mail-writing-active.mail-keyboard #pageContent{height:100%!important;min-height:0!important;overflow:hidden!important}
+main.mail-writing-active.mail-keyboard .a2-mail-writing-layout{height:100%!important;min-height:0!important;gap:3px!important}
+main.mail-writing-active.mail-keyboard .a2-mail-writing-layout>.stage-label{display:none!important}
+main.mail-writing-active.mail-keyboard .a2-writing-questions{
+ max-height:23%!important;min-height:0!important;overflow-y:auto!important;
+ padding:3px 7px!important;border-radius:6px!important;flex:0 1 auto!important
+}
+main.mail-writing-active.mail-keyboard .a2-writing-questions-head{margin:0 0 3px!important}
+main.mail-writing-active.mail-keyboard .a2-writing-questions ol{gap:2px!important}
+main.mail-writing-active.mail-keyboard .a2-writing-questions li{font-size:10px!important;line-height:1.12!important}
+main.mail-writing-active.mail-keyboard .a2-writing-questions li>.sr{font-size:9px!important}
+main.mail-writing-active.mail-keyboard .a2-mail-writing-editor{
+ flex:1 1 0!important;min-height:0!important;height:0!important;
+ margin:0!important;padding:5px!important;overflow:hidden!important;
+}
+main.mail-writing-active.mail-keyboard .a2-writing-editor-bar{margin:0!important}
+main.mail-writing-active.mail-keyboard .a2-mail-writing-editor #emailAnswer{
+ flex:1 1 0!important;min-height:36px!important;height:auto!important;
+ max-height:100%!important;resize:none!important;
+ overscroll-behavior:contain!important;-webkit-overflow-scrolling:touch
+}
+main.mail-writing-active.mail-keyboard .ai-mail-controls,
+main.mail-writing-active.mail-keyboard .ai-mail-status{display:none!important}
+@media(max-height:380px){
+ main.mail-writing-active.mail-keyboard .a2-writing-questions{max-height:18%!important}
+ main.mail-writing-active.mail-keyboard .a2-writing-questions-head h3{font-size:10px!important}
+ main.mail-writing-active.mail-keyboard #a2QuestionTranslate{font-size:8px!important;padding:2px 4px!important;min-height:23px!important}
+}
+/* A dynamic visual viewport height allows standalone mobile page to shrink with keyboard. */
+@media(max-width:649px){#app{height:var(--live-app-height,100dvh)!important}}
+
 </style>
 </head>
 <body>
-<div id="app"><header><div class="headrow"><div class="brand"><div><b>DE-MAX TUTIN</b><small>A2 • Test 1 • Sa Vama od 2013</small></div></div><div class="topstat" id="topstat">0/7<small>vežbanje</small></div></div><div class="progress"><div id="bar"></div></div></header><main id="main"></main><footer><button id="prev" class="btn back" type="button">← Nazad</button><div id="fontFooter" class="footer-font-controls" hidden><button type="button" data-font-adjust="-1" class="footer-font-button" aria-label="Smanji veličinu teksta" title="Smanji tekst">−</button><button type="button" data-font-adjust="1" class="footer-font-button" aria-label="Povećaj veličinu teksta" title="Povećaj tekst">+</button></div><button id="next" class="btn primary" type="button">Nastavi →</button></footer></div>
+<div id="app"><header class="only-progress" aria-label="Napredak testa"><div class="progress"><div id="bar"></div></div></header><main id="main"></main><footer><button id="prev" class="btn back" type="button">← Nazad</button><div id="fontFooter" class="footer-font-controls" hidden><button type="button" data-font-adjust="-1" class="footer-font-button" aria-label="Smanji veličinu teksta" title="Smanji tekst">−</button><button type="button" data-font-adjust="1" class="footer-font-button" aria-label="Povećaj veličinu teksta" title="Povećaj tekst">+</button></div><button id="next" class="btn primary" type="button">Nastavi →</button></footer></div>
 <script>
 'use strict';
 const KEY='demax-osd-a2-model-1-20261113';
@@ -855,15 +932,17 @@ function render(){
  prev.hidden=st.page===0;main.style.setProperty('--read-size',Math.max(11,Math.min(24,Number(st.fontSize)||14))+'px');
  main.classList.toggle('reading-scroll',st.page===2||st.page===3);
  main.classList.toggle('lesen-intro-active',st.page===1);
+ main.classList.toggle('hearing-one',st.page===5);
  main.classList.toggle('hearing2-scroll',st.page===6);
  main.classList.toggle('h2-keyboard',st.page===6&&document.activeElement?.matches?.('[data-w2]'));
  main.classList.toggle('hearing-three',st.page===7);
  main.classList.toggle('results-scroll',st.page===LAST);
  main.classList.toggle('mail-writing-active',st.page===LAST-1);
+ main.classList.remove('mail-keyboard');
  main.innerHTML='<div id="pageContent">'+PAGES[st.page]()+'</div>';
  main.scrollTop=0;
  document.getElementById('bar').style.width=(st.page/LAST*100)+'%';
- document.getElementById('topstat').innerHTML=st.page+'/'+LAST+'<small>'+(st.page===LAST?'Rezultati':'ÖSD A2')+'</small>';
+
  const zoomFooter=document.getElementById('fontFooter');
  zoomFooter.hidden=!(st.page===2||st.page===3);
  const fontNow=Math.max(11,Math.min(24,Number(st.fontSize)||14));
@@ -932,9 +1011,40 @@ main.addEventListener('focusout',e=>{
   updateH2Keyboard();
  });
 });
+
 window.visualViewport?.addEventListener('resize',()=>{
  if(st.page===6)requestAnimationFrame(updateH2Keyboard);
+ if(st.page===LAST-1)requestAnimationFrame(updateMailKeyboard);
 },{passive:true});
+/* Track available height without restarting audio or rendering the input. */
+function syncMobileViewportHeight(){
+ const vv=window.visualViewport;
+ const available=vv&&Number.isFinite(vv.height)?vv.height:window.innerHeight;
+ if(available>100)document.documentElement.style.setProperty('--live-app-height',Math.floor(available)+'px');
+}
+function updateMailKeyboard(){
+ const mailFocused=st.page===LAST-1&&document.activeElement?.id==='emailAnswer';
+ main.classList.toggle('mail-keyboard',Boolean(mailFocused));
+}
+main.addEventListener('focusin',e=>{
+ if(st.page===LAST-1&&e.target.id==='emailAnswer'){
+  updateMailKeyboard();
+  requestAnimationFrame(syncMobileViewportHeight);
+ }
+});
+main.addEventListener('focusout',e=>{
+ if(st.page===LAST-1&&e.target.id==='emailAnswer'){
+  queueMicrotask(()=>{
+   updateMailKeyboard();
+   requestAnimationFrame(syncMobileViewportHeight);
+  });
+ }
+});
+window.addEventListener('resize',syncMobileViewportHeight,{passive:true});
+window.visualViewport?.addEventListener('resize',syncMobileViewportHeight,{passive:true});
+window.visualViewport?.addEventListener('scroll',syncMobileViewportHeight,{passive:true});
+syncMobileViewportHeight();
+
 
 document.getElementById('app').addEventListener('click',e=>{
  const translate=e.target.closest('#a2QuestionTranslate');
