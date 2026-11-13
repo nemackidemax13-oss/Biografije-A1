@@ -295,6 +295,94 @@ footer .footer-font-controls{gap:3px}
 footer .footer-font-button{height:35px;width:30px;flex:0 0 30px;border-radius:8px;font-size:20px}
 @media(max-width:360px){footer{gap:3px!important;padding-left:5px!important;padding-right:5px!important}
  footer .btn{padding:5px 6px;font-size:10.5px}footer .footer-font-button{width:28px;flex-basis:28px}}
+
+/* V22: yellow scoring, condensed app header, fixed all-fields Hören 2 mobile keyboard layout */
+header{padding:3px 9px 3px!important;min-height:0!important;box-shadow:none}
+header .headrow{min-height:20px;gap:2px}
+header .brand b{font-size:12px!important;line-height:1.12;letter-spacing:.15px}
+header .brand small{font-size:9px!important;line-height:1.1;margin-top:1px!important}
+header .progress{margin-top:3px;height:2px}
+header .progress div{background:#ffd24b}
+@media(max-height:600px){header{padding:2px 8px!important}header .brand b{font-size:11px!important}header .brand small{font-size:8px!important}}
+/* High-contrast yellow points and point chips across all test pages. */
+.pill,.summary-task .pill,.qtop .pill,.count,.tile .pill{
+ background:#ffdc58!important;color:#403002!important;border:1px solid #efc34c!important;
+ box-shadow:none!important;font-weight:900
+}
+.stage-label{color:#b47e00!important}
+.total-points,.intro-cover .total-points{color:#ffdf65!important}
+.summary-total{color:#724e00;background:#fff1b9}
+.score{color:#b17e00}
+.score small{color:#8c670e}
+.result-details .result-row strong,.result-details .result-row .r,.results-scroll .result-row .r{color:#a97900!important}
+.qtop b,.small,.instructions{overflow-wrap:break-word}
+/* Hören 2: all five answer rows remain in view, no scrolling or sticky audio overlay. */
+main.hearing2-scroll{overflow:hidden!important;touch-action:manipulation!important;padding:5px 8px 5px!important;overscroll-behavior:none!important}
+main.hearing2-scroll #pageContent{
+ transform:none!important;height:100%!important;max-height:100%!important;
+ display:flex!important;flex-direction:column!important;min-height:0!important;overflow:hidden!important;
+}
+main.hearing2-scroll .stage-label{flex-shrink:0;font-size:9px;line-height:1.15;margin:0 0 2px}
+main.hearing2-scroll .stage-title{flex-shrink:0;font-size:17px;line-height:1.1;margin:0 0 3px}
+main.hearing2-scroll .h2-instructions{flex-shrink:0;font-size:10px;line-height:1.1;margin:0 0 4px!important}
+main.hearing2-scroll .exam-audio{
+ flex-shrink:0;position:relative!important;top:auto!important;z-index:0!important;
+ margin:0 0 5px!important;padding:5px 8px!important;border-radius:8px!important;box-shadow:none!important;
+}
+main.hearing2-scroll .exam-audio .between{font-size:10px;line-height:1;gap:4px}
+main.hearing2-scroll .exam-audio .between b{font-size:10px!important}
+main.hearing2-scroll .exam-audio .audio-status{font-size:9px;line-height:1.1;margin:2px 0!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+main.hearing2-scroll .exam-audio .audio-progress{height:3px}
+main.hearing2-scroll .exam-audio .audio-start{margin-top:3px;padding:5px 7px;font-size:10px;min-height:25px}
+main.hearing2-scroll .hearing2-card{
+ flex:1 1 0;min-height:0;max-height:100%;display:flex;flex-direction:column;
+ overflow:hidden;margin:0!important;padding:5px!important;box-shadow:none;border-radius:9px
+}
+main.hearing2-scroll .hearing2-card .qtop{flex:0 0 auto;margin-bottom:3px}
+main.hearing2-scroll .hearing2-card .qtop b{font-size:10px}
+main.hearing2-scroll .hearing2-card .qtop .pill{font-size:9px;padding:2px 7px}
+main.hearing2-scroll .note-grid{
+ flex:1 1 auto;min-height:0;overflow:hidden;display:grid!important;
+ grid-template-columns:minmax(0,1fr)!important;grid-template-rows:repeat(5,minmax(0,1fr));
+ gap:3px!important
+}
+main.hearing2-scroll .note-row{
+ display:grid!important;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr)!important;gap:5px!important;
+ align-items:center;min-height:0!important;height:100%;margin:0!important;padding:2px 5px!important;border-radius:7px
+}
+main.hearing2-scroll .note-row .fieldlabel{
+ min-width:0;font-size:10px!important;line-height:1.08!important;margin:0!important;overflow-wrap:anywhere
+}
+main.hearing2-scroll .note-row .field{
+ height:clamp(23px,100%,34px)!important;min-height:0!important;min-width:0!important;
+ max-height:34px!important;width:100%!important;padding:3px 6px!important;line-height:1.1!important;
+ font-size:16px!important;border-radius:6px!important
+}
+/* Focus on mobile: compact the player and remove secondary copy so the notes stay visible
+   above the virtual keyboard. Audio continues without replacing/restarting its element. */
+main.hearing2-scroll.h2-keyboard .stage-label,
+main.hearing2-scroll.h2-keyboard .stage-title,
+main.hearing2-scroll.h2-keyboard .h2-instructions,
+main.hearing2-scroll.h2-keyboard .hearing2-card .qtop{display:none!important}
+main.hearing2-scroll.h2-keyboard .exam-audio{
+ padding:3px 7px!important;min-height:0!important;margin:0 0 3px!important;
+ border-radius:6px!important;position:relative!important
+}
+main.hearing2-scroll.h2-keyboard .exam-audio .between{display:none!important}
+main.hearing2-scroll.h2-keyboard .exam-audio .audio-status{font-size:9px!important;margin:0 0 2px!important}
+main.hearing2-scroll.h2-keyboard .exam-audio .audio-progress{height:2px}
+main.hearing2-scroll.h2-keyboard .hearing2-card{padding:4px!important}
+main.hearing2-scroll.h2-keyboard .note-grid{gap:2px!important}
+main.hearing2-scroll.h2-keyboard .note-row{padding:1px 4px!important}
+main.hearing2-scroll.h2-keyboard .note-row .field{max-height:30px!important}
+#app:has(main.hearing2-scroll.h2-keyboard) header{padding:1px 8px!important}
+#app:has(main.hearing2-scroll.h2-keyboard) header .brand b{font-size:10px!important}
+#app:has(main.hearing2-scroll.h2-keyboard) header .brand small{display:none!important}
+#app:has(main.hearing2-scroll.h2-keyboard) header .progress{display:none!important}
+#app:has(main.hearing2-scroll.h2-keyboard) footer{padding:2px 6px 3px!important}
+#app:has(main.hearing2-scroll.h2-keyboard) footer .btn{height:28px!important;min-height:28px!important;padding:3px 8px!important}
+@media(max-width:365px){main.hearing2-scroll .note-row .fieldlabel{font-size:9.5px!important}}
+
 </style>
 </head>
 <body>
@@ -388,7 +476,7 @@ function h1(){return '<div class="stage-label">HÖREN · Aufgabe 1 · 10 bodova<
 '<p class="small" style="margin:0 0 7px">Slušate dva teksta istog sadržaja. Označite četiri odgovora.</p>'+player(1)+
 '<div class="card"><div class="qtop"><b>Wählen Sie vier Antworten</b><span class="pill">10 Punkte</span></div><div class="twocol">'+WEATHER.map((w,i)=>'<label class="check"><input type="checkbox" data-w1="'+i+'" '+checked(st.w1,i)+'>'+esc(w)+'</label>').join('')+'</div><p class="small" id="weatherCount" style="margin:5px 0 0">'+st.w1.length+' / 4 izabrano</p></div>'}
 function h2(){const lab=['Letzter Kurstag','Zum Essen mitnehmen','Für Getränke (Euro)','Anrufen ab (Uhr)','Telefonnummer'];return '<div class="stage-label">HÖREN · Aufgabe 2 · 10 bodova</div><h1 class="stage-title">Notizen – Abschlussfeier</h1>'+
-'<p class="small" style="margin:0 0 7px">Slušate poruku dva puta. Dopunite pet beleški.</p>'+player(2)+
+'<p class="small h2-instructions" style="margin:0 0 7px">Slušate poruku dva puta. Dopunite pet beleški.</p>'+player(2)+
 '<div class="card hearing2-card"><div class="qtop"><b>✎ Notizblatt</b><span class="pill">10 Punkte</span></div><div class="note-grid">'+lab.map((l,i)=>'<div class="note-row"><label class="fieldlabel" for="n'+i+'">'+(i+1)+'. '+esc(l)+'</label><input id="n'+i+'" data-w2="'+i+'" class="field" type="text" inputmode="'+(i>=2?'numeric':'text')+'" autocomplete="off" placeholder="'+(['Wochentag','Essen','Betrag','Stunde','Nummer'][i])+'" value="'+esc(st.w2[i])+'"></div>').join('')+'</div></div>'}
 function speakerCard(i){return '<div class="card"><div class="qtop"><b>'+(i+1)+'. '+(i%2===0?'Sprecherin':'Sprecher')+'</b><span class="pill">2 Punkte</span></div>'+
 '<p class="small">Koje sportove osoba navodi? Moguće je više odgovora.</p>'+
@@ -768,6 +856,7 @@ function render(){
  main.classList.toggle('reading-scroll',st.page===2||st.page===3);
  main.classList.toggle('lesen-intro-active',st.page===1);
  main.classList.toggle('hearing2-scroll',st.page===6);
+ main.classList.toggle('h2-keyboard',st.page===6&&document.activeElement?.matches?.('[data-w2]'));
  main.classList.toggle('hearing-three',st.page===7);
  main.classList.toggle('results-scroll',st.page===LAST);
  main.classList.toggle('mail-writing-active',st.page===LAST-1);
@@ -817,6 +906,35 @@ function openTitlePicker(i){
  document.addEventListener('keydown',onKeys);
  wrap.querySelector('.a2-picker-option.chosen,.a2-picker-option')?.focus({preventScroll:true});
 }
+
+
+/* Hören 2 keyboard handling: do not rerender the player or move it above inputs.
+   The parent iframe resizes with visualViewport, so use the current actual frame height. */
+let h2Focused=null;
+function updateH2Keyboard(){
+ const inH2=st.page===6;
+ const focused=inH2&&h2Focused?.isConnected&&document.activeElement===h2Focused;
+ const keyboardLikely=focused;
+ const container=main;
+ container.classList.toggle('h2-keyboard',keyboardLikely);
+ document.getElementById('app').classList.toggle('h2-keyboard-mode',keyboardLikely);
+}
+main.addEventListener('focusin',e=>{
+ if(st.page!==6||!e.target.matches?.('[data-w2]'))return;
+ h2Focused=e.target;
+ updateH2Keyboard();
+});
+main.addEventListener('focusout',e=>{
+ if(st.page!==6||!e.target.matches?.('[data-w2]'))return;
+ queueMicrotask(()=>{
+  if(st.page!==6)return;
+  h2Focused=main.querySelector('[data-w2]:focus')||null;
+  updateH2Keyboard();
+ });
+});
+window.visualViewport?.addEventListener('resize',()=>{
+ if(st.page===6)requestAnimationFrame(updateH2Keyboard);
+},{passive:true});
 
 document.getElementById('app').addEventListener('click',e=>{
  const translate=e.target.closest('#a2QuestionTranslate');
