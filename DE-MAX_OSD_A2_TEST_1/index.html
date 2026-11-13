@@ -121,7 +121,7 @@ function checked(a,i){return a.includes(i)?'checked':''}
 function heading(k){return '<div class="sub">'+esc(k)+'</div>'}
 function intro(k,name,detail){return heading(k)+'<h1>'+name+'</h1><p class="instructions">'+detail+'</p>'}
 function getSelect(i){return '<select aria-label="Überschrift für Text '+(i+1)+'" class="field" data-r1="'+i+'"><option value="">– Überschrift wählen –</option>'+H.map((h,j)=>'<option value="'+h+'" '+(st.r1[i]===h?'selected':'')+'>'+h+' · '+esc(HEAD[j])+'</option>').join('')+'</select>'}
-function cover(){return '<div class="hero"><div class="round">A2</div><div style="letter-spacing:2px;font-weight:900;font-size:11px;color:#f6d18b">ÖSD ZERTIFIKAT A2</div><h1>TEST 1</h1><p>Kompletna interaktivna pisana proba prema dostavljenom modelu<br>Lesen · Hören · Schreiben</p></div><div class="tiles"><div class="tile"><b>25</b><small>Lesen</small></div><div class="tile"><b>30</b><small>Hören</small></div><div class="tile"><b>~50</b><small>Wörter</small></div></div><div class="card" style="margin-top:12px"><label class="fieldlabel" for="student">Ime i prezime učenika (nije obavezno)</label><input id="student" class="field" placeholder="Unesi ime i prezime" value="'+esc(st.name)+'"></div><p class="small" style="text-align:center">Nezvanična aplikacija za vežbanje. DE-MAX Tutin.</p>'}
+function cover(){return '<div class="hero"><div class="round">A2</div><div style="letter-spacing:2px;font-weight:900;font-size:11px;color:#f6d18b">ÖSD ZERTIFIKAT A2</div><h1>TEST 1</h1><p>Kompletna interaktivna pisana proba prema dostavljenom modelu<br>Lesen · Hören · Schreiben</p></div><div class="tiles"><div class="tile"><b>25</b><small>Lesen</small></div><div class="tile"><b>30</b><small>Hören</small></div><div class="tile"><b>✉</b><small>E-Mail</small></div></div><p class="small" style="text-align:center">Nezvanična aplikacija za vežbanje. DE-MAX Tutin.</p>'}
 
 function lesenIntro(){
 return '<div class="intro-screen"><div class="intro-cover"><div class="intro-eyebrow">LESEN · ÖSD A2</div><h1>Razumevanje</h1><p>Pročitajte zadatke i odaberite tačne odgovore.</p><div class="total-points">25 <small>bodova</small></div><div class="min-points">Minimum 5 bodova za prolaz</div></div>'+
@@ -182,7 +182,7 @@ function mailEditor(){return '<div class="stage-label">SCHREIBEN · E-Mail</div>
 '<div class="card mail-questions" aria-label="Pitanja za pisanje mejla"><b class="fieldlabel">Fragen – odgovori na sledeća pitanja:</b>'+
 '<p>1. Hast du schon einmal eine Reise gemacht?</p>'+
 '<p>2. Wohin bist du gefahren?</p>'+
-'<p>3. Was gibt es bei dir Neues?</p></div>'+
+'<p>3. Was gibt es bei dir Neues?</p><p>4. Wann hast du Zeit?</p></div>'+
 '<div class="card"><label class="fieldlabel" for="emailAnswer">Deine E-Mail an Michael</label><textarea class="field editor" id="emailAnswer" style="height:min(33dvh,255px);min-height:145px" placeholder="Lieber Michael,&#10;&#10;vielen Dank für deine E-Mail. ...">'+esc(st.mail)+'</textarea><div class="between" style="margin-top:7px"><small class="small">Oko 50 reči.</small><b class="pill" id="wordCount">'+wordCount(st.mail)+' Wörter</b></div></div>'+
 '<p class="small">Pritisni „Završi i oceni” kada završiš mejl.</p>'}
 
@@ -260,7 +260,7 @@ function render(){
  prev.disabled=st.page===0;
  next.textContent=st.page===0?'Počni test →':st.page===LAST-1?'Završi i oceni ✓':st.page===LAST?'Na početak ↺':'Nastavi →';
  requestAnimationFrame(fitPage);
- if(st.page===LAST){const copy=document.getElementById('copyResult');copy.onclick=()=>{const g=grade();const txt='DE-MAX ÖSD A2 Test 1 | '+(st.name||'Učenik')+' | Lesen '+(g.r1+g.r2)+'/25 | Hören '+(g.w1+g.w2+g.w3)+'/30 | Ukupno '+g.total+'/55 | Schreiben '+wordCount(st.mail)+' Wörter';if(navigator.clipboard?.writeText)navigator.clipboard.writeText(txt).then(()=>notify('Rezultat kopiran')).catch(()=>notify('Kopiranje nije dostupno'));else notify(txt)};
+ if(st.page===LAST){const copy=document.getElementById('copyResult');copy.onclick=()=>{const g=grade();const txt='DE-MAX ÖSD A2 Test 1 | Lesen '+(g.r1+g.r2)+'/25 | Hören '+(g.w1+g.w2+g.w3)+'/30 | Ukupno '+g.total+'/55 | Schreiben '+wordCount(st.mail)+' Wörter';if(navigator.clipboard?.writeText)navigator.clipboard.writeText(txt).then(()=>notify('Rezultat kopiran')).catch(()=>notify('Kopiranje nije dostupno'));else notify(txt)};
  document.getElementById('reset').onclick=()=>{if(confirm('Obrisati sve odgovore i početi ponovo?')){st=JSON.parse(JSON.stringify(DEFAULT));st.flowV2=true;st.flowV3=true;save();render()}}}
  if(st.page>=5&&st.page<=7){
  const audio=document.getElementById('player'),signal=document.getElementById('audiosignal');
@@ -286,7 +286,6 @@ main.addEventListener('click',e=>{
 });
 main.addEventListener('input',e=>{
  const t=e.target;
- if(t.id==='student')st.name=t.value;
  if(t.id==='emailAnswer'){st.mail=t.value;document.getElementById('wordCount').textContent=wordCount(st.mail)+' Wörter'}
  if(t.dataset.w2!==undefined)st.w2[Number(t.dataset.w2)]=t.value;
  save();
