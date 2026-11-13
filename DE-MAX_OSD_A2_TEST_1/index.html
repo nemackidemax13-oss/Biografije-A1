@@ -129,11 +129,32 @@ function r2(){return intro('Lesen • Aufgabe 2','65 Jahre ohne ernsten Streit',
 '<details class="card tinted" open><summary>Lesetext anzeigen / ausblenden</summary><div style="margin-top:10px">'+STORY.map(x=>'<p class="passage">'+esc(x)+'</p>').join('')+'</div></details>'+
 '<div class="card goldish"><p class="small" style="margin:0">Beispiel: Herr und Frau Böhm sind seit 65 Jahren ein Ehepaar. (C)</p></div>'+
 QS.map((q,i)=>'<div class="card"><div class="qtop"><b>'+(i+1)+'. '+esc(q[0])+'</b><span class="pill">2 Punkte</span></div><div class="choices">'+['A','B','C'].map((c,j)=>'<label class="choice"><input type="radio" name="r2-'+i+'" data-r2="'+i+'" value="'+c+'" '+(st.r2[i]===c?'checked':'')+'><b>'+c+'</b> '+esc(q[j+1])+'</label>').join('')+'</div></div>').join('')}
-function player(i){return '<div class="audio"><div class="between"><b style="font-size:13px">🎧 Originalno slušanje '+i+'</b><span style="font-size:10px;color:#cfe2f6">Track '+i+'</span></div><audio id="player" controls playsinline preload="metadata" src="./audio/track-'+i+'.mp3"></audio><div id="audiosignal" class="aux">Pritisni ▶ za slušanje. Na iPhone i Android uređajima reprodukcija se pokreće dodirom.</div><label class="aux" for="localAudio">Ako snimak nije učitan, izaberi MP3 sa uređaja:</label><input id="localAudio" type="file" accept="audio/mpeg,audio/mp3,audio/*" aria-label="Dodaj slušanje '+i+'"></div>'}
-function h1(){return intro('Hören • Aufgabe 1','Das Wetter am Wochenende','Sie hören zwei verschiedene Texte mit dem gleichen Inhalt. Markieren Sie die vier richtigen Antworten. (10 Punkte)')+player(1)+'<div class="card"><h3>Wählen Sie vier Antworten</h3><p class="small">Tekstovi se slušaju jednom. Izaberi četiri odgovora.</p><div class="twocol">'+WEATHER.map((w,i)=>'<label class="check"><input type="checkbox" data-w1="'+i+'" '+checked(st.w1,i)+'>'+esc(w)+'</label>').join('')+'</div><p class="small" id="weatherCount" style="margin-bottom:0">'+st.w1.length+' / 4 izabrano</p></div>'}
-function h2(){const lab=['Letzter Kurstag','Zum Essen mitnehmen','Für Getränke (Euro)','Anrufen ab (Uhr)','Telefonnummer'];return intro('Hören • Aufgabe 2','Notizen – Abschlussfeier','Sie hören eine Nachricht zweimal. Schreiben Sie die wichtigsten Informationen auf. (10 Punkte)')+player(2)+'<div class="card"><h3>✎ Notizblatt</h3>'+lab.map((l,i)=>'<div style="margin-bottom:11px"><label class="fieldlabel" for="n'+i+'">'+esc(l)+'</label><input id="n'+i+'" data-w2="'+i+'" class="field" type="text" autocomplete="off" placeholder="'+(['Wochentag','Essen','Betrag','Stunde','Nummer'][i])+'" value="'+esc(st.w2[i])+'"></div>').join('')+'</div>'}
-function h3(){return intro('Hören • Aufgabe 3','Welchen Sport betreiben Sie?','Sie hören fünf Personen, die befragt werden. Pro Person sind mehrere Antworten möglich. (10 Punkte)')+player(3)+[0,1,2,3,4].map((i)=>'<div class="card"><div class="qtop"><b>'+(i+1)+'. '+(i%2===0?'Sprecherin':'Sprecher')+'</b><span class="pill">2 Punkte</span></div><div class="rowchecks">'+SPORTS.map((n,j)=>'<label class="sport"><input type="checkbox" data-sp="'+i+'" data-sport="'+j+'" '+checked(st.w3[i],j)+'>'+esc(n)+'</label>').join('')+'</div></div>').join('')}
-function writing(){const count=wordCount(st.mail);return intro('Schreiben • E-Mail','Eine E-Mail an Michael','Sie bekommen eine E-Mail von Ihrem Freund Michael. Schreiben Sie circa 50 Wörter. Beantworten Sie alle Fragen.')+'<div class="card tinted"><div class="between"><b style="font-size:12px">Von: Michael</b><small class="small">Betreff: Reise</small></div><div class="letter" style="margin-top:10px"><p>Liebe/Lieber …,</p><p>wie geht es dir? Stell dir vor, ich fahre nächste Woche nach Österreich. Dort werde ich Wien, Salzburg und Innsbruck besuchen. Ich freue mich sehr darauf. Hast du schon einmal eine Reise gemacht? Wohin bist du gefahren? Was gibt es bei dir Neues?</p><p>Wir haben uns so lange nicht mehr gesehen. Nach meiner Reise müssen wir uns unbedingt treffen. Dann zeige ich dir auch meine Fotos.</p><p>Wann hast du Zeit?</p><p>Bis bald und liebe Grüße<br>Michael</p></div></div><div class="card goldish"><b style="font-size:12px">Aufgabe</b><p class="instructions" style="margin:5px 0 0">Schreiben Sie circa 50 Wörter. Antworten Sie auf: Wie geht es dir? Welche Reise hast du gemacht und wohin? Was gibt es Neues? Wann hast du Zeit? Schreiben Sie am Ende einen Gruß.</p></div><div class="card"><label class="fieldlabel" for="emailAnswer">Deine E-Mail an Michael</label><textarea class="field editor" id="emailAnswer" placeholder="Lieber Michael,&#10;&#10;vielen Dank für deine E-Mail. ...">'+esc(st.mail)+'</textarea><div class="between" style="margin-top:7px"><small class="small">Tvoj tekst se automatski čuva.</small><b class="pill" id="wordCount">'+count+' Wörter</b></div></div>'}
+
+function player(i){return '<div class="audio" style="padding:9px;position:relative;top:auto;margin-bottom:8px"><div class="between"><b style="font-size:12px">🎧 Slušanje '+i+'</b><span style="font-size:10px;color:#d9eaff">10 bodova</span></div>'+
+'<audio id="player" controls playsinline preload="metadata" src="./audio/track-'+i+'.mp3"></audio><div id="audiosignal" class="aux">Pritisnite ▶ za slušanje.</div>'+
+'<details style="margin-top:4px"><summary>Ako snimak ne radi, izaberi MP3 sa telefona</summary><input id="localAudio" type="file" accept="audio/mpeg,audio/mp3,audio/*" aria-label="Dodaj audio '+i+'"></details></div>'}
+function h1(){return '<div class="stage-label">HÖREN · Aufgabe 1 · 10 bodova</div><h1 class="stage-title">Das Wetter am Wochenende</h1>'+
+'<p class="small" style="margin:0 0 7px">Slušate dva teksta istog sadržaja. Označite četiri odgovora.</p>'+player(1)+
+'<div class="card"><div class="qtop"><b>Wählen Sie vier Antworten</b><span class="pill">10 Punkte</span></div><div class="twocol">'+WEATHER.map((w,i)=>'<label class="check"><input type="checkbox" data-w1="'+i+'" '+checked(st.w1,i)+'>'+esc(w)+'</label>').join('')+'</div><p class="small" id="weatherCount" style="margin:5px 0 0">'+st.w1.length+' / 4 izabrano</p></div>'}
+function h2(){const lab=['Letzter Kurstag','Zum Essen mitnehmen','Für Getränke (Euro)','Anrufen ab (Uhr)','Telefonnummer'];return '<div class="stage-label">HÖREN · Aufgabe 2 · 10 bodova</div><h1 class="stage-title">Notizen – Abschlussfeier</h1>'+
+'<p class="small" style="margin:0 0 7px">Slušate poruku dva puta. Dopunite pet beleški.</p>'+player(2)+
+'<div class="card"><div class="qtop"><b>✎ Notizblatt</b><span class="pill">10 Punkte</span></div><div class="note-grid">'+lab.map((l,i)=>'<div><label class="fieldlabel" for="n'+i+'">'+esc(l)+'</label><input id="n'+i+'" data-w2="'+i+'" class="field" type="text" autocomplete="off" placeholder="'+(['Wochentag','Essen','Betrag','Stunde','Nummer'][i])+'" value="'+esc(st.w2[i])+'"></div>').join('')+'</div></div>'}
+function speakerCard(i){return '<div class="card"><div class="qtop"><b>'+(i+1)+'. '+(i%2===0?'Sprecherin':'Sprecher')+'</b><span class="pill">2 Punkte</span></div>'+
+'<p class="small">Koje sportove osoba navodi? Moguće je više odgovora.</p>'+
+'<div class="rowchecks">'+SPORTS.map((n,j)=>'<label class="sport"><input type="checkbox" data-sp="'+i+'" data-sport="'+j+'" '+checked(st.w3[i],j)+'>'+esc(n)+'</label>').join('')+'</div></div>'}
+function h3(){const i=Math.max(0,Math.min(4,Number(st.speaker)||0));return '<div class="stage-label">HÖREN · Aufgabe 3 · 10 bodova</div><h1 class="stage-title">Welchen Sport betreiben Sie?</h1>'+
+'<p class="small" style="margin:0 0 7px">Slušate intervju sa 5 osoba. Za svaku označite tačne sportove.</p>'+player(3)+
+'<div class="person-tabs">'+[0,1,2,3,4].map(j=>'<button type="button" data-person="'+j+'" class="'+(j===i?'active':'')+'">'+(j+1)+'</button>').join('')+'</div>'+
+'<div id="speakerCard">'+speakerCard(i)+'</div><p class="small">Izaberite brojeve 1–5 za sve govornike. Audio nastavlja reprodukciju pri promeni osobe.</p>'}
+function mailPrompt(){return '<div class="stage-label">SCHREIBEN · E-Mail</div><h1 class="stage-title">Eine E-Mail an Michael</h1><p class="small">Pročitajte poruku koju šalje Michael.</p>'+
+'<div class="card tinted"><div class="between"><b style="font-size:12px">Von: Michael</b><small class="small">Betreff: Reise</small></div>'+
+'<div class="letter" style="margin-top:6px"><p>Liebe/Lieber …,</p><p>wie geht es dir? Stell dir vor, ich fahre nächste Woche nach Österreich. Dort werde ich Wien, Salzburg und Innsbruck besuchen. Ich freue mich sehr darauf. Hast du schon einmal eine Reise gemacht? Wohin bist du gefahren? Was gibt es bei dir Neues?</p><p>Wir haben uns so lange nicht mehr gesehen. Nach meiner Reise müssen wir uns unbedingt treffen. Dann zeige ich dir auch meine Fotos.</p><p>Wann hast du Zeit?</p><p>Bis bald und liebe Grüße<br>Michael</p></div></div>'+
+'<div class="card goldish"><b style="font-size:12px">Aufgabe</b><p class="small" style="margin:3px 0 0">Napišite odgovor od oko 50 reči, odgovorite na sva 4 pitanja i na kraju dodajte pozdrav.</p></div>'}
+function mailEditor(){return '<div class="stage-label">SCHREIBEN · E-Mail</div><h1 class="stage-title">Tvoj odgovor Michaelu</h1>'+
+'<p class="small" style="margin:0 0 8px">Odgovorite: kako ste, putovanje, novosti i kada imate vremena.</p>'+
+'<div class="card"><label class="fieldlabel" for="emailAnswer">Deine E-Mail an Michael</label><textarea class="field editor" id="emailAnswer" style="height:min(42dvh,310px);min-height:160px" placeholder="Lieber Michael,&#10;&#10;vielen Dank für deine E-Mail. ...">'+esc(st.mail)+'</textarea><div class="between" style="margin-top:7px"><small class="small">Oko 50 reči.</small><b class="pill" id="wordCount">'+wordCount(st.mail)+' Wörter</b></div></div>'+
+'<p class="small">Pritisni „Završi i oceni” kada završiš mejl.</p>'}
+
 function wordCount(s){return String(s||'').trim().split(/\s+/).filter(Boolean).length}
 function digits(s){return String(s||'').replace(/\D/g,'')}
 function normalize(s){return String(s||'').trim().toLocaleLowerCase('de').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'')}
@@ -169,7 +190,7 @@ const PAGES=[cover,lesenIntro,
 ()=>r1Item(0),()=>r1Item(1),()=>r1Item(2),()=>r1Item(3),()=>r1Item(4),
 ()=>storyPart(0),()=>storyPart(1),()=>storyPart(2),()=>storyPart(3),
 ()=>r2Item(0),()=>r2Item(1),()=>r2Item(2),()=>r2Item(3),()=>r2Item(4),
-horenIntro,h1,h2,h3,writing,result];
+horenIntro,h1,h2,h3,mailPrompt,mailEditor,result];
 const LAST=PAGES.length-1;
 if(!st.flowV2){st.page=0;st.flowV2=true;st.speaker=0;save()}
 function fitPage(){
@@ -199,6 +220,16 @@ function render(){
 window.addEventListener('resize',()=>requestAnimationFrame(fitPage),{passive:true});
 window.visualViewport?.addEventListener('resize',()=>requestAnimationFrame(fitPage),{passive:true});
 function notify(s){const el=document.createElement('div');el.className='toast';el.textContent=s;document.body.append(el);setTimeout(()=>el.remove(),2800)}
+
+main.addEventListener('click',e=>{
+ const b=e.target.closest('[data-person]');
+ if(b){
+ st.speaker=Number(b.dataset.person);save();
+ const c=document.getElementById('speakerCard');if(c)c.innerHTML=speakerCard(st.speaker);
+ main.querySelectorAll('[data-person]').forEach(x=>x.classList.toggle('active',Number(x.dataset.person)===st.speaker));
+ requestAnimationFrame(fitPage);
+ }
+});
 main.addEventListener('input',e=>{
  const t=e.target;
  if(t.id==='student')st.name=t.value;
