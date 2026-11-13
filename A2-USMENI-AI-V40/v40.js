@@ -17,7 +17,7 @@ const scenarios=[
 ];
 const V={serial:0,ready:new Set(),part:null,stream:null,rec:null,ctx:null,interval:0,chunks:[],working:false,transcribing:false};
 const originalSpeak=showSpeak,originalResults=showResults;
-const V40_DIRECT_URL=location.origin+location.pathname+"?v=20261113-v43-automikrofon";
+const V40_DIRECT_URL=location.origin+location.pathname+"?v=20261113-v44-replit-ios-android";
 function micPolicyAllowed(){
  try{const p=document.permissionsPolicy||document.featurePolicy;return p?.allowsFeature?.("microphone")??null}catch(e){return null}
 }
@@ -25,7 +25,16 @@ function sendMicStatus(state){
  if(window.parent!==window)try{window.parent.postMessage({source:"DEMAX_A2_V40",kind:"microphone",state},"*")}catch(e){}
 }
 function micBlockedMessage(){
- return "Replit ili pregledač blokira mikrofon u ugrađenom prikazu. Otvorite direktni HTTPS link u Chrome/Safari i dozvolite mikrofon.";
+ return 'Mikrofon je blokiran unutar Replit iframe-a. U Replitu dodajte allow="microphone; autoplay; fullscreen" na iframe ili otvorite direktni HTTPS link.';
+}
+// Recovery link is ONLY for a failure in the second part, not on the intro screen.
+function micFallbackLink(afterEl){
+ const a=document.createElement("a");
+ a.href=V40_DIRECT_URL;a.target="_blank";a.rel="noopener noreferrer";
+ a.className="v40-mic-direct";
+ a.textContent="Otvori A2 u pregledaču (Safari / Chrome)";
+ afterEl?.insertAdjacentElement("afterend",a);
+ return a;
 }
 /* The first screen has only the start button. On that tap, request the mic
    using the same getUserMedia permission flow as the working A1 version.
@@ -160,7 +169,7 @@ async function permit(){
 }
 function listen(){
  if(!V.part?.started||V.part.finished||V.rec?.state==="recording")return;
- if(!V.stream){status("Pritisnite „Govori” i dozvolite mikrofon kao u V30.");return}
+ if(!V.stream?.getAudioTracks().some(t=>t.readyState==="live")){status("Mikrofon još nije aktivan. Pritisnite „Govori” za ponovno uključivanje.");return}
  if(!window.MediaRecorder){status("Snimanje nije podržano; upišite odgovor.");return}
  try{
   const mime=["audio/webm;codecs=opus","audio/mp4","audio/webm"].find(x=>MediaRecorder.isTypeSupported(x))||"";
