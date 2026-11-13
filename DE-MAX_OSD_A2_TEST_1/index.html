@@ -132,6 +132,12 @@ footer #prev{flex:0 0 auto;white-space:nowrap}
 footer #next{min-width:0;flex:1 1 auto;white-space:nowrap}
 @media(max-width:360px){footer{gap:5px;padding-left:6px;padding-right:6px}footer #prev{font-size:11px;padding:7px 8px}footer #next{font-size:12px;padding:7px 8px}footer .footer-font-button{width:35px;flex-basis:35px}}
 @media(max-height:670px){footer .footer-font-button{height:38px}}
+
+/* V11: home only — put the DE-MAX emblem underneath A2 TEST */
+.home-center{flex-direction:column;gap:24px}
+.home-brand-logo{width:110px;height:110px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:27px;background:linear-gradient(140deg,#ffdf9b,#e8aa4d);color:#15294c;box-shadow:0 10px 25px #1c315333, inset 0 1px 0 #fff7;font-size:30px;font-weight:1000;letter-spacing:-1.5px;line-height:1.04;user-select:none}
+.home-brand-logo span{display:block}
+@media(max-height:600px){.home-center{gap:17px}.home-brand-logo{width:86px;height:86px;border-radius:22px;font-size:25px}}
 </style>
 </head>
 <body>
@@ -175,7 +181,7 @@ function checked(a,i){return a.includes(i)?'checked':''}
 function heading(k){return '<div class="sub">'+esc(k)+'</div>'}
 function intro(k,name,detail){return heading(k)+'<h1>'+name+'</h1><p class="instructions">'+detail+'</p>'}
 function getSelect(i){return '<select aria-label="Überschrift für Text '+(i+1)+'" class="field" data-r1="'+i+'"><option value="">– Überschrift wählen –</option>'+H.map((h,j)=>'<option value="'+h+'" '+(st.r1[i]===h?'selected':'')+'>'+h+' · '+esc(HEAD[j])+'</option>').join('')+'</select>'}
-function cover(){return '<section class="home-center"><h1>A2 TEST</h1></section>'}
+function cover(){return '<section class="home-center"><h1>A2 TEST</h1><div class="home-brand-logo" role="img" aria-label="DE-MAX logo"><span>DE</span><span>MAX</span></div></section>'}
 
 function lesenIntro(){
 return '<div class="intro-screen"><div class="intro-cover"><div class="intro-eyebrow">LESEN · ÖSD A2</div><h1>Razumevanje</h1><p>Pročitajte zadatke i odaberite tačne odgovore.</p><div class="total-points">25 <small>bodova</small></div><div class="min-points">Minimum 5 bodova za prolaz</div></div>'+
