@@ -239,6 +239,62 @@ main.reading-scroll .lesen2-text{
 .home-center{gap:8px}
 .home-center .home-school{font-size:clamp(17px,5vw,23px);font-weight:900;color:#193e71;text-align:center;line-height:1.3;margin:0}
 .home-center .home-slogan{margin:0;font-size:clamp(14px,4.2vw,19px)}
+
+/* V21 — full-screen Lesen instructions, mobile heading picker, Hören 2 fields, compact navigation. */
+main.lesen-intro-active{overflow:hidden!important;padding:9px 12px 7px}
+main.lesen-intro-active #pageContent{height:100%;min-height:0;display:flex;flex-direction:column;transform:none!important}
+main.lesen-intro-active .lesen-full-intro{height:100%;min-height:0;width:100%;display:grid;grid-template-rows:minmax(0,1fr) auto auto auto;gap:11px;align-items:stretch}
+main.lesen-intro-active .lesen-full-intro .intro-cover{min-height:0;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:15px 14px;border-radius:17px}
+main.lesen-intro-active .lesen-full-intro .intro-cover h1{font-size:clamp(24px,7vw,32px);margin:9px 0 6px}
+main.lesen-intro-active .lesen-full-intro .intro-cover p{font-size:clamp(12px,3.3vw,14px);line-height:1.5}
+main.lesen-intro-active .lesen-full-intro .total-points{font-size:clamp(38px,12vw,54px);margin-top:7px}
+main.lesen-intro-active .lesen-full-intro .min-points{margin-top:8px}
+main.lesen-intro-active .summary-task{padding:12px;border-radius:11px;min-height:48px}
+main.lesen-intro-active .summary-total{padding:13px 9px;border-radius:11px}
+@media(max-height:620px){
+ main.lesen-intro-active .lesen-full-intro{gap:7px}
+ main.lesen-intro-active .lesen-full-intro .intro-cover{padding:8px 10px}
+ main.lesen-intro-active .lesen-full-intro .intro-cover h1{font-size:24px;margin:5px 0}
+ main.lesen-intro-active .lesen-full-intro .total-points{font-size:36px;margin:4px}
+ main.lesen-intro-active .lesen-full-intro .min-points{padding:6px 10px;margin-top:5px}
+ main.lesen-intro-active .summary-task{min-height:39px;padding:8px 10px}
+ main.lesen-intro-active .summary-total{padding:9px}
+}
+.title-picker-button{display:flex;align-items:center;gap:10px;width:100%;min-height:45px;padding:8px 9px;text-align:left;
+ border:1.5px solid #aac4e2;border-radius:10px;background:#f3f8ff;color:#173f72;font-weight:800;font-size:12px}
+.title-picker-button .picker-letter{flex:0 0 45px;border-radius:8px;background:#d9eafa;color:#154978;padding:8px 5px;text-align:center;font-weight:950}
+.title-picker-button .picker-label{flex:1;min-width:0;line-height:1.35;overflow-wrap:anywhere}
+.title-picker-button .picker-caret{font-size:15px;color:#41679b}
+.title-picker-button:focus-visible,.a2-picker-option:focus-visible{outline:2px solid #0a8f65;outline-offset:2px}
+.a2-picker-overlay{position:fixed;inset:0;z-index:3000;display:flex;align-items:flex-end;justify-content:center}
+.a2-picker-backdrop{position:absolute;inset:0;background:#071b38aa}
+.a2-picker-dialog{z-index:1;width:min(500px,100%);max-height:min(83dvh,740px);background:white;border-radius:18px 18px 0 0;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 -12px 32px #08162a4a}
+.a2-picker-head{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#173a6c;color:white;padding:13px 14px;font-size:13px}
+.a2-picker-head button{background:#fff2;border:0;color:white;border-radius:7px;padding:8px 12px;font-size:16px}
+.a2-picker-items{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:9px 10px max(14px,env(safe-area-inset-bottom));display:grid;gap:7px}
+.a2-picker-option{display:flex;align-items:center;gap:10px;width:100%;min-height:45px;padding:8px 10px;border:1px solid #d3e0ee;border-radius:10px;background:#f7faff;color:#153c6b;font-size:12px;font-weight:700;line-height:1.35;text-align:left}
+.a2-picker-option.chosen{background:#e0f5e9;border-color:#0e9968}
+.a2-picker-mark{width:31px;flex:0 0 31px;background:#e4edf9;border-radius:7px;padding:7px 0;text-align:center;font-weight:950;color:#194c85}
+main.hearing2-scroll{overflow-y:auto!important;overflow-x:hidden!important;touch-action:pan-y!important;overscroll-behavior-y:contain!important;-webkit-overflow-scrolling:touch;scroll-padding-bottom:48px}
+main.hearing2-scroll #pageContent{transform:none!important}
+main.hearing2-scroll .hearing2-card{padding:10px}
+main.hearing2-scroll .note-grid{display:flex;flex-direction:column;gap:7px}
+main.hearing2-scroll .note-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(115px,1.1fr);gap:9px;align-items:center;margin:0;min-width:0;padding:6px 7px;border:1px solid #e1eaf5;border-radius:9px;background:#f7faff}
+main.hearing2-scroll .note-row .fieldlabel{font-size:11px;line-height:1.2;margin:0;color:#264b7a;overflow-wrap:anywhere}
+main.hearing2-scroll .note-row .field{width:100%;min-width:0;min-height:38px;padding:7px 9px;border-radius:7px;font-size:16px}
+main.hearing2-scroll .exam-audio{position:sticky!important;top:0!important;z-index:5}
+@media(max-width:360px){
+ main.hearing2-scroll .note-row{grid-template-columns:minmax(0,1fr) minmax(110px,1fr);gap:5px}
+ main.hearing2-scroll .note-row .fieldlabel{font-size:10px}
+}
+footer{gap:4px!important;padding:4px 7px max(4px,env(safe-area-inset-bottom))!important;align-items:center}
+footer .btn{height:35px;min-height:35px;padding:5px 9px;font-size:11px;border-radius:8px;line-height:1.1}
+footer #prev{max-width:90px}
+footer #next{min-width:0;flex:1 1 0}
+footer .footer-font-controls{gap:3px}
+footer .footer-font-button{height:35px;width:30px;flex:0 0 30px;border-radius:8px;font-size:20px}
+@media(max-width:360px){footer{gap:3px!important;padding-left:5px!important;padding-right:5px!important}
+ footer .btn{padding:5px 6px;font-size:10.5px}footer .footer-font-button{width:28px;flex-basis:28px}}
 </style>
 </head>
 <body>
@@ -281,11 +337,12 @@ function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&l
 function checked(a,i){return a.includes(i)?'checked':''}
 function heading(k){return '<div class="sub">'+esc(k)+'</div>'}
 function intro(k,name,detail){return heading(k)+'<h1>'+name+'</h1><p class="instructions">'+detail+'</p>'}
-function getSelect(i){return '<select aria-label="Überschrift für Text '+(i+1)+'" class="field" data-r1="'+i+'"><option value="">– Überschrift wählen –</option>'+H.map((h,j)=>'<option value="'+h+'" '+(st.r1[i]===h?'selected':'')+'>'+h+' · '+esc(HEAD[j])+'</option>').join('')+'</select>'}
+function getSelect(i){const val=st.r1[i]||'',idx=H.indexOf(val);return '<button class="title-picker-button" type="button" data-title-picker="'+i+'" aria-haspopup="dialog" aria-label="Izaberi naslov za tekst '+(i+1)+'">'+
+'<span class="picker-letter">'+(val||'A–K')+'</span><span class="picker-label">'+(idx>=0?esc(HEAD[idx]):'Dodirni za izbor naslova')+'</span><span class="picker-caret">▾</span></button>'}
 function cover(){return '<section class="home-center"><h1>A2 TEST</h1><p class="home-school">Nemački jezik De-Max Tutin</p><p class="home-slogan">Sa Vama od 2013 godine</p></section>'}
 
 function lesenIntro(){
-return '<div class="intro-screen"><div class="intro-cover"><div class="intro-eyebrow">LESEN · ÖSD A2</div><h1>Razumevanje</h1><p>Pročitajte zadatke i odaberite tačne odgovore.</p><div class="total-points">25 <small>bodova</small></div><div class="min-points">Minimum 5 bodova za prolaz</div></div>'+
+return '<div class="intro-screen lesen-full-intro"><div class="intro-cover"><div class="intro-eyebrow">LESEN · ÖSD A2</div><h1>Razumevanje</h1><p>Pročitajte zadatke i odaberite tačne odgovore.</p><div class="total-points">25 <small>bodova</small></div><div class="min-points">Minimum 5 bodova za prolaz</div></div>'+
 '<div class="summary-task"><b>1. Situationen + Anzeigen</b><span class="pill">15 bodova</span></div>'+
 '<div class="summary-task"><b>2. Anzeige A, B, C</b><span class="pill">10 bodova</span></div>'+
 '<div class="summary-total">Ukupno 25 bodova / Prolaz 5 bodova</div></div>';
@@ -312,7 +369,7 @@ function r2Item(i){const q=QS[i];return '<div class="stage-label">LESEN · Aufga
 
 function r1(){return intro('Lesen • Aufgabe 1','Die passende Überschrift','Pročitajte 10 naslova i 5 tekstova. Za svaki tekst izaberite odgovarajući naslov. (15 bodova)')+
 
-'<details class="card" open><summary>10 Überschriften (A–K)</summary><div class="headings" style="margin-top:11px">'+H.map((h,i)=>'<div><b>'+h+'</b> '+esc(HEAD[i])+'</div>').join('')+'</div></details>'+
+'<details class="card lesen-titles-reference"><summary>Pregled 10 naslova (A–K) · dodirni za prikaz</summary><div class="headings" style="margin-top:11px">'+H.map((h,i)=>'<div><b>'+h+'</b> '+esc(HEAD[i])+'</div>').join('')+'</div></details>'+
 TEXTS.map((t,i)=>'<div class="card"><div class="qtop"><b>Text '+(i+1)+'</b><span class="pill">3 Punkte</span></div><p class="passage lesen1-text" lang="de">'+esc(t)+'</p>'+getSelect(i)+'</div>').join('')}
 function r2(){return intro('Lesen • Aufgabe 2','65 Jahre ohne ernsten Streit','Prvo pročitajte tekst, a zatim kod svakog pitanja označite tačan odgovor A, B ili C. (10 bodova)')+
 
@@ -332,7 +389,7 @@ function h1(){return '<div class="stage-label">HÖREN · Aufgabe 1 · 10 bodova<
 '<div class="card"><div class="qtop"><b>Wählen Sie vier Antworten</b><span class="pill">10 Punkte</span></div><div class="twocol">'+WEATHER.map((w,i)=>'<label class="check"><input type="checkbox" data-w1="'+i+'" '+checked(st.w1,i)+'>'+esc(w)+'</label>').join('')+'</div><p class="small" id="weatherCount" style="margin:5px 0 0">'+st.w1.length+' / 4 izabrano</p></div>'}
 function h2(){const lab=['Letzter Kurstag','Zum Essen mitnehmen','Für Getränke (Euro)','Anrufen ab (Uhr)','Telefonnummer'];return '<div class="stage-label">HÖREN · Aufgabe 2 · 10 bodova</div><h1 class="stage-title">Notizen – Abschlussfeier</h1>'+
 '<p class="small" style="margin:0 0 7px">Slušate poruku dva puta. Dopunite pet beleški.</p>'+player(2)+
-'<div class="card"><div class="qtop"><b>✎ Notizblatt</b><span class="pill">10 Punkte</span></div><div class="note-grid">'+lab.map((l,i)=>'<div><label class="fieldlabel" for="n'+i+'">'+esc(l)+'</label><input id="n'+i+'" data-w2="'+i+'" class="field" type="text" autocomplete="off" placeholder="'+(['Wochentag','Essen','Betrag','Stunde','Nummer'][i])+'" value="'+esc(st.w2[i])+'"></div>').join('')+'</div></div>'}
+'<div class="card hearing2-card"><div class="qtop"><b>✎ Notizblatt</b><span class="pill">10 Punkte</span></div><div class="note-grid">'+lab.map((l,i)=>'<div class="note-row"><label class="fieldlabel" for="n'+i+'">'+(i+1)+'. '+esc(l)+'</label><input id="n'+i+'" data-w2="'+i+'" class="field" type="text" inputmode="'+(i>=2?'numeric':'text')+'" autocomplete="off" placeholder="'+(['Wochentag','Essen','Betrag','Stunde','Nummer'][i])+'" value="'+esc(st.w2[i])+'"></div>').join('')+'</div></div>'}
 function speakerCard(i){return '<div class="card"><div class="qtop"><b>'+(i+1)+'. '+(i%2===0?'Sprecherin':'Sprecher')+'</b><span class="pill">2 Punkte</span></div>'+
 '<p class="small">Koje sportove osoba navodi? Moguće je više odgovora.</p>'+
 '<div class="rowchecks">'+SPORTS.map((n,j)=>'<label class="sport"><input type="checkbox" data-sp="'+i+'" data-sport="'+j+'" '+checked(st.w3[i],j)+'>'+esc(n)+'</label>').join('')+'</div></div>'}
@@ -607,7 +664,7 @@ if(!st.flowV12){if(Number(st.page)>=8)st.page=Math.min(11,Number(st.page)+1);st.
 function fitPage(){
  const content=document.getElementById('pageContent');if(!content)return;
  content.style.transform='';
- if(st.page===2||st.page===3||st.page===7||st.page===LAST||st.page===LAST-1)return; // Reading, Hören 3, result and flexible writing
+ if(st.page===1||st.page===2||st.page===3||st.page===6||st.page===7||st.page===LAST||st.page===LAST-1)return; // Full-screen Lesen intro; scrollable tasks and flexible writing
  const h=main.clientHeight,n=content.scrollHeight;
  const ratio=h&&n?Math.min(1,(h-2)/n):1;
  content.style.transform='scale('+Math.max(.5,ratio)+')';
@@ -709,6 +766,8 @@ function render(){
  document.getElementById('app').classList.toggle('home-mode',st.page===0);
  prev.hidden=st.page===0;main.style.setProperty('--read-size',Math.max(11,Math.min(24,Number(st.fontSize)||14))+'px');
  main.classList.toggle('reading-scroll',st.page===2||st.page===3);
+ main.classList.toggle('lesen-intro-active',st.page===1);
+ main.classList.toggle('hearing2-scroll',st.page===6);
  main.classList.toggle('hearing-three',st.page===7);
  main.classList.toggle('results-scroll',st.page===LAST);
  main.classList.toggle('mail-writing-active',st.page===LAST-1);
@@ -731,6 +790,34 @@ window.addEventListener('resize',()=>requestAnimationFrame(fitPage),{passive:tru
 window.visualViewport?.addEventListener('resize',()=>requestAnimationFrame(fitPage),{passive:true});
 function notify(s){const el=document.createElement('div');el.className='toast';el.textContent=s;document.body.append(el);setTimeout(()=>el.remove(),2800)}
 
+
+function openTitlePicker(i){
+ const old=document.getElementById('a2HeadingPickerOverlay');if(old)old.remove();
+ if(!Number.isInteger(i)||i<0||i>=TEXTS.length)return;
+ const opener=main.querySelector('[data-title-picker="'+i+'"]');
+ const wrap=document.createElement('div');wrap.className='a2-picker-overlay';wrap.id='a2HeadingPickerOverlay';
+ wrap.innerHTML='<div class="a2-picker-backdrop" data-dismiss-picker="1"></div>'+
+ '<section class="a2-picker-dialog" role="dialog" aria-modal="true" aria-label="Izaberi naslov za tekst '+(i+1)+'">'+
+ '<div class="a2-picker-head"><strong>Text '+(i+1)+' · Izaberi naslov</strong><button type="button" data-dismiss-picker="1" aria-label="Zatvori izbor">✕</button></div>'+
+ '<div class="a2-picker-items">'+H.map((h,j)=>'<button type="button" data-heading-value="'+h+'" class="a2-picker-option'+(st.r1[i]===h?' chosen':'')+'" aria-pressed="'+(st.r1[i]===h)+'"><span class="a2-picker-mark">'+h+'</span><span>'+esc(HEAD[j])+'</span></button>').join('')+'</div>'+
+ '</section>';
+ const close=()=>{wrap.remove();document.removeEventListener('keydown',onKeys);if(opener?.isConnected)opener.focus({preventScroll:true});};
+ const onKeys=(e)=>{if(e.key==='Escape'){e.preventDefault();close()}};
+ wrap.addEventListener('click',e=>{
+  if(e.target.closest('[data-dismiss-picker]')){close();return}
+  const option=e.target.closest('[data-heading-value]');if(!option)return;
+  const value=option.dataset.headingValue;
+  if(!H.includes(value))return;
+  st.r1[i]=value;save();
+  const updated=main.querySelector('[data-title-picker="'+i+'"]');
+  if(updated)updated.outerHTML=getSelect(i);
+  close();
+ });
+ document.body.appendChild(wrap);
+ document.addEventListener('keydown',onKeys);
+ wrap.querySelector('.a2-picker-option.chosen,.a2-picker-option')?.focus({preventScroll:true});
+}
+
 document.getElementById('app').addEventListener('click',e=>{
  const translate=e.target.closest('#a2QuestionTranslate');
  if(translate){
@@ -746,6 +833,8 @@ document.getElementById('app').addEventListener('click',e=>{
    }
    return;
  }
+ const chooseHeading=e.target.closest('[data-title-picker]');
+ if(chooseHeading){openTitlePicker(Number(chooseHeading.dataset.titlePicker));return;}
  const aiBtn=e.target.closest('#aiGradeBtn, #retryAiResult');
  if(aiBtn){checkEmailAI(aiBtn.id==='retryAiResult');return;}
  const skipBtn=e.target.closest('#skipAiBtn');
