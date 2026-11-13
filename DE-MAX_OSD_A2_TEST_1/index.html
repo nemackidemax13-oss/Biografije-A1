@@ -108,6 +108,20 @@ main.reading-scroll .question-title{font-size:var(--read-size,14px)!important}
 .audio-start{display:block;border:0;background:#f8cf82;color:#142a4b;border-radius:9px;padding:9px 12px;font-size:12px;font-weight:900;width:100%;margin:9px 0 0}
 .audio-start[hidden]{display:none!important}
 .h3-screen .exam-audio{padding:8px 10px!important}
+
+/* V7: third listening shows all five speakers and their answers one below the other */
+main.hearing-three{overflow-y:auto!important;overflow-x:hidden!important;overscroll-behavior-y:contain!important;touch-action:pan-y!important;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:#bacbe1 transparent}
+main.hearing-three::-webkit-scrollbar{display:block;width:5px}
+main.hearing-three::-webkit-scrollbar-thumb{background:#b7c8df;border-radius:8px}
+main.hearing-three #pageContent{transform:none!important}
+.h3-screen .speaker-stack{display:grid;grid-template-columns:1fr;gap:9px;padding-bottom:8px}
+.h3-screen .speaker-stack .card{margin:0;padding:11px}
+.h3-screen .speaker-stack .qtop{margin-bottom:6px}
+.h3-screen .speaker-stack .qtop b{font-size:13px}
+.h3-screen .speaker-stack .rowchecks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.h3-screen .speaker-stack .sport{min-height:39px;padding:8px 7px;font-size:11px}
+main.hearing-three .h3-screen .exam-audio{position:sticky!important;top:0!important;z-index:5;box-shadow:0 6px 12px #1a315c22}
+@media(max-width:360px){.h3-screen .speaker-stack .sport{font-size:10px}}
 </style>
 </head>
 <body>
@@ -206,10 +220,9 @@ function h2(){const lab=['Letzter Kurstag','Zum Essen mitnehmen','Für Getränke
 function speakerCard(i){return '<div class="card"><div class="qtop"><b>'+(i+1)+'. '+(i%2===0?'Sprecherin':'Sprecher')+'</b><span class="pill">2 Punkte</span></div>'+
 '<p class="small">Koje sportove osoba navodi? Moguće je više odgovora.</p>'+
 '<div class="rowchecks">'+SPORTS.map((n,j)=>'<label class="sport"><input type="checkbox" data-sp="'+i+'" data-sport="'+j+'" '+checked(st.w3[i],j)+'>'+esc(n)+'</label>').join('')+'</div></div>'}
-function h3(){const i=Math.max(0,Math.min(4,Number(st.speaker)||0));return '<section class="h3-screen"><div class="stage-label">HÖREN · Aufgabe 3 · 10 bodova</div><h1 class="stage-title">Welchen Sport betreiben Sie?</h1>'+
-'<p class="small h3-help">Slušate 5 osoba. Označite sportove za svaku osobu.</p>'+player(3)+
-'<div class="speaker-select-row"><label for="speakerSelect">Izaberi govornika (1–5)</label><select id="speakerSelect" class="speaker-select" aria-label="Izaberi govornika">'+[0,1,2,3,4].map(j=>'<option value="'+j+'" '+(j===i?'selected':'')+'>Govornik '+(j+1)+' · '+(j%2===0?'Sprecherin':'Sprecher')+'</option>').join('')+'</select></div>'+
-'<div id="speakerCard">'+speakerCard(i)+'</div></section>'}
+function h3(){return '<section class="h3-screen"><div class="stage-label">HÖREN · Aufgabe 3 · 10 bodova</div><h1 class="stage-title">Welchen Sport betreiben Sie?</h1>'+
+'<p class="small h3-help">Slušate pet osoba. Za svaku označite odgovarajuće sportove.</p>'+player(3)+
+'<div class="speaker-stack">'+[0,1,2,3,4].map(i=>speakerCard(i)).join('')+'</div></section>'}
 function mailPrompt(){return '<div class="stage-label">SCHREIBEN · E-Mail</div><h1 class="stage-title">Eine E-Mail an Michael</h1><p class="small">Pročitajte poruku koju šalje Michael.</p>'+
 '<div class="card tinted"><div class="between"><b style="font-size:12px">Von: Michael</b><small class="small">Betreff: Reise</small></div>'+
 '<div class="letter" style="margin-top:6px"><p>Liebe/Lieber …,</p><p>wie geht es dir? Stell dir vor, ich fahre nächste Woche nach Österreich. Dort werde ich Wien, Salzburg und Innsbruck besuchen. Ich freue mich sehr darauf. Hast du schon einmal eine Reise gemacht? Wohin bist du gefahren? Was gibt es bei dir Neues?</p><p>Wir haben uns so lange nicht mehr gesehen. Nach meiner Reise müssen wir uns unbedingt treffen. Dann zeige ich dir auch meine Fotos.</p><p>Wann hast du Zeit?</p><p>Bis bald und liebe Grüße<br>Michael</p></div></div>'+
@@ -280,7 +293,7 @@ if(!st.flowV3){
 function fitPage(){
  const content=document.getElementById('pageContent');if(!content)return;
  content.style.transform='';
- if(st.page===2||st.page===3)return; // Lesen: original height and native vertical scroll
+ if(st.page===2||st.page===3||st.page===7)return; // Lesen and Hören 3: original height, vertical scrolling
  const h=main.clientHeight,n=content.scrollHeight;
  const ratio=h&&n?Math.min(1,(h-2)/n):1;
  content.style.transform='scale('+Math.max(.5,ratio)+')';
@@ -405,11 +418,6 @@ main.addEventListener('input',e=>{
 });
 main.addEventListener('change',e=>{
  const t=e.target;
- if(t.id==='speakerSelect'){
-  st.speaker=Math.max(0,Math.min(4,Number(t.value)||0));save();
-  const c=document.getElementById('speakerCard');if(c)c.innerHTML=speakerCard(st.speaker);
-  requestAnimationFrame(fitPage);
- }
  if(t.dataset.r1!==undefined)st.r1[Number(t.dataset.r1)]=t.value;
  if(t.dataset.r2!==undefined)st.r2[Number(t.dataset.r2)]=t.value;
  if(t.dataset.w1!==undefined){const i=Number(t.dataset.w1);st.w1=t.checked?[...new Set([...st.w1,i])]:st.w1.filter(x=>x!==i);const c=document.getElementById('weatherCount');if(c)c.textContent=st.w1.length+' / 4 izabrano';}
