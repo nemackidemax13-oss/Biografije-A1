@@ -1054,6 +1054,68 @@ function freshA2Test(){
 let st=freshA2Test();
 try{localStorage.removeItem(KEY)}catch(e){}
 let objectAudio=null;
+
+/* MP3 tracks originally supplied for Test 8. Larger files are stored losslessly
+   as two binary parts on GitHub because of the upload size limit.
+   Joining occurs before playback; exam questions and the player UI are unchanged. */
+const DEMAX_AUDIO_PARTS={
+ 2:['./audio/track-2-a.part','./audio/track-2-b.part'],
+ 3:['./audio/track-3-a.part','./audio/track-3-b.part']
+};
+const DEMAX_AUDIO_READY={};
+const DEMAX_AUDIO_PENDING={};
+function demaxPrepareAudio(n){
+ if(n===1)return Promise.resolve('./audio/track-1.mp3');
+ if(DEMAX_AUDIO_READY[n])return Promise.resolve(DEMAX_AUDIO_READY[n]);
+ if(DEMAX_AUDIO_PENDING[n])return DEMAX_AUDIO_PENDING[n];
+ const paths=DEMAX_AUDIO_PARTS[n];
+ DEMAX_AUDIO_PENDING[n]=Promise.all(paths.map(async path=>{
+   const response=await fetch(path,{cache:'force-cache'});
+   if(!response.ok)throw new Error('Audio '+n+' HTTP '+response.status);
+   return response.arrayBuffer();
+ })).then(buffers=>{
+   const blob=new Blob(buffers,{type:'audio/mpeg'});
+   const url=URL.createObjectURL(blob);
+   DEMAX_AUDIO_READY[n]=url;
+   return url;
+ }).catch(error=>{
+   delete DEMAX_AUDIO_PENDING[n];
+   throw error;
+ });
+ return DEMAX_AUDIO_PENDING[n];
+}
+function demaxConnectExamAudio(page){
+ const n=page-4;
+ if(n===1){setupExamAudio(page);return;}
+ const audio=document.getElementById('player');
+ const status=document.getElementById('audiosignal');
+ const fallback=document.getElementById('audioFallback');
+ if(!audio||!status||!fallback)return;
+ audio.pause();
+ audio.removeAttribute('src');
+ audio.load();
+ const isCurrent=()=>st.page===page&&audio.isConnected;
+ const ready=url=>{
+   if(!isCurrent())return;
+   fallback.onclick=null;
+   audio.src=url;
+   setupExamAudio(page);
+ };
+ if(DEMAX_AUDIO_READY[n]){ready(DEMAX_AUDIO_READY[n]);return;}
+ status.textContent='Učitava se slušanje '+n+'…';
+ fallback.hidden=true;
+ function attempt(){
+   demaxPrepareAudio(n).then(ready).catch(()=>{
+     if(!isCurrent())return;
+     status.textContent='Snimak nije učitan. Proverite internet.';
+     fallback.textContent='▶ Učitaj slušanje';
+     fallback.hidden=false;
+     fallback.onclick=()=>{fallback.hidden=true;status.textContent='Učitava se slušanje…';attempt()};
+   });
+ }
+ attempt();
+}
+
 const main=document.getElementById('main'),prev=document.getElementById('prev'),next=document.getElementById('next');
 /* Keep answers only in memory during the current attempt. Reload starts a fresh test. */
 function save(){}
@@ -1558,7 +1620,7 @@ function render(){
  requestAnimationFrame(fitPage);
  if(st.page===LAST){const copy=document.getElementById('copyResult');copy.onclick=()=>{const g=grade();const txt='DE-MAX ÖSD A2 Test 8 | Lesen '+g.lesen+'/25 | Hören '+g.horen+'/30 | E-Mail '+g.mail.points+'/15 | Ukupno '+g.total+'/70 | '+(g.pass?'POLOŽENO':'NIJE POLOŽENO')+' | E-Mail automatska procena';if(navigator.clipboard?.writeText)navigator.clipboard.writeText(txt).then(()=>notify('Rezultat kopiran')).catch(()=>notify('Kopiranje nije dostupno'));else notify(txt)};
  document.getElementById('reset').onclick=()=>{if(confirm('Obrisati sve odgovore i početi ponovo?')){st=freshA2Test();save();render()}}}
- if(st.page>=5&&st.page<=7)setupExamAudio(st.page);
+ if(st.page>=5&&st.page<=7)demaxConnectExamAudio(st.page);
  if(st.page===LAST-1)checkEmailWorkerStatus();
 }
 window.addEventListener('resize',()=>requestAnimationFrame(fitPage),{passive:true});
@@ -1733,6 +1795,9 @@ main.addEventListener('change',e=>{
 prev.onclick=()=>{if(st.page>0){st.page--;render()}};
 next.onclick=()=>{if(st.page===LAST-1){checkEmailAI(true);return;}if(st.page===0){st.started=Date.now();st.page=1}else if(st.page<LAST)st.page++;else st.page=0;render()};
 render();
+/* Preload audio while student completes Lesen; playback stays immediate on mobile. */
+demaxPrepareAudio(2).catch(()=>{});
+demaxPrepareAudio(3).catch(()=>{});
 /* Mobile back-forward cache must not reopen another student's completed test. */
 window.addEventListener('pageshow',event=>{if(event.persisted){st=freshA2Test();render();}});
 </script>
