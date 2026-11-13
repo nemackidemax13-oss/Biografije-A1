@@ -766,6 +766,63 @@ main.hearing-three .h3-help{margin:0 0 8px!important}
 .ai-worker-connection{display:inline;font-size:10px;font-weight:800;color:#335d83}
 .ai-worker-connection.connected{color:#088958}
 .ai-worker-connection.unavailable{color:#ae5a16}
+
+/* V29: point columns clearly separated from task labels, right aligned on mobile. */
+.result-details .result-row,
+main.results-scroll .result-details .result-row {
+ display:grid!important;
+ grid-template-columns:minmax(0,1fr) max-content!important;
+ column-gap:16px!important;
+ align-items:center!important;
+ justify-content:stretch!important;
+ padding:9px 0!important;
+ min-width:0!important;
+}
+.result-details .result-row > :first-child {
+ min-width:0!important;
+ padding-right:5px!important;
+ text-align:left!important;
+ overflow-wrap:anywhere!important;
+ line-height:1.35!important;
+}
+.result-details .result-row > :last-child {
+ display:inline-flex!important;
+ align-items:center!important;
+ justify-content:center!important;
+ justify-self:end!important;
+ text-align:right!important;
+ white-space:nowrap!important;
+ flex:0 0 auto!important;
+ min-width:70px!important;
+ padding:5px 10px!important;
+ border-radius:8px!important;
+ background:#ffdc58!important;
+ color:#493200!important;
+ font-variant-numeric:tabular-nums!important;
+ font-weight:950!important;
+}
+.intro-screen .summary-task,
+.lesen-full-intro .summary-task,
+.horen-full-intro .summary-task{
+ display:grid!important;
+ grid-template-columns:minmax(0,1fr) max-content!important;
+ column-gap:13px!important;
+ align-items:center!important;
+ justify-content:stretch!important;
+ min-width:0!important;
+}
+.summary-task>b{min-width:0!important;overflow-wrap:anywhere!important;line-height:1.28!important}
+.summary-task>.pill{justify-self:end!important;text-align:right!important;white-space:nowrap!important;flex-shrink:0!important}
+.qtop{display:grid!important;grid-template-columns:minmax(0,1fr) max-content!important;column-gap:10px!important}
+.qtop>b{min-width:0!important;overflow-wrap:anywhere!important}
+.qtop>.pill{justify-self:end!important;white-space:nowrap!important}
+@media(max-width:370px){
+ .result-details .result-row,main.results-scroll .result-details .result-row{column-gap:10px!important}
+ .result-details .result-row > :last-child{min-width:62px!important;padding:4px 7px!important}
+ .summary-task{column-gap:8px!important}
+ .summary-task>.pill{font-size:9px!important;padding:4px 6px!important}
+}
+
 </style>
 </head>
 <body>
