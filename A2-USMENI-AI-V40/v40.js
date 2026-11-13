@@ -17,7 +17,7 @@ const scenarios=[
 ];
 const V={serial:0,ready:new Set(),part:null,stream:null,rec:null,ctx:null,interval:0,chunks:[],working:false,transcribing:false};
 const originalSpeak=showSpeak,originalResults=showResults;
-const V40_DIRECT_URL=location.origin+location.pathname+"?v=20261113-v42-v30mic";
+const V40_DIRECT_URL=location.origin+location.pathname+"?v=20261113-v43-automikrofon";
 function micPolicyAllowed(){
  try{const p=document.permissionsPolicy||document.featurePolicy;return p?.allowsFeature?.("microphone")??null}catch(e){return null}
 }
@@ -27,29 +27,19 @@ function sendMicStatus(state){
 function micBlockedMessage(){
  return "Replit ili pregledač blokira mikrofon u ugrađenom prikazu. Otvorite direktni HTTPS link u Chrome/Safari i dozvolite mikrofon.";
 }
-function micFallbackLink(afterEl){
- const a=document.createElement("a");
- a.href=V40_DIRECT_URL;a.target="_blank";a.rel="noopener noreferrer";
- a.className="v40-mic-direct";
- a.textContent="↗ Otvori direktno sa mikrofonom";
- afterEl?.insertAdjacentElement("afterend",a);
- return a;
-}
-/* Preserve V30 dmPermit() exactly: do not wrap, block or replace the working permission function. */
+/* The first screen has only the start button. On that tap, request the mic
+   using the same getUserMedia permission flow as the working A1 version.
+   The browser controls its native permission dialog. */
 const intro=document.querySelector("#intro .intro-sub");
 if(intro)intro.innerHTML="ÖSD A2 · AI simulacija V40<br>Predstavljanje · 5 tema · 10 pitanja · Drugi deo";
 const introBtn=q("begin");
 if(introBtn){
- const micTools=document.createElement("div");micTools.className="v40-mic-tools";
- micTools.innerHTML='<button type="button" class="btn soft" id="v40testmic">🎙 Dozvoli / proveri mikrofon</button><span id="v40micintro" class="v40-mini" aria-live="polite">Za rad u Replitu dozvolite mikrofon.</span>';
- introBtn.insertAdjacentElement("afterend",micTools);
- micFallbackLink(micTools);
- q("v40testmic").addEventListener("click",async()=>{
-  const msg=q("v40micintro");msg.textContent="Proveravam dozvolu mikrofona…";
-  const ok=await dmPermit(true);
-  sendMicStatus(ok?"allowed":"blocked");
-  msg.textContent=ok?"✓ Mikrofon je dozvoljen. Pritisnite „Započni simulaciju”.":micBlockedMessage();
- });
+ introBtn.addEventListener("click",()=>{
+  // V30 has its own capture-phase listener; reuse its pending stream instead
+  // of requiring the student to click a second test/permission button.
+  const request=DM_MIC.pending||(dmTrackLive()?Promise.resolve(true):dmPermit(true));
+  Promise.resolve(request).then(ok=>sendMicStatus(ok?"allowed":"blocked")).catch(()=>sendMicStatus("blocked"));
+ },{capture:true});
 }
 function fallbackTopicQuestion(topic,context,number){
  const low=norm(context).toLowerCase(),n=topic.title.split(" · ")[0];
