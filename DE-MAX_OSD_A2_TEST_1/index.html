@@ -234,6 +234,11 @@ main.reading-scroll .lesen2-text{
 /* V18: no cover logo, slogan visible below the A2 TEST heading */
 .home-center .home-slogan{margin:0;color:#375b8b;font-size:clamp(15px,4.4vw,20px);font-weight:850;letter-spacing:.3px;text-align:center}
 .home-center{gap:11px}
+
+/* Home title and school name */
+.home-center{gap:8px}
+.home-center .home-school{font-size:clamp(17px,5vw,23px);font-weight:900;color:#193e71;text-align:center;line-height:1.3;margin:0}
+.home-center .home-slogan{margin:0;font-size:clamp(14px,4.2vw,19px)}
 </style>
 </head>
 <body>
@@ -277,7 +282,7 @@ function checked(a,i){return a.includes(i)?'checked':''}
 function heading(k){return '<div class="sub">'+esc(k)+'</div>'}
 function intro(k,name,detail){return heading(k)+'<h1>'+name+'</h1><p class="instructions">'+detail+'</p>'}
 function getSelect(i){return '<select aria-label="Überschrift für Text '+(i+1)+'" class="field" data-r1="'+i+'"><option value="">– Überschrift wählen –</option>'+H.map((h,j)=>'<option value="'+h+'" '+(st.r1[i]===h?'selected':'')+'>'+h+' · '+esc(HEAD[j])+'</option>').join('')+'</select>'}
-function cover(){return '<section class="home-center"><h1>A2 TEST</h1><p class="home-slogan">Sa Vama od 2013</p></section>'}
+function cover(){return '<section class="home-center"><h1>A2 TEST</h1><p class="home-school">Nemački jezik De-Max Tutin</p><p class="home-slogan">Sa Vama od 2013 godine</p></section>'}
 
 function lesenIntro(){
 return '<div class="intro-screen"><div class="intro-cover"><div class="intro-eyebrow">LESEN · ÖSD A2</div><h1>Razumevanje</h1><p>Pročitajte zadatke i odaberite tačne odgovore.</p><div class="total-points">25 <small>bodova</small></div><div class="min-points">Minimum 5 bodova za prolaz</div></div>'+
