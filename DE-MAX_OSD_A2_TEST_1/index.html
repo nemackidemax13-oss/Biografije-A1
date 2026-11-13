@@ -150,6 +150,15 @@ main.results-scroll .result-row{padding:9px 0;font-size:11px}
 main.results-scroll .result-row .r{color:#224d80}
 main.results-scroll .mail-result{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;line-height:1.65}
 main.results-scroll .card{margin-bottom:10px}
+
+.ai-mail-controls{display:flex;align-items:center;gap:7px;margin:8px 0}
+.ai-mail-controls .btn{font-size:11px;min-height:40px;padding:8px}
+.ai-mail-status{font-size:11px;line-height:1.5;color:#526887;margin:6px 0;padding:7px 9px;background:#edf4ff;border-radius:8px}
+.ai-mail-status.bad{background:#fff0f0;color:#ae3345}
+.ai-question{border-bottom:1px solid #e4ebf3;padding:9px 0;font-size:12px;line-height:1.45}
+.ai-question>strong{font-size:11px;display:inline-block;max-width:85%}
+.ai-question>span{float:right;font-weight:900;color:#1e5a88}
+.ai-question p{margin:5px 0 0}
 </style>
 </head>
 <body>
@@ -270,29 +279,85 @@ function mailEditor(){return '<div class="stage-label">SCHREIBEN · E-Mail</div>
 '<p>2. Wohin bist du gefahren?</p>'+
 '<p>3. Was gibt es bei dir Neues?</p><p>4. Wann hast du Zeit?</p></div>'+
 '<div class="card"><label class="fieldlabel" for="emailAnswer">Deine E-Mail an Michael</label><textarea class="field editor" id="emailAnswer" style="height:min(33dvh,255px);min-height:145px" placeholder="Lieber Michael,&#10;&#10;vielen Dank für deine E-Mail. ...">'+esc(st.mail)+'</textarea><div class="between" style="margin-top:7px"><small class="small">Oko 50 reči.</small><b class="pill" id="wordCount">'+wordCount(st.mail)+' Wörter</b></div></div>'+
-'<p class="small">Pritisni „Završi i oceni” kada završiš mejl.</p>'}
+'<div class="ai-mail-controls"><button type="button" id="aiGradeBtn" class="btn primary" style="flex:1">✦ Proveri mejl AI</button><button type="button" id="skipAiBtn" class="btn back">Ostali bodovi</button></div><p id="aiStatus" role="status" class="ai-mail-status">Cloudflare AI proverava mejlove od 26 do 50 reči. Mejl ispod 26 reči dobija 0 bodova.</p>'}
 
-function wordCount(s){return String(s||'').trim().split(/\s+/).filter(Boolean).length}
+function wordCount(s){return (String(s||'').match(/[\p{L}\p{N}]+(?:[-’'][\p{L}\p{N}]+)*/gu)||[]).length}
 function digits(s){return String(s||'').replace(/\D/g,'')}
 function normalize(s){return String(s||'').trim().toLocaleLowerCase('de').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'')}
 
+
+const EMAIL_AI_API='https://a2mejlovi.nemackidemax13.workers.dev/api/check-a2-email';
+const EMAIL_AI_VERSIONS=['a2-de-max-50-words-rubric-v2','a2-de-max-26-min-50-target-v3','a2-de-max-original-first-v4'];
+const EMAIL_INDEX_MICHAEL=1;
+let aiPending=false;
 function emailScore(){
- const mail=String(st.mail||''),count=wordCount(mail),valid=count>=25;
- const normalized=mail.toLocaleLowerCase('de').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/ß/g,'ss');
- const has=(re)=>re.test(normalized);
- const coverage=[
-  {label:'1. Hast du schon einmal eine Reise gemacht?',found:has(/\b(reise|urlaub|gereist|gefahren|geflogen|verreist|besucht|noch nie)\b/)},
-  {label:'2. Wohin bist du gefahren?',found:has(/\b(nach|in|im|auf|ans|zum|zur)\s+[a-z]{3,}/)&&has(/\b(gefahren|geflogen|gereist|besucht|urlaub|reise|war)\b/)},
-  {label:'3. Was gibt es bei dir Neues?',found:has(/\b(neu|neues|neuen|neuer|jetzt|seit|arbeit|schule|job|umzug|wohnung|baby|kind|prufung|kurs|gekauft|begonnen|angefangen|studium|heirat)\w*\b/)},
-  {label:'4. Wann hast du Zeit?',found:has(/\b(zeit|treffen|samstag|sonntag|montag|dienstag|mittwoch|donnerstag|freitag|wochenende|abends|morgen|nachste woche|nach deiner reise)\b/)}
- ].map(q=>({...q,max:3,points:valid&&q.found?3:0}));
- const formal=[
-  {label:'Pozdrav na početku',found:/^\s*(lieber|liebe|hallo|hi|guten tag)\b/i.test(mail)},
-  {label:'Pozdrav na kraju',found:/(liebe grusse|viele grusse|herzliche grusse|bis bald|mit freundlichen grussen|dein|deine)\b/.test(normalized)},
-  {label:'Približno 50 reči (40–70)',found:count>=40&&count<=70}
- ].map(q=>({...q,max:1,points:valid&&q.found?1:0}));
- return {count,valid,coverage,formal,points:coverage.reduce((sum,q)=>sum+q.points,0)+formal.reduce((sum,q)=>sum+q.points,0)};
+ const answer=String(st.mail||'').trim(),count=wordCount(answer);
+ if(count<26)return {count,points:0,valid:false,graded:true,status:'too_short',source:'word_limit'};
+ const saved=st.aiEmail;
+ if(saved&&saved.answer===answer&&saved.response&&Number.isInteger(Number(saved.response.score))&&Number(saved.response.score)>=0&&Number(saved.response.score)<=15){
+  return {count,points:Number(saved.response.score),valid:true,graded:true,status:'ai',source:'cloudflare',feedback:saved.response};
+ }
+ return {count,points:0,valid:count<=50,graded:false,status:count>50?'too_long':'not_checked',source:'pending'};
 }
+function setAiStatus(message,isError){
+ const field=document.getElementById('aiStatus');
+ if(field){field.textContent=message;field.classList.toggle('bad',Boolean(isError));}
+}
+function validateAiResponse(data){
+ if(!data||typeof data!=='object')throw Error('Cloudflare nije vratio JSON rezultat.');
+ if(!Number.isInteger(Number(data.score))||Number(data.score)<0||Number(data.score)>15)throw Error('Cloudflare rezultat nema ispravnu ocenu 0–15.');
+ if(!data.rubric||typeof data.rubric!=='object')throw Error('Cloudflare nije vratio raspodelu bodova.');
+ if(!Array.isArray(data.questionPoints)||data.questionPoints.length!==4)throw Error('Cloudflare nije vratio bodove za četiri pitanja.');
+ if(!EMAIL_AI_VERSIONS.includes(data.verificationVersion))throw Error('Cloudflare verzija ocenjivanja nije prepoznata.');
+ return data;
+}
+async function checkEmailAI(thenShowResult){
+ if(aiPending)return;
+ const answer=String(st.mail||'').trim(),count=wordCount(answer);
+ if(count<26){
+  st.aiEmail=null;save();
+  setAiStatus('Mejl ima '+count+' reči. Ispod 26 reči: Schreiben 0/15.');
+  if(thenShowResult){st.page=LAST;st.resultTab='mail';render();}
+  return;
+ }
+ if(count>50){
+  setAiStatus('Cloudflare AI trenutno prihvata 26–50 reči. Napisano: '+count+'. Skratite mejl za '+(count-50)+' reči.',true);
+  return;
+ }
+ if(st.aiEmail?.answer===answer&&st.aiEmail?.response&&thenShowResult){
+  st.page=LAST;st.resultTab='score';render();return;
+ }
+ aiPending=true;
+ const checkButton=document.getElementById('aiGradeBtn');
+ const nextButton=document.getElementById('next');
+ if(checkButton)checkButton.disabled=true;
+ if(nextButton)nextButton.disabled=true;
+ setAiStatus('AI proverava sva 4 pitanja, gramatiku i ispravke…');
+ const controller=new AbortController();
+ const cancel=setTimeout(()=>controller.abort(),58000);
+ try{
+  const response=await fetch(EMAIL_AI_API,{
+   method:'POST',mode:'cors',credentials:'omit',cache:'no-store',
+   headers:{'Content-Type':'application/json','Accept':'application/json'},
+   signal:controller.signal,
+   body:JSON.stringify({mailIndex:EMAIL_INDEX_MICHAEL,answer})
+  });
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok)throw Error(String(data.error||('Cloudflare HTTP '+response.status)));
+  validateAiResponse(data);
+  if(String(st.mail||'').trim()!==answer)throw Error('Tekst mejla je izmenjen tokom provere. Pokrenite novu proveru.');
+  st.aiEmail={answer,response:data,checkedAt:Date.now()};save();
+  setAiStatus('Cloudflare AI provera je završena: '+Number(data.score)+'/15 bodova.');
+  if(thenShowResult){st.page=LAST;st.resultTab='score';render();}
+ }catch(error){
+  setAiStatus('AI provera nije uspela: '+(error.name==='AbortError'?'server nije odgovorio na vreme':error.message)+'. Tekst je sačuvan; možete pokušati ponovo.',true);
+ }finally{
+  clearTimeout(cancel);aiPending=false;
+  if(checkButton&&checkButton.isConnected)checkButton.disabled=false;
+  if(nextButton&&nextButton.isConnected)nextButton.disabled=false;
+ }
+}
+
 function grade(){
  const rd1=['C','E','K','B','G'],rd2=['C','A','A','A','A'];
  const r1=st.r1.reduce((n,v,i)=>n+(v===rd1[i]?3:0),0);
@@ -310,7 +375,7 @@ function grade(){
  const w3rows=st.w3.map((vals,i)=>{let errors=0;for(let j=0;j<5;j++)if(vals.includes(j)!==SPORTSKEY[i].includes(j))errors++;return Math.max(0,2-errors)});
  const w3=w3rows.reduce((sum,n)=>sum+n,0);
  const mail=emailScore(),lesen=r1+r2,horen=w1+w2+w3,total=lesen+horen+mail.points;
- const pass=total>=35&&lesen>=5&&horen>=6&&mail.points>=3&&mail.valid;
+ const pass=mail.graded&&total>=35&&lesen>=5&&horen>=6&&mail.points>=3&&mail.valid;
  return {r1,r2,w1,w2,w3,w3rows,noteok,mail,lesen,horen,total,pass};
 }
 function solutionRow(name,actual,expected,points,max){
@@ -318,18 +383,19 @@ function solutionRow(name,actual,expected,points,max){
 }
 function result(){
  const g=grade(),tab=st.resultTab||'score';
+ const mailDisplay=g.mail.graded?g.mail.points:'—';
  const resultline=(name,pts,max)=>'<div class="result-row"><span class="l">'+esc(name)+'</span><strong class="r">'+pts+' / '+max+'</strong></div>';
  let area='';
  if(tab==='score'){
-   area='<div class="card center"><div class="sub">Ukupan rezultat</div><div class="score">'+g.total+' <small>/ 70</small></div><h3 class="'+(g.pass?'ok':'bad')+'">'+(g.pass?'POLOŽENO':'NIJE POLOŽENO')+'</h3><p class="small">Za prolaz najmanje 35/70 i minimum po oblastima.</p></div>'+
+   area='<div class="card center"><div class="sub">'+(g.mail.graded?'Ukupan rezultat':'Trenutno poznati bodovi')+'</div><div class="score">'+(g.mail.graded?g.total:g.lesen+g.horen)+' <small>/ 70</small></div><h3 class="'+(!g.mail.graded?'':g.pass?'ok':'bad')+'">'+(!g.mail.graded?'AI PROVERA MEJLA NIJE ZAVRŠENA':g.pass?'POLOŽENO':'NIJE POLOŽENO')+'</h3><p class="small">Za prolaz najmanje 35/70 i minimum po oblastima.</p></div>'+
    '<div class="card">'+
    resultline('Lesen · Aufgabe 1',g.r1,15)+resultline('Lesen · Aufgabe 2',g.r2,10)+
    resultline('Hören · Aufgabe 1',g.w1,10)+resultline('Hören · Aufgabe 2',g.w2,10)+resultline('Hören · Aufgabe 3',g.w3,10)+
-   resultline('Schreiben · E-Mail (procena)',g.mail.points,15)+'</div>'+
+   resultline('Schreiben · E-Mail (Cloudflare AI)',mailDisplay,15)+'</div>'+
    '<div class="card greenish">'+
-   resultline('LESEN · ukupno',g.lesen,25)+resultline('HÖREN · ukupno',g.horen,30)+resultline('E-MAIL · ukupno',g.mail.points,15)+
+   resultline('LESEN · ukupno',g.lesen,25)+resultline('HÖREN · ukupno',g.horen,30)+resultline('E-MAIL · ukupno',mailDisplay,15)+
    '<p class="small">Pragovi: Lesen 5/25 · Hören 6/30 · E-Mail 3/15. E-Mail kraći od 25 reči ne dobija bodove.</p></div>'+
-   '<p class="small">Automatska procena mejla je orijentaciona. Konačna ocena jezičke tačnosti zahteva nastavnika.</p>';
+   '<p class="small">Ocena mejla dolazi iz Cloudflare AI servisa. Ovaj Worker koristi DE-MAX rubricu i opseg 26–50 reči, što nije potpuno isto kao zvanični ÖSD kriterijumi.</p>';
  }else if(tab==='lesen'){
    area='<div class="card"><h3>Lesen · Aufgabe 1 · '+g.r1+'/15</h3>'+
    ['C','E','K','B','G'].map((v,i)=>solutionRow('Text '+(i+1),st.r1[i],v,st.r1[i]===v?3:0,3)).join('')+'</div>'+
@@ -347,12 +413,35 @@ function result(){
    SPORTSKEY.map((v,i)=>solutionRow((i+1)+'. '+(i%2===0?'Sprecherin':'Sprecher'),st.w3[i].map(k=>SPORTS[k]).join(', '),v.map(k=>SPORTS[k]).join(', '),g.w3rows[i],2)).join('')+'</div>'+
    '<div class="card greenish"><b>Ukupno Hören: '+g.horen+'/30</b><p class="small">Minimum 6 bodova · '+(g.horen>=6?'Prag ostvaren':'Prag nije ostvaren')+'</p></div>';
  }else{
-   area='<div class="card"><h3>E-Mail · '+g.mail.points+'/15</h3>'+
-   (!g.mail.valid?'<p class="bad">Mejl ima '+g.mail.count+' reči. Za ocenjivanje treba najmanje 25 reči.</p>':'<p class="small">'+g.mail.count+' reči · minimum 3/15 za prolaz.</p>')+
-   [...g.mail.coverage,...g.mail.formal].map(q=>'<div class="result-row"><span>'+esc(q.label)+'</span><b class="'+(q.points?'ok':'bad')+'">'+q.points+'/'+q.max+'</b></div>').join('')+
-   '<p class="small">Ocenjivanje je orijentaciono: prepoznate fraze ne mogu pouzdano oceniti gramatiku i smisao. Nastavnik proverava tekst.</p></div>'+
-   '<div class="card"><h3>Tvoj mejl</h3><p class="mail-result">'+esc(st.mail||'Mejl nije napisan.')+'</p></div>'+
-   '<details class="card"><summary>Primer ispravno napisanog mejla</summary><p class="mail-result">Lieber Michael, vielen Dank für deine E-Mail. Mir geht es gut. Ja, ich bin letztes Jahr nach Deutschland gefahren und habe Berlin besucht. Bei mir gibt es Neuigkeiten: Ich habe einen neuen Deutschkurs begonnen. Am Samstag nach deiner Reise habe ich Zeit. Wir können uns im Café treffen. Liebe Grüße, Ali</p></details>';
+   const m=g.mail,verified=m.graded&&m.status==='ai',resp=verified?m.feedback:{},rubric=resp.rubric||{};
+   area='<div class="card"><h3>E-Mail · '+(m.graded?m.points:'—')+'/15</h3>'+
+   '<p class="small">Napisano: '+m.count+' reči · Prolaz: 3/15 · Cloudflare prihvata 26–50 reči.</p>'+
+   (m.status==='too_short'?'<p class="bad">Manje od 26 reči: ceo Schreiben se ne ocenjuje (0 bodova).</p>':
+   !verified?'<p class="bad">Mejl još nije AI ocenjen. Pokrenite proveru na prethodnom koraku.</p>':
+   '<p class="ok"><b>AI provera završena.</b> Ocena: '+m.points+'/15.</p>')+'</div>';
+   if(verified){
+    const rubricRows=[
+     ['Odgovori na 4 pitanja',rubric.questions,8],['Gramatika',rubric.grammar,4],
+     ['Obraćanje',rubric.opening,1],['Završni pozdrav',rubric.closing,1],['Povezanost',rubric.coherence,1]
+    ];
+    area+='<div class="card"><h3>Cloudflare AI – bodovi</h3>'+
+      rubricRows.map(row=>'<div class="result-row"><span>'+esc(row[0])+'</span><strong>'+esc(row[1]??'—')+'/'+row[2]+'</strong></div>').join('')+'</div>'+
+      '<div class="card"><h3>Odgovori na četiri pitanja</h3>'+
+      ['Hast du schon einmal eine Reise gemacht?','Wohin bist du gefahren?','Was gibt es bei dir Neues?','Wann hast du Zeit?']
+       .map((question,i)=>'<div class="ai-question"><strong>'+esc((i+1)+'. '+question)+'</strong><span>'+esc(resp.questionPoints?.[i]??'—')+'/2</span><p class="small">'+esc(resp.questionFeedback?.[i]||'Nema dodatnog komentara.')+'</p></div>').join('')+'</div>';
+    if(resp.feedback)area+='<div class="card"><h3>Mišljenje AI profesora</h3><p class="mail-result">'+esc(resp.feedback)+'</p></div>';
+    if(Array.isArray(resp.grammarCorrections)&&resp.grammarCorrections.length)area+='<div class="card"><h3>Ispravke grešaka</h3>'+
+      resp.grammarCorrections.map(x=>'<div class="ai-question"><p><b class="bad">Pre:</b> '+esc(x.original||'')+'</p><p><b class="ok">Ispravno:</b> '+esc(x.corrected||'')+'</p><p class="small">'+esc(x.explanation||'')+'</p></div>').join('')+'</div>';
+    if(resp.correctedText)area+='<div class="card"><h3>Ispravljeni mejl</h3><p class="mail-result">'+esc(resp.correctedText)+'</p>'+
+      (resp.translationSr?'<details><summary>Prevod ispravljenog mejla</summary><p class="mail-result">'+esc(resp.translationSr)+'</p></details>':'')+'</div>';
+    if(resp.modelEmail)area+='<details class="card"><summary>Model – primer pravilnog mejla</summary><p class="mail-result">'+esc(resp.modelEmail)+'</p></details>';
+   }else if(m.status==='not_checked'){
+     area+='<div class="card"><button id="retryAiResult" type="button" class="btn primary" style="width:100%">✦ Proveri mejl AI</button><p id="aiStatus" class="small" role="status"></p></div>';
+   }else if(m.status==='too_long'){
+     area+='<div class="card"><p class="small">Radna verzija Cloudflare Workera trenutno ne prihvata više od 50 reči. Vratite se i skratite mejl ili koristite zasebnu procenu nastavnika.</p></div>';
+   }
+   area+='<div class="card"><h3>Tvoj mejl</h3><p class="mail-result">'+esc(st.mail||'Mejl nije napisan.')+'</p></div>';
+
  }
  return '<div class="stage-label">DE-MAX · ÖSD A2</div><h1 class="stage-title">Rezultati testa</h1>'+
  '<div class="result-tabs">'+[['score','Bodovi'],['lesen','Lesen'],['horen','Hören'],['mail','E-Mail']].map(([k,v])=>'<button type="button" data-result="'+k+'" class="'+(tab===k?'active':'')+'">'+v+'</button>').join('')+'</div>'+
@@ -484,6 +573,10 @@ window.visualViewport?.addEventListener('resize',()=>requestAnimationFrame(fitPa
 function notify(s){const el=document.createElement('div');el.className='toast';el.textContent=s;document.body.append(el);setTimeout(()=>el.remove(),2800)}
 
 document.getElementById('app').addEventListener('click',e=>{
+ const aiBtn=e.target.closest('#aiGradeBtn, #retryAiResult');
+ if(aiBtn){checkEmailAI(aiBtn.id==='retryAiResult');return;}
+ const skipBtn=e.target.closest('#skipAiBtn');
+ if(skipBtn){st.page=LAST;st.resultTab='score';render();return;}
  const resultTab=e.target.closest('[data-result]');
  if(resultTab){st.resultTab=resultTab.dataset.result;save();render();return;}
  const b=e.target.closest('[data-font-adjust]');
@@ -495,7 +588,7 @@ document.getElementById('app').addEventListener('click',e=>{
 });
 main.addEventListener('input',e=>{
  const t=e.target;
- if(t.id==='emailAnswer'){st.mail=t.value;document.getElementById('wordCount').textContent=wordCount(st.mail)+' Wörter'}
+ if(t.id==='emailAnswer'){st.mail=t.value;st.aiEmail=null;document.getElementById('wordCount').textContent=wordCount(st.mail)+' Wörter';setAiStatus('Tekst je izmenjen. Proverite ga ponovo preko Cloudflare AI.',false)}
  if(t.dataset.w2!==undefined)st.w2[Number(t.dataset.w2)]=t.value;
  save();
 });
@@ -508,7 +601,7 @@ main.addEventListener('change',e=>{
  save();
 });
 prev.onclick=()=>{if(st.page>0){st.page--;render()}};
-next.onclick=()=>{if(st.page===0){st.started=Date.now();st.page=1}else if(st.page<LAST)st.page++;else st.page=0;render()};
+next.onclick=()=>{if(st.page===LAST-1){checkEmailAI(true);return;}if(st.page===0){st.started=Date.now();st.page=1}else if(st.page<LAST)st.page++;else st.page=0;render()};
 render();
 </script>
 </body></html>
