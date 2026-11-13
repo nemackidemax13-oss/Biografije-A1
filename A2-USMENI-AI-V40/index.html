@@ -1786,7 +1786,7 @@ $("restart").onclick=()=>{app.evaluations={};app.inFlight={};app.grammarReviews=
  * iOS/Android fallback: MediaRecorder + DE-MAX transcribe Worker.
  * Ne prebacuje učenika na sledeće pitanje samostalno.
  */
-const DM_DIRECT_MIC_URL=location.origin+location.pathname+"?v=20261113-v45-replit-mikrofon";
+const DM_DIRECT_MIC_URL=location.origin+location.pathname+"?v=20261113-v46-v30-mikrofon";
 const DM_EMBEDDED=window.self!==window.top;
 const DM_MIC={
  stream:null,pending:null,allowed:false,permitGeneration:0,
@@ -1836,16 +1836,9 @@ function dmReleaseStream(){
 async function dmPermit(fromTap){
  if(dmTrackLive())return true;
  if(DM_MIC.pending)return DM_MIC.pending;
- // A Replit iframe must delegate microphone access; the child cannot bypass it.
- try{
-  const policy=document.permissionsPolicy||document.featurePolicy;
-  if(policy?.allowsFeature?.("microphone")===false){
-   DM_MIC.lastError="IframePolicyBlocked";
-   dmMicStatus('Replit iframe mora da ima allow="microphone; autoplay". Ako je mikrofon blokiran, otvorite direktan HTTPS link.',true);
-   if(window.parent!==window)window.parent.postMessage({source:"DEMAX_A2_V40",kind:"microphone",state:"iframe-policy-blocked"},"*");
-   return false;
-  }
- }catch(e){}
+ // Kao u radnoj V30: direktno pozovi getUserMedia posle klika korisnika.
+ // Ne blokiraj zahtev samo zbog iframe Permissions Policy provere.
+ // Sam pregledač odlucuje da li je pristup dozvoljen.
  // The device and browser must still authorize microphone access.
  if(!window.isSecureContext){
   dmMicStatus("Mikrofon radi samo preko bezbednog HTTPS linka. Otvori direktnu GitHub aplikaciju.",true);return false
@@ -2634,7 +2627,7 @@ document.addEventListener("visibilitychange",()=>{
  // If a user tap is required, the green Start button retries during the gesture.
  function dmAutoPrepareMobileMic(){
   if(!dmMobileRecognizer()||dmTrackLive()||DM_MIC.pending||
-     DM_MIC.lastError==="IframePolicyBlocked"||document.visibilityState==="hidden")return;
+     document.visibilityState==="hidden")return;
   dmPermit(false).then(ok=>{
    if(window.parent!==window)try{
     window.parent.postMessage({source:"DEMAX_A2_V40",kind:"microphone",state:ok?"allowed":"blocked"},"*");
@@ -2848,5 +2841,5 @@ document.addEventListener("visibilitychange",()=>{
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" async></script>
-<script src="./v40.js?v=20261113-v45-replit-mikrofon"></script>
+<script src="./v40.js?v=20261113-v46-v30-mikrofon"></script>
 </body></html>
