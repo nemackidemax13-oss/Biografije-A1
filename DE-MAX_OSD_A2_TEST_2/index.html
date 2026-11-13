@@ -1336,26 +1336,27 @@ async function checkEmailAI(thenShowResult){
  }
 }
 
+
 function grade(){
- const rd1=['C','E','K','B','G'],rd2=['C','A','A','A','A'];
- const r1=st.r1.reduce((n,v,i)=>n+(v===rd1[i]?3:0),0);
- const r2=st.r2.reduce((n,v,i)=>n+(v===rd2[i]?2:0),0);
- const correct=[0,1,5,6],hit=st.w1.filter(i=>correct.includes(i)).length;
- let w1=st.w1.length>5?0:[0,1,4,7,10][hit];if(st.w1.length===5)w1=Math.max(0,w1-3);
+ const rd1=['G','D','H','E','I'],rd2=['A','A','B','B','C'];
+ const r1=st.r1.reduce((sum,value,i)=>sum+(value===rd1[i]?3:0),0);
+ const r2=st.r2.reduce((sum,value,i)=>sum+(value===rd2[i]?2:0),0);
+ const w1=st.w1.reduce((sum,value,i)=>sum+(value!==''&&Number(value)===HEARING1KEY[i]?2:0),0);
  const noteok=[
- ['freitag','fr','fr.'].some(v=>normalize(st.w2[0])===normalize(v)),
- normalize(st.w2[1])==='salat',
- ['2','zwei','2euro','zwo'].includes(normalize(st.w2[2])),
- ['19','7','19uhr','7uhr','19:00','19.00','7:00','7.00','19h'].includes(String(st.w2[3]).trim().toLowerCase().replace(/\s/g,'')),
- digits(st.w2[4])==='7345682'
+  ['juni','june','6','06'].includes(normalize(st.w2[0])),
+  digits(st.w2[1])==='68',
+  digits(st.w2[2])==='500',
+  ['hirschen','hirschenstrasse','hirschenstrae','hirschenstraße'].includes(normalize(st.w2[3])),
+  digits(st.w2[4])==='2648235'
  ];
  const w2=noteok.filter(Boolean).length*2;
- const w3rows=st.w3.map((vals,i)=>{let errors=0;for(let j=0;j<5;j++)if(vals.includes(j)!==SPORTSKEY[i].includes(j))errors++;return Math.max(0,2-errors)});
- const w3=w3rows.reduce((sum,n)=>sum+n,0);
+ const w3rows=st.w3.map((v,i)=>v.length===1&&v[0]===SPORTSKEY[i][0]?2:0);
+ const w3=w3rows.reduce((a,b)=>a+b,0);
  const mail=emailScore(),lesen=r1+r2,horen=w1+w2+w3,total=lesen+horen+mail.points;
  const pass=mail.graded&&total>=35&&lesen>=5&&horen>=6&&mail.points>=3&&mail.valid;
  return {r1,r2,w1,w2,w3,w3rows,noteok,mail,lesen,horen,total,pass};
 }
+
 function solutionRow(name,actual,expected,points,max){
  return '<div class="solution-detail"><span>'+esc(name)+'</span><span><small>Tvoj: <b>'+esc(actual||'—')+'</b></small><small>Tačno: <b>'+esc(expected)+'</b></small><strong class="'+(points===max?'ok':'bad')+'">'+points+' / '+max+'</strong></span></div>';
 }
@@ -1376,20 +1377,21 @@ function result(){
    '';
  }else if(tab==='lesen'){
    area='<div class="card"><h3>Lesen · Aufgabe 1 · '+g.r1+'/15</h3>'+
-   ['C','E','K','B','G'].map((v,i)=>solutionRow('Text '+(i+1),st.r1[i],v,st.r1[i]===v?3:0,3)).join('')+'</div>'+
+   ['G','D','H','E','I'].map((v,i)=>solutionRow('Text '+(i+1),st.r1[i],v,st.r1[i]===v?3:0,3)).join('')+'</div>'+
    '<div class="card"><h3>Lesen · Aufgabe 2 · '+g.r2+'/10</h3>'+
-   ['C','A','A','A','A'].map((v,i)=>solutionRow('Frage '+(i+1),st.r2[i],v,st.r2[i]===v?2:0,2)).join('')+'</div>'+
+   ['A','A','B','B','C'].map((v,i)=>solutionRow('Frage '+(i+1),st.r2[i],v,st.r2[i]===v?2:0,2)).join('')+'</div>'+
    '<div class="card greenish"><b>Ukupno Lesen: '+g.lesen+'/25</b><p class="small">Minimum 5 bodova · '+(g.lesen>=5?'Prag ostvaren':'Prag nije ostvaren')+'</p></div>';
+
  }else if(tab==='horen'){
-   const weather=['Sonne','Gewitter','18 Grad','Regen','Nebel','Wind','25 Grad','Wolken'];
-   const nw=['Freitag','Salat','2 Euro','19 Uhr','734 56 82'];
+   const labels=['Juni','68 m²','500 Euro','Hirschenstraße','2648235'];
    area='<div class="card"><h3>Hören · Aufgabe 1 · '+g.w1+'/10</h3>'+
-   '<p class="small">Tvoj: '+esc(st.w1.map(i=>weather[i]).filter(Boolean).join(', ')||'—')+'</p><p class="small">Tačno: <b>Sonne, Gewitter, Wind, 25 Grad</b></p></div>'+
-   '<div class="card"><h3>Hören · Aufgabe 2 · '+g.w2+'/10</h3>'+
-   nw.map((v,i)=>solutionRow('Notiz '+(i+1),st.w2[i],v,g.noteok[i]?2:0,2)).join('')+'</div>'+
-   '<div class="card"><h3>Hören · Aufgabe 3 · '+g.w3+'/10</h3>'+
-   SPORTSKEY.map((v,i)=>solutionRow((i+1)+'. '+(i%2===0?'Sprecherin':'Sprecher'),st.w3[i].map(k=>SPORTS[k]).join(', '),v.map(k=>SPORTS[k]).join(', '),g.w3rows[i],2)).join('')+'</div>'+
-   '<div class="card greenish"><b>Ukupno Hören: '+g.horen+'/30</b><p class="small">Minimum 6 bodova · '+(g.horen>=6?'Prag ostvaren':'Prag nije ostvaren')+'</p></div>';
+    HEARING1KEY.map((value,i)=>solutionRow('Text '+(i+1),WEATHER[Number(st.w1[i])]||'—',WEATHER[value],Number(st.w1[i])===value?2:0,2)).join('')+'</div>'+
+    '<div class="card"><h3>Hören · Aufgabe 2 · '+g.w2+'/10</h3>'+
+    labels.map((value,i)=>solutionRow('Notiz '+(i+1),st.w2[i],value,g.noteok[i]?2:0,2)).join('')+'</div>'+
+    '<div class="card"><h3>Hören · Aufgabe 3 · '+g.w3+'/10</h3>'+
+    SPORTSKEY.map((v,i)=>solutionRow('Text '+(i+1),SPORTS[st.w3[i]?.[0]]||'—',SPORTS[v[0]],g.w3rows[i],2)).join('')+'</div>'+
+    '<div class="card greenish"><b>Ukupno Hören: '+g.horen+'/30</b><p class="small">Minimum 6 bodova · '+(g.horen>=6?'Prag ostvaren':'Prag nije ostvaren')+'</p></div>';
+
  }else{
    const m=g.mail,verified=Boolean(m.feedback),resp=verified?m.feedback:{},rubric=resp.rubric||{};
    area='<div class="card"><h3>E-Mail · '+(m.graded?m.points:'—')+'/15</h3>'+
@@ -1750,6 +1752,8 @@ main.addEventListener('change',e=>{
    const oldScroll=main.scrollTop;render();main.scrollTop=oldScroll;
    return;
  }
+ if(t.dataset.w1Choice!==undefined){st.w1[Number(t.dataset.w1Choice)]=t.value;}
+ if(t.dataset.w3Choice!==undefined){const i=Number(t.dataset.w3Choice);st.w3[i]=t.value===''?[]:[Number(t.value)];}
  if(t.dataset.r1!==undefined)st.r1[Number(t.dataset.r1)]=t.value;
  if(t.dataset.r2!==undefined)st.r2[Number(t.dataset.r2)]=t.value;
  if(t.dataset.w1!==undefined){const i=Number(t.dataset.w1);st.w1=t.checked?[...new Set([...st.w1,i])]:st.w1.filter(x=>x!==i);const c=document.getElementById('weatherCount');if(c)c.textContent=st.w1.length+' / 4 izabrano';}
