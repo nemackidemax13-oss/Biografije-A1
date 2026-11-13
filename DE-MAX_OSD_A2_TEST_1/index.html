@@ -272,8 +272,8 @@ function schreibenIntro(){
 return '<div class="intro-screen"><div class="intro-cover"><div class="intro-eyebrow">SCHREIBEN · ÖSD A2</div><h1>Pisanje mejla</h1>'+
 '<p>Pročitajte postavku mejla, odgovorite na sva četiri pitanja i napišite oko 50 reči. Mejl mora imati najmanje 26 reči da bi bio ocenjen.</p>'+
 '<div class="total-points">15 <small>bodova</small></div><div class="min-points">Minimum 3 boda za prolaz</div></div>'+
-'<div class="summary-task"><b>Četiri pitanja iz mejla</b><span class="pill">12 bodova</span></div>'+
-'<div class="summary-task"><b>Pozdrav, završetak, obim</b><span class="pill">3 boda</span></div>'+
+'<div class="summary-task"><b>TL (dužina) + A (ispunjenost zadatka)</b><span class="pill">± bodovi</span></div>'+
+'<div class="summary-task"><b>K (primerenost) + T (povezanost)</b><span class="pill">2 + 2</span></div>'+ '<div class="summary-task"><b>L (leksika) + F (tačnost)</b><span class="pill">5 + 5</span></div>'+
 '<div class="summary-total">Ukupno 15 bodova / Prolaz 3 boda</div>'+
 '<p class="small" style="text-align:center">Mejl mora imati najmanje 26 reči da bi bio ocenjen.</p></div>';
 }
@@ -299,15 +299,48 @@ const EMAIL_AI_API='https://a2mejlovi.nemackidemax13.workers.dev/api/check-a2-em
 const EMAIL_AI_VERSIONS=['a2-de-max-50-words-rubric-v2','a2-de-max-26-min-50-target-v3','a2-de-max-original-first-v4'];
 const EMAIL_INDEX_MICHAEL=1;
 let aiPending=false;
-function emailScore(){
- const answer=String(st.mail||'').trim(),count=wordCount(answer);
- if(count<26)return {count,points:0,valid:false,graded:true,status:'too_short',source:'word_limit'};
- const saved=st.aiEmail;
- if(saved&&saved.answer===answer&&saved.response&&Number.isInteger(Number(saved.response.score))&&Number(saved.response.score)>=0&&Number(saved.response.score)<=15){
-  return {count,points:Number(saved.response.score),valid:true,graded:true,status:'ai',source:'cloudflare',feedback:saved.response};
- }
- return {count,points:0,valid:count<=50,graded:false,status:count>50?'too_long':'not_checked',source:'pending'};
+
+/* ÖSD ZA2: TL+A+K+T+L+F. Previous Worker speaks another rubric: AI maps to a
+   preliminary estimate, which teacher can adjust using official criteria. */
+function osdLengthPenalty(n){
+ if(n<26)return {points:0,nb:true,label:'Manje od 26 reči – n.b., zadatak se ne ocenjuje'};
+ if(n<=30)return {points:-3,nb:false,label:'26–30 reči: −3 boda'};
+ if(n<=35)return {points:-2,nb:false,label:'31–35 reči: −2 boda'};
+ if(n<=39)return {points:-1,nb:false,label:'36–39 reči: −1 bod'};
+ return {points:0,nb:false,label:'40+ reči: bez odbitka'};
 }
+function aiOsdProposal(ai){
+ if(!ai||!ai.rubric)return null;
+ const q=Array.isArray(ai.questionPoints)?ai.questionPoints:[];
+ const answered=q.filter(x=>Number(x)>0).length;
+ const qSum=q.reduce((n,x)=>n+(Number(x)||0),0);
+ const grammar=Math.max(0,Math.min(4,Number(ai.rubric.grammar)||0));
+ return {
+ A:ai.offTopic||answered<2?'nb':answered===2?-2:answered===3?-1:0,
+ K:Math.min(2,(Number(ai.rubric.opening)>0?1:0)+(Number(ai.rubric.closing)>0?1:0)),
+ T:Number(ai.rubric.coherence)>0?2:0,
+ L:Math.max(0,Math.min(5,Math.round(5*(.55*qSum/8+.45*grammar/4)))),
+ F:Math.max(0,Math.min(5,Math.round(5*grammar/4)))
+ };
+}
+function osdPoints(v,tl){
+ if(tl.nb||v?.A==='nb')return 0;
+ if(!v||!['A','K','T','L','F'].every(k=>v[k]!==null&&v[k]!==undefined&&v[k]!==''))return null;
+ const A=Number(v.A),K=Number(v.K),T=Number(v.T),L=Number(v.L),F=Number(v.F);
+ if(![-2,-1,0,1].includes(A)||![0,1,2].includes(K)||![0,1,2].includes(T)||![0,1,2,3,4,5].includes(L)||![0,1,2,3,4,5].includes(F))return null;
+ return Math.max(0,Math.min(15,tl.points+A+K+T+L+F));
+}
+function emailScore(){
+ const answer=String(st.mail||'').trim(),count=wordCount(answer),tl=osdLengthPenalty(count);
+ if(tl.nb)return {count,tl,points:0,valid:false,graded:true,status:'too_short',source:'word_limit',values:{A:'nb',K:null,T:null,L:null,F:null}};
+ const cached=st.aiEmail?.answer===answer?st.aiEmail.response:null;
+ const candidate=cached&&cached.rubric?cached:null;
+ const manual=st.osdMailRubric?.answer===answer?st.osdMailRubric.values:null;
+ const values={A:null,K:null,T:null,L:null,F:null,...(aiOsdProposal(candidate)||{}),...(manual||{})};
+ const pts=osdPoints(values,tl),graded=pts!==null;
+ return {count,tl,points:graded?pts:0,valid:true,graded,status:manual?'manual':candidate?'ai':count>50?'too_long':'not_checked',source:manual?'teacher_adjusted':candidate?'ai_estimate':'pending',values,feedback:candidate,workerRaw:candidate?Number(candidate.score):null};
+}
+
 function setAiStatus(message,isError){
  const field=document.getElementById('aiStatus');
  if(field){field.textContent=message;field.classList.toggle('bad',Boolean(isError));}
@@ -329,10 +362,7 @@ async function checkEmailAI(thenShowResult){
   if(thenShowResult){st.page=LAST;st.resultTab='mail';render();}
   return;
  }
- if(count>50){
-  setAiStatus('Cloudflare AI trenutno prihvata 26–50 reči. Napisano: '+count+'. Skratite mejl za '+(count-50)+' reči.',true);
-  return;
- }
+ if(count>50){setAiStatus('Postojeći AI servis prihvata najviše 50 reči. Po pravilima ÖSD tekst od 40+ reči nema odbitak. Za duži mejl koristite ručnu proveru kriterijuma.',true);if(thenShowResult){st.page=LAST;st.resultTab='mail';render();}return;}
  if(st.aiEmail?.answer===answer&&st.aiEmail?.response&&thenShowResult){
   st.page=LAST;st.resultTab='score';render();return;
  }
@@ -356,7 +386,7 @@ async function checkEmailAI(thenShowResult){
   validateAiResponse(data);
   if(String(st.mail||'').trim()!==answer)throw Error('Tekst mejla je izmenjen tokom provere. Pokrenite novu proveru.');
   st.aiEmail={answer,response:data,checkedAt:Date.now()};save();
-  setAiStatus('Cloudflare AI provera je završena: '+Number(data.score)+'/15 bodova.');
+  setAiStatus('Cloudflare AI provera je završena. ÖSD kriterijumi su obračunati kao predlog koji nastavnik može izmeniti.');
   if(thenShowResult){st.page=LAST;st.resultTab='score';render();}
  }catch(error){
   setAiStatus('AI provera nije uspela: '+(error.name==='AbortError'?'server nije odgovorio na vreme':error.message)+'. Tekst je sačuvan; možete pokušati ponovo.',true);
@@ -597,7 +627,7 @@ document.getElementById('app').addEventListener('click',e=>{
 });
 main.addEventListener('input',e=>{
  const t=e.target;
- if(t.id==='emailAnswer'){st.mail=t.value;st.aiEmail=null;document.getElementById('wordCount').textContent=wordCount(st.mail)+' Wörter';setAiStatus('Tekst je izmenjen. Proverite ga ponovo preko Cloudflare AI.',false)}
+ if(t.id==='emailAnswer'){st.mail=t.value;st.aiEmail=null;st.osdMailRubric=null;document.getElementById('wordCount').textContent=wordCount(st.mail)+' Wörter';setAiStatus('Tekst je izmenjen. Proverite ga ponovo preko Cloudflare AI.',false)}
  if(t.dataset.w2!==undefined)st.w2[Number(t.dataset.w2)]=t.value;
  save();
 });
