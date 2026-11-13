@@ -1028,6 +1028,18 @@ main.mail-writing-active.mail-keyboard .a2-mail-writing-layout{justify-content:f
  }
 }
 
+
+/* Custom Hören 1 and Hören 3 selectors; downloadable audio fallback. */
+#app .h1-match-list{flex:1 1 0;min-height:0;overflow-y:auto;display:grid;grid-template-columns:1fr;gap:6px}
+#app .h1-match-row{display:grid;grid-template-columns:65px minmax(0,1fr);gap:6px;align-items:center;padding:3px 7px;background:#f5f9ff;border:1px solid #dce6f3;border-radius:9px;font-size:12px;font-weight:850}
+#app .h1-match-row select{font-size:12px;min-width:0;height:38px;min-height:38px;padding:6px 7px}
+#app main.hearing-one .h1-answers{min-height:0!important}
+#app .speaker-one{width:100%;padding:5px}
+#app .speaker-one select{font-size:14px;min-height:37px;padding:7px}
+#app .audio-file-label[hidden]{display:none!important}
+#app .audio-file-label{display:block;color:#ffe3a0;font-size:11px;padding:5px;background:#1e426d;border-radius:7px}
+#app .audio-file-label input{display:block;width:100%;font-size:11px;margin:4px 0}
+@media(max-height:590px){#app .h1-match-row{padding:2px 5px;font-size:11px}#app .h1-match-row select{min-height:31px;height:31px;font-size:11px}#app .h1-match-list{gap:3px}}
 </style>
 </head>
 <body>
@@ -1068,15 +1080,15 @@ function cover(){return '<section class="home-center"><h1>A2 TEST 2</h1><p class
 
 function lesenIntro(){
 return '<div class="intro-screen lesen-full-intro"><div class="intro-cover"><div class="intro-eyebrow">LESEN · ÖSD A2</div><h1>Razumevanje</h1><p>Pročitajte zadatke i odaberite tačne odgovore.</p><div class="total-points">25 <small>bodova</small></div><div class="min-points">Minimum 5 bodova za prolaz</div></div>'+
-'<div class="summary-task"><b>1. Situationen + Anzeigen</b><span class="pill">15 bodova</span></div>'+
-'<div class="summary-task"><b>2. Anzeige A, B, C</b><span class="pill">10 bodova</span></div>'+
+'<div class="summary-task"><b>1. Überschriften + 5 Texte</b><span class="pill">15 bodova</span></div>'+
+'<div class="summary-task"><b>2. Ein neues Leben</b><span class="pill">10 bodova</span></div>'+
 '<div class="summary-total">Ukupno 25 bodova / Prolaz 5 bodova</div></div>';
 }
 function horenIntro(){
 return '<div class="intro-screen horen-full-intro"><div class="intro-cover"><div class="intro-eyebrow">HÖREN · ÖSD A2</div><h1>Slušanje</h1><p>Slušate tri dela slušanja.</p><div class="total-points">30 <small>bodova</small></div><div class="min-points">Minimum 6 bodova za prolaz</div></div>'+
-'<div class="summary-task"><b>1. Das Wetter am Wochenende</b><span class="pill">10 bodova</span></div>'+
-'<div class="summary-task"><b>2. Notizen – Abschlussfeier</b><span class="pill">10 bodova</span></div>'+
-'<div class="summary-task"><b>3. Welchen Sport betreiben Sie?</b><span class="pill">10 bodova</span></div>'+
+'<div class="summary-task"><b>1. Alltagssituationen</b><span class="pill">10 bodova</span></div>'+
+'<div class="summary-task"><b>2. Notizen – Wohnung</b><span class="pill">10 bodova</span></div>'+
+'<div class="summary-task"><b>3. Was lesen Sie am liebsten?</b><span class="pill">10 bodova</span></div>'+
 '<div class="summary-total">Ukupno 30 bodova / Prolaz 6 bodova</div></div>';
 }
 function r1Item(i){return '<div class="stage-label">LESEN · Aufgabe 1 · 15 bodova</div><h1 class="stage-title">Die passende Überschrift</h1>'+
@@ -1096,32 +1108,47 @@ function r1(){return intro('Lesen • Aufgabe 1','Die passende Überschrift','Pr
 
 '<section class="card lesen-titles-reference" aria-label="Svih deset naslova"><h3 class="lesen-titles-heading">10 naslova (A–K) – stalno prikazani</h3><div class="headings">'+H.map((h,i)=>'<div><b>'+h+'</b> '+esc(HEAD[i])+'</div>').join('')+'</div></section>'+
 TEXTS.map((t,i)=>'<div class="card"><div class="qtop"><b>Text '+(i+1)+'</b><span class="pill">3 Punkte</span></div><p class="passage lesen1-text" lang="de">'+esc(t)+'</p>'+getSelect(i)+'</div>').join('')}
-function r2(){return intro('Lesen • Aufgabe 2','65 Jahre ohne ernsten Streit','Prvo pročitajte tekst, a zatim kod svakog pitanja označite tačan odgovor A, B ili C. (10 bodova)')+
+function r2(){return intro('Lesen • Aufgabe 2','Ein neues Leben','Prvo pročitajte tekst, a zatim kod svakog pitanja označite tačan odgovor A, B ili C. (10 bodova)')+
 
 '<details class="card tinted" open><summary>Lesetext anzeigen / ausblenden</summary><div style="margin-top:10px">'+STORY.map(x=>'<p class="passage lesen2-text" lang="de">'+esc(x)+'</p>').join('')+'</div></details>'+
-'<div class="card goldish"><p class="small" style="margin:0">Beispiel: Herr und Frau Böhm sind seit 65 Jahren ein Ehepaar. (C)</p></div>'+
+'<div class="card goldish"><p class="small" style="margin:0">Beispiel: Sangpos Eltern haben viele Tiere in Tibet. (B)</p></div>'+
 QS.map((q,i)=>'<div class="card"><div class="qtop"><b>'+(i+1)+'. '+esc(q[0])+'</b><span class="pill">2 Punkte</span></div><div class="choices">'+['A','B','C'].map((c,j)=>'<label class="choice"><input type="radio" name="r2-'+i+'" data-r2="'+i+'" value="'+c+'" '+(st.r2[i]===c?'checked':'')+'><b>'+c+'</b> '+esc(q[j+1])+'</label>').join('')+'</div></div>').join('')}
+
 
 function player(i){
  return '<div class="audio exam-audio"><div class="between"><b style="font-size:12px">🎧 Slušanje '+i+'</b><span style="font-size:10px;color:#d9eaff">10 bodova</span></div>'+
  '<div id="audiosignal" role="status" class="audio-status" aria-live="polite">Automatsko slušanje</div>'+
  '<div class="audio-progress"><div id="audioBar"></div></div>'+
  '<button type="button" id="audioFallback" class="audio-start" hidden>▶ Pokreni slušanje</button>'+
+ '<label id="audioFileLabel" class="audio-file-label" hidden>Dodaj MP3 sa uređaja: <input id="audioFromPhone" type="file" accept=".mp3,audio/mpeg,audio/*"></label>'+
  '<audio id="player" autoplay playsinline preload="auto" src="./audio/track-'+i+'.mp3"></audio></div>';
 }
-function h1(){return '<section class="h1-full-mobile"><div class="stage-label">HÖREN · Aufgabe 1 · 10 bodova</div><h1 class="stage-title">Das Wetter am Wochenende</h1>'+
-'<p class="small h1-instructions">Slušate dva teksta istog sadržaja. Označite četiri odgovora.</p>'+player(1)+
-'<div class="card h1-answers"><div class="qtop"><b>Wählen Sie vier Antworten</b><span class="pill">10 Punkte</span></div><div class="twocol">'+WEATHER.map((w,i)=>'<label class="check"><input type="checkbox" data-w1="'+i+'" '+checked(st.w1,i)+'>'+esc(w)+'</label>').join('')+'</div><p class="small h1-count" id="weatherCount">'+st.w1.length+' / 4 izabrano</p></div></section>'}
-function h2(){const lab=['Letzter Kurstag','Zum Essen mitnehmen','Für Getränke (Euro)','Anrufen ab (Uhr)','Telefonnummer'];return '<div class="stage-label">HÖREN · Aufgabe 2 · 10 bodova</div><h1 class="stage-title">Notizen – Abschlussfeier</h1>'+
-'<p class="small h2-instructions" style="margin:0 0 7px">Slušate poruku dva puta. Dopunite pet beleški.</p>'+player(2)+
-'<div class="card hearing2-card"><div class="qtop"><b>✎ Notizblatt</b><span class="pill">10 Punkte</span></div><div class="note-grid">'+lab.map((l,i)=>'<div class="note-row"><label class="fieldlabel" for="n'+i+'">'+(i+1)+'. '+esc(l)+'</label><input id="n'+i+'" data-w2="'+i+'" class="field" type="text" inputmode="'+(i>=2?'numeric':'text')+'" autocomplete="off" placeholder="'+(['Wochentag','Essen','Betrag','Stunde','Nummer'][i])+'" value="'+esc(st.w2[i])+'"></div>').join('')+'</div></div>'}
-function speakerCard(i){return '<div class="card"><div class="qtop"><b>'+(i+1)+'. '+(i%2===0?'Sprecherin':'Sprecher')+'</b><span class="pill">2 Punkte</span></div>'+
-'<p class="small">Koje sportove osoba navodi? Moguće je više odgovora.</p>'+
-'<div class="rowchecks">'+SPORTS.map((n,j)=>'<label class="sport"><input type="checkbox" data-sp="'+i+'" data-sport="'+j+'" '+checked(st.w3[i],j)+'>'+esc(n)+'</label>').join('')+'</div></div>'}
-function h3(){return '<section class="h3-screen"><div class="stage-label">HÖREN · Aufgabe 3 · 10 bodova</div>'+player(3)+
-'<h1 class="stage-title h3-title-below-player">Welchen Sport betreiben Sie?</h1>'+
-'<p class="small h3-help">Slušate pet osoba. Za svaku označite odgovarajuće sportove.</p>'+
-'<div class="speaker-stack">'+[0,1,2,3,4].map(i=>speakerCard(i)).join('')+'</div></section>'}
+function h1(){
+ return '<section class="h1-full-mobile"><div class="stage-label">HÖREN · Aufgabe 1 · 10 bodova</div><h1 class="stage-title">Fünf Alltagssituationen</h1>'+
+ '<p class="small h1-instructions">Slušate pet kratkih razgovora. Za svaki izaberite odgovarajuću situaciju.</p>'+player(1)+
+ '<div class="card h1-answers"><div class="qtop"><b>Ordnen Sie die Situationen zu</b><span class="pill">10 Punkte</span></div>'+
+ '<div class="h1-match-list">'+[0,1,2,3,4].map(i=>'<label class="h1-match-row"><span>Text '+(i+1)+'</span><select class="field" data-w1-choice="'+i+'"><option value="">Izaberi situaciju</option>'+WEATHER.map((v,j)=>'<option value="'+j+'" '+(String(st.w1[i])===String(j)?'selected':'')+'>'+esc(v)+'</option>').join('')+'</select></label>').join('')+'</div></div></section>';
+}
+function h2(){
+ const lab=['Wohnung frei ab (Monat)','Wohnungsgröße (m²)','Preis pro Monat (Euro)','Straße: …straße 23','Telefon 0650 / …'];
+ const placeholders=['Monat','Quadratmeter','Euro','Straßenname','Telefonnummer'];
+ return '<div class="stage-label">HÖREN · Aufgabe 2 · 10 bodova</div><h1 class="stage-title">Notizen – Wohnung</h1>'+
+ '<p class="small h2-instructions">Slušate poruku o stanu. Unesite pet podataka.</p>'+player(2)+
+ '<div class="card hearing2-card"><div class="qtop"><b>✎ Notizblatt</b><span class="pill">10 Punkte</span></div><div class="note-grid">'+lab.map((l,i)=>'<div class="note-row"><label class="fieldlabel" for="n'+i+'">'+(i+1)+'. '+esc(l)+'</label><input id="n'+i+'" data-w2="'+i+'" class="field" type="text" inputmode="'+([1,2,4].includes(i)?'numeric':'text')+'" autocomplete="off" placeholder="'+placeholders[i]+'" value="'+esc(st.w2[i])+'"></div>').join('')+'</div></div>';
+}
+function speakerCard(i){
+ const g=['Sprecherin','Sprecher','Sprecherin','Sprecher','Sprecherin'];
+ return '<div class="card"><div class="qtop"><b>'+(i+1)+'. '+g[i]+'</b><span class="pill">2 Punkte</span></div>'+
+ '<div class="speaker-one"><select class="field" data-w3-choice="'+i+'" aria-label="Odgovor za tekst '+(i+1)+'"><option value="">Izaberi odgovor</option>'+
+ SPORTS.map((v,j)=>'<option value="'+j+'" '+(st.w3[i]?.[0]===j?'selected':'')+'>'+esc(v)+'</option>').join('')+'</select></div></div>';
+}
+function h3(){
+ return '<section class="h3-screen"><div class="stage-label">HÖREN · Aufgabe 3 · 10 bodova</div>'+player(3)+
+ '<h1 class="stage-title h3-title-below-player">Was lesen Sie am liebsten?</h1>'+
+ '<p class="small h3-help">Slušate pet osoba. Za svaku izaberite jednu vrstu štiva.</p>'+
+ '<div class="speaker-stack">'+[0,1,2,3,4].map(i=>speakerCard(i)).join('')+'</div></section>';
+}
+
 function schreibenIntro(){
 return '<div class="intro-screen"><div class="intro-cover"><div class="intro-eyebrow">SCHREIBEN · ÖSD A2</div><h1>Pisanje mejla</h1>'+
 '<p>Pročitajte postavku mejla, odgovorite na sva četiri pitanja i napišite oko 50 reči. Mejl mora imati najmanje 26 reči da bi bio ocenjen.</p>'+
