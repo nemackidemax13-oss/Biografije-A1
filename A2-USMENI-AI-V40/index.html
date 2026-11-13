@@ -1875,7 +1875,7 @@ async function dmProbeAudio(){
 }
 
 // Po prestanku govora odmah pocinje odbrojavanje pet sekundi.
-const DM_SILENCE_LIMIT_MS=5000;
+const DM_SILENCE_LIMIT_MS=7000;
 
 function dmTickCountdown(){
  const key=respondKey();
@@ -1912,7 +1912,7 @@ function dmCancelNoAnswer(){
  DM_MIC.noAnswerUntil=0;
 }
 
-/* Nakon 5 sekundi tišine čuvaj i prevedi, ali čekaj klik za sledeći korak. */
+/* Nakon 7 sekundi tišine čuvaj i prevedi, ali čekaj klik za sledeći korak. */
 async function dmAutoCompleteAnswer(key){
  if(DM_MIC.autoEnding||!DM_MIC.wantListening||respondKey()!==key)return;
  const serial=DM_MIC.serial;
@@ -1963,7 +1963,7 @@ function dmCancelSilence(){
 }
 
 /* Prikazuj prepoznati nemački govor uživo dok je mikrofon uključen.
-   Nakon 5 sekundi tišine poslednji tekst ostaje sačuvan. */
+   Nakon 7 sekundi tišine poslednji tekst ostaje sačuvan. */
 function dmDraftText(key){
  return DM_MIC.pendingKey===key?clean(DM_MIC.pendingText):clean(app.responses[key]||"");
 }
@@ -2447,7 +2447,7 @@ async function startMic(fromTap=false){
  if(app.screen!=="introExam"&&app.screen!=="speaking")return;
  const key=respondKey(),serial=DM_MIC.serial;
  if(DM_MIC.recognition||DM_MIC.media||DM_MIC.mediaSession){
-  dmMicStatus("🎙 Mikrofon je stalno uključen tokom odgovora. Posle 5 sekundi tišine automatski završavam.");
+  dmMicStatus("🎙 Mikrofon je stalno uključen tokom odgovora. Posle 7 sekundi tišine automatski završavam.");
   return;
  }
  dmNewSpeechSession(key);
@@ -2548,7 +2548,7 @@ $("restart").onclick=()=>{
 window.addEventListener("pagehide",()=>{
  dmInvalidate();dmReleaseStream()
 });
-// Ručni prelazak na narednu temu / pitanje: NE čeka se 5 sekundi tišine.
+// Ručni prelazak na narednu temu / pitanje: NE čeka se 7 sekundi tišine.
 // Sačuvaj i poslednji deo snimka, prevedi završeni odgovor i tek onda idi dalje.
 async function dmManualAdvanceSpeaking(){
  if(DM_MIC.autoEnding||app.screen!=="speaking")return;
