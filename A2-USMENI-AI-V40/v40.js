@@ -15,9 +15,9 @@ const scenarios=[
 ["Im Restaurant","Dogovarate zajednički odlazak u restoran.",["🍽️ Wo?","⏰ Wann?","👥 Wer?","📞 Reservierung?"],["In welches Restaurant gehen wir?","Wann möchten Sie essen gehen?","Wen wollen wir einladen?","Wer reserviert den Tisch?"]],
 ["Ein Geschenk kaufen","Kupujete poklon za nastavnicu nemačkog.",["🎁 Was?","💶 Preis?","🏬 Wo?","📅 Wann?"],["Was können wir als Geschenk kaufen?","Wie viel möchten wir ausgeben?","Wo bekommen wir das Geschenk?","Wann wollen wir einkaufen?"]]
 ];
-const V={serial:0,ready:new Set(),part:null,stream:null,rec:null,ctx:null,interval:0,chunks:[],working:false,transcribing:false};
+const V={serial:0,ready:new Set(),part:null,stream:null,rec:null,ctx:null,interval:0,chunks:[],working:false,transcribing:false,native:null,nativeTimer:null,nativeRetry:0,nativeLast:0,nativeSeq:0};
 const originalSpeak=showSpeak,originalResults=showResults;
-const V40_DIRECT_URL=location.origin+location.pathname+"?v=20261113-v47-auto-ton";
+const V40_DIRECT_URL=location.origin+location.pathname+"?v=20261113-v48-v30-webspeech";
 function micPolicyAllowed(){
  try{const p=document.permissionsPolicy||document.featurePolicy;return p?.allowsFeature?.("microphone")??null}catch(e){return null}
 }
@@ -44,8 +44,10 @@ if(intro)intro.innerHTML="ÖSD A2 · AI simulacija V40<br>Predstavljanje · 5 te
 const introBtn=q("begin");
 if(introBtn){
  introBtn.addEventListener("click",()=>{
-  // V30 has its own capture-phase listener; reuse its pending stream instead
-  // of requiring the student to click a second test/permission button.
+  // Originalna V30: za Android Web Speech prvo, bez blokiranog getUserMedia.
+  if(typeof dmUseNativeSpeechFirst==="function"&&dmUseNativeSpeechFirst()){
+   sendMicStatus("native-first");return;
+  }
   const request=DM_MIC.pending||(dmTrackLive()?Promise.resolve(true):dmPermit(true));
   Promise.resolve(request).then(ok=>sendMicStatus(ok?"allowed":"blocked")).catch(()=>sendMicStatus("blocked"));
  },{capture:true});
@@ -119,6 +121,14 @@ directPart2.id="v40direct";directPart2.hidden=true;
 function status(x){q("v40status").textContent=x}
 function scenario(){return scenarios[V.part.index]}
 function vStop(){
+ V.nativeSeq++;
+ if(V.nativeTimer){clearTimeout(V.nativeTimer);V.nativeTimer=null}
+ if(V.native){
+  const n=V.native;V.native=null;
+  n.onresult=n.onerror=n.onend=null;
+  try{n.abort()}catch(e){try{n.stop()}catch(x){}}
+ }
+ V.nativeLast=0;V.nativeRetry=0;
  if(V.interval)clearInterval(V.interval);V.interval=0;
  if(V.ctx){try{V.ctx.close()}catch(e){}V.ctx=null}
  if(V.rec){try{if(V.rec.state!=="inactive")V.rec.stop()}catch(e){}V.rec=null}
@@ -155,6 +165,7 @@ function say(de,then){
  }catch(e){then?.()}
 }
 async function permit(){
+ if(dmUseNativeSpeechFirst())return true;
  if(V.stream?.getAudioTracks().some(x=>x.readyState==="live"))return true;
  // Request permission with the exact V30 getUserMedia function on the user's tap.
  // This intentionally bypasses all custom V40 permission-policy prechecks.
@@ -170,7 +181,73 @@ async function permit(){
  sendMicStatus("blocked");
  return false;
 }
+function listenNative(){
+ if(!V.part?.started||V.part.finished||V.native||V.rec?.state==="recording")return false;
+ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!SR)return false;
+ const p=V.part,serial=V.serial,seq=++V.nativeSeq;
+ const current=()=>V.part===p&&V.serial===serial&&V.nativeSeq===seq;
+ const baseline=norm(q("v40answer").value);
+ let rec,reason="";
+ try{rec=new SR()}catch(e){return false}
+ V.native=rec;
+ rec.lang="de-DE";rec.interimResults=true;rec.continuous=true;rec.maxAlternatives=1;
+ rec.onresult=e=>{
+  if(!current()||V.native!==rec)return;
+  const parts=[];
+  for(let i=0;i<e.results.length;i++){
+   const t=norm(e.results[i]?.[0]?.transcript);
+   if(t)parts.push(t);
+  }
+  const answer=norm([baseline,parts.join(" ")].filter(Boolean).join(" "));
+  if(!answer)return;
+  V.nativeRetry=0;V.nativeLast=Date.now();
+  q("v40answer").value=answer;p.draft=answer;
+  if(V.nativeTimer)clearTimeout(V.nativeTimer);
+  V.nativeTimer=setTimeout(()=>{
+   if(V.part===p&&V.serial===serial&&Date.now()-V.nativeLast>=4900)finishNative();
+  },5000);
+  status("🔴 Prepoznajem nemački. Nakon 5 sekundi bez novih reči završavam odgovor.");
+ };
+ rec.onerror=e=>{reason=e.error||"error"};
+ rec.onend=()=>{
+  if(!current()||V.native!==rec)return;
+  V.native=null;
+  if(reason==="not-allowed"||reason==="service-not-allowed"){
+   if(V.nativeTimer){clearTimeout(V.nativeTimer);V.nativeTimer=null}
+   status("🎙 Mikrofon je odbijen u ovom prikazu. Unesite odgovor ručno.");
+   return;
+  }
+  if(V.nativeLast>0&&Date.now()-V.nativeLast>=5000){finishNative();return}
+  if(V.nativeRetry<12){
+   V.nativeRetry++;
+   setTimeout(()=>{
+    if(V.part===p&&V.serial===serial&&!V.native&&
+       (!V.nativeLast||Date.now()-V.nativeLast<5000))listenNative();
+   },250);
+  }else if(!V.nativeLast){
+   status("🎙 Nema prepoznatog govora. Dodirnite Govori za novi pokušaj.");
+  }
+ };
+ try{
+  rec.start();
+  status("🔴 Slušam nemački preko Web Speech, kao u V30.");
+  return true;
+ }catch(e){V.native=null;status("🎙 Prepoznavanje nije pokrenuto. Možete uneti odgovor.");return false}
+}
+function finishNative(){
+ if(V.nativeTimer){clearTimeout(V.nativeTimer);V.nativeTimer=null}
+ V.nativeSeq++;
+ if(V.native){
+  const rec=V.native;V.native=null;
+  rec.onresult=rec.onerror=rec.onend=null;
+  try{rec.stop()}catch(e){try{rec.abort()}catch(x){}}
+ }
+ V.nativeLast=0;V.nativeRetry=0;
+ if(V.part&&!V.part.finished)status("✓ Odgovor je zabeležen. Pritisnite Sledeća replika.");
+}
 function listen(){
+ if(dmUseNativeSpeechFirst()){listenNative();return}
  if(!V.part?.started||V.part.finished||V.rec?.state==="recording")return;
  if(!V.stream?.getAudioTracks().some(t=>t.readyState==="live")){status("Mikrofon još nije aktivan. Pritisnite „Govori” za ponovno uključivanje.");return}
  if(!window.MediaRecorder){status("Snimanje nije podržano; upišite odgovor.");return}
@@ -249,7 +326,7 @@ async function next(){
  try{
   if(!p.started){
    // Izgovor pocinje odmah u korisnickom kliku, nezavisno od mikrofona.
-   const permitPromise=permit();
+   const permitPromise=dmUseNativeSpeechFirst()?Promise.resolve(true):permit();
    p.started=true;p.question=scenario()[3][0];p.history.push({role:"examiner",text:p.question});
    vRender();status("Ispitivač čita pitanje…");
    say(p.question,()=>{
@@ -258,6 +335,7 @@ async function next(){
     }).catch(()=>{});
    });return;
   }
+  if(V.native||V.nativeTimer)finishNative();
   if(V.rec?.state==="recording")await finishAudio();
   const answer=norm(q("v40answer").value);
   if(!answer){status("Izgovorite ili upišite odgovor pre nastavka.");return}
@@ -271,8 +349,14 @@ async function next(){
   say(reply,()=>{if(V.part===p&&!p.finished)listen()});
  }finally{V.working=false;q("v40next").disabled=false}
 }
-q("v40mic").onclick=async()=>{await permit();listen()};
-q("v40stop").onclick=finishAudio;
+q("v40mic").onclick=async()=>{
+ if(dmUseNativeSpeechFirst()){listenNative();return}
+ const ok=await permit();if(ok)listen();
+};
+q("v40stop").onclick=()=>{
+ if(V.native||V.nativeTimer){finishNative();return}
+ finishAudio();
+};
 q("v40repeat").onclick=()=>{if(V.rec?.state==="recording"){status("Prvo završite govor.");return}if(V.part?.question)say(V.part.question)};
 q("v40next").onclick=next;
 q("v40answer").oninput=()=>{if(V.part)V.part.draft=q("v40answer").value};
