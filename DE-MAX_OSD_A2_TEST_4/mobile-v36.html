@@ -1,0 +1,80 @@
+<!doctype html><html lang="sr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#102447"><title>DE-MAX | ÖSD A2 – Test 4</title><style>body{margin:0;font-family:system-ui;background:#f5f8fd;color:#18365d;min-height:100dvh;display:grid;place-items:center;text-align:center}main{padding:24px}b{font-size:25px}small{display:block;margin-top:15px;color:#657b98}</style></head><body><main><b>DE-MAX A2 TEST 4</b><small>Učitavanje ispitne aplikacije…</small></main><script>
+const testData={"head":["Wohnungssuche nach Ihren Wünschen","Jobangebote in Österreich auf neuer Internetseite","Früher sehr teuer, heute benützt sie jeder","Schnell und stressfrei in die neue Wohnung","Einfache Tipps für die Zahngesundheit","China: Zahnkrankheiten werden häufiger","So finden Sie die perfekten Möbel","Der österreichische Arbeitsmarkt: Tipps und Informationen","Hohe Zahnarztkosten in der Schweiz","Wie schreibt man Wohnungsanzeigen richtig?"],"texts":["Niemand hat gerne Zahnschmerzen, deshalb dachten die Menschen schon früh darüber nach, wie man die Zähne sauber halten kann. Um 1500 kamen von China die ersten Zahnbürsten aus Knochen und Tierhaaren nach Europa. Sie kosteten aber so viel, dass nur die reichsten Leute eine hatten. Erst nach 1930 wurden die Bürsten billiger und seitdem gibt es sie in jedem Badezimmer.","Am kommenden Wochenende finden in der Messehalle Wien wieder die Informationstage „Arbeiten in Österreich“ statt. Die Besucher und Besucherinnen können sich dort über viele Berufe informieren sowie Ratschläge für den Start ins Berufsleben und die Arbeitssuche in Österreich bekommen. Es gibt auch interessante Vorträge von Experten, das Programm dazu finden Sie unter www.arbeit-in-aut.at.","Sie möchten umziehen und haben wenig Zeit? Lassen Sie sich von einem Spezialisten helfen. Ob Ein- und Auspacken Ihrer Sachen oder Tragen und Aufbauen Ihrer Möbel – wir machen das gerne für Sie. Mit unserer Hilfe gelingt Ihr Wohnungswechsel problemlos und schon nach kurzer Zeit fühlen Sie sich in Ihrer neuen Wohnung wohl. Besuchen Sie uns auf www.wirtragendas.at oder informieren Sie sich unter 01/1565412.","Zweimal im Jahr sollten Kinder und Erwachsene zu einer zahnärztlichen Kontrolle gehen. So bleiben die Zähne gesund, man muss sich weniger vor dem Zahnarzt fürchten und spart auch noch viel Geld. Es spricht also alles für eine gute Zahnpflege. Hierfür wichtig: Dreimal täglich die Zähne putzen! Und: Je weniger Zucker, desto besser für die Zähne.","Die richtige Wohnung zu finden ist oft schwierig. Vieles muss passen, damit man gerne nach Hause kommt. Deshalb ist es wichtig, genau zu wissen, was man will. Wir stellen Ihnen die richtigen Fragen und suchen die besten Wohnungsangebote für Sie. Einfacher geht es nicht. Mehr Informationen finden Sie auf www.traumwohnungen.de."],"story":["Immer öfter setzen sich die Menschen auf ihre Fahrräder, weil ihnen die Kosten für einen Wagen zu hoch sind. Sie fahren mit dem Rad zur Arbeit und unternehmen in der Freizeit Fahrradausflüge. Mit dem Rad kann man aber auch größere Reisen machen. Dafür ist eigentlich nur genug Zeit und ein Fahrrad nötig.","Obwohl das einfach, schnell organisiert und ziemlich billig ist, tun es nur wenige. Barbara aus Wien ist nach ihrem Studium ohne Ziel einfach nach Westen gefahren. Als sie dann in Spanien am Meer war, wollte sie noch weiter. Vier Jahre später und nach einer Reise durch mehrere Kontinente war sie wieder zu Hause.","Auf der Reise hat sie gelernt, ihr Rad zu reparieren, denn Geld hatte sie fast keines. „Die tollen Menschen an den verschiedenen Orten und die vielen neuen Freunde haben durch ihre Hilfe diese Reise erst möglich gemacht“, meint Barbara.","Felix und sein Freund Fynn aus Stuttgart wollten als Jugendliche mit der Schule aufhören und auf Weltreise gehen. Nach dem Abitur und einigen Jahren Arbeit im Sportmanagement konnten sie endlich starten.","Leider wurde Fynn schon nach sechs Wochen krank und musste zurück nach Hause. Felix ist weitergefahren und hat auf seiner einjährigen Reise wunderbare Menschen getroffen, über die er einen Film gemacht hat."],"qs":[["Für eine Reise mit dem Fahrrad","braucht man nur wenig Geld.","interessieren sich viele Leute.","muss man alles genau planen."],["Barbara","hat mit dem Rad eine Weltreise gemacht.","ist 4 Jahre lang durch Spanien gefahren.","möchte zum Studieren ins Ausland fahren."],["Auf ihrer Reise hat Barbara","armen Menschen geholfen.","Fahrradprobleme selbst gelöst.","mit Nebenjobs ihr Geld verdient."],["Fynn und Felix","haben die Schule fertig gemacht.","reisen in der Schulzeit zusammen.","sind vor dem Abitur losgefahren."],["Felix","hatte auf Reisen Gesundheitsprobleme.","möchte sich daheim mit Fynn treffen.","war ein Jahr lang alleine unterwegs."]]};
+function patchA2(s){
+ const strict=(x)=>{if(!x)throw Error('Nedostaje deo originalnog testa');};
+ function one(a,b){strict(s.includes(a));s=s.replace(a,b);}
+ function all(a,b){strict(s.includes(a));s=s.split(a).join(b);}
+ function between(a,b,c){const i=s.indexOf(a),j=s.indexOf(b,i+a.length);strict(i>=0&&j>i);s=s.slice(0,i)+c+'\n'+s.slice(j);}
+ const as=x=>JSON.stringify(x)+';';
+ one('<title>DE-MAX | ÖSD A2 – Test 1</title>','<title>DE-MAX | ÖSD A2 – Test 4</title>');
+ one('interaktivni ÖSD A2 Test 1','interaktivni ÖSD A2 Test 4');
+ one("const KEY='demax-osd-a2-model-1-20261113';","const KEY='demax-osd-a2-test-4-20261113';");
+ between('const HEAD=[','const TEXTS=','const HEAD='+as(testData.head));
+ between('const TEXTS=[','const STORY=','const TEXTS='+as(testData.texts));
+ between('const STORY=[','const QS=','const STORY='+as(testData.story));
+ between('const QS=[','const WEATHER=','const QS='+as(testData.qs));
+ between('const WEATHER=','const DEFAULT=',"const WEATHER="+as(['Trinkflasche','Ausweis','gute Schuhe','Fotoapparat','Essen','Rucksack','Handy','Regenjacke'])+"\nconst SPORTS="+as(['Brot','Fleisch','Kuchen','Salat','Speck'])+"\nconst SPORTSKEY="+as([[1,4],[0],[2,3,4],[0,3],[1,3]]));
+ one('<h1>A2 TEST</h1>','<h1>A2 TEST 4</h1>');
+ all('65 Jahre ohne ernsten Streit','Mit dem Fahrrad in die Welt');
+ one('1. Situationen + Anzeigen','1. Texte + Überschriften');
+ one('2. Anzeige A, B, C','2. Mit dem Fahrrad in die Welt');
+ between('function horenIntro(){','function r1Item(',`function horenIntro(){return '<div class="intro-screen horen-full-intro"><div class="intro-cover"><div class="intro-eyebrow">HÖREN · ÖSD A2</div><h1>Slušanje</h1><p>Tri dela slušanja.</p><div class="total-points">30 <small>bodova</small></div><div class="min-points">Minimum 6 bodova za prolaz</div></div>'+
+ '<div class="summary-task"><b>1. Wandern und Spazierengehen</b><span class="pill">10 bodova</span></div>'+
+ '<div class="summary-task"><b>2. Notizen – Elternabend</b><span class="pill">10 bodova</span></div>'+
+ '<div class="summary-task"><b>3. Essen in Österreich</b><span class="pill">10 bodova</span></div>'+
+ '<div class="summary-total">Ukupno 30 bodova / Prolaz 6 bodova</div>'+
+ '<div class="card" style="padding:8px 10px"><label class="fieldlabel" for="audioImport">🎵 Učitaj Track 10, 11 i 12 ukoliko zvuk nije dostupan</label><input type="file" id="audioImport" accept=".mp3,audio/mpeg" multiple style="width:100%;font-size:11px"><p class="small" id="audioReady" style="margin:3px 0 0">MP3 Übungssatz 3</p></div></div>';}`);
+ one('<div class="card goldish"><p class="small" style="margin:0">Beispiel: Herr und Frau Böhm sind seit 65 Jahren ein Ehepaar. (C)</p></div>','<div class="card goldish"><p class="small" style="margin:0">Beispiel: Viele Leute finden, dass Autos zu teuer sind. (B)</p></div>');
+ one('src="./audio/track-\'+i+\'.mp3"','src="\'+(window.__demaxAudioURLs?.[i]||\'./audio/track-\'+i+\'.mp3\')+\'"');
+ between('function h1(){','function h2(){',`function h1(){return '<section class="h1-full-mobile"><div class="stage-label">HÖREN · Aufgabe 1 · 10 bodova</div><h1 class="stage-title">Wandern und Spazierengehen</h1>'+
+ '<p class="small h1-instructions">Slušate dva teksta istog sadržaja. Izaberite četiri odgovora.</p>'+player(1)+
+ '<div class="card h1-answers"><div class="qtop"><b>Was braucht man in der Natur?</b><span class="pill">10 Punkte</span></div><div class="twocol">'+WEATHER.map((w,i)=>'<label class="check"><input type="checkbox" data-w1="'+i+'" '+checked(st.w1,i)+'>'+esc(w)+'</label>').join('')+'</div><p class="small h1-count" id="weatherCount">'+st.w1.length+' / 4 izabrano</p></div></section>';}`);
+ between('function h2(){','function speakerCard(',`function h2(){const lab=['Nächsten (Wochentag)','Uhrzeit Elternabend','Was mitbringen?','Radetzkystraße Nr.','Telefon 0676/'];return '<div class="stage-label">HÖREN · Aufgabe 2 · 10 bodova</div><h1 class="stage-title">Notizen – Elternabend</h1>'+
+ '<p class="small h2-instructions" style="margin:0 0 7px">Slušate poruku dva puta. Dopunite pet beleški.</p>'+player(2)+
+ '<div class="card hearing2-card"><div class="qtop"><b>✎ Notizblatt</b><span class="pill">10 Punkte</span></div><div class="note-grid">'+lab.map((l,i)=>'<div class="note-row"><label class="fieldlabel" for="n'+i+'">'+(i+1)+'. '+esc(l)+'</label><input id="n'+i+'" data-w2="'+i+'" class="field" type="text" inputmode="'+(i===1||i>=3?'numeric':'text')+'" autocomplete="off" placeholder="'+(['Wochentag','17:__','Gegenstand','Nummer','Telefonnummer'][i])+'" value="'+esc(st.w2[i])+'"></div>').join('')+'</div></div>';}`);
+ all("'+(i%2===0?'Sprecherin':'Sprecher')+'","'+(i%2===0?'Sprecher':'Sprecherin')+'");
+ all('Koje sportove osoba navodi? Moguće je više odgovora.','Šta osoba voli da jede? Moguće je više odgovora.');
+ all('Welchen Sport betreiben Sie?','Was essen Sie in Österreich am liebsten?');
+ all('Za svaku označite odgovarajuće sportove.','Za svaku osobu označite odgovarajuću hranu.');
+ between('function mailPrompt(){','/* Match the writing questions',`function mailPrompt(){return '<section class="mail-prompt-full"><div class="stage-label">SCHREIBEN · E-Mail</div><h1 class="stage-title">Eine E-Mail an Ivo</h1><p class="small mail-prompt-instructions">Pročitajte celu poruku koju šalje Ivo.</p>'+
+ '<div class="card tinted mail-prompt-card"><div class="between mail-prompt-sender"><b>Von: Ivo</b><small class="small">Betreff: Wörterbuch leihen</small></div>'+
+ '<div class="letter mail-prompt-letter" lang="de"><p>Liebe/Lieber …!</p><p>Ich bin bald mit meinem Deutschkurs fertig! Nächste Woche habe ich die Prüfung. Du hast ja gesagt, dass du mir dein Wörterbuch leihst. Wann kann ich denn zu dir kommen und es abholen?</p><p>Vielleicht können wir danach etwas zusammen machen. Hast du eine Idee?</p><p>Du hast ja auch einen Deutschkurs besucht und eine sehr gute Note bekommen. Wie hat dir der Kurs gefallen und welchen Tipp kannst du mir für meine Prüfung geben?</p><p>Ich freue mich darauf, dich wiederzusehen. :)</p><p>Liebe Grüße<br>Ivo</p></div></div></section>';}`);
+ between('const MICHAEL_QUESTIONS=[','function writingQuestions()',`const MICHAEL_QUESTIONS=[{de:'Wann kann Ivo zu dir kommen?',sr:'Kada Ivo može da dođe po rečnik?'},{de:'Was wollt ihr danach zusammen machen?',sr:'Šta ćete raditi zajedno?'},{de:'Wie hat dir der Deutschkurs gefallen?',sr:'Kako ti se dopao kurs nemačkog?'},{de:'Welchen Tipp kannst du für die Prüfung geben?',sr:'Koji savet možeš dati za ispit?'}];`);
+ one('const EMAIL_INDEX_MICHAEL=1;','const EMAIL_INDEX_MICHAEL=4;');
+ all('Lieber Michael','Lieber Ivo');
+ one("const rd1=['C','E','K','B','G'],rd2=['C','A','A','A','A'];","const rd1=['C','H','D','E','A'],rd2=['A','A','B','A','C'];");
+ one('const correct=[0,1,5,6]','const correct=[0,2,6,7]');
+ between(' const noteok=[',' const w2=noteok.filter(Boolean).length*2;',` const noteok=[
+ ['donnerstag','do','do.'].includes(String(st.w2[0]).toLowerCase().trim()),
+ ['1715','515','viertelnachfunf','viertelnachfuenf'].includes(normalize(st.w2[1])),
+ ['getranke','getraenke'].includes(normalize(st.w2[2])),
+ digits(st.w2[3])==='24',
+ digits(st.w2[4])==='1569523'
+ ];`);
+ all("['C','E','K','B','G']","['C','H','D','E','A']");
+ all("['C','A','A','A','A']","['A','A','B','A','C']");
+ one("const weather=['Sonne','Gewitter','18 Grad','Regen','Nebel','Wind','25 Grad','Wolken'];","const weather=WEATHER;");
+ one("const nw=['Freitag','Salat','2 Euro','19 Uhr','734 56 82'];","const nw=['Donnerstag','17:15 Uhr','Getränke','24','1569523'];");
+ one('Sonne, Gewitter, Wind, 25 Grad','Trinkflasche, gute Schuhe, Handy, Regenjacke');
+ all('DE-MAX ÖSD A2 Test 1','DE-MAX ÖSD A2 Test 4');
+ all('./assets/demax-logo-user.webp','../DE-MAX_OSD_A2_TEST_1/assets/demax-logo-user.webp');
+ const inject=`<script>
+ window.__demaxAudioURLs=window.__demaxAudioURLs||{};
+ document.addEventListener('change',function(ev){
+ const inp=ev.target;if(!inp||inp.id!=='audioImport')return;
+ let n=0;[...(inp.files||[])].forEach((file,idx)=>{
+ const match=/(?:^|\\D)(10|11|12)(?:\\D|$)/.exec(file.name||'');
+ const i=match?Number(match[1])-9:idx+1;
+ if(i>=1&&i<=3){if(window.__demaxAudioURLs[i])URL.revokeObjectURL(window.__demaxAudioURLs[i]);window.__demaxAudioURLs[i]=URL.createObjectURL(file);n++;}
+ });
+ const p=document.getElementById('audioReady');if(p)p.textContent=n===3?'✓ Učitana sva 3 snimka. Nastavite dalje.':n+' / 3 MP3 snimka učitano';
+ });
+ <\/script>`;
+ s=s.replace('</body>',inject+'</body>');
+ return s;
+}
+fetch('../DE-MAX_OSD_A2_TEST_1/mobile-v36.html?v=20261113-v36-horen2-nav-keyboard',{cache:'no-cache'})
+.then(r=>{if(!r.ok)throw Error('HTTP '+r.status);return r.text()})
+.then(original=>{const updated=patchA2(original);document.open();document.write(updated);document.close();})
+.catch(err=>{document.querySelector('main').innerHTML='<b>Test nije učitan.</b><small>'+String(err.message).replace(/[<>&]/g,'')+'</small>';});
+</script></body></html>
