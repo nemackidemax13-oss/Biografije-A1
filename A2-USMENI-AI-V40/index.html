@@ -1786,7 +1786,7 @@ $("restart").onclick=()=>{app.evaluations={};app.inFlight={};app.grammarReviews=
  * iOS/Android fallback: MediaRecorder + DE-MAX transcribe Worker.
  * Ne prebacuje učenika na sledeće pitanje samostalno.
  */
-const DM_DIRECT_MIC_URL=location.origin+location.pathname+"?v=20261113-v44-replit-ios-android";
+const DM_DIRECT_MIC_URL=location.origin+location.pathname+"?v=20261113-v45-replit-mikrofon";
 const DM_EMBEDDED=window.self!==window.top;
 const DM_MIC={
  stream:null,pending:null,allowed:false,permitGeneration:0,
@@ -1802,8 +1802,21 @@ const DM_MIC={
 };
 function dmMicStatus(message,link=false){
  const id=app.screen==="introExam"?"introStatus":app.screen==="speaking"?"speakStatus":null;
- if(!id)return;
- const target=$(id);target.textContent=message;
+ let target=id?$(id):null;
+ // Replit/WebView moze blokirati dozvolu pre prikaza prvog pitanja.
+ // U tom slucaju poruka i izlazni HTTPS link moraju biti vidljivi i na pocetnoj strani.
+ if(!target&&link&&app.screen==="intro"){
+  target=document.getElementById("dmMicAccessInfo");
+  if(!target){
+   target=document.createElement("p");
+   target.id="dmMicAccessInfo";
+   target.setAttribute("role","alert");
+   target.style.cssText="color:#a52a40;font-size:12px;line-height:1.5;font-weight:750;margin:10px auto;max-width:360px";
+   $("begin")?.insertAdjacentElement("afterend",target);
+  }
+ }
+ if(!target)return;
+ target.textContent=message;
  if(link){
   const a=document.createElement("a");
   a.textContent=" Otvori direktno u Safari/Chrome";
@@ -2629,7 +2642,8 @@ document.addEventListener("visibilitychange",()=>{
   }).catch(()=>{});
  }
  if(dmMobileRecognizer()){
-  setTimeout(dmAutoPrepareMobileMic,160);
+  // iOS/Android: prvi zahtev iskljucivo na klik "Pokreni ispit".
+  // Automatski zahtev pri ucitavanju stranice moze biti odbijen pre klika.
   window.addEventListener("pageshow",()=>{
    if(DM_MIC.permissionEverGranted&&!dmTrackLive()&&!DM_MIC.pending)
     dmAutoPrepareMobileMic();
@@ -2834,5 +2848,5 @@ document.addEventListener("visibilitychange",()=>{
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" async></script>
-<script src="./v40.js?v=20261113-v44-replit-ios-android"></script>
+<script src="./v40.js?v=20261113-v45-replit-mikrofon"></script>
 </body></html>
