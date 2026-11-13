@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="sr">
-<head><meta name="app-version" content="V38-20261113-horen123-cache-refresh"><meta name="app-version" content="V36-20261113-horen2-nav-above-keyboard"><meta name="app-version" content="V35-20261113-compact-mail-buttons-above-keyboard"><meta name="app-version" content="V34-20261113-exercise-labels-right"><meta name="app-version" content="V33-20261113-keyboard-horen2-email-no-translation"><meta name="app-version" content="V32-20261113-fresh-exam-at-every-open"><meta name="app-version" content="V30-20261113-proveri-mejl-label"><meta name="app-version" content="V29-20261113-score-column-right"><meta name="app-version" content="V28-20261113-horen3-heading-below-player">
+<head><meta name="app-version" content="V39-20261113-pdf-test5-content"><meta name="app-version" content="V38-20261113-horen123-cache-refresh"><meta name="app-version" content="V36-20261113-horen2-nav-above-keyboard"><meta name="app-version" content="V35-20261113-compact-mail-buttons-above-keyboard"><meta name="app-version" content="V34-20261113-exercise-labels-right"><meta name="app-version" content="V33-20261113-keyboard-horen2-email-no-translation"><meta name="app-version" content="V32-20261113-fresh-exam-at-every-open"><meta name="app-version" content="V30-20261113-proveri-mejl-label"><meta name="app-version" content="V29-20261113-score-column-right"><meta name="app-version" content="V28-20261113-horen3-heading-below-player">
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
 <meta name="theme-color" content="#102447"><meta name="description" content="DE-MAX Tutin — interaktivni ÖSD A2 Test 7: Lesen, Hören i Schreiben">
 <title>DE-MAX | ÖSD A2 – Test 7</title>
@@ -1084,7 +1084,7 @@ function cover(){return '<section class="home-center"><h1>A2 TEST 7</h1><p class
 function lesenIntro(){
 return '<div class="intro-screen lesen-full-intro"><div class="intro-cover"><div class="intro-eyebrow">LESEN · ÖSD A2</div><h1>Razumevanje</h1><p>Pročitajte zadatke i odaberite tačne odgovore.</p><div class="total-points">25 <small>bodova</small></div><div class="min-points">Minimum 5 bodova za prolaz</div></div>'+
 '<div class="summary-task"><b>1. Überschriften und Texte</b><span class="pill">15 bodova</span></div>'+
-'<div class="summary-task"><b>2. Pflegehilfe mit Herz</b><span class="pill">10 bodova</span></div>'+
+'<div class="summary-task"><b>2. Sprache und Freundschaft kennen keine Grenzen</b><span class="pill">10 bodova</span></div>'+
 '<div class="summary-total">Ukupno 25 bodova / Prolaz 5 bodova</div></div>';
 }
 function horenIntro(){
@@ -1100,10 +1100,10 @@ function r1Item(i){return '<div class="stage-label">LESEN · Aufgabe 1 · 15 bod
 '<div class="card tinted"><label class="fieldlabel">Überschrift</label>'+getSelect(i)+'</div>'+
 '<p class="small">Svih 10 naslova nalazi se u padajućem meniju.</p>';}
 const storyGroups=[[0],[1],[2,3],[4]];
-function storyPart(i){return '<div class="stage-label">LESEN · Aufgabe 2 · 10 bodova</div><h1 class="stage-title">Pflegehilfe mit Herz</h1><p class="small">Pročitajte tekst. Deo '+(i+1)+' / 4.</p>'+
+function storyPart(i){return '<div class="stage-label">LESEN · Aufgabe 2 · 10 bodova</div><h1 class="stage-title">Sprache und Freundschaft kennen keine Grenzen</h1><p class="small">Pročitajte tekst. Deo '+(i+1)+' / 4.</p>'+
 '<div class="card reading-card tinted">'+storyGroups[i].map(j=>'<p class="passage">'+esc(STORY[j])+'</p>').join('')+'</div>'+
 '<div class="card goldish"><p class="small" style="margin:0">Posle teksta odgovorićete na pet pitanja A, B ili C.</p></div>';}
-function r2Item(i){const q=QS[i];return '<div class="stage-label">LESEN · Aufgabe 2 · 10 bodova</div><h1 class="stage-title">Pflegehilfe mit Herz</h1><p class="small">Frage '+(i+1)+' / 5</p>'+
+function r2Item(i){const q=QS[i];return '<div class="stage-label">LESEN · Aufgabe 2 · 10 bodova</div><h1 class="stage-title">Sprache und Freundschaft kennen keine Grenzen</h1><p class="small">Frage '+(i+1)+' / 5</p>'+
 '<div class="card"><div class="qtop"><b>'+esc(q[0])+'</b><span class="pill">2 Punkte</span></div><div class="choices">'+['A','B','C'].map((c,j)=>'<label class="choice"><input type="radio" name="r2-'+i+'" data-r2="'+i+'" value="'+c+'" '+(st.r2[i]===c?'checked':'')+'><b>'+c+'</b> '+esc(q[j+1])+'</label>').join('')+'</div></div>'+
 '<p class="small">Za povratak na originalni tekst koristite „Nazad”.</p>';}
 
@@ -1111,10 +1111,10 @@ function r1(){return intro('Lesen • Aufgabe 1','Die passende Überschrift','Pr
 
 '<section class="card lesen-titles-reference" aria-label="Svih deset naslova"><h3 class="lesen-titles-heading">10 naslova (A–K) – stalno prikazani</h3><div class="headings">'+H.map((h,i)=>'<div><b>'+h+'</b> '+esc(HEAD[i])+'</div>').join('')+'</div></section>'+
 TEXTS.map((t,i)=>'<div class="card"><div class="qtop"><b>Text '+(i+1)+'</b><span class="pill">3 Punkte</span></div><p class="passage lesen1-text" lang="de">'+esc(t)+'</p>'+getSelect(i)+'</div>').join('')}
-function r2(){return intro('Lesen • Aufgabe 2','Pflegehilfe mit Herz','Prvo pročitajte tekst, a zatim kod svakog pitanja označite tačan odgovor A, B ili C. (10 bodova)')+
+function r2(){return intro('Lesen • Aufgabe 2','Sprache und Freundschaft kennen keine Grenzen','Prvo pročitajte tekst, a zatim kod svakog pitanja označite tačan odgovor A, B ili C. (10 bodova)')+
 
 '<details class="card tinted" open><summary>Lesetext anzeigen / ausblenden</summary><div style="margin-top:10px">'+STORY.map(x=>'<p class="passage lesen2-text" lang="de">'+esc(x)+'</p>').join('')+'</div></details>'+
-'<div class="card goldish"><p class="small" style="margin:0">Beispiel: Mendita hilft älteren Menschen in ihren Wohnungen. (B)</p></div>'+
+'<div class="card goldish"><p class="small" style="margin:0">Beispiel: Die Projektstunden finden jede Woche statt. (A)</p></div>'+
 QS.map((q,i)=>'<div class="card"><div class="qtop"><b>'+(i+1)+'. '+esc(q[0])+'</b><span class="pill">2 Punkte</span></div><div class="choices">'+['A','B','C'].map((c,j)=>'<label class="choice"><input type="radio" name="r2-'+i+'" data-r2="'+i+'" value="'+c+'" '+(st.r2[i]===c?'checked':'')+'><b>'+c+'</b> '+esc(q[j+1])+'</label>').join('')+'</div></div>').join('')}
 
 function player(i){
@@ -1122,7 +1122,7 @@ function player(i){
  '<div id="audiosignal" role="status" class="audio-status" aria-live="polite">Automatsko slušanje</div>'+
  '<div class="audio-progress"><div id="audioBar"></div></div>'+
  '<button type="button" id="audioFallback" class="audio-start" hidden>▶ Pokreni slušanje</button>'+
- '<audio id="player" autoplay playsinline preload="auto" src="./audio/track-'+i+'.mp3?v=20261113-test7-horen123"></audio></div>';
+ '<audio id="player" autoplay playsinline preload="auto" src="./audio/track-'+i+'.mp3?v=20261113-test7-pdf5"></audio></div>';
 }
 function h1(){return '<section class="h1-full-mobile"><div class="stage-label">HÖREN · Aufgabe 1 · 10 bodova</div><h1 class="stage-title">Was gibt es beim Fest der Länder?</h1>'+
 '<p class="small h1-instructions">Slušate dva teksta istog sadržaja. Označite četiri odgovora.</p>'+player(1)+
@@ -1135,7 +1135,7 @@ function speakerCard(i){return '<div class="card"><div class="qtop"><b>'+(i+1)+'
 '<div class="rowchecks">'+SPORTS.map((n,j)=>'<label class="sport"><input type="checkbox" data-sp="'+i+'" data-sport="'+j+'" '+checked(st.w3[i],j)+'>'+esc(n)+'</label>').join('')+'</div></div>'}
 function h3(){return '<section class="h3-screen"><div class="stage-label">HÖREN · Aufgabe 3 · 10 bodova</div>'+player(3)+
 '<h1 class="stage-title h3-title-below-player">Was lesen Sie oft?</h1>'+
-'<p class="small h3-help">Slušate pet osoba. Za svaku označite odgovarajuće sportove.</p>'+
+'<p class="small h3-help">Slušate pet osoba. Za svaku označite šta ta osoba često čita.</p>'+
 '<div class="speaker-stack">'+[0,1,2,3,4].map(i=>speakerCard(i)).join('')+'</div></section>'}
 function schreibenIntro(){
 return '<div class="intro-screen"><div class="intro-cover"><div class="intro-eyebrow">SCHREIBEN · ÖSD A2</div><h1>Pisanje mejla</h1>'+
@@ -1169,7 +1169,7 @@ function mailEditor(){
  '<div class="stage-label">SCHREIBEN · E-Mail</div>'+
  writingQuestions()+
  '<div class="card a2-mail-writing-editor"><div class="between a2-writing-editor-bar"><label class="fieldlabel" for="emailAnswer">✎ PIŠI MEJL</label><b class="pill" id="wordCount">'+wordCount(st.mail)+' reči</b></div>'+
- '<textarea class="field editor" id="emailAnswer" placeholder="Liebe Josy,&#10;&#10;danke für deine liebe Nachricht. Zu deinen Fragen: ...">'+esc(st.mail)+'</textarea>'+ 
+ '<textarea class="field editor" id="emailAnswer" placeholder="Liebe Milena,&#10;&#10;danke für deine Nachricht. Wir können ...">'+esc(st.mail)+'</textarea>'+ 
 '<div class="mail-word-meter" id="mailWordMeter" role="progressbar" aria-label="Najmanje 26 reči za ocenjivanje" aria-valuemin="0" aria-valuemax="26" aria-valuenow="'+Math.min(26,wordCount(st.mail))+'"><div class="mail-word-fill '+(wordCount(st.mail)>=26?'met':'below')+'" id="mailWordFill" style="width:'+Math.min(100,wordCount(st.mail)/26*100)+'%"></div></div></div>'+
  '<div class="ai-mail-controls"><button type="button" id="aiGradeBtn" class="btn primary" style="flex:1">✦ Proveri mejl</button><button type="button" id="skipAiBtn" class="btn back">Ostali bodovi</button></div>'+
  '<p id="aiStatus" role="status" class="ai-mail-status">Cloudflare AI proverava 26–50 reči. <span id="aiWorkerConnection" class="ai-worker-connection">Proveravam vezu sa Workerom…</span></p>'+
@@ -1299,7 +1299,7 @@ async function checkEmailAI(thenShowResult){
    method:'POST',mode:'cors',credentials:'omit',cache:'no-store',
    headers:{'Content-Type':'application/json','Accept':'application/json'},
    signal:controller.signal,
-   body:JSON.stringify({mailIndex:EMAIL_INDEX_MICHAEL,answer,prompt:'Neue Wohnung',questions:MICHAEL_QUESTIONS.map(x=>x.de),recipient:'Josy'})
+   body:JSON.stringify({mailIndex:EMAIL_INDEX_MICHAEL,answer,prompt:'Lukas ist da!',questions:MICHAEL_QUESTIONS.map(x=>x.de),recipient:'Milena'})
   });
   const data=await response.json().catch(()=>({}));
   if(!response.ok)throw Error(String(data.error||('Cloudflare HTTP '+response.status)));
@@ -1322,7 +1322,7 @@ async function checkEmailAI(thenShowResult){
 }
 
 function grade(){
- const rd1=['E','G','K','C','H'],rd2=['B','B','C','A','C'];
+ const rd1=['E','F','D','I','K'],rd2=['C','B','C','B','C'];
  const r1=st.r1.reduce((n,v,i)=>n+(v===rd1[i]?3:0),0);
  const r2=st.r2.reduce((n,v,i)=>n+(v===rd2[i]?2:0),0);
  const correct=[1,4,6,7],hit=st.w1.filter(i=>correct.includes(i)).length;
@@ -1361,9 +1361,9 @@ function result(){
    '';
  }else if(tab==='lesen'){
    area='<div class="card"><h3>Lesen · Aufgabe 1 · '+g.r1+'/15</h3>'+
-   ['E','G','K','C','H'].map((v,i)=>solutionRow('Text '+(i+1),st.r1[i],v,st.r1[i]===v?3:0,3)).join('')+'</div>'+
+   ['E','F','D','I','K'].map((v,i)=>solutionRow('Text '+(i+1),st.r1[i],v,st.r1[i]===v?3:0,3)).join('')+'</div>'+
    '<div class="card"><h3>Lesen · Aufgabe 2 · '+g.r2+'/10</h3>'+
-   ['B','B','C','A','C'].map((v,i)=>solutionRow('Frage '+(i+1),st.r2[i],v,st.r2[i]===v?2:0,2)).join('')+'</div>'+
+   ['C','B','C','B','C'].map((v,i)=>solutionRow('Frage '+(i+1),st.r2[i],v,st.r2[i]===v?2:0,2)).join('')+'</div>'+
    '<div class="card greenish"><b>Ukupno Lesen: '+g.lesen+'/25</b><p class="small">Minimum 5 bodova · '+(g.lesen>=5?'Prag ostvaren':'Prag nije ostvaren')+'</p></div>';
  }else if(tab==='horen'){
    const weather=WEATHER;
@@ -1744,20 +1744,47 @@ main.addEventListener('change',e=>{
 prev.onclick=()=>{if(st.page>0){st.page--;render()}};
 next.onclick=()=>{if(st.page===LAST-1){checkEmailAI(true);return;}if(st.page===0){st.started=Date.now();st.page=1}else if(st.page<LAST)st.page++;else st.page=0;render()};
 
-/* Test 7 content adaptation: Lesen + Schreiben PDF Übungssatz 4, Hören Übungssatz 5 */
-HEAD.splice(0,HEAD.length,...["Konzert-Tickets im Internet kaufen","Neuer Zeitungsladen öffnet am Bahnhof","Später aufstehen – leichter lernen","Angebot für Jugendliche: Zugticket für ganz Europa","Tipps für die Jobsuche","Unterricht soll früher beginnen","Musik-Fans können jetzt gewinnen!","Neues Leseangebot für unterwegs","Jobangebot für junge Menschen","Unterschiede bei Fahrkarten-Preisen"]);
-TEXTS.splice(0,TEXTS.length,...["„Chance Bildung – Zukunft sichern“ ist der Titel einer Broschüre für Jugendliche, die noch nicht lange in Österreich leben. In sieben Sprachen findet man darin Informationen zu Ausbildung, Bewerbung und Start ins Berufsleben. Dieses nützliche Heft hilft Jugendlichen schon seit vielen Jahren, in ihrer neuen Heimat Österreich leichter und schneller eine passende Stelle zu finden.","Am Vorplatz der berühmten Hamburger „Elbphilharmonie“ findet dieses Jahr der „Internationale Kultursommer“ statt. Bands aus aller Welt spielen an diesem besonderen Ort klassische, aber auch moderne Lieder. Bis Mitte August gibt es noch die Chance, das Festival kostenlos zu besuchen. Alles, was Sie dafür tun müssen: Melden Sie sich an unter www.elbphilharmoniehamburg.de. Mit etwas Glück gehören bald zwei Eintrittskarten Ihnen.","Laut einer Studie sind öffentliche Verkehrsmittel in Österreich billiger als in vielen anderen europäischen Ländern. Am wenigsten bezahlt man für Bus und Straßenbahn in großen Städten wie Wien oder Graz. Vor allem für Jugendliche und Senioren sind die Fahrten dort besonders günstig. In England kosten die öffentlichen Verkehrsmittel für Erwachsene etwa dreimal so viel wie in Österreich.","Eine Umfrage der Universität Basel zeigt: Jugendliche zwischen 13 und 18 Jahren kommen morgens oft nur schwer aus dem Bett. Deshalb sind sie meistens noch sehr müde, wenn die Schule um 07:30 Uhr anfängt. Verschiebt man die erste Schulstunde um nur 30 Minuten nach hinten, können sich die Schüler schon viel besser konzentrieren.","Wer mit den Österreichischen Bundesbahnen reist, bekommt ab jetzt kostenlos und bequem Zeitschriften und Magazine auf Smartphone, Tablet oder Laptop. So geht’s: Einfach im Zug das Gerät mit dem Internet verbinden und zwischen vielen verschiedenen Themen wählen. Egal ob man sich für internationale Nachrichten, Kultur, Mode oder Sport interessiert – es ist für jeden etwas dabei."]);
-STORY.splice(0,STORY.length,...["Mendita Selmani kommt aus Albanien und hat einen Job als Pflegehelferin in der Schweiz. Sie unterstützt Senioren, die zu Hause leben und manches nicht mehr allein machen können.","Um als Pflegehelferin arbeiten zu können, hat Mendita einen 6-monatigen Kurs besucht und die Prüfung auf Deutsch gemacht. „Das habe ich geschafft, weil meine Geschwister mit mir geübt haben“, erzählt sie. Nach ihrer Ausbildung hat sie sofort eine Stelle gefunden.","In ihrem Job hilft Mendita bei der Körperpflege, wäscht die Wäsche, erledigt Lebensmitteleinkäufe, räumt die Wohnung auf und hört zu, wenn jemand reden möchte. Mit den meisten Senioren unterhält sie sich auf Deutsch, mit manchen auch auf Französisch.","Heute ist Mendita zum interkulturellen Mittagessen der Stadt Luzern eingeladen. Zusammen mit der 85-jährigen Frau Stöckli besucht sie das Rathaus, wo es Speisen aus aller Welt gibt. Mit am Tisch sitzen Pflegehelfer aus über 20 Ländern, die mit Mendita arbeiten.","Zwei nigerianische Angestellte erzählen, dass ihr Beruf nicht immer einfach ist, sie ihn aber trotzdem gerne machen. „Viele ältere Menschen wollen uns zuerst nicht bei sich haben. Wenn sie uns aber näher kennenlernen, gibt es meistens keine Probleme mehr.“ „Wichtig ist, dass man sich in Ruhe mit den alten Menschen unterhält“, erzählt Mendita. „Viele haben nämlich wenig Kontakt zur Familie und wir sind ihre einzigen Gesprächspartner. Außerdem halten Gespräche mit Jüngeren fit“, lächelt Mendita."]);
-QS.splice(0,QS.length,...[["Vor der Prüfung zur Pflegehelferin hat Mendita","ein Jobangebot bekommen.","mit ihrer Familie gelernt.","sich ein Jahr lang vorbereitet."],["Als Pflegehelferin","kauft Mendita auch Kleidung ein.","macht Mendita den Haushalt.","spricht Mendita nur eine Sprache."],["Heute","fährt Mendita allein zu einem Fest ins Zentrum.","kocht Mendita eine Mahlzeit für eine ältere Dame.","trifft Mendita bei einer Veranstaltung ihre Kollegen."],["Zwei Angestellte aus Nigeria sagen, dass","die Arbeit mit alten Leuten schwierig sein kann.","die Senioren beim ersten Treffen freundlich sind.","sie sich einen anderen Job suchen möchten."],["Mendita meint, dass","die Rentner mehr mit anderen älteren Leuten sprechen sollen.","die Senioren regelmäßig mit ihren Verwandten telefonieren.","Pflegehelfer in ihrem Job genug Zeit zum Reden einplanen sollen."]]);
-WEATHER.splice(0,WEATHER.length,...["Filme","Konzerte","Malkurse","Tanzgruppen","Kleidermarkt","Getränke-Bar","Theater-Workshops","Speisen"]);
-SPORTS.splice(0,SPORTS.length,...["Zeitung","E-Mails","Bücher","Anzeigen im Internet","Prospekte"]);
-SPORTSKEY.splice(0,SPORTSKEY.length,...[[4],[0,2],[0,1,3],[0,1],[1,3]]);
+
+/* Test 7: replace only exam CONTENT with uploaded ÖSD A2 Übungssatz 5.
+   Keep existing UI, Hören playback, scoring method and navigation intact. */
+HEAD.splice(0,HEAD.length,
+"Museum plant Renovierung",
+"Angebot: Fahrtraining bei Frost",
+"Kliniken brauchen mehr Ärzte",
+"Neue Ausstellung wartet auf Besucher",
+"Auto-Veranstaltung bei jedem Wetter",
+"Gesundheitsberufe: viele freie Stellen",
+"Welche Pkws Männer am liebsten fahren",
+"Moderne Wohnungen in alten Gebäuden",
+"Sicher unterwegs in der kalten Jahreszeit",
+"Sehenswürdigkeit für Geschichte-Interessierte");
+TEXTS.splice(0,TEXTS.length,
+"Kommenden Freitag, 18. 8., findet wieder das jährliche Oldtimer-Treffen des Vereins Garacho in Basel statt. Dass es an diesem Tag regnen soll, stört die Fahrerinnen der 1960er-Sportwägen nicht. Mechanikerin Dete S. ist mit ihrem Mercedes 300 SL das erste Mal dabei. Ihren Partner hat sie zu Hause gelassen. «Wir sind nämlich ein Club für Damen, nicht für Herren», so die 52-Jährige. *Oldtimer: Fahrzeuge, die mindestens 30 Jahre alt sind. [aus einer Schweizer Zeitung]",
+"Sie möchten eine Ausbildung machen und helfen gerne Menschen? Sie sind freundlich und sozial? Dann ist ein Job als Krankenpfleger für Sie das Richtige. Aktuelle Zahlen zeigen: Sowohl in österreichischen Krankenhäusern als auch in Pensionistenheimen wird es in den nächsten Jahren tausende Arbeitsplätze geben. Informieren Sie sich unter www.pflegeschulen-noe.at über verschiedene Pflege-Ausbildungen. *Pensionist: österreichisch für Rentner. [aus einer österreichischen Tageszeitung]",
+"Nach einer längeren Pause wegen Umbauarbeiten und Reparaturen sind in der Kunsthalle Artefix wieder spannende künstlerische Arbeiten zu sehen. „Wir hatten Platzprobleme, jetzt ist unser Haus endlich viel größer und moderner“, freut sich Museumsdirektor Eberhard Bittner. Ab heute bis 15. Dezember zeigt die Kunsthalle Artefix nun Bilder von jungen Fotografen aus aller Welt. [aus einem österreichischen Magazin]",
+"Achtung, bald ist wieder Winter! Bei Schnee und Temperaturen unter null Grad kann es für Verkehrsteilnehmer auf den Straßen schnell gefährlich werden. Von 1. November bis 15. April brauchen Sie deshalb in Österreich Winterreifen für Ihren Wagen. Bitte denken Sie daran, die Reifen früh genug zu wechseln, oder vereinbaren Sie dafür einen Termin in Ihrer Werkstatt. [von einer österreichischen Website]",
+"Holzhäuser, Handwerksbetriebe und Gaststätten aus dem 16. bis 19. Jahrhundert, Kräutergärten, Dorfläden und vieles mehr: Seit über 50 Jahren bietet das Freilichtmuseum Mühlenthal Gästen eine spannende Reise in die Vergangenheit. Lernen Sie Wohn- und Arbeitsformen aus früheren Zeiten kennen! Geöffnet ist jedes Jahr von 1. Mai bis 30. September. Der Eintrittspreis beträgt 10 Euro pro Person, Kinder bezahlen die Hälfte. [von einer deutschen Website]");
+STORY.splice(0,STORY.length,
+"Im Kosser-Gymnasium in Mainz, Deutschland, gehört seit zwei Jahren ein besonderes Projekt zum Französischunterricht: In den achten Klassen stehen freitags Video-Chats mit Deutsch-Schülern der französischen Partnerschule Clotilde-Loreau in Paris auf dem Stundenplan. So verbessern sich die Schüler beider Nachbarländer in jener Fremdsprache, die sie schon seit mehreren Jahren lernen.",
+"„Die kostenlosen Video-Chats waren die Idee meiner Schüler“, erklärt Lehrerin Martina Pfänder. „Als ich für mein Französisch- und Geografiestudium an der Universität war, habe ich Freunden in Frankreich noch Briefe geschrieben. Telefongespräche waren damals zu teuer.“",
+"Heute sind Video-Gespräche für viele normal. Am Kosser-Gymnasium bekommen die Mädchen und Jungen dafür Laptops, auch private Mobiltelefone sind erlaubt. Die Gespräche finden immer im Turnsaal statt. Dort ist es laut, wenn alle reden. Aber das stört niemanden.",
+"Achtklässler Michael Bauer aus Mainz-Ebersheim erzählt, dass er mit seiner Pariser Kollegin Louise zuerst immer Deutsch und dann Französisch spricht. „Wir beide lieben Filme, darüber reden wir oft. Wir sind wirklich gute Freunde.“",
+"In 14 Tagen reisen zum ersten Mal mehrere Klassen der Pariser Partnerschule für eine Sprachwoche nach Mainz. Die Franzosen werden bei den Chat-Kollegen wohnen. Dadurch lernen sie noch mehr über das Leben im Nachbarland, als sie schon in den Chats erfahren haben. Auch vielen Eltern gefällt das Projekt. Sie sammeln Geld für Jugendliche, deren Väter und Mütter nicht viel verdienen. So können im Frühling auch alle Mainzer Achtklässler ihre Kollegen in Paris besuchen.");
+QS.splice(0,QS.length,
+["Martina Pfänder hat","früher ihre Bekannten im Ausland angerufen.","ihrer Klasse das Projekt vorgeschlagen.","zwei verschiedene Fächer studiert."],
+["Die Schüler des Kosser-Gymnasiums","chatten im Klassenzimmer mit den Pariser Schülern.","dürfen für das Projekt ihre Handys benutzen.","müssen in den Projektstunden leise sprechen."],
+["Michael Bauer sagt, dass er","die Chats gern in der Fremdsprache beginnt.","sich in seine Gesprächspartnerin verliebt hat.","und seine Bekannte dasselbe Interesse haben."],
+["Die französischen Schüler","bekommen bald Besuch von den deutschen Freunden.","haben die deutsche Kultur schon ein wenig kennengelernt.","waren mit ihren Lehrern heuer schon in Deutschland."],
+["Viele Eltern","bekommen die Reisekosten ihrer Kinder von der Schule bezahlt.","kritisieren, dass der Sprach-Aufenthalt im Nachbarland zu teuer ist.","unterstützen Schülerinnen und Schüler aus ärmeren Familien."]);
+WEATHER.splice(0,WEATHER.length,"Filme","Konzerte","Malkurse","Tanzgruppen","Kleidermarkt","Getränke-Bar","Theater-Workshops","Speisen");
+SPORTS.splice(0,SPORTS.length,"Zeitung","E-Mails","Bücher","Anzeigen im Internet","Prospekte");
+SPORTSKEY.splice(0,SPORTSKEY.length,[4],[0,2],[0,1,3],[0,1],[1,3]);
 MICHAEL_QUESTIONS.splice(0,MICHAEL_QUESTIONS.length,
- {de:'Wie ist deine neue Wohnung?',sr:'Kakav je tvoj novi stan?'},
- {de:'Was gefällt dir in der neuen Stadt am besten?',sr:'Šta ti se najviše sviđa u novom gradu?'},
- {de:'Wann hast du Zeit?',sr:'Kada imaš vremena?'},
- {de:'Was können wir zusammen unternehmen?',sr:'Šta možemo zajedno da radimo?'});
-PAGES[9]=()=>'<section class="mail-prompt-full"><div class="stage-label">SCHREIBEN · E-Mail</div><h1 class="stage-title">Eine E-Mail an Josy</h1><p class="small mail-prompt-instructions">Pročitajte celu poruku koju šalje Josy.</p><div class="card tinted mail-prompt-card"><div class="between mail-prompt-sender"><b>Von: Josy</b><small class="small">Betreff: Neue Wohnung</small></div><div class="letter mail-prompt-letter" lang="de"><p>Liebe/Lieber …,</p><p>seit du umgezogen bist, denke ich oft an dich. Bitte erzähle: Wie ist deine neue Wohnung? Ich hoffe, du fühlst dich wohl. Es ist bestimmt aufregend, in eine andere Stadt zu ziehen. Was gefällt dir dort am besten? Ich möchte dich gerne bald besuchen kommen und mir alles ansehen. Wann hast du Zeit? Und was können wir zusammen unternehmen?</p><p>Ich freue mich schon sehr auf dich!</p><p>Alles Liebe — Josy</p></div></div></section>';
+  {de:"Wann sollen wir Stephanie und Amir besuchen?",sr:"Kada treba da posetimo Stephanie i Amira?"},
+  {de:"Wie können wir ihnen am besten helfen?",sr:"Kako im najbolje možemo pomoći?"},
+  {de:"Was kaufen wir für das Baby?",sr:"Šta ćemo kupiti za bebu?"},
+  {de:"Wo bekommen wir ein schönes Geschenk?",sr:"Gde možemo nabaviti lep poklon?"});
+PAGES[9]=()=>'<section class="mail-prompt-full"><div class="stage-label">SCHREIBEN · E-Mail</div><h1 class="stage-title">Eine E-Mail an Milena</h1><p class="small mail-prompt-instructions">Pročitajte celu poruku koju šalje Milena.</p><div class="card tinted mail-prompt-card"><div class="between mail-prompt-sender"><b>Von: milena1@gmail.com</b><small class="small">Betreff: Lukas ist da!</small></div><div class="letter mail-prompt-letter" lang="de"><p>Liebe/Lieber …,</p><p>es gibt Neuigkeiten: Unsere Freunde Stephanie und Amir haben gestern einen Sohn bekommen! Er heißt Lukas und ist gesund.</p><p>Die beiden haben gemeint, dass wir ab nächster Woche vorbeikommen können. Wann sollen wir sie besuchen?</p><p>Bestimmt haben Stephanie und Amir jetzt viel zu tun. Wir haben ja gesagt, dass wir sie unterstützen möchten. Wie können wir ihnen am besten helfen? Wir brauchen auch noch ein Geschenk für das Baby. Was sollen wir kaufen? Und wo bekommen wir ein schönes Geschenk?</p><p>Liebe Grüße<br>Milena</p></div></div></section>';
 /* The three MP3 files are hosted in this test's audio folder. */
 
 render();
