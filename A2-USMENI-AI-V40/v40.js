@@ -17,7 +17,7 @@ const scenarios=[
 ];
 const V={serial:0,ready:new Set(),part:null,stream:null,rec:null,ctx:null,interval:0,chunks:[],working:false,transcribing:false};
 const originalSpeak=showSpeak,originalResults=showResults;
-const V40_DIRECT_URL=location.origin+location.pathname+"?v=20261113-v46-v30-mikrofon";
+const V40_DIRECT_URL=location.origin+location.pathname+"?v=20261113-v47-auto-ton";
 function micPolicyAllowed(){
  try{const p=document.permissionsPolicy||document.featurePolicy;return p?.allowsFeature?.("microphone")??null}catch(e){return null}
 }
@@ -165,7 +165,7 @@ async function permit(){
   sendMicStatus("allowed");
   return true;
  }
- status(micBlockedMessage()+" Možete i upisati odgovor.");
+ status("🎙 Mikrofon nije dostupan u ugrađenom prikazu. Nemački izgovor radi nezavisno, a odgovor možete upisati.");
  q("v40direct").hidden=false;
  sendMicStatus("blocked");
  return false;
@@ -243,15 +243,20 @@ async function nextPrompt(step,previous,answer){
 }
 async function next(){
  if(V.working||V.transcribing)return;
+ try{window.speechSynthesis?.resume()}catch(e){}
  const p=V.part;if(!p||p.finished)return;
  V.working=true;q("v40next").disabled=true;
  try{
   if(!p.started){
+   // Izgovor pocinje odmah u korisnickom kliku, nezavisno od mikrofona.
    const permitPromise=permit();
    p.started=true;p.question=scenario()[3][0];p.history.push({role:"examiner",text:p.question});
    vRender();status("Ispitivač čita pitanje…");
-   await permitPromise;
-   say(p.question,()=>{if(V.part===p)listen()});return;
+   say(p.question,()=>{
+    Promise.resolve(permitPromise).then(ok=>{
+     if(V.part===p&&ok)listen();
+    }).catch(()=>{});
+   });return;
   }
   if(V.rec?.state==="recording")await finishAudio();
   const answer=norm(q("v40answer").value);
