@@ -17,7 +17,7 @@ const scenarios=[
 ];
 const V={serial:0,ready:new Set(),part:null,stream:null,rec:null,ctx:null,interval:0,chunks:[],working:false,transcribing:false};
 const originalSpeak=showSpeak,originalResults=showResults;
-const V40_DIRECT_URL=location.origin+location.pathname+"?v=20261113-v41-mic";
+const V40_DIRECT_URL=location.origin+location.pathname+"?v=20261113-v42-v30mic";
 function micPolicyAllowed(){
  try{const p=document.permissionsPolicy||document.featurePolicy;return p?.allowsFeature?.("microphone")??null}catch(e){return null}
 }
@@ -35,15 +35,7 @@ function micFallbackLink(afterEl){
  afterEl?.insertAdjacentElement("afterend",a);
  return a;
 }
-const oldDmPermitV40=dmPermit;
-dmPermit=async function(fromTap){
- if(micPolicyAllowed()===false){
-  sendMicStatus("blocked");return false;
- }
- const ok=await oldDmPermitV40(fromTap);
- sendMicStatus(ok?"allowed":"blocked");
- return ok;
-};
+/* Preserve V30 dmPermit() exactly: do not wrap, block or replace the working permission function. */
 const intro=document.querySelector("#intro .intro-sub");
 if(intro)intro.innerHTML="ÖSD A2 · AI simulacija V40<br>Predstavljanje · 5 tema · 10 pitanja · Drugi deo";
 const introBtn=q("begin");
@@ -54,11 +46,10 @@ if(introBtn){
  micFallbackLink(micTools);
  q("v40testmic").addEventListener("click",async()=>{
   const msg=q("v40micintro");msg.textContent="Proveravam dozvolu mikrofona…";
-  if(micPolicyAllowed()===false){msg.textContent=micBlockedMessage();sendMicStatus("blocked");return}
   const ok=await dmPermit(true);
+  sendMicStatus(ok?"allowed":"blocked");
   msg.textContent=ok?"✓ Mikrofon je dozvoljen. Pritisnite „Započni simulaciju”.":micBlockedMessage();
  });
- if(micPolicyAllowed()===false){q("v40micintro").textContent=micBlockedMessage();sendMicStatus("blocked")}
 }
 function fallbackTopicQuestion(topic,context,number){
  const low=norm(context).toLowerCase(),n=topic.title.split(" · ")[0];
@@ -163,14 +154,23 @@ function say(de,then){
 }
 async function permit(){
  if(V.stream?.getAudioTracks().some(x=>x.readyState==="live"))return true;
- if(micPolicyAllowed()===false){status(micBlockedMessage());sendMicStatus("blocked");q("v40direct").hidden=false;return false}
- if(!navigator.mediaDevices?.getUserMedia){status("Ovaj pregledač ne podržava mikrofon. Otvorite direktno ili unesite odgovor.");q("v40direct").hidden=false;sendMicStatus("blocked");return false}
- try{V.stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true,channelCount:{ideal:1},sampleRate:{ideal:48000}}});sendMicStatus("allowed");q("v40direct").hidden=true;return true}
- catch(e){status(micBlockedMessage());sendMicStatus("blocked");q("v40direct").hidden=false;return false}
+ // Request permission with the exact V30 getUserMedia function on the user's tap.
+ // This intentionally bypasses all custom V40 permission-policy prechecks.
+ const ok=await dmPermit(true);
+ if(ok&&dmTrackLive()){
+  V.stream=DM_MIC.stream;
+  q("v40direct").hidden=true;
+  sendMicStatus("allowed");
+  return true;
+ }
+ status(micBlockedMessage()+" Možete i upisati odgovor.");
+ q("v40direct").hidden=false;
+ sendMicStatus("blocked");
+ return false;
 }
 function listen(){
  if(!V.part?.started||V.part.finished||V.rec?.state==="recording")return;
- if(!V.stream){status("Pritisnite „Govori” i dozvolite mikrofon.");return}
+ if(!V.stream){status("Pritisnite „Govori” i dozvolite mikrofon kao u V30.");return}
  if(!window.MediaRecorder){status("Snimanje nije podržano; upišite odgovor.");return}
  try{
   const mime=["audio/webm;codecs=opus","audio/mp4","audio/webm"].find(x=>MediaRecorder.isTypeSupported(x))||"";
