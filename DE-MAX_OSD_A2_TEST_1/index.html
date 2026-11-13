@@ -592,6 +592,126 @@ main.mail-writing-active.mail-keyboard .a2-mail-writing-editor #emailAnswer{
  main.mail-writing-active.mail-keyboard .a2-writing-questions li{font-size:10px!important;line-height:1.1!important}
  main.mail-writing-active.mail-keyboard .a2-writing-questions li>.sr{font-size:9px!important}
 }
+
+/* V26 - Hören overview occupies the full mobile app area, just like Lesen overview. */
+main.horen-intro-active{overflow:hidden!important;padding:8px 11px 7px!important}
+main.horen-intro-active #pageContent{
+ height:100%!important;min-height:0!important;transform:none!important;
+ display:flex!important;flex-direction:column!important;
+}
+main.horen-intro-active .horen-full-intro{
+ display:grid!important;grid-template-rows:minmax(0,1fr) repeat(4,auto)!important;
+ gap:8px!important;height:100%!important;min-height:0!important;
+ margin:0!important;align-items:stretch!important;justify-content:stretch!important
+}
+main.horen-intro-active .horen-full-intro .intro-cover{
+ display:flex;flex-direction:column;justify-content:center;align-items:center;
+ min-height:0!important;padding:15px 12px!important;border-radius:17px!important
+}
+main.horen-intro-active .horen-full-intro .intro-cover h1{
+ font-size:clamp(25px,7vw,34px)!important;margin:7px 0!important
+}
+main.horen-intro-active .horen-full-intro .intro-cover p{
+ font-size:clamp(12px,3.25vw,14px)!important;margin:6px 0!important;line-height:1.4
+}
+main.horen-intro-active .horen-full-intro .total-points{
+ font-size:clamp(43px,12vw,57px)!important;line-height:1.04!important
+}
+main.horen-intro-active .horen-full-intro .min-points{margin-top:7px!important}
+main.horen-intro-active .horen-full-intro .summary-task{
+ min-height:44px!important;padding:9px 11px!important;line-height:1.2!important;
+ border-radius:10px!important;font-size:12px!important
+}
+main.horen-intro-active .horen-full-intro .summary-total{
+ padding:11px 8px!important;font-size:12px!important;border-radius:9px!important
+}
+@media(max-height:600px){
+ main.horen-intro-active .horen-full-intro{gap:5px!important}
+ main.horen-intro-active .horen-full-intro .intro-cover{padding:8px 9px!important}
+ main.horen-intro-active .horen-full-intro .intro-cover h1{font-size:24px!important;margin:4px 0!important}
+ main.horen-intro-active .horen-full-intro .total-points{font-size:38px!important}
+ main.horen-intro-active .horen-full-intro .min-points{padding:6px 10px!important;margin-top:4px!important}
+ main.horen-intro-active .horen-full-intro .summary-task{min-height:36px!important;padding:6px 9px!important;font-size:11px!important}
+ main.horen-intro-active .horen-full-intro .summary-total{padding:8px!important}
+}
+/* Hören 3: same non-floating micro player as Hören 1 and Hören 2. */
+main.hearing-three .h3-screen .exam-audio{
+ position:static!important;top:auto!important;z-index:auto!important;box-shadow:none!important;
+ display:flex!important;flex-direction:column!important;gap:2px!important;
+ min-height:12px!important;padding:3px 7px!important;margin:0 0 6px!important;
+ border-radius:6px!important;background:#1d3968!important
+}
+main.hearing-three .h3-screen .exam-audio .between{display:none!important}
+main.hearing-three .h3-screen .exam-audio .audio-status{
+ font-size:9px!important;line-height:1.12!important;margin:0!important;
+ white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;color:#fff2cd!important
+}
+main.hearing-three .h3-screen .exam-audio .audio-progress{
+ height:3px!important;min-height:3px!important;margin:0!important
+}
+main.hearing-three .h3-screen .exam-audio .audio-start{
+ margin:2px 0 0!important;min-height:26px!important;padding:4px 6px!important;
+ font-size:10px!important;border-radius:5px!important
+}
+/* Writing: all 4 German questions are permanently visible, no scrolling in the question area.
+   Only the writing textarea itself scrolls when text becomes longer. */
+main.mail-writing-active .a2-mail-writing-layout{
+ height:100%!important;min-height:0!important;
+ display:flex!important;flex-direction:column!important;gap:5px!important
+}
+main.mail-writing-active .a2-writing-questions,
+main.mail-writing-active.mail-keyboard .a2-writing-questions,
+main.mail-writing-active:not(.mail-keyboard) .a2-writing-questions{
+ display:block!important;
+ flex:0 0 auto!important;height:auto!important;min-height:0!important;
+ max-height:none!important;overflow:visible!important;
+ padding:7px 9px!important;
+ border-radius:8px!important
+}
+main.mail-writing-active .a2-writing-questions-head{margin:0 0 4px!important;gap:5px!important}
+main.mail-writing-active .a2-writing-questions-head h3{font-size:11px!important;line-height:1.15!important}
+main.mail-writing-active .a2-writing-questions ol{
+ display:grid!important;grid-template-columns:minmax(0,1fr)!important;
+ gap:3px!important;padding-left:20px!important;margin:0!important
+}
+main.mail-writing-active .a2-writing-questions li,
+main.mail-writing-active.mail-keyboard .a2-writing-questions li{
+ font-size:11px!important;line-height:1.19!important;margin:0!important;padding:0!important;
+ overflow-wrap:anywhere!important
+}
+main.mail-writing-active .a2-writing-questions li>.sr,
+main.mail-writing-active.mail-keyboard .a2-writing-questions li>.sr{
+ font-size:9px!important;line-height:1.14!important;margin:1px 0 0!important
+}
+main.mail-writing-active .a2-mail-writing-editor{
+ flex:1 1 0!important;height:0!important;min-height:65px!important;max-height:none!important;
+ padding:5px!important;margin:0!important;overflow:hidden!important
+}
+main.mail-writing-active .a2-mail-writing-editor #emailAnswer{
+ flex:1 1 0!important;height:auto!important;min-height:42px!important;max-height:100%!important;
+ overflow-y:auto!important;-webkit-overflow-scrolling:touch!important;
+ resize:none!important;font-size:16px!important
+}
+main.mail-writing-active.mail-keyboard .a2-mail-writing-editor{
+ flex:1 1 0!important;height:0!important;min-height:0!important;max-height:none!important;
+ padding:4px!important;overflow:hidden!important
+}
+main.mail-writing-active.mail-keyboard .a2-mail-writing-editor #emailAnswer{
+ flex:1 1 0!important;height:auto!important;min-height:28px!important;max-height:100%!important
+}
+@media(max-height:420px){
+ main.mail-writing-active .a2-mail-writing-layout{gap:2px!important}
+ main.mail-writing-active .a2-writing-questions,
+ main.mail-writing-active.mail-keyboard .a2-writing-questions{padding:3px 6px!important}
+ main.mail-writing-active .a2-writing-questions-head{margin-bottom:2px!important}
+ main.mail-writing-active .a2-writing-questions ol{gap:1px!important;padding-left:17px!important}
+ main.mail-writing-active .a2-writing-questions li,
+ main.mail-writing-active.mail-keyboard .a2-writing-questions li{font-size:10px!important;line-height:1.11!important}
+ main.mail-writing-active .a2-writing-questions li>.sr{font-size:8px!important;line-height:1.05!important}
+ main.mail-writing-active #a2QuestionTranslate{min-height:22px!important;padding:2px 4px!important;font-size:8px!important}
+ main.mail-writing-active .a2-writing-editor-bar{font-size:10px!important}
+}
+
 </style>
 </head>
 <body>
@@ -645,7 +765,7 @@ return '<div class="intro-screen lesen-full-intro"><div class="intro-cover"><div
 '<div class="summary-total">Ukupno 25 bodova / Prolaz 5 bodova</div></div>';
 }
 function horenIntro(){
-return '<div class="intro-screen"><div class="intro-cover"><div class="intro-eyebrow">HÖREN · ÖSD A2</div><h1>Slušanje</h1><p>Slušate tri dela slušanja.</p><div class="total-points">30 <small>bodova</small></div><div class="min-points">Minimum 6 bodova za prolaz</div></div>'+
+return '<div class="intro-screen horen-full-intro"><div class="intro-cover"><div class="intro-eyebrow">HÖREN · ÖSD A2</div><h1>Slušanje</h1><p>Slušate tri dela slušanja.</p><div class="total-points">30 <small>bodova</small></div><div class="min-points">Minimum 6 bodova za prolaz</div></div>'+
 '<div class="summary-task"><b>1. Das Wetter am Wochenende</b><span class="pill">10 bodova</span></div>'+
 '<div class="summary-task"><b>2. Notizen – Abschlussfeier</b><span class="pill">10 bodova</span></div>'+
 '<div class="summary-task"><b>3. Welchen Sport betreiben Sie?</b><span class="pill">10 bodova</span></div>'+
@@ -961,7 +1081,7 @@ if(!st.flowV12){if(Number(st.page)>=8)st.page=Math.min(11,Number(st.page)+1);st.
 function fitPage(){
  const content=document.getElementById('pageContent');if(!content)return;
  content.style.transform='';
- if(st.page===1||st.page===2||st.page===3||st.page===5||st.page===6||st.page===7||st.page===9||st.page===LAST||st.page===LAST-1)return; // Full-screen Lesen intro; scrollable tasks and flexible writing
+ if(st.page===1||st.page===2||st.page===3||st.page===4||st.page===5||st.page===6||st.page===7||st.page===9||st.page===LAST||st.page===LAST-1)return; // Full-screen Lesen intro; scrollable tasks and flexible writing
  const h=main.clientHeight,n=content.scrollHeight;
  const ratio=h&&n?Math.min(1,(h-2)/n):1;
  content.style.transform='scale('+Math.max(.5,ratio)+')';
@@ -1064,6 +1184,7 @@ function render(){
  prev.hidden=st.page===0;main.style.setProperty('--read-size',Math.max(11,Math.min(24,Number(st.fontSize)||14))+'px');
  main.classList.toggle('reading-scroll',st.page===2||st.page===3);
  main.classList.toggle('lesen-intro-active',st.page===1);
+ main.classList.toggle('horen-intro-active',st.page===4);
  main.classList.toggle('hearing-one',st.page===5);
  main.classList.toggle('mail-prompt-active',st.page===9);
  main.classList.toggle('hearing2-scroll',st.page===6);
