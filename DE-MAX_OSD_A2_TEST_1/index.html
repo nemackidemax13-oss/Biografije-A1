@@ -78,6 +78,27 @@ main.hearing-three #pageContent{transform-origin:top center}
 .mail-questions .fieldlabel{color:#254a81;font-size:11px}
 .mail-questions p{margin:4px 0;font-size:12px;line-height:1.3;font-weight:700;color:#233b5c}
 @media(max-height:680px){.h3-screen .h3-help{display:none}.h3-screen #speakerCard .sport{padding:5px;font-size:10px;min-height:30px}.mail-questions p{font-size:11px;margin:3px 0}}
+
+/* V6: clean home; reading zoom; native scrollable speaker selector */
+#app.home-mode header{display:none}
+#app.home-mode main{display:flex;align-items:center;justify-content:center}
+#app.home-mode #pageContent{width:100%;height:100%;display:grid;place-items:center}
+#app.home-mode #prev{display:none}
+.home-center{height:100%;width:100%;min-height:50dvh;display:flex;justify-content:center;align-items:center;text-align:center}
+.home-center h1{font-size:clamp(38px,12vw,62px);font-weight:1000;letter-spacing:-2px;color:#173b6a;margin:0}
+.font-controls{display:flex;align-items:center;justify-content:flex-end;gap:8px;margin:7px 0 11px;padding:7px 9px;border-radius:12px;background:#eaf1fb;border:1px solid #d5e3f3}
+.font-caption{flex:1;min-width:0;color:#355b8b;font-size:11px;font-weight:850}
+.font-controls button{width:36px;height:36px;border:0;border-radius:9px;background:#1e538a;color:white;font-size:22px;line-height:1;font-weight:900;flex-shrink:0}
+.font-controls button:disabled{opacity:.3}.font-controls strong{color:#274976;font-size:12px;min-width:39px;text-align:center}
+main.reading-scroll .passage{font-size:var(--read-size,14px)!important;line-height:1.57}
+main.reading-scroll .headings div{font-size:var(--read-size,14px)!important;line-height:1.45}
+main.reading-scroll .choice{font-size:var(--read-size,14px)!important;line-height:1.45}
+main.reading-scroll .field{font-size:var(--read-size,14px)!important}
+main.reading-scroll .question-title{font-size:var(--read-size,14px)!important}
+.speaker-select-row{display:grid;grid-template-columns:1fr;gap:5px;margin:5px 0 9px}
+.speaker-select-row label{font-size:11px;color:#325a8a;font-weight:900}
+.speaker-select{width:100%;max-width:100%;min-height:41px;padding:8px 12px;border:1.5px solid #9fb9d7;border-radius:10px;background:#f2f7fe;color:#1b4575;font-size:13px;font-weight:850}
+@media(max-height:620px){.speaker-select{min-height:34px;padding:5px 8px}.speaker-select-row{margin:3px 0 5px}}
 </style>
 </head>
 <body>
@@ -121,7 +142,7 @@ function checked(a,i){return a.includes(i)?'checked':''}
 function heading(k){return '<div class="sub">'+esc(k)+'</div>'}
 function intro(k,name,detail){return heading(k)+'<h1>'+name+'</h1><p class="instructions">'+detail+'</p>'}
 function getSelect(i){return '<select aria-label="Überschrift für Text '+(i+1)+'" class="field" data-r1="'+i+'"><option value="">– Überschrift wählen –</option>'+H.map((h,j)=>'<option value="'+h+'" '+(st.r1[i]===h?'selected':'')+'>'+h+' · '+esc(HEAD[j])+'</option>').join('')+'</select>'}
-function cover(){return '<div class="hero"><div class="round">A2</div><div style="letter-spacing:2px;font-weight:900;font-size:11px;color:#f6d18b">ÖSD ZERTIFIKAT A2</div><h1>TEST 1</h1><p>Kompletna interaktivna pisana proba prema dostavljenom modelu<br>Lesen · Hören · Schreiben</p></div><div class="tiles"><div class="tile"><b>25</b><small>Lesen</small></div><div class="tile"><b>30</b><small>Hören</small></div><div class="tile"><b>✉</b><small>E-Mail</small></div></div><p class="small" style="text-align:center">Nezvanična aplikacija za vežbanje. DE-MAX Tutin.</p>'}
+function cover(){return '<section class="home-center"><h1>A2 TEST</h1></section>'}
 
 function lesenIntro(){
 return '<div class="intro-screen"><div class="intro-cover"><div class="intro-eyebrow">LESEN · ÖSD A2</div><h1>Razumevanje</h1><p>Pročitajte zadatke i odaberite tačne odgovore.</p><div class="total-points">25 <small>bodova</small></div><div class="min-points">Minimum 5 bodova za prolaz</div></div>'+
@@ -149,10 +170,13 @@ function r2Item(i){const q=QS[i];return '<div class="stage-label">LESEN · Aufga
 '<div class="card"><div class="qtop"><b>'+esc(q[0])+'</b><span class="pill">2 Punkte</span></div><div class="choices">'+['A','B','C'].map((c,j)=>'<label class="choice"><input type="radio" name="r2-'+i+'" data-r2="'+i+'" value="'+c+'" '+(st.r2[i]===c?'checked':'')+'><b>'+c+'</b> '+esc(q[j+1])+'</label>').join('')+'</div></div>'+
 '<p class="small">Za povratak na originalni tekst koristite „Nazad”.</p>';}
 
+function lesenFontControls(){const v=Math.max(11,Math.min(24,Number(st.fontSize)||14));return '<div class="font-controls" aria-label="Veličina fonta"><span class="font-caption">Veličina teksta</span><button type="button" data-font-adjust="-1" aria-label="Smanji font" '+(v<=11?'disabled':'')+'>−</button><strong id="fontValue">'+v+' px</strong><button type="button" data-font-adjust="1" aria-label="Povećaj font" '+(v>=24?'disabled':'')+'>+</button></div>'}
 function r1(){return intro('Lesen • Aufgabe 1','Die passende Überschrift','Lesen Sie die 10 Überschriften und die 5 Texte. Wählen Sie pro Text die richtige Überschrift. (15 Punkte)')+
+lesenFontControls()+
 '<details class="card" open><summary>10 Überschriften (A–K)</summary><div class="headings" style="margin-top:11px">'+H.map((h,i)=>'<div><b>'+h+'</b> '+esc(HEAD[i])+'</div>').join('')+'</div></details>'+
 TEXTS.map((t,i)=>'<div class="card"><div class="qtop"><b>Text '+(i+1)+'</b><span class="pill">3 Punkte</span></div><p class="passage">'+esc(t)+'</p>'+getSelect(i)+'</div>').join('')}
 function r2(){return intro('Lesen • Aufgabe 2','65 Jahre ohne ernsten Streit','Lesen Sie zuerst den Text und markieren Sie bei jeder Frage A, B oder C. (10 Punkte)')+
+lesenFontControls()+
 '<details class="card tinted" open><summary>Lesetext anzeigen / ausblenden</summary><div style="margin-top:10px">'+STORY.map(x=>'<p class="passage">'+esc(x)+'</p>').join('')+'</div></details>'+
 '<div class="card goldish"><p class="small" style="margin:0">Beispiel: Herr und Frau Böhm sind seit 65 Jahren ein Ehepaar. (C)</p></div>'+
 QS.map((q,i)=>'<div class="card"><div class="qtop"><b>'+(i+1)+'. '+esc(q[0])+'</b><span class="pill">2 Punkte</span></div><div class="choices">'+['A','B','C'].map((c,j)=>'<label class="choice"><input type="radio" name="r2-'+i+'" data-r2="'+i+'" value="'+c+'" '+(st.r2[i]===c?'checked':'')+'><b>'+c+'</b> '+esc(q[j+1])+'</label>').join('')+'</div></div>').join('')}
@@ -171,7 +195,7 @@ function speakerCard(i){return '<div class="card"><div class="qtop"><b>'+(i+1)+'
 '<div class="rowchecks">'+SPORTS.map((n,j)=>'<label class="sport"><input type="checkbox" data-sp="'+i+'" data-sport="'+j+'" '+checked(st.w3[i],j)+'>'+esc(n)+'</label>').join('')+'</div></div>'}
 function h3(){const i=Math.max(0,Math.min(4,Number(st.speaker)||0));return '<section class="h3-screen"><div class="stage-label">HÖREN · Aufgabe 3 · 10 bodova</div><h1 class="stage-title">Welchen Sport betreiben Sie?</h1>'+
 '<p class="small h3-help">Slušate 5 osoba. Označite sportove za svaku osobu.</p>'+player(3)+
-'<div class="person-tabs" aria-label="Izaberi govornika">'+[0,1,2,3,4].map(j=>'<button type="button" data-person="'+j+'" class="'+(j===i?'active':'')+'" aria-label="Govornik '+(j+1)+'">'+(j+1)+'</button>').join('')+'</div>'+
+'<div class="speaker-select-row"><label for="speakerSelect">Izaberi govornika (1–5)</label><select id="speakerSelect" class="speaker-select" aria-label="Izaberi govornika">'+[0,1,2,3,4].map(j=>'<option value="'+j+'" '+(j===i?'selected':'')+'>Govornik '+(j+1)+' · '+(j%2===0?'Sprecherin':'Sprecher')+'</option>').join('')+'</select></div>'+
 '<div id="speakerCard">'+speakerCard(i)+'</div></section>'}
 function mailPrompt(){return '<div class="stage-label">SCHREIBEN · E-Mail</div><h1 class="stage-title">Eine E-Mail an Michael</h1><p class="small">Pročitajte poruku koju šalje Michael.</p>'+
 '<div class="card tinted"><div class="between"><b style="font-size:12px">Von: Michael</b><small class="small">Betreff: Reise</small></div>'+
@@ -251,6 +275,8 @@ function fitPage(){
 function render(){
  const a=document.getElementById('player');if(a){a.pause();if(objectAudio){URL.revokeObjectURL(objectAudio);objectAudio=null}}
  st.page=Math.max(0,Math.min(LAST,st.page));save();
+ document.getElementById('app').classList.toggle('home-mode',st.page===0);
+ prev.hidden=st.page===0;main.style.setProperty('--read-size',Math.max(11,Math.min(24,Number(st.fontSize)||14))+'px');
  main.classList.toggle('reading-scroll',st.page===2||st.page===3);
  main.classList.toggle('hearing-three',st.page===7);
  main.innerHTML='<div id="pageContent">'+PAGES[st.page]()+'</div>';
@@ -276,12 +302,12 @@ function notify(s){const el=document.createElement('div');el.className='toast';e
 main.addEventListener('click',e=>{
  const resultTab=e.target.closest('[data-result]');
  if(resultTab){st.resultTab=resultTab.dataset.result;save();render();return;}
- const b=e.target.closest('[data-person]');
+ const b=e.target.closest('[data-font-adjust]');
  if(b){
- st.speaker=Number(b.dataset.person);save();
- const c=document.getElementById('speakerCard');if(c)c.innerHTML=speakerCard(st.speaker);
- main.querySelectorAll('[data-person]').forEach(x=>x.classList.toggle('active',Number(x.dataset.person)===st.speaker));
- requestAnimationFrame(fitPage);
+  const n=Math.max(11,Math.min(24,(Number(st.fontSize)||14)+Number(b.dataset.fontAdjust)));
+  st.fontSize=n;save(); main.style.setProperty('--read-size',n+'px');
+  const show=document.getElementById('fontValue');if(show)show.textContent=n+' px';
+  main.querySelectorAll('[data-font-adjust]').forEach(v=>v.disabled=v.dataset.fontAdjust==='-1'?n<=11:n>=24);
  }
 });
 main.addEventListener('input',e=>{
@@ -292,6 +318,11 @@ main.addEventListener('input',e=>{
 });
 main.addEventListener('change',e=>{
  const t=e.target;
+ if(t.id==='speakerSelect'){
+  st.speaker=Math.max(0,Math.min(4,Number(t.value)||0));save();
+  const c=document.getElementById('speakerCard');if(c)c.innerHTML=speakerCard(st.speaker);
+  requestAnimationFrame(fitPage);
+ }
  if(t.dataset.r1!==undefined)st.r1[Number(t.dataset.r1)]=t.value;
  if(t.dataset.r2!==undefined)st.r2[Number(t.dataset.r2)]=t.value;
  if(t.dataset.w1!==undefined){const i=Number(t.dataset.w1);st.w1=t.checked?[...new Set([...st.w1,i])]:st.w1.filter(x=>x!==i);const c=document.getElementById('weatherCount');if(c)c.textContent=st.w1.length+' / 4 izabrano';}
