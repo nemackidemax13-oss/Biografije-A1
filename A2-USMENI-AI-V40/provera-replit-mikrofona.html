@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>DE-MAX A2 · Provera mikrofona i zvuka</title>
+<style>
+:root{color-scheme:light;--navy:#12335c;--blue:#215dbf;--green:#008a60}
+*{box-sizing:border-box}body{margin:0;min-height:100dvh;background:linear-gradient(135deg,#eaf1ff,#f7faff);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--navy)}
+main{max-width:470px;min-height:100dvh;margin:auto;background:#fff;padding:24px 17px;display:flex;flex-direction:column;gap:12px;box-shadow:0 2px 35px #153b7314}
+h1{font-size:23px;margin:0;text-align:center}.sub{text-align:center;font-size:13px;line-height:1.4;color:#597294;margin:0}
+button{border:0;min-height:52px;font-weight:800;border-radius:12px;font-size:15px;color:#fff;background:var(--blue);cursor:pointer;touch-action:manipulation}
+button.green{background:var(--green)}button.ghost{background:#e8f0ff;color:var(--navy)}
+#status{padding:12px 14px;line-height:1.45;border-radius:12px;font-weight:600;font-size:13px;background:#f3f7fd;min-height:120px;overflow-wrap:anywhere}
+.line{padding:5px 0;border-bottom:1px solid #dce6f5}.line:last-child{border:0}.yes{color:#07825a}.warn{color:#bb4f22}.note{font-size:12px;color:#597294;line-height:1.5}
+a{color:#1e5abb;font-weight:700}strong{font-weight:900}
+</style>
+</head>
+<body>
+<main>
+<h1>DE-MAX · Provera A2</h1>
+<p class="sub">Proverava šta iPhone, Android ili Replit prikaz stvarno dozvoljavaju. Mikrofon se traži samo pritiskom na dugme.</p>
+<div id="status" role="status" aria-live="polite"></div>
+<button id="sound">🔊 Proveri nemački izgovor</button>
+<button id="mic" class="green">🎙 Proveri mikrofon</button>
+<button id="open" class="ghost">↗ Otvori A2 van ugrađenog okvira</button>
+<p class="note">Kada pritisnete dugme za mikrofon, telefon može prikazati sistemski zahtev za dozvolu. Ova stranica ne čuva niti šalje snimak. Ako je pristup zabranjen pravilima Replit aplikacije, sama GitHub stranica ne može da promeni tu zabranu.</p>
+<p class="note">Na kraju mi pošaljite tekst ili snimak ekrana rezultata. <a href="./?v=20261113-v47-auto-ton">Povratak na A2 V47</a></p>
+</main>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const log=[];const put=(label,result,kind="")=>{log.push({label,result,kind});$("status").innerHTML=log.map(x=>'<div class="line '+x.kind+'"><strong>'+safe(x.label)+'</strong> '+safe(x.result)+'</div>').join("")};
+const safe=x=>String(x).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const embedded=window.self!==window.top;
+put("HTTPS:",String(window.isSecureContext),window.isSecureContext?"yes":"warn");
+put("Ugrađeni iframe:",embedded?"DA":"NE",embedded?"warn":"yes");
+const pp=document.permissionsPolicy||document.featurePolicy;
+let policy="nije dostupna provera";
+try{if(typeof pp?.allowsFeature==="function"){policy=pp.allowsFeature("microphone")?"dozvoljeno politikom":"BLOKIRANO politikom iframe-a"}}catch(e){policy="nije dostupna provera"}
+put("Mikrofon (politika):",policy,/BLOKIRANO/.test(policy)?"warn":"");
+put("Mikrofon (API):",navigator.mediaDevices?.getUserMedia?"dostupan":"nedostupan",navigator.mediaDevices?.getUserMedia?"yes":"warn");
+put("Nemački izgovor (API):",("speechSynthesis" in window&&"SpeechSynthesisUtterance" in window)?"dostupan":"nedostupan");
+$("sound").onclick=()=>{
+ try{
+  const Audio=window.AudioContext||window.webkitAudioContext;
+  if(Audio){
+   const ac=new Audio();ac.resume?.();
+   const osc=ac.createOscillator(),gain=ac.createGain();gain.gain.setValueAtTime(.04,ac.currentTime);osc.frequency.setValueAtTime(720,ac.currentTime);osc.connect(gain);gain.connect(ac.destination);osc.start();osc.stop(ac.currentTime+.15);
+   osc.onended=()=>ac.close().catch(()=>{});
+   put("Test tona:","Signal je pokrenut. Da li ste čuli kratki ton?");
+  }else put("Test tona:","AudioContext nije dostupan","warn");
+  if(!("speechSynthesis" in window))return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance("Guten Tag. Können Sie sich bitte vorstellen?");
+  u.lang="de-DE";u.rate=.88;u.volume=1;
+  u.onstart=()=>put("Izgovor:","nemačko pitanje se reprodukuje","yes");
+  u.onend=()=>put("Izgovor:","nemačko pitanje je završeno","yes");
+  u.onerror=e=>put("Izgovor:","greška "+(e.error||"nepoznato"),"warn");
+  speechSynthesis.speak(u);
+  setTimeout(()=>{if(speechSynthesis.pending||speechSynthesis.speaking)return;},1000);
+ }catch(e){put("Test zvuka:","greška "+(e.name||"")+' '+(e.message||""),"warn")}
+};
+$("mic").onclick=async()=>{
+ if(!navigator.mediaDevices?.getUserMedia){put("Mikrofon:","getUserMedia nije dostupan. Ugrađeni preglednik ga ne podržava.","warn");return}
+ put("Mikrofon:","zahtev za dozvolu je poslat…");
+ try{
+  const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+  const tracks=stream.getAudioTracks(),live=tracks.some(t=>t.readyState==="live");
+  put("Rezultat mikrofona:",live?"RADI – telefon je dozvolio zvuk sa mikrofona":"nema aktivne audio trake",live?"yes":"warn");
+  stream.getTracks().forEach(t=>t.stop());
+ }catch(e){put("Rezultat mikrofona:","ODBIJENO – "+(e.name||"nepoznata greška")+" "+(e.message||""),"warn")}
+};
+$("open").onclick=()=>{
+ const dest=new URL("./?v=20261113-v47-auto-ton&direct=1",location.href).href;
+ try{if(window.top!==window){window.top.location.assign(dest);put("Otvaranje:","Pokušavam direktni prikaz bez iframe-a");return}}catch(e){put("Otvaranje:","Ugrađena aplikacija ne dozvoljava izlazak iz iframe-a: "+(e.name||""),"warn")}
+ location.assign(dest);
+};
+</script>
+</body>
+</html>
