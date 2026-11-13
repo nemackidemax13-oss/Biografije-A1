@@ -762,6 +762,10 @@ main.mail-writing-active.mail-keyboard .mail-word-meter{
 /* V28: Hören 3 title directly BELOW the compact player. */
 main.hearing-three .h3-title-below-player{margin:6px 0 6px!important;font-size:clamp(18px,5vw,22px)!important;line-height:1.2!important;text-align:center!important;color:#173b6a}
 main.hearing-three .h3-help{margin:0 0 8px!important}
+/* V28 Worker connection status. */
+.ai-worker-connection{display:inline;font-size:10px;font-weight:800;color:#335d83}
+.ai-worker-connection.connected{color:#088958}
+.ai-worker-connection.unavailable{color:#ae5a16}
 </style>
 </head>
 <body>
@@ -900,8 +904,8 @@ function mailEditor(){
  '<div class="card a2-mail-writing-editor"><div class="between a2-writing-editor-bar"><label class="fieldlabel" for="emailAnswer">✎ PIŠI MEJL</label><b class="pill" id="wordCount">'+wordCount(st.mail)+' reči</b></div>'+
  '<textarea class="field editor" id="emailAnswer" placeholder="Lieber Michael,&#10;&#10;vielen Dank für deine E-Mail. ...">'+esc(st.mail)+'</textarea>'+ 
 '<div class="mail-word-meter" id="mailWordMeter" role="progressbar" aria-label="Najmanje 26 reči za ocenjivanje" aria-valuemin="0" aria-valuemax="26" aria-valuenow="'+Math.min(26,wordCount(st.mail))+'"><div class="mail-word-fill '+(wordCount(st.mail)>=26?'met':'below')+'" id="mailWordFill" style="width:'+Math.min(100,wordCount(st.mail)/26*100)+'%"></div></div></div>'+
- '<div class="ai-mail-controls"><button type="button" id="aiGradeBtn" class="btn primary" style="flex:1">✦ Proveri mejl AI</button><button type="button" id="skipAiBtn" class="btn back">Ostali bodovi</button></div>'+
- '<p id="aiStatus" role="status" class="ai-mail-status">Cloudflare AI proverava 26–50 reči. Prema ÖSD pravilima, mejl ispod 26 reči ne dobija bodove.</p>'+
+ '<div class="ai-mail-controls"><button type="button" id="aiGradeBtn" class="btn primary" style="flex:1">✦ Proveri mejl Cloudflare AI</button><button type="button" id="skipAiBtn" class="btn back">Ostali bodovi</button></div>'+
+ '<p id="aiStatus" role="status" class="ai-mail-status">Cloudflare AI proverava 26–50 reči. <span id="aiWorkerConnection" class="ai-worker-connection">Proveravam vezu sa Workerom…</span></p>'+
  '</section>';
 }
 
@@ -911,6 +915,7 @@ function normalize(s){return String(s||'').trim().toLocaleLowerCase('de').normal
 
 
 const EMAIL_AI_API='https://a2mejlovi.nemackidemax13.workers.dev/api/check-a2-email';
+const EMAIL_AI_HEALTH='https://a2mejlovi.nemackidemax13.workers.dev/health';
 const EMAIL_AI_VERSIONS=['a2-de-max-50-words-rubric-v2','a2-de-max-26-min-50-target-v3','a2-de-max-original-first-v4'];
 const EMAIL_INDEX_MICHAEL=1;
 let aiPending=false;
@@ -960,6 +965,39 @@ function setAiStatus(message,isError){
  const field=document.getElementById('aiStatus');
  if(field){field.textContent=message;field.classList.toggle('bad',Boolean(isError));}
 }
+
+/* Worker connectivity check: /health does not send the student's email. */
+async function checkEmailWorkerStatus(){
+ const indicator=document.getElementById('aiWorkerConnection');
+ if(!indicator)return;
+ indicator.textContent='• Proveravam Cloudflare vezu…';
+ indicator.classList.remove('connected','unavailable');
+ const controller=new AbortController();
+ const timeout=setTimeout(()=>controller.abort(),10000);
+ try{
+  const res=await fetch(EMAIL_AI_HEALTH,{
+   method:'GET',mode:'cors',credentials:'omit',cache:'no-store',signal:controller.signal
+  });
+  if(!res.ok)throw Error('HTTP '+res.status);
+  const data=await res.json();
+  if(!indicator.isConnected)return;
+  if(data?.status==='ok'&&data?.openaiConfigured===true){
+   indicator.textContent='• Cloudflare AI povezan';
+   indicator.classList.add('connected');
+  }else if(data?.status==='ok'){
+   indicator.textContent='• Worker radi, ali AI ključ nije podešen';
+   indicator.classList.add('unavailable');
+  }else{
+   indicator.textContent='• Veza nije potvrđena';
+   indicator.classList.add('unavailable');
+  }
+ }catch(err){
+  if(!indicator.isConnected)return;
+  indicator.textContent='• Veza nije potvrđena — možete pokušati proveru';
+  indicator.classList.add('unavailable');
+ }finally{clearTimeout(timeout)}
+}
+
 function validateAiResponse(data){
  if(!data||typeof data!=='object')throw Error('Cloudflare nije vratio JSON rezultat.');
  if(!Number.isInteger(Number(data.score))||Number(data.score)<0||Number(data.score)>15)throw Error('Cloudflare rezultat nema ispravnu ocenu 0–15.');
@@ -1001,10 +1039,13 @@ async function checkEmailAI(thenShowResult){
   validateAiResponse(data);
   if(String(st.mail||'').trim()!==answer)throw Error('Tekst mejla je izmenjen tokom provere. Pokrenite novu proveru.');
   st.aiEmail={answer,response:data,checkedAt:Date.now()};save();
+  const healthInfo=document.getElementById("aiWorkerConnection");
+  if(healthInfo){healthInfo.textContent="• Cloudflare AI odgovor primljen";healthInfo.classList.add("connected");}
   setAiStatus('Cloudflare AI provera je završena. ÖSD kriterijumi su obračunati kao predlog koji nastavnik može izmeniti.');
   if(thenShowResult){st.page=LAST;st.resultTab='score';render();}
  }catch(error){
-  setAiStatus('AI provera nije uspela: '+(error.name==='AbortError'?'server nije odgovorio na vreme':error.message)+'. Tekst je sačuvan; možete pokušati ponovo.',true);
+  const reason=error.name==='AbortError'?'server nije odgovorio na vreme':error instanceof TypeError?'veza sa Workerom nije uspela (mreža ili CORS)':error.message;
+  setAiStatus('AI provera nije uspela: '+reason+'. Tekst je sačuvan; možete pokušati ponovo.',true);
  }finally{
   clearTimeout(cancel);aiPending=false;
   if(checkButton&&checkButton.isConnected)checkButton.disabled=false;
@@ -1260,6 +1301,7 @@ function render(){
  if(st.page===LAST){const copy=document.getElementById('copyResult');copy.onclick=()=>{const g=grade();const txt='DE-MAX ÖSD A2 Test 1 | Lesen '+g.lesen+'/25 | Hören '+g.horen+'/30 | E-Mail '+g.mail.points+'/15 | Ukupno '+g.total+'/70 | '+(g.pass?'POLOŽENO':'NIJE POLOŽENO')+' | E-Mail automatska procena';if(navigator.clipboard?.writeText)navigator.clipboard.writeText(txt).then(()=>notify('Rezultat kopiran')).catch(()=>notify('Kopiranje nije dostupno'));else notify(txt)};
  document.getElementById('reset').onclick=()=>{if(confirm('Obrisati sve odgovore i početi ponovo?')){st=JSON.parse(JSON.stringify(DEFAULT));st.flowV2=true;st.flowV3=true;save();render()}}}
  if(st.page>=5&&st.page<=7)setupExamAudio(st.page);
+ if(st.page===LAST-1)checkEmailWorkerStatus();
 }
 window.addEventListener('resize',()=>requestAnimationFrame(fitPage),{passive:true});
 window.visualViewport?.addEventListener('resize',()=>requestAnimationFrame(fitPage),{passive:true});
