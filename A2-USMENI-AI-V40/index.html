@@ -593,7 +593,7 @@ function validWorkerUrl(value){
     <h1>Usmeni ispit<span>Prvi deo · A2</span></h1>
     <p class="intro-sub">ÖSD A2 · Interaktivna simulacija<br>Predstavljanje → 6 tema → izaberi 5 → po 2 pitanja</p>
     <div class="chips"><span>🎙 Mikrofon</span><span>🔊 Nemački izgovor</span><span id="dmWorkerHealth" aria-live="polite">AI: proveravam vezu…</span></div>
-    <button class="btn green start" id="begin">Započni simulaciju →</button>
+    <button class="btn green start" id="begin">🔊 Započni simulaciju →</button>
     
   </section>
   <section id="introExam" class="screen">
@@ -1337,7 +1337,7 @@ function finishRecognition(){
 }
 function endMic(){finishRecognition()}
 // A1/Replit stil izgovora: biramo najkvalitetniji dostupni nemacki glas.
-const A2_VOICE={watchdog:null,micTimer:null,voices:[]};
+const A2_VOICE={watchdog:null,micTimer:null,voices:[],activeUtterance:null};
 function dmVoiceScore(v){
  const name=(v.name||"").toLowerCase(),lang=(v.lang||"").toLowerCase();
  let score=0;
@@ -1364,7 +1364,14 @@ function stopAudio(){
  app.sayToken++;
  if(A2_VOICE.watchdog){clearTimeout(A2_VOICE.watchdog);A2_VOICE.watchdog=null}
  if(A2_VOICE.micTimer){clearTimeout(A2_VOICE.micTimer);A2_VOICE.micTimer=null}
- try{if("speechSynthesis" in window)window.speechSynthesis.cancel()}catch(e){}
+ // Android WebView: cancel() tokom sledeceg speak() moze vratiti "interrupted".
+ // Ne pozivaj cancel() kada nema govora. Stare callbackove gasi sayToken.
+ try{
+  if("speechSynthesis" in window&&
+    (window.speechSynthesis.speaking||window.speechSynthesis.pending))
+    window.speechSynthesis.cancel();
+ }catch(e){}
+ A2_VOICE.activeUtterance=null;
 }
 function startMic(){
  if(app.screen!=="introExam"&&app.screen!=="speaking")return;
@@ -1405,77 +1412,71 @@ function startMic(){
 function speakPrompt(autoMic){
  stopEverything();
  const p=getPrompt();if(!p)return;
- const token=app.sayToken;
- const key=respondKey();
- statusSet("🔊 Pripremam pitanje na nemačkom...");
- const listenAfter=(delay=120)=>{
-  if(!autoMic||token!==app.sayToken||respondKey()!==key)return;
-  if(A2_VOICE.micTimer)clearTimeout(A2_VOICE.micTimer);
-  A2_VOICE.micTimer=setTimeout(()=>{
-   A2_VOICE.micTimer=null;
-   if(token!==app.sayToken||respondKey()!==key)return;
-   startMic(false);
-  },delay);
- };
- const sayNow=()=>{
-  if(token!==app.sayToken||respondKey()!==key)return;
-  if(!("speechSynthesis" in window)||!window.SpeechSynthesisUtterance){
-   statusSet("🎙 Izgovor nije dostupan; uključujem mikrofon za odgovor.");
-   listenAfter(90);
-   return;
+ const token=app.sayToken,key=respondKey();
+ const isCurrent=()=>token===app.sayToken&&respondKey()===key;
+ let completed=false,attempt=0,started=false;
+ statusSet("🔊 Pripremam nemački izgovor…");
+ const finish=(played)=>{
+  if(completed||!isCurrent())return;
+  completed=true;
+  if(A2_VOICE.watchdog){clearTimeout(A2_VOICE.watchdog);A2_VOICE.watchdog=null}
+  A2_VOICE.activeUtterance=null;
+  statusSet(played?"✓ Pitanje je izgovoreno. Odgovorite na nemačkom.":
+    "🔊 Ako niste čuli pitanje, dodirnite „Poslušaj pitanje”.");
+  if(autoMic){
+   if(A2_VOICE.micTimer)clearTimeout(A2_VOICE.micTimer);
+   A2_VOICE.micTimer=setTimeout(()=>{
+    A2_VOICE.micTimer=null;
+    if(isCurrent())startMic(false);
+   },160);
   }
+ };
+ const trySpeak=()=>{
+  if(completed||!isCurrent())return;
+  if(!("speechSynthesis" in window)||!window.SpeechSynthesisUtterance){
+   finish(false);return;
+  }
+  const synth=window.speechSynthesis;
   try{
-   // Potpuno isti TTS parametri i izbor glasa kao A1 koji radi u De-Max aplikaciji.
    const u=new SpeechSynthesisUtterance(p.q);
-   u.lang="de-DE";u.rate=.91;u.pitch=1;u.volume=1;
-   const voices=window.speechSynthesis.getVoices();
-   const de=voices.filter(v=>/^de[-_]/i.test(v.lang));
-   u.voice=de.find(v=>/google/i.test(v.name))||
-           de.find(v=>/natural|premium/i.test(v.name))||
-           de[0]||null;
-   let started=false,finished=false;
-   const done=(spoken)=>{
-    if(finished||token!==app.sayToken||respondKey()!==key)return;
-    finished=true;
-    if(A2_VOICE.watchdog){
-     clearTimeout(A2_VOICE.watchdog);A2_VOICE.watchdog=null;
-    }
-    if(spoken){
-     statusSet("✓ Pitanje je izgovoreno. Odgovorite na nemačkom.");
-     listenAfter(120);
-    }else{
-     statusSet("🎙 Izgovor pitanja nije dostupan. Mikrofon se ipak automatski uključuje.");
-     listenAfter(90);
-    }
-   };
-   u.onstart=()=>{
-    if(token!==app.sayToken)return;
-    started=true;
-    statusSet("🔊 Ispitivac izgovara pitanje na nemackom...");
-   };
-   u.onend=()=>done(true);
+   u.lang="de-DE";u.rate=.90;u.pitch=1;u.volume=1;
+   // Pri drugom pokusaju koristi sistemski glas; Google glas ume da
+   // vrati "interrupted" u Android/Replit WebView prikazu.
+   dmRefreshVoices();
+   if(attempt===0&&A2_VOICE.voices.length)u.voice=A2_VOICE.voices[0];
+   A2_VOICE.activeUtterance=u;
+   started=false;
+   u.onstart=()=>{if(isCurrent()){started=true;statusSet("🔊 Ispitivač čita pitanje na nemačkom…")}};
+   u.onend=()=>finish(true);
    u.onerror=e=>{
-    if(token!==app.sayToken)return;
-    // Safari zna da prijavi "interrupted" ili "canceled" bez onend.
-    // Ne ostavljaj učenika bez automatskog mikrofona.
-    done(started);
+    if(!isCurrent()||completed)return;
+    const code=e?.error||"unknown";
+    if(A2_VOICE.watchdog){clearTimeout(A2_VOICE.watchdog);A2_VOICE.watchdog=null}
+    if(attempt<1&&["interrupted","canceled","audio-busy","synthesis-failed","unknown"].includes(code)){
+     attempt++;
+     A2_VOICE.activeUtterance=null;
+     statusSet("🔊 Ponovo pokrećem nemački izgovor…");
+     // Posle "interrupted" daj Android govornom servisu vremena da
+     // oslobodi audio fokus; ne pokreći snimanje dok traje ponovno čitanje.
+     A2_VOICE.watchdog=setTimeout(()=>{A2_VOICE.watchdog=null;trySpeak()},320);
+    }else finish(false);
    };
-   window.speechSynthesis.speak(u);
-   // Ista zastita od blokiranog TTS dogadjaja kao u A1.
+   try{synth.resume()}catch(e){}
+   synth.speak(u);
+   // Ako ugrađeni prikaz ne šalje onstart/onend, ostavi ručno slušanje.
    A2_VOICE.watchdog=setTimeout(()=>{
     A2_VOICE.watchdog=null;
-    if(token!==app.sayToken||finished)return;
-    try{window.speechSynthesis.cancel()}catch(e){}
-    done(started);
-   },Math.min(19000,Math.max(6500,p.q.length*115)));
-  }catch(e){
-   statusSet("🎙 Automatski govor nije dostupan. Uključujem mikrofon.");
-   listenAfter(90);
-  }
+    if(completed||!isCurrent())return;
+    if(!started&&attempt<1){
+     attempt++;
+     trySpeak();
+    }else finish(started);
+   },Math.min(19000,Math.max(7000,p.q.length*150)));
+  }catch(e){finish(false)}
  };
- // V47: pitanja se izgovaraju odmah posle korisnickog klika,
- // nezavisno od eventualno blokiranog Replit mikrofona.
- sayNow();
+ // Uz pokretanje preko dugmeta "Započni simulaciju" već imamo korisnički dodir.
+ // Ne mešaj kratki testni ton sa govorom u istom trenutku.
+ trySpeak();
 }
 function buildFeedback(el,result,prompt,section){
  el.replaceChildren();
@@ -1776,7 +1777,7 @@ $("restart").onclick=()=>{app.evaluations={};app.inFlight={};app.grammarReviews=
  * iOS/Android fallback: MediaRecorder + DE-MAX transcribe Worker.
  * Ne prebacuje učenika na sledeće pitanje samostalno.
  */
-const DM_DIRECT_MIC_URL=location.origin+location.pathname+"?v=20261113-v48-v30-webspeech";
+const DM_DIRECT_MIC_URL=location.origin+location.pathname+"?v=20261113-v49-replit-zvuk";
 const DM_EMBEDDED=window.self!==window.top;
 const DM_MIC={
  stream:null,pending:null,allowed:false,permitGeneration:0,
@@ -2859,5 +2860,5 @@ document.addEventListener("visibilitychange",()=>{
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" async></script>
-<script src="./v40.js?v=20261113-v48-v30-webspeech"></script>
+<script src="./v40.js?v=20261113-v49-replit-zvuk"></script>
 </body></html>
