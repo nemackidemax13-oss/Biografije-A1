@@ -122,7 +122,7 @@ function vStop(){
  if(V.interval)clearInterval(V.interval);V.interval=0;
  if(V.ctx){try{V.ctx.close()}catch(e){}V.ctx=null}
  if(V.rec){try{if(V.rec.state!=="inactive")V.rec.stop()}catch(e){}V.rec=null}
- if(V.stream){try{V.stream.getTracks().forEach(t=>t.stop())}catch(e){}V.stream=null}
+ if(V.stream){if(V.stream!==DM_MIC.stream)try{V.stream.getTracks().forEach(t=>t.stop())}catch(e){}V.stream=null}
 }
 function vRender(){
  const p=V.part;if(!p)return;const s=scenario();
@@ -137,7 +137,10 @@ function vRender(){
 }
 function vOpen(){
  vStop();V.serial++;V.part={index:Math.floor(Math.random()*scenarios.length),step:0,started:false,finished:false,history:[],draft:"",question:""};
- stage("v40part2","5 / 5 · PLANIRANJE");vRender();status("Odaberite „Pokreni razgovor”.");
+ stage("v40part2","5 / 5 · PLANIRANJE");
+ // Keep the same permitted mic stream from Part 1 on mobile, including Replit.
+ if(dmTrackLive())V.stream=DM_MIC.stream;
+ vRender();status("Odaberite „Pokreni razgovor”.");
 }
 showResults=function(){vOpen()};
 function say(de,then){
