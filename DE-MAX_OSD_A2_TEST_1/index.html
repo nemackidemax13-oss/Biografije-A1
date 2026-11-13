@@ -122,10 +122,20 @@ main.hearing-three #pageContent{transform:none!important}
 .h3-screen .speaker-stack .sport{min-height:39px;padding:8px 7px;font-size:11px}
 main.hearing-three .h3-screen .exam-audio{position:sticky!important;top:0!important;z-index:5;box-shadow:0 6px 12px #1a315c22}
 @media(max-width:360px){.h3-screen .speaker-stack .sport{font-size:10px}}
+
+/* V8: reading font controls fixed in the bottom navigation bar */
+footer .footer-font-controls{display:flex;align-items:center;justify-content:center;gap:5px;flex:0 0 auto}
+footer .footer-font-controls[hidden]{display:none!important}
+footer .footer-font-button{height:43px;width:38px;flex:0 0 38px;border:1px solid #c8d8ec;border-radius:10px;background:#eaf1fb;color:#1c4d80;font-size:23px;line-height:1;font-weight:950;padding:0}
+footer .footer-font-button:disabled{opacity:.35}
+footer #prev{flex:0 0 auto;white-space:nowrap}
+footer #next{min-width:0;flex:1 1 auto;white-space:nowrap}
+@media(max-width:360px){footer{gap:5px;padding-left:6px;padding-right:6px}footer #prev{font-size:11px;padding:7px 8px}footer #next{font-size:12px;padding:7px 8px}footer .footer-font-button{width:35px;flex-basis:35px}}
+@media(max-height:670px){footer .footer-font-button{height:38px}}
 </style>
 </head>
 <body>
-<div id="app"><header><div class="headrow"><div class="brand"><div class="logo">DE<br>MAX</div><div><b>DE-MAX TUTIN</b><small>ÖSD A2 • Test 1 • Od 2013. sa Vama</small></div></div><div class="topstat" id="topstat">0/7<small>vežbanje</small></div></div><div class="progress"><div id="bar"></div></div></header><main id="main"></main><footer><button id="prev" class="btn back" type="button">← Nazad</button><button id="next" class="btn primary" type="button">Počni test →</button></footer></div>
+<div id="app"><header><div class="headrow"><div class="brand"><div class="logo">DE<br>MAX</div><div><b>DE-MAX TUTIN</b><small>ÖSD A2 • Test 1 • Od 2013. sa Vama</small></div></div><div class="topstat" id="topstat">0/7<small>vežbanje</small></div></div><div class="progress"><div id="bar"></div></div></header><main id="main"></main><footer><button id="prev" class="btn back" type="button">← Nazad</button><div id="fontFooter" class="footer-font-controls" hidden><button type="button" data-font-adjust="-1" class="footer-font-button" aria-label="Smanji veličinu teksta" title="Smanji tekst">−</button><button type="button" data-font-adjust="1" class="footer-font-button" aria-label="Povećaj veličinu teksta" title="Povećaj tekst">+</button></div><button id="next" class="btn primary" type="button">Nastavi →</button></footer></div>
 <script>
 'use strict';
 const KEY='demax-osd-a2-model-1-20261113';
@@ -193,13 +203,12 @@ function r2Item(i){const q=QS[i];return '<div class="stage-label">LESEN · Aufga
 '<div class="card"><div class="qtop"><b>'+esc(q[0])+'</b><span class="pill">2 Punkte</span></div><div class="choices">'+['A','B','C'].map((c,j)=>'<label class="choice"><input type="radio" name="r2-'+i+'" data-r2="'+i+'" value="'+c+'" '+(st.r2[i]===c?'checked':'')+'><b>'+c+'</b> '+esc(q[j+1])+'</label>').join('')+'</div></div>'+
 '<p class="small">Za povratak na originalni tekst koristite „Nazad”.</p>';}
 
-function lesenFontControls(){const v=Math.max(11,Math.min(24,Number(st.fontSize)||14));return '<div class="font-controls" aria-label="Veličina fonta"><span class="font-caption">Veličina teksta</span><button type="button" data-font-adjust="-1" aria-label="Smanji font" '+(v<=11?'disabled':'')+'>−</button><strong id="fontValue">'+v+' px</strong><button type="button" data-font-adjust="1" aria-label="Povećaj font" '+(v>=24?'disabled':'')+'>+</button></div>'}
 function r1(){return intro('Lesen • Aufgabe 1','Die passende Überschrift','Lesen Sie die 10 Überschriften und die 5 Texte. Wählen Sie pro Text die richtige Überschrift. (15 Punkte)')+
-lesenFontControls()+
+
 '<details class="card" open><summary>10 Überschriften (A–K)</summary><div class="headings" style="margin-top:11px">'+H.map((h,i)=>'<div><b>'+h+'</b> '+esc(HEAD[i])+'</div>').join('')+'</div></details>'+
 TEXTS.map((t,i)=>'<div class="card"><div class="qtop"><b>Text '+(i+1)+'</b><span class="pill">3 Punkte</span></div><p class="passage">'+esc(t)+'</p>'+getSelect(i)+'</div>').join('')}
 function r2(){return intro('Lesen • Aufgabe 2','65 Jahre ohne ernsten Streit','Lesen Sie zuerst den Text und markieren Sie bei jeder Frage A, B oder C. (10 Punkte)')+
-lesenFontControls()+
+
 '<details class="card tinted" open><summary>Lesetext anzeigen / ausblenden</summary><div style="margin-top:10px">'+STORY.map(x=>'<p class="passage">'+esc(x)+'</p>').join('')+'</div></details>'+
 '<div class="card goldish"><p class="small" style="margin:0">Beispiel: Herr und Frau Böhm sind seit 65 Jahren ein Ehepaar. (C)</p></div>'+
 QS.map((q,i)=>'<div class="card"><div class="qtop"><b>'+(i+1)+'. '+esc(q[0])+'</b><span class="pill">2 Punkte</span></div><div class="choices">'+['A','B','C'].map((c,j)=>'<label class="choice"><input type="radio" name="r2-'+i+'" data-r2="'+i+'" value="'+c+'" '+(st.r2[i]===c?'checked':'')+'><b>'+c+'</b> '+esc(q[j+1])+'</label>').join('')+'</div></div>').join('')}
@@ -388,6 +397,10 @@ function render(){
  main.scrollTop=0;
  document.getElementById('bar').style.width=(st.page/LAST*100)+'%';
  document.getElementById('topstat').innerHTML=st.page+'/'+LAST+'<small>'+(st.page===LAST?'Rezultati':'ÖSD A2')+'</small>';
+ const zoomFooter=document.getElementById('fontFooter');
+ zoomFooter.hidden=!(st.page===2||st.page===3);
+ const fontNow=Math.max(11,Math.min(24,Number(st.fontSize)||14));
+ zoomFooter.querySelectorAll('[data-font-adjust]').forEach(b=>{b.disabled=b.dataset.fontAdjust==='-1'?fontNow<=11:fontNow>=24;});
  prev.disabled=st.page===0;
  next.textContent=st.page===0?'Počni test →':st.page===LAST-1?'Završi i oceni ✓':st.page===LAST?'Na početak ↺':'Nastavi →';
  requestAnimationFrame(fitPage);
@@ -399,15 +412,14 @@ window.addEventListener('resize',()=>requestAnimationFrame(fitPage),{passive:tru
 window.visualViewport?.addEventListener('resize',()=>requestAnimationFrame(fitPage),{passive:true});
 function notify(s){const el=document.createElement('div');el.className='toast';el.textContent=s;document.body.append(el);setTimeout(()=>el.remove(),2800)}
 
-main.addEventListener('click',e=>{
+document.getElementById('app').addEventListener('click',e=>{
  const resultTab=e.target.closest('[data-result]');
  if(resultTab){st.resultTab=resultTab.dataset.result;save();render();return;}
  const b=e.target.closest('[data-font-adjust]');
  if(b){
   const n=Math.max(11,Math.min(24,(Number(st.fontSize)||14)+Number(b.dataset.fontAdjust)));
   st.fontSize=n;save(); main.style.setProperty('--read-size',n+'px');
-  const show=document.getElementById('fontValue');if(show)show.textContent=n+' px';
-  main.querySelectorAll('[data-font-adjust]').forEach(v=>v.disabled=v.dataset.fontAdjust==='-1'?n<=11:n>=24);
+  document.querySelectorAll('#fontFooter [data-font-adjust]').forEach(v=>v.disabled=v.dataset.fontAdjust==='-1'?n<=11:n>=24);
  }
 });
 main.addEventListener('input',e=>{
