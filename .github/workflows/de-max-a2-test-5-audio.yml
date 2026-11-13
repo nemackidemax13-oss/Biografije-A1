@@ -26,7 +26,31 @@ jobs:
           root=pathlib.Path('DE-MAX_OSD_A2_TEST_5/audio')
           root.mkdir(parents=True,exist_ok=True)
           with zipfile.ZipFile(archive) as z:
-              files=[e for e in z.infolist() if not e.is_dir() and re.search(r'\.(mp3|m4a|wav)$',e.filename,re.I)]
+              files=[e for e in z.infolist() if not e.is_dir() and '__MACOSX/' not in e.filename and '/._' not in e.filename and re.search(r'\.(mp3|m4a|wav)
+              print('Audio entries:',[(e.filename,e.file_size) for e in files])
+              for k in (1,2,3):
+                  cand=[e for e in files if re.search(r'(?:^|[\\/_-])A'+str(k)+r'(?:[._-]|$)',e.filename,re.I)]
+                  if len(cand)!=1:
+                      raise RuntimeError(f'Expected exactly one official A{k} track, found {len(cand)}. Audio entries: {[x.filename for x in files]}')
+                  chosen=cand[0]
+                  if not chosen.filename.lower().endswith('.mp3'):
+                      raise RuntimeError(f'Official A{k} audio is not MP3: {chosen.filename}')
+                  with z.open(chosen) as inp, open(root / f'track-{k}.mp3','wb') as out:
+                      import shutil
+                      shutil.copyfileobj(inp,out)
+                  print(f'Published track-{k}.mp3 ({chosen.file_size} bytes) from {chosen.filename}')
+          PY
+      - name: Commit audio tracks into public site
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add DE-MAX_OSD_A2_TEST_5/audio/track-1.mp3 DE-MAX_OSD_A2_TEST_5/audio/track-2.mp3 DE-MAX_OSD_A2_TEST_5/audio/track-3.mp3
+          git diff --cached --quiet && exit 0
+          git commit -m "Publish original OSD A2 Test 5 listening files"
+          git push
+,e.filename,re.I)]
               print('Audio entries:',[(e.filename,e.file_size) for e in files])
               for k in (1,2,3):
                   cand=[e for e in files if re.search(r'(?:^|[\\/_-])A'+str(k)+r'(?:[._-]|$)',e.filename,re.I)]
