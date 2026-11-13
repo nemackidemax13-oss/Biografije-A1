@@ -1,0 +1,52 @@
+name: "Publish DE-MAX A2 Test 5 MP3"
+on:
+  push:
+    paths:
+      - ".github/workflows/de-max-a2-test-5-audio-publish-v2.yml"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  audio-test-five:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Download official OSD Austria tracks and copy A1 A2 A3
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 "https://osd.at/wp-content/uploads/2026/09/ZA2-Oe-MS-HP-gesamt.zip" -o /tmp/za2-test5.zip
+          python3 - <<'PY'
+          import pathlib,re,zipfile,shutil
+          out=pathlib.Path("DE-MAX_OSD_A2_TEST_5/audio")
+          out.mkdir(parents=True,exist_ok=True)
+          with zipfile.ZipFile("/tmp/za2-test5.zip") as z:
+              entries=[f for f in z.infolist() if not f.is_dir() and not f.filename.startswith("__MACOSX/") and "/._" not in f.filename and f.filename.lower().endswith(".mp3")]
+              print("Real MP3 entries:",[(x.filename,x.file_size) for x in entries])
+              for i in (1,2,3):
+                  found=[x for x in entries if re.search(r"_A"+str(i)+r"_",pathlib.Path(x.filename).name,re.I)]
+                  assert len(found)==1, f"A{i}: expected 1, got {len(found)}"
+                  with z.open(found[0]) as source, open(out/("track-"+str(i)+".mp3"),"wb") as target:
+                      shutil.copyfileobj(source,target)
+                  print("Created",out/("track-"+str(i)+".mp3"))
+          PY
+      - name: Commit audio to the Pages branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add DE-MAX_OSD_A2_TEST_5/audio/track-1.mp3 DE-MAX_OSD_A2_TEST_5/audio/track-2.mp3 DE-MAX_OSD_A2_TEST_5/audio/track-3.mp3
+          if git diff --cached --quiet; then echo "Audio already published"; exit 0; fi
+          git commit -m "Publish OSD A2 Austria audio for DE-MAX test 5"
+          for attempt in 1 2 3 4; do
+            git fetch origin main
+            git rebase origin/main
+            if git push origin HEAD:main; then exit 0; fi
+            sleep 5
+          done
+          exit 1
