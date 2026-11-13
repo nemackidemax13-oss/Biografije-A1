@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
+<meta name="theme-color" content="#102447"><meta name="description" content="DE-MAX Tutin — interaktivni ÖSD A2 Test 1: Lesen, Hören i Schreiben">
+<title>DE-MAX | ÖSD A2 – Test 1</title>
+<style>
+:root{--navy:#132749;--blue:#274d85;--green:#087d58;--gold:#f5c875;--ink:#172847;--muted:#687994;--line:#dce5f0;--bg:#f5f8fd}
+*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden}body{font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;color:var(--ink);background:#dbe6f5}button,input,textarea,select{font:inherit}
+#app{width:100%;height:100dvh;display:flex;flex-direction:column;background:var(--bg);overflow:hidden}
+@media(min-width:650px){body{display:grid;place-items:center}#app{width:min(100%,510px);height:min(96dvh,900px);border:5px solid #172d50;border-radius:26px;box-shadow:0 15px 65px #0c214653}}
+header{flex-shrink:0;background:linear-gradient(115deg,#112344,#284b7e);color:white;padding:11px 14px 9px;box-shadow:0 3px 14px #233c6044}
+.headrow,.brand,.between,.arow{display:flex;align-items:center;justify-content:space-between;gap:10px}.brand{justify-content:flex-start}.logo{width:42px;height:42px;display:grid;place-items:center;background:linear-gradient(130deg,#ffe1a3,#e9ac53);border-radius:12px;color:#102447;font-size:12px;font-weight:1000;letter-spacing:-.5px;box-shadow:0 2px 10px #0808083a}.brand b{font-size:15px;display:block}.brand small{display:block;color:#c7d7ee;font-size:10px;margin-top:3px}.topstat{text-align:right;font-size:11px;font-weight:900}.topstat small{display:block;color:#c6d7e8;font-size:10px;font-weight:600;margin-top:4px}.progress{margin-top:8px;background:#ffffff33;border-radius:9px;height:5px;overflow:hidden}.progress div{height:100%;width:0;background:linear-gradient(90deg,#f4c45e,#a6e8ca);transition:width .2s}
+main{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:12px 12px 16px;scrollbar-width:thin}
+footer{flex-shrink:0;background:white;border-top:1px solid var(--line);box-shadow:0 -5px 14px #26396014;display:flex;gap:8px;padding:8px 11px max(9px,env(safe-area-inset-bottom))}
+button{cursor:pointer}button:disabled{opacity:.4;cursor:not-allowed}.btn{border:0;border-radius:12px;padding:11px 15px;font-size:13px;font-weight:850;min-height:43px;display:inline-flex;align-items:center;justify-content:center}.primary{background:linear-gradient(115deg,#0d986c,#087453);color:white;flex:1}.back{background:#eef2fa;color:#28466e}.soft{background:#e8effb;color:#244c81}.gold{background:#f5cf81;color:#253755}.danger{background:#ffeced;color:#a43249}
+h1{font-size:25px;line-height:1.1;margin:5px 0 8px;letter-spacing:-.65px}h2{font-size:19px;line-height:1.25;margin:0 0 7px}h3{font-size:15px;margin:0 0 7px}.sub{font-size:10px;letter-spacing:1.8px;text-transform:uppercase;font-weight:900;color:#38629c;margin:5px 0}.muted{font-size:12px;line-height:1.55;color:var(--muted)}.small{font-size:11px;color:var(--muted);line-height:1.4}
+.card{padding:13px;margin:0 0 10px;background:#fff;border-radius:15px;border:1px solid var(--line);box-shadow:0 2px 11px #203b5a0a}.card.tinted{background:#f4f8ff}.card.goldish{background:#fff8ec;border-color:#f2dfb5}.card.greenish{background:#eafaef;border-color:#c7e5d2}.hero{background:radial-gradient(circle at 88% 5%,#426298,transparent 45%),linear-gradient(135deg,#0d2043,#214274);border-radius:21px;color:white;text-align:center;padding:27px 16px;margin:4px 0 12px}.hero .round{width:76px;height:76px;background:linear-gradient(145deg,#ffe3a2,#edb15c);color:#152747;border-radius:23px;display:grid;place-items:center;font-size:32px;font-weight:1000;margin:auto auto 13px}.hero h1{font-size:33px;margin:6px 0}.hero p{font-size:12px;color:#dce9fc;line-height:1.5}.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.tile{background:white;border:1px solid var(--line);border-radius:13px;text-align:center;padding:11px 5px}.tile b{display:block;font-size:19px;color:#225182}.tile small{font-size:10px;color:var(--muted)}
+.field{width:100%;border:1px solid #cbd9ea;background:white;border-radius:11px;padding:11px;font-size:14px;outline:none;color:var(--ink)}.field:focus,textarea:focus{outline:2px solid #8ab6de}.fieldlabel{display:block;font-size:11px;font-weight:900;color:#3e5676;margin:0 0 5px}.pill{display:inline-block;padding:5px 8px;border-radius:30px;background:#e8effb;color:#2e548d;font-weight:850;font-size:10px}
+.instructions{font-size:12px;line-height:1.6;color:#566e8f;margin:0 0 11px}.headings{display:grid;grid-template-columns:1fr;gap:5px}.headings div{padding:6px 8px;background:#f4f7fc;border-radius:8px;font-size:11px;line-height:1.3}.headings b{display:inline-block;min-width:18px;color:#265d99}
+details{margin-bottom:10px}details>summary{cursor:pointer;font-size:12px;font-weight:850;color:#284f83;list-style:none}details>summary:before{content:"▾ ";color:#efac42}.passage{font-size:12px;line-height:1.62;color:#263952;margin:8px 0 10px}.qtop{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}.qtop b{font-size:12px;color:#183c69}.qtop small{font-size:10px;color:#5f748f}.choices{display:grid;gap:7px}.choice{display:flex;align-items:center;gap:9px;border:1px solid #dbe5f2;background:#f7faff;border-radius:10px;padding:10px;font-size:12px;line-height:1.35;cursor:pointer}.choice:has(input:checked){background:#ddf6eb;border-color:#1da276;color:#0d6950}.choice input{accent-color:#0f936a}.twocol{display:grid;grid-template-columns:1fr 1fr;gap:7px}.check{display:flex;gap:8px;align-items:center;min-height:42px;border:1px solid #d9e2ee;border-radius:10px;background:#fafcff;padding:9px;font-size:12px;font-weight:750;cursor:pointer}.check:has(input:checked){background:#e2f7ed;border-color:#36a782;color:#096848}.check input{accent-color:#11895e}.audio{position:sticky;top:-8px;z-index:4;background:linear-gradient(120deg,#18315b,#264a7e);color:white;border-radius:16px;padding:12px;margin-bottom:11px;box-shadow:0 6px 16px #1e3b6235}.audio .btn{padding:7px 12px;min-height:35px;font-size:12px}.audio audio{width:100%;height:42px;margin-top:7px;display:block;filter:sepia(.05)}.audio .aux{font-size:10px;color:#bcd2e9;line-height:1.5}.audio label{display:block;margin-top:8px}.audio input[type=file]{font-size:10px;width:100%;margin-top:4px}
+.rowchecks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.sport{background:#f5f8fd;border:1px solid #d9e3ee;border-radius:10px;padding:9px 8px;display:flex;gap:6px;align-items:center;font-size:11px;font-weight:800;cursor:pointer}.sport:has(input:checked){background:#e1f6eb;border-color:#3dba89;color:#096d4e}.sport input{accent-color:#087f5f}.sport:last-child:nth-child(odd){grid-column:1/-1}
+.taskline{border-left:3px solid #ecc87c;padding-left:10px;margin:7px 0;font-size:13px;line-height:1.6}.letter{font-size:12px;line-height:1.75}.letter p{margin:0 0 10px}.editor{min-height:200px;resize:vertical;line-height:1.7}.score{font-size:46px;font-weight:1000;letter-spacing:-2px;color:#1e4a7c;line-height:1.1}.score small{font-size:17px;color:#73879d}.resultline{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid #e7edf5;padding:10px 0;font-size:12px}.resultline:last-child{border-bottom:0}.resultline strong{color:#1e507d}.ok{color:#07835b!important}.bad{color:#c44959!important}.review{border-bottom:1px solid #e9eef3;padding:10px 0;font-size:12px;line-height:1.5}.review:last-child{border:0}.review code{font:inherit;color:#176e55;font-weight:850}.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:72px;background:#122b4f;color:white;padding:10px 14px;border-radius:12px;font-size:12px;z-index:30;max-width:85%;box-shadow:0 8px 20px #0003}
+@media(min-width:430px){.rowchecks{grid-template-columns:repeat(3,minmax(0,1fr))}.sport:last-child:nth-child(odd){grid-column:auto}}
+</style>
+</head>
+<body>
+<div id="app"><header><div class="headrow"><div class="brand"><div class="logo">DE<br>MAX</div><div><b>DE-MAX TUTIN</b><small>ÖSD A2 • Test 1 • Od 2013. sa Vama</small></div></div><div class="topstat" id="topstat">0/7<small>vežbanje</small></div></div><div class="progress"><div id="bar"></div></div></header><main id="main"></main><footer><button id="prev" class="btn back" type="button">← Nazad</button><button id="next" class="btn primary" type="button">Počni test →</button></footer></div>
+<script>
+'use strict';
+const KEY='demax-osd-a2-model-1-20261113';
+const H=['A','B','C','D','E','F','G','H','I','K'];
+const HEAD=[
+'Jetzt das Fahrrad reparieren lassen','Im Rathaus: Informationen über Tiere','Tipp: Ausflug in den Tierpark','Frühlingspflanzen im Sonderangebot','Tipps fürs Radfahren in der Stadt','Radfahren ist gesund!','Mit neuen Pflanzen in den Frühling','Haustiere machen krank','Ausstellung: Blumen im Frühling','Wiener wurden zum Radfahren befragt'];
+const TEXTS=[
+'Seit Jahrzehnten ist der Oberberger Tierpark ein beliebtes Ausflugsziel. Die Vielfalt der Tiere und Pflanzen und die wunderbare Naturlandschaft sind die Gründe dafür. Das Angebot ist vielfältig: Führungen, Tierfütterungen, Naturlehrpfad, Waldspielplätze und vieles mehr. Info-Telefon 804 31 69.',
+'Fahrrad fahren in Hamburg liegt voll im Trend. Das Fahrrad hat sich im Stadtgebiet heute einen wichtigen Platz erobert. Mehr als 1.000 Kilometer an Radwegen sollen Sie animieren, umzusteigen und das Fahrrad (neu) zu entdecken. Was Sie dabei beachten müssen, aber auch Tipps zu interessanten Routen – das finden Sie unter www.hamburg.de/verkehr/radfahren.',
+'An Werktagen nützen 37 Prozent der Wiener ihr Rad in der Freizeit, aber auch für Wege in die Arbeit oder zur Schule/Uni ist das Rad ein beliebtes Verkehrsmittel. Das ging aus den Antworten auf eine Interview-Reihe zum Thema „Mit dem Fahrrad in Wien“ hervor. Das Ergebnis der Umfrage im Detail.',
+'Die aktuelle Ausstellung im Rathaus bietet Wissenswertes über Tierschutz und Tierhaltung. Für Kinder gibt es die Möglichkeit, verschiedene Haustiere kennenzulernen und sich über das Zusammenleben mit ihnen zu informieren. Der Eintritt ist frei! Informationen: www.tierschutzinbern.ch.',
+'„Unsere Stadt blüht auf!“ Das ist unser Motto für den Frühling und alle sind eingeladen, mitzumachen: Egal ob Sie neue Sträucher, Bäume oder Blumen am Fenster pflanzen – mehr Natur tut allen gut! Schicken Sie ein Foto von Ihren Frühlingspflanzen an das Gemeindeamt und gewinnen Sie einen Einkaufsgutschein im Wert von 50 Euro.'];
+const STORY=[
+'Dass sich zwei Menschen, die schon 65 Jahre verheiratet sind und einander stets treu waren, nach so langer Zeit immer noch lieben und achten wie am ersten Tag, ist doch etwas sehr Außergewöhnliches.',
+'Franz und Hanna Böhm aus Linz sind ein solches Paar. „Liebe auf den ersten Blick war es nicht“, meint der 88-jährige Franz Böhm und lacht, „denn ich habe ihr anfangs gar nicht gefallen.“ Damals war seine Hanna 19 Jahre alt und „hatte es schon recht eilig“, endlich zu heiraten. Heute ist Hanna Böhm 84 und glücklich, dass ihr Franz sie doch noch erobert hat.',
+'Er hat als Matrose auf einem Donauschiff gearbeitet, sie war die Tochter seines Chefs, des Steuermannes. Und als er erzählt, wie er einmal eine Frau aus dem Wasser geholt und so vor dem Ertrinken gerettet hat, da merkt man, wie stolz seine Ehefrau auf ihn ist.',
+'Eigene Kinder haben die beiden leider nie bekommen, dafür haben sie ihren Neffen, den Sohn von Hannas Schwester, zu sich genommen und liebevoll erzogen.',
+'Gemeinsame Spaziergänge am Pöstlingberg in der Nähe von Linz halten das rüstige Paar jung und fit – und natürlich auch ihre Liebe zueinander, die all die Jahre in guten wie in schlechten Zeiten bis heute andauert.'];
+const QS=[
+['Herr Böhm ist','65 Jahre alt.','84 Jahre alt.','88 Jahre alt.'],
+['Franz Böhm','hat auf einem Schiff gearbeitet.','hat ein Schiff gekauft.','wollte auf einem Schiff arbeiten.'],
+['Franz Böhm hat','einer Frau in Not geholfen.','seine Frau oft auf dem Schiff mitfahren lassen.','seinem Chef geholfen.'],
+['Das Paar hat','einen Neffen bei sich aufgenommen.','einen Sohn bekommen.','viele Kinder bekommen.'],
+['Das Ehepaar','bleibt durch Spazierengehen jung.','geht oft im Stadtzentrum von Linz spazieren.','ist früher gern spazieren gegangen.']];
+const WEATHER=['Sonne','Gewitter','18 Grad','Regen','Nebel','Wind','25 Grad','Wolken'];
+const SPORTS=['Fußball','Tennis','Laufen','Schwimmen','Radfahren'];
+const SPORTSKEY=[[1,3],[0,2,4],[4],[0,1],[2,3]];
+const DEFAULT={page:0,name:'',r1:['','','','',''],r2:['','','','',''],w1:[],w2:['','','','',''],w3:[[],[],[],[],[]],mail:'',started:0};
+let st;
+try{st=Object.assign({},DEFAULT,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){st={...DEFAULT}}
+if(!Array.isArray(st.w3)||st.w3.length!==5)st.w3=[[],[],[],[],[]];
+let objectAudio=null;
+const main=document.getElementById('main'),prev=document.getElementById('prev'),next=document.getElementById('next');
+function save(){try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function checked(a,i){return a.includes(i)?'checked':''}
+function heading(k){return '<div class="sub">'+esc(k)+'</div>'}
+function intro(k,name,detail){return heading(k)+'<h1>'+name+'</h1><p class="instructions">'+detail+'</p>'}
+function getSelect(i){return '<select aria-label="Überschrift für Text '+(i+1)+'" class="field" data-r1="'+i+'"><option value="">– Überschrift wählen –</option>'+H.map((h,j)=>'<option value="'+h+'" '+(st.r1[i]===h?'selected':'')+'>'+h+' · '+esc(HEAD[j])+'</option>').join('')+'</select>'}
+function cover(){return '<div class="hero"><div class="round">A2</div><div style="letter-spacing:2px;font-weight:900;font-size:11px;color:#f6d18b">ÖSD ZERTIFIKAT A2</div><h1>TEST 1</h1><p>Kompletna interaktivna pisana proba prema dostavljenom modelu<br>Lesen · Hören · Schreiben</p></div><div class="tiles"><div class="tile"><b>25</b><small>Lesen</small></div><div class="tile"><b>30</b><small>Hören</small></div><div class="tile"><b>~50</b><small>Wörter</small></div></div><div class="card" style="margin-top:12px"><label class="fieldlabel" for="student">Ime i prezime učenika (nije obavezno)</label><input id="student" class="field" placeholder="Unesi ime i prezime" value="'+esc(st.name)+'"></div><div class="card goldish"><b style="font-size:12px">Uputstvo</b><p class="muted" style="margin:6px 0">Odgovori se automatski čuvaju na ovom uređaju. Svako slušanje pokrećeš na dugme ▶. Na kraju dobijaš rezultate, bodove i tačne odgovore. Mejl se ne ocenjuje automatski.</p></div><p class="small" style="text-align:center">Nezvanična aplikacija za vežbanje. DE-MAX Tutin.</p>'}
+function r1(){return intro('Lesen • Aufgabe 1','Die passende Überschrift','Lesen Sie die 10 Überschriften und die 5 Texte. Wählen Sie pro Text die richtige Überschrift. (15 Punkte)')+
+'<details class="card" open><summary>10 Überschriften (A–K)</summary><div class="headings" style="margin-top:11px">'+H.map((h,i)=>'<div><b>'+h+'</b> '+esc(HEAD[i])+'</div>').join('')+'</div></details>'+
+TEXTS.map((t,i)=>'<div class="card"><div class="qtop"><b>Text '+(i+1)+'</b><span class="pill">3 Punkte</span></div><p class="passage">'+esc(t)+'</p>'+getSelect(i)+'</div>').join('')}
+function r2(){return intro('Lesen • Aufgabe 2','65 Jahre ohne ernsten Streit','Lesen Sie zuerst den Text und markieren Sie bei jeder Frage A, B oder C. (10 Punkte)')+
+'<details class="card tinted" open><summary>Lesetext anzeigen / ausblenden</summary><div style="margin-top:10px">'+STORY.map(x=>'<p class="passage">'+esc(x)+'</p>').join('')+'</div></details>'+
+'<div class="card goldish"><p class="small" style="margin:0">Beispiel: Herr und Frau Böhm sind seit 65 Jahren ein Ehepaar. (C)</p></div>'+
+QS.map((q,i)=>'<div class="card"><div class="qtop"><b>'+(i+1)+'. '+esc(q[0])+'</b><span class="pill">2 Punkte</span></div><div class="choices">'+['A','B','C'].map((c,j)=>'<label class="choice"><input type="radio" name="r2-'+i+'" data-r2="'+i+'" value="'+c+'" '+(st.r2[i]===c?'checked':'')+'><b>'+c+'</b> '+esc(q[j+1])+'</label>').join('')+'</div></div>').join('')}
+function player(i){return '<div class="audio"><div class="between"><b style="font-size:13px">🎧 Originalno slušanje '+i+'</b><span style="font-size:10px;color:#cfe2f6">Track '+i+'</span></div><audio id="player" controls playsinline preload="metadata" src="./audio/track-'+i+'.mp3"></audio><div id="audiosignal" class="aux">Pritisni ▶ za slušanje. Na iPhone i Android uređajima reprodukcija se pokreće dodirom.</div><label class="aux" for="localAudio">Ako snimak nije učitan, izaberi MP3 sa uređaja:</label><input id="localAudio" type="file" accept="audio/mpeg,audio/mp3,audio/*" aria-label="Dodaj slušanje '+i+'"></div>'}
+function h1(){return intro('Hören • Aufgabe 1','Das Wetter am Wochenende','Sie hören zwei verschiedene Texte mit dem gleichen Inhalt. Markieren Sie die vier richtigen Antworten. (10 Punkte)')+player(1)+'<div class="card"><h3>Wählen Sie vier Antworten</h3><p class="small">Tekstovi se slušaju jednom. Izaberi četiri odgovora.</p><div class="twocol">'+WEATHER.map((w,i)=>'<label class="check"><input type="checkbox" data-w1="'+i+'" '+checked(st.w1,i)+'>'+esc(w)+'</label>').join('')+'</div><p class="small" id="weatherCount" style="margin-bottom:0">'+st.w1.length+' / 4 izabrano</p></div>'}
+function h2(){const lab=['Letzter Kurstag','Zum Essen mitnehmen','Für Getränke (Euro)','Anrufen ab (Uhr)','Telefonnummer'];return intro('Hören • Aufgabe 2','Notizen – Abschlussfeier','Sie hören eine Nachricht zweimal. Schreiben Sie die wichtigsten Informationen auf. (10 Punkte)')+player(2)+'<div class="card"><h3>✎ Notizblatt</h3>'+lab.map((l,i)=>'<div style="margin-bottom:11px"><label class="fieldlabel" for="n'+i+'">'+esc(l)+'</label><input id="n'+i+'" data-w2="'+i+'" class="field" type="text" autocomplete="off" placeholder="'+(['Wochentag','Essen','Betrag','Stunde','Nummer'][i])+'" value="'+esc(st.w2[i])+'"></div>').join('')+'</div>'}
+function h3(){return intro('Hören • Aufgabe 3','Welchen Sport betreiben Sie?','Sie hören fünf Personen, die befragt werden. Pro Person sind mehrere Antworten möglich. (10 Punkte)')+player(3)+[0,1,2,3,4].map((i)=>'<div class="card"><div class="qtop"><b>'+(i+1)+'. '+(i%2===0?'Sprecherin':'Sprecher')+'</b><span class="pill">2 Punkte</span></div><div class="rowchecks">'+SPORTS.map((n,j)=>'<label class="sport"><input type="checkbox" data-sp="'+i+'" data-sport="'+j+'" '+checked(st.w3[i],j)+'>'+esc(n)+'</label>').join('')+'</div></div>').join('')}
+function writing(){const count=wordCount(st.mail);return intro('Schreiben • E-Mail','Eine E-Mail an Michael','Sie bekommen eine E-Mail von Ihrem Freund Michael. Schreiben Sie circa 50 Wörter. Beantworten Sie alle Fragen.')+'<div class="card tinted"><div class="between"><b style="font-size:12px">Von: Michael</b><small class="small">Betreff: Reise</small></div><div class="letter" style="margin-top:10px"><p>Liebe/Lieber …,</p><p>wie geht es dir? Stell dir vor, ich fahre nächste Woche nach Österreich. Dort werde ich Wien, Salzburg und Innsbruck besuchen. Ich freue mich sehr darauf. Hast du schon einmal eine Reise gemacht? Wohin bist du gefahren? Was gibt es bei dir Neues?</p><p>Wir haben uns so lange nicht mehr gesehen. Nach meiner Reise müssen wir uns unbedingt treffen. Dann zeige ich dir auch meine Fotos.</p><p>Wann hast du Zeit?</p><p>Bis bald und liebe Grüße<br>Michael</p></div></div><div class="card goldish"><b style="font-size:12px">Aufgabe</b><p class="instructions" style="margin:5px 0 0">Schreiben Sie circa 50 Wörter. Antworten Sie auf: Wie geht es dir? Welche Reise hast du gemacht und wohin? Was gibt es Neues? Wann hast du Zeit? Schreiben Sie am Ende einen Gruß.</p></div><div class="card"><label class="fieldlabel" for="emailAnswer">Deine E-Mail an Michael</label><textarea class="field editor" id="emailAnswer" placeholder="Lieber Michael,&#10;&#10;vielen Dank für deine E-Mail. ...">'+esc(st.mail)+'</textarea><div class="between" style="margin-top:7px"><small class="small">Tvoj tekst se automatski čuva.</small><b class="pill" id="wordCount">'+count+' Wörter</b></div></div>'}
+function wordCount(s){return String(s||'').trim().split(/\s+/).filter(Boolean).length}
+function digits(s){return String(s||'').replace(/\D/g,'')}
+function normalize(s){return String(s||'').trim().toLocaleLowerCase('de').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'')}
+function grade(){
+ const rd1=['C','E','K','B','G'],rd2=['C','A','A','A','A'];
+ const r1=st.r1.reduce((n,v,i)=>n+(v===rd1[i]?3:0),0);
+ const r2=st.r2.reduce((n,v,i)=>n+(v===rd2[i]?2:0),0);
+ const truth=[0,1,5,6],valid=st.w1.filter(i=>truth.includes(i)).length;
+ let w1=st.w1.length>5?0:[0,1,4,7,10][valid];if(st.w1.length===5)w1=Math.max(0,w1-3);
+ const noteok=[
+ ['freitag','fr','fr.'].some(x=>normalize(st.w2[0])===normalize(x)),
+ normalize(st.w2[1])==='salat',
+ ['2','zwei','2euro','zwo'].includes(normalize(st.w2[2])),
+ ['19','7','19uhr','7uhr','19:00','19.00','7:00','7.00','19h'].includes(String(st.w2[3]).trim().toLowerCase().replace(/\s/g,'')),
+ digits(st.w2[4])==='7345682'];
+ const w2=noteok.filter(Boolean).length*2;
+ const w3rows=st.w3.map((vals,i)=>{let errs=0;for(let s=0;s<5;s++)if(vals.includes(s)!==SPORTSKEY[i].includes(s))errs++;return Math.max(0,2-errs)});
+ const w3=w3rows.reduce((n,v)=>n+v,0);
+ return {r1,r2,w1,w2,w3,w3rows,noteok,total:r1+r2+w1+w2+w3};
+}
+function result(){const g=grade();const items=[['Lesen – Aufgabe 1',g.r1,15],['Lesen – Aufgabe 2',g.r2,10],['Hören – Aufgabe 1',g.w1,10],['Hören – Aufgabe 2',g.w2,10],['Hören – Aufgabe 3',g.w3,10]];
+ const checks=['C','E','K','B','G'];
+ return intro('DE-MAX • Ergebnis','Rezultati testa','Automatska provera za Lesen i Hören. Schreiben zahteva nastavnikovu procenu.')+
+ '<div class="card" style="text-align:center;padding:21px"><div class="sub">Ukupan rezultat</div><div class="score">'+g.total+' <small>/ 55 Punkte</small></div><div class="pill" style="margin-top:8px">'+Math.round(100*g.total/55)+'% urađenosti</div><p class="small">Lesen: '+(g.r1+g.r2)+'/25 • Hören: '+(g.w1+g.w2+g.w3)+'/30</p></div>'+
+ '<div class="card">'+items.map(x=>'<div class="resultline"><span>'+x[0]+'</span><strong>'+x[1]+' / '+x[2]+'</strong></div>').join('')+'</div>'+
+ '<div class="card greenish"><b style="font-size:12px">Bodovanje prema modelu ÖSD A2</b><p class="small">Za Lesen je navedena minimalna granica 5/25, za Hören 6/30. Ovo nije zvaničan rezultat ispita: pisani mejl nije ocenjen i ukupan prolaz se ovde ne potvrđuje.</p></div>'+
+ '<details class="card"><summary>Tačni odgovori i ispravke • Lesen</summary><div style="margin-top:10px">'+checks.map((c,i)=>'<div class="review">Aufgabe 1 · Text '+(i+1)+': <code>'+c+'</code> '+(st.r1[i]===c?'✔':'· tvoj odgovor: '+(esc(st.r1[i])||'—'))+'</div>').join('')+['C','A','A','A','A'].map((c,i)=>'<div class="review">Aufgabe 2 · Nr. '+(i+1)+': <code>'+c+'</code> '+(st.r2[i]===c?'✔':'· tvoj odgovor: '+(esc(st.r2[i])||'—'))+'</div>').join('')+'</div></details>'+
+ '<details class="card"><summary>Tačni odgovori i ispravke • Hören</summary><div style="margin-top:10px"><b style="font-size:12px">Aufgabe 1</b><p class="small">Sonne, Gewitter, Wind, 25 Grad.</p><b style="font-size:12px">Aufgabe 2</b><p class="small">Freitag · Salat · 2 Euro · 19 Uhr (7 Uhr abends) · 734 56 82.</p><b style="font-size:12px">Aufgabe 3</b>'+SPORTSKEY.map((arr,i)=>'<div class="review">'+(i+1)+'. '+arr.map(j=>SPORTS[j]).join(', ')+' <strong>('+g.w3rows[i]+'/2)</strong></div>').join('')+'</div></details>'+
+ '<details class="card"><summary>Schreiben • Tvoj mejl</summary><div class="letter" style="margin-top:10px;white-space:pre-wrap;overflow-wrap:anywhere">'+(esc(st.mail)||'Mejl nije napisan.')+'</div><p class="small">'+wordCount(st.mail)+' reči. Tekst treba da pregleda nastavnik.</p></details>'+
+ '<div class="card"><button class="btn soft" style="width:100%" id="copyResult">Kopiraj rezultat</button><button class="btn danger" style="width:100%;margin-top:8px" id="reset">Počni novi test (obriši odgovore)</button></div>'}
+function render(){
+ const a=document.getElementById('player');if(a){a.pause();if(objectAudio){URL.revokeObjectURL(objectAudio);objectAudio=null}}
+ st.page=Math.max(0,Math.min(7,st.page));save();
+ const pages=[cover,r1,r2,h1,h2,h3,writing,result];
+ main.innerHTML=pages[st.page]();main.scrollTop=0;
+ document.getElementById('bar').style.width=(st.page/7*100)+'%';
+ document.getElementById('topstat').innerHTML=st.page+'/7<small>'+(st.page===7?'Rezultati':'ÖSD A2')+'</small>';
+ prev.disabled=st.page===0;next.textContent=st.page===0?'Počni test →':st.page===6?'Završi i oceni ✓':st.page===7?'Vrati na početak ↺':'Nastavi →';
+ if(st.page===7){const copy=document.getElementById('copyResult');copy.onclick=()=>{const g=grade();const txt='DE-MAX ÖSD A2 Test 1 | '+(st.name||'Učenik')+' | Lesen '+(g.r1+g.r2)+'/25 | Hören '+(g.w1+g.w2+g.w3)+'/30 | Ukupno '+g.total+'/55 | Schreiben '+wordCount(st.mail)+' Wörter';if(navigator.clipboard?.writeText)navigator.clipboard.writeText(txt).then(()=>notify('Rezultat kopiran')).catch(()=>notify('Kopiranje nije dostupno'));else notify(txt)};
+ document.getElementById('reset').onclick=()=>{if(confirm('Obrisati sve odgovore i početi ponovo?')){st=JSON.parse(JSON.stringify(DEFAULT));save();render()}}}
+ if(st.page>=3&&st.page<=5){
+ const audio=document.getElementById('player'),signal=document.getElementById('audiosignal');
+ audio.addEventListener('error',()=>{signal.textContent='Snimak nije dostupan na serveru. Izaberi MP3 sa uređaja ispod.'});
+ audio.addEventListener('canplay',()=>{signal.textContent='Snimak je spreman. Pritisni ▶ za slušanje.'});
+ document.getElementById('localAudio').addEventListener('change',e=>{const file=e.target.files[0];if(!file)return;if(objectAudio)URL.revokeObjectURL(objectAudio);objectAudio=URL.createObjectURL(file);audio.src=objectAudio;audio.load();signal.textContent='Učitan fajl: '+file.name;});}
+}
+function notify(s){const el=document.createElement('div');el.className='toast';el.textContent=s;document.body.append(el);setTimeout(()=>el.remove(),2800)}
+main.addEventListener('input',e=>{
+ const t=e.target;
+ if(t.id==='student')st.name=t.value;
+ if(t.id==='emailAnswer'){st.mail=t.value;document.getElementById('wordCount').textContent=wordCount(st.mail)+' Wörter'}
+ if(t.dataset.w2!==undefined)st.w2[Number(t.dataset.w2)]=t.value;
+ save();
+});
+main.addEventListener('change',e=>{
+ const t=e.target;
+ if(t.dataset.r1!==undefined)st.r1[Number(t.dataset.r1)]=t.value;
+ if(t.dataset.r2!==undefined)st.r2[Number(t.dataset.r2)]=t.value;
+ if(t.dataset.w1!==undefined){const i=Number(t.dataset.w1);st.w1=t.checked?[...new Set([...st.w1,i])]:st.w1.filter(x=>x!==i);const c=document.getElementById('weatherCount');if(c)c.textContent=st.w1.length+' / 4 izabrano';}
+ if(t.dataset.sp!==undefined){const i=Number(t.dataset.sp),j=Number(t.dataset.sport);st.w3[i]=t.checked?[...new Set([...st.w3[i],j])]:st.w3[i].filter(x=>x!==j)}
+ save();
+});
+prev.onclick=()=>{if(st.page>0){st.page--;render()}};
+next.onclick=()=>{if(st.page===0){st.started=Date.now();st.page=1}else if(st.page<7)st.page++;else st.page=0;render()};
+render();
+</script>
+</body></html>
