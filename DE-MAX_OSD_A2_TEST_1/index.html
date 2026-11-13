@@ -11,7 +11,7 @@
 @media(min-width:650px){body{display:grid;place-items:center}#app{width:min(100%,510px);height:min(96dvh,900px);border:5px solid #172d50;border-radius:26px;box-shadow:0 15px 65px #0c214653}}
 header{flex-shrink:0;background:linear-gradient(115deg,#112344,#284b7e);color:white;padding:11px 14px 9px;box-shadow:0 3px 14px #233c6044}
 .headrow,.brand,.between,.arow{display:flex;align-items:center;justify-content:space-between;gap:10px}.brand{justify-content:flex-start}.logo{width:42px;height:42px;display:grid;place-items:center;background:linear-gradient(130deg,#ffe1a3,#e9ac53);border-radius:12px;color:#102447;font-size:12px;font-weight:1000;letter-spacing:-.5px;box-shadow:0 2px 10px #0808083a}.brand b{font-size:15px;display:block}.brand small{display:block;color:#c7d7ee;font-size:10px;margin-top:3px}.topstat{text-align:right;font-size:11px;font-weight:900}.topstat small{display:block;color:#c6d7e8;font-size:10px;font-weight:600;margin-top:4px}.progress{margin-top:8px;background:#ffffff33;border-radius:9px;height:5px;overflow:hidden}.progress div{height:100%;width:0;background:linear-gradient(90deg,#f4c45e,#a6e8ca);transition:width .2s}
-main{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:12px 12px 16px;scrollbar-width:thin}
+main{flex:1;min-height:0;overflow:hidden;overscroll-behavior:none;padding:10px 12px 8px}
 footer{flex-shrink:0;background:white;border-top:1px solid var(--line);box-shadow:0 -5px 14px #26396014;display:flex;gap:8px;padding:8px 11px max(9px,env(safe-area-inset-bottom))}
 button{cursor:pointer}button:disabled{opacity:.4;cursor:not-allowed}.btn{border:0;border-radius:12px;padding:11px 15px;font-size:13px;font-weight:850;min-height:43px;display:inline-flex;align-items:center;justify-content:center}.primary{background:linear-gradient(115deg,#0d986c,#087453);color:white;flex:1}.back{background:#eef2fa;color:#28466e}.soft{background:#e8effb;color:#244c81}.gold{background:#f5cf81;color:#253755}.danger{background:#ffeced;color:#a43249}
 h1{font-size:25px;line-height:1.1;margin:5px 0 8px;letter-spacing:-.65px}h2{font-size:19px;line-height:1.25;margin:0 0 7px}h3{font-size:15px;margin:0 0 7px}.sub{font-size:10px;letter-spacing:1.8px;text-transform:uppercase;font-weight:900;color:#38629c;margin:5px 0}.muted{font-size:12px;line-height:1.55;color:var(--muted)}.small{font-size:11px;color:var(--muted);line-height:1.4}
@@ -22,6 +22,35 @@ details{margin-bottom:10px}details>summary{cursor:pointer;font-size:12px;font-we
 .rowchecks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}.sport{background:#f5f8fd;border:1px solid #d9e3ee;border-radius:10px;padding:9px 8px;display:flex;gap:6px;align-items:center;font-size:11px;font-weight:800;cursor:pointer}.sport:has(input:checked){background:#e1f6eb;border-color:#3dba89;color:#096d4e}.sport input{accent-color:#087f5f}.sport:last-child:nth-child(odd){grid-column:1/-1}
 .taskline{border-left:3px solid #ecc87c;padding-left:10px;margin:7px 0;font-size:13px;line-height:1.6}.letter{font-size:12px;line-height:1.75}.letter p{margin:0 0 10px}.editor{min-height:200px;resize:vertical;line-height:1.7}.score{font-size:46px;font-weight:1000;letter-spacing:-2px;color:#1e4a7c;line-height:1.1}.score small{font-size:17px;color:#73879d}.resultline{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid #e7edf5;padding:10px 0;font-size:12px}.resultline:last-child{border-bottom:0}.resultline strong{color:#1e507d}.ok{color:#07835b!important}.bad{color:#c44959!important}.review{border-bottom:1px solid #e9eef3;padding:10px 0;font-size:12px;line-height:1.5}.review:last-child{border:0}.review code{font:inherit;color:#176e55;font-weight:850}.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:72px;background:#122b4f;color:white;padding:10px 14px;border-radius:12px;font-size:12px;z-index:30;max-width:85%;box-shadow:0 8px 20px #0003}
 @media(min-width:430px){.rowchecks{grid-template-columns:repeat(3,minmax(0,1fr))}.sport:last-child:nth-child(odd){grid-column:auto}}
+
+/* V2 full screen mobile: each task occupies a single viewport */
+#pageContent{width:100%;transform-origin:top center}
+.intro-screen{display:flex;flex-direction:column;gap:9px;justify-content:center;min-height:100%}
+.intro-cover{background:radial-gradient(circle at 85% 10%,#48699a 0,transparent 48%),linear-gradient(145deg,#112548,#274a79);border-radius:21px;padding:21px 15px;color:white;text-align:center;box-shadow:0 11px 26px #142f4d33}
+.intro-eyebrow{color:#f7cf84;font-size:12px;letter-spacing:2px;font-weight:900}
+.intro-cover h1{font-size:30px;margin:9px 0}.intro-cover p{color:#e1ebfa;font-size:13px;line-height:1.5;margin:8px 0}
+.total-points{font-size:51px;font-weight:1000;color:#ffcf81;line-height:1.08}
+.total-points small{font-size:15px;color:white}
+.min-points{display:inline-block;padding:9px 12px;background:#ffe1aa;color:#263850;border-radius:999px;font-size:12px;font-weight:900;margin-top:10px}
+.summary-task{display:flex;align-items:center;justify-content:space-between;gap:7px;border:1px solid #dbe5f0;background:#fff;border-radius:12px;padding:11px 12px;font-size:12px}
+.summary-task b{font-weight:900}.summary-task .pill{background:#e7f5eb;color:#06764f}
+.summary-total{font-size:13px;font-weight:900;color:#244974;text-align:center;background:#e9f0fb;padding:11px;border-radius:11px}
+.stage-label{color:#38639b;text-transform:uppercase;letter-spacing:1px;font-size:10px;font-weight:900;margin:0 0 5px}
+.stage-title{font-size:20px;line-height:1.14;margin:3px 0 9px}
+.reading-card .passage{font-size:12px;line-height:1.63;margin:6px 0}
+.audio{position:relative;top:auto}.audio audio{height:38px;margin-top:5px}.audio .aux{font-size:10px}
+.audio details{margin-bottom:0}.audio details summary{font-size:10px;color:#d5e8ff;font-weight:700}
+.audio input[type=file]{font-size:10px;width:100%}
+.note-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.note-grid>div:last-child:nth-child(odd){grid-column:1/-1}
+.note-grid .field{padding:8px;font-size:12px}.note-grid .fieldlabel{font-size:10px}
+.person-tabs{display:flex;gap:5px;margin:9px 0}.person-tabs button{flex:1;border:1px solid #c8d9e8;border-radius:9px;background:#edf3fb;color:#2a5184;font-weight:900;padding:9px}
+.person-tabs button.active{background:#0c8b67;color:white}
+.result-tabs{display:flex;gap:5px;margin:9px 0}.result-tabs button{flex:1;background:#e6eef9;border:0;color:#28527a;border-radius:9px;padding:9px 2px;font-weight:850;font-size:11px}.result-tabs button.active{background:#0d8e67;color:white}
+.result-details{font-size:11px;line-height:1.48}.result-details .result-row{padding:6px 0}.result-details .card{margin-bottom:6px}
+@media(max-height:730px){header{padding:8px 12px 6px}.logo{width:33px;height:33px;font-size:10px}.hero{padding:16px}.hero .round{width:54px;height:54px;font-size:24px;margin-bottom:9px}.hero h1{font-size:26px}.card{padding:10px;margin-bottom:7px}.intro-cover{padding:15px}.intro-cover h1{font-size:26px}.total-points{font-size:43px}h1{font-size:22px}footer{padding-top:5px}.summary-task{padding:9px}}
+@media(max-height:610px){.intro-cover{padding:11px}.reading-card .passage{font-size:11px;line-height:1.4}.card{padding:8px;margin-bottom:5px}.choice{padding:7px}.letter{font-size:11px;line-height:1.5}}
+
 </style>
 </head>
 <body>
@@ -65,7 +94,34 @@ function checked(a,i){return a.includes(i)?'checked':''}
 function heading(k){return '<div class="sub">'+esc(k)+'</div>'}
 function intro(k,name,detail){return heading(k)+'<h1>'+name+'</h1><p class="instructions">'+detail+'</p>'}
 function getSelect(i){return '<select aria-label="Überschrift für Text '+(i+1)+'" class="field" data-r1="'+i+'"><option value="">– Überschrift wählen –</option>'+H.map((h,j)=>'<option value="'+h+'" '+(st.r1[i]===h?'selected':'')+'>'+h+' · '+esc(HEAD[j])+'</option>').join('')+'</select>'}
-function cover(){return '<div class="hero"><div class="round">A2</div><div style="letter-spacing:2px;font-weight:900;font-size:11px;color:#f6d18b">ÖSD ZERTIFIKAT A2</div><h1>TEST 1</h1><p>Kompletna interaktivna pisana proba prema dostavljenom modelu<br>Lesen · Hören · Schreiben</p></div><div class="tiles"><div class="tile"><b>25</b><small>Lesen</small></div><div class="tile"><b>30</b><small>Hören</small></div><div class="tile"><b>~50</b><small>Wörter</small></div></div><div class="card" style="margin-top:12px"><label class="fieldlabel" for="student">Ime i prezime učenika (nije obavezno)</label><input id="student" class="field" placeholder="Unesi ime i prezime" value="'+esc(st.name)+'"></div><div class="card goldish"><b style="font-size:12px">Uputstvo</b><p class="muted" style="margin:6px 0">Odgovori se automatski čuvaju na ovom uređaju. Svako slušanje pokrećeš na dugme ▶. Na kraju dobijaš rezultate, bodove i tačne odgovore. Mejl se ne ocenjuje automatski.</p></div><p class="small" style="text-align:center">Nezvanična aplikacija za vežbanje. DE-MAX Tutin.</p>'}
+function cover(){return '<div class="hero"><div class="round">A2</div><div style="letter-spacing:2px;font-weight:900;font-size:11px;color:#f6d18b">ÖSD ZERTIFIKAT A2</div><h1>TEST 1</h1><p>Kompletna interaktivna pisana proba prema dostavljenom modelu<br>Lesen · Hören · Schreiben</p></div><div class="tiles"><div class="tile"><b>25</b><small>Lesen</small></div><div class="tile"><b>30</b><small>Hören</small></div><div class="tile"><b>~50</b><small>Wörter</small></div></div><div class="card" style="margin-top:12px"><label class="fieldlabel" for="student">Ime i prezime učenika (nije obavezno)</label><input id="student" class="field" placeholder="Unesi ime i prezime" value="'+esc(st.name)+'"></div><p class="small" style="text-align:center">Nezvanična aplikacija za vežbanje. DE-MAX Tutin.</p>'}
+
+function lesenIntro(){
+return '<div class="intro-screen"><div class="intro-cover"><div class="intro-eyebrow">LESEN · ÖSD A2</div><h1>Razumevanje</h1><p>Pročitajte zadatke i odaberite tačne odgovore.</p><div class="total-points">25 <small>bodova</small></div><div class="min-points">Minimum 5 bodova za prolaz</div></div>'+
+'<div class="summary-task"><b>1. Situationen + Anzeigen</b><span class="pill">15 bodova</span></div>'+
+'<div class="summary-task"><b>2. Anzeige A, B, C</b><span class="pill">10 bodova</span></div>'+
+'<div class="summary-total">Ukupno 25 bodova / Prolaz 5 bodova</div></div>';
+}
+function horenIntro(){
+return '<div class="intro-screen"><div class="intro-cover"><div class="intro-eyebrow">HÖREN · ÖSD A2</div><h1>Slušanje</h1><p>Slušate tri dela slušanja.</p><div class="total-points">30 <small>bodova</small></div><div class="min-points">Minimum 6 bodova za prolaz</div></div>'+
+'<div class="summary-task"><b>1. Das Wetter am Wochenende</b><span class="pill">10 bodova</span></div>'+
+'<div class="summary-task"><b>2. Notizen – Abschlussfeier</b><span class="pill">10 bodova</span></div>'+
+'<div class="summary-task"><b>3. Welchen Sport betreiben Sie?</b><span class="pill">10 bodova</span></div>'+
+'<div class="summary-total">Ukupno 30 bodova / Prolaz 6 bodova</div></div>';
+}
+function r1Item(i){return '<div class="stage-label">LESEN · Aufgabe 1 · 15 bodova</div><h1 class="stage-title">Die passende Überschrift</h1>'+
+'<p class="small">Text '+(i+1)+' / 5 · Odaberite odgovarajući naslov (A–K).</p>'+
+'<div class="card reading-card"><div class="qtop"><b>Text '+(i+1)+'</b><span class="pill">3 Punkte</span></div><p class="passage">'+esc(TEXTS[i])+'</p></div>'+
+'<div class="card tinted"><label class="fieldlabel">Überschrift</label>'+getSelect(i)+'</div>'+
+'<p class="small">Svih 10 naslova nalazi se u padajućem meniju.</p>';}
+const storyGroups=[[0],[1],[2,3],[4]];
+function storyPart(i){return '<div class="stage-label">LESEN · Aufgabe 2 · 10 bodova</div><h1 class="stage-title">65 Jahre ohne ernsten Streit</h1><p class="small">Pročitajte tekst. Deo '+(i+1)+' / 4.</p>'+
+'<div class="card reading-card tinted">'+storyGroups[i].map(j=>'<p class="passage">'+esc(STORY[j])+'</p>').join('')+'</div>'+
+'<div class="card goldish"><p class="small" style="margin:0">Posle teksta odgovorićete na pet pitanja A, B ili C.</p></div>';}
+function r2Item(i){const q=QS[i];return '<div class="stage-label">LESEN · Aufgabe 2 · 10 bodova</div><h1 class="stage-title">65 Jahre ohne ernsten Streit</h1><p class="small">Frage '+(i+1)+' / 5</p>'+
+'<div class="card"><div class="qtop"><b>'+esc(q[0])+'</b><span class="pill">2 Punkte</span></div><div class="choices">'+['A','B','C'].map((c,j)=>'<label class="choice"><input type="radio" name="r2-'+i+'" data-r2="'+i+'" value="'+c+'" '+(st.r2[i]===c?'checked':'')+'><b>'+c+'</b> '+esc(q[j+1])+'</label>').join('')+'</div></div>'+
+'<p class="small">Za povratak na originalni tekst koristite „Nazad”.</p>';}
+
 function r1(){return intro('Lesen • Aufgabe 1','Die passende Überschrift','Lesen Sie die 10 Überschriften und die 5 Texte. Wählen Sie pro Text die richtige Überschrift. (15 Punkte)')+
 '<details class="card" open><summary>10 Überschriften (A–K)</summary><div class="headings" style="margin-top:11px">'+H.map((h,i)=>'<div><b>'+h+'</b> '+esc(HEAD[i])+'</div>').join('')+'</div></details>'+
 TEXTS.map((t,i)=>'<div class="card"><div class="qtop"><b>Text '+(i+1)+'</b><span class="pill">3 Punkte</span></div><p class="passage">'+esc(t)+'</p>'+getSelect(i)+'</div>').join('')}
@@ -108,22 +164,40 @@ function result(){const g=grade();const items=[['Lesen – Aufgabe 1',g.r1,15],[
  '<details class="card"><summary>Tačni odgovori i ispravke • Hören</summary><div style="margin-top:10px"><b style="font-size:12px">Aufgabe 1</b><p class="small">Sonne, Gewitter, Wind, 25 Grad.</p><b style="font-size:12px">Aufgabe 2</b><p class="small">Freitag · Salat · 2 Euro · 19 Uhr (7 Uhr abends) · 734 56 82.</p><b style="font-size:12px">Aufgabe 3</b>'+SPORTSKEY.map((arr,i)=>'<div class="review">'+(i+1)+'. '+arr.map(j=>SPORTS[j]).join(', ')+' <strong>('+g.w3rows[i]+'/2)</strong></div>').join('')+'</div></details>'+
  '<details class="card"><summary>Schreiben • Tvoj mejl</summary><div class="letter" style="margin-top:10px;white-space:pre-wrap;overflow-wrap:anywhere">'+(esc(st.mail)||'Mejl nije napisan.')+'</div><p class="small">'+wordCount(st.mail)+' reči. Tekst treba da pregleda nastavnik.</p></details>'+
  '<div class="card"><button class="btn soft" style="width:100%" id="copyResult">Kopiraj rezultat</button><button class="btn danger" style="width:100%;margin-top:8px" id="reset">Počni novi test (obriši odgovore)</button></div>'}
+
+const PAGES=[cover,lesenIntro,
+()=>r1Item(0),()=>r1Item(1),()=>r1Item(2),()=>r1Item(3),()=>r1Item(4),
+()=>storyPart(0),()=>storyPart(1),()=>storyPart(2),()=>storyPart(3),
+()=>r2Item(0),()=>r2Item(1),()=>r2Item(2),()=>r2Item(3),()=>r2Item(4),
+horenIntro,h1,h2,h3,writing,result];
+const LAST=PAGES.length-1;
+if(!st.flowV2){st.page=0;st.flowV2=true;st.speaker=0;save()}
+function fitPage(){
+ const content=document.getElementById('pageContent');if(!content)return;
+ content.style.transform='';const h=main.clientHeight,n=content.scrollHeight;
+ const ratio=h&&n?Math.min(1,(h-2)/n):1;
+ content.style.transform='scale('+Math.max(.5,ratio)+')';
+}
 function render(){
  const a=document.getElementById('player');if(a){a.pause();if(objectAudio){URL.revokeObjectURL(objectAudio);objectAudio=null}}
- st.page=Math.max(0,Math.min(7,st.page));save();
- const pages=[cover,r1,r2,h1,h2,h3,writing,result];
- main.innerHTML=pages[st.page]();main.scrollTop=0;
- document.getElementById('bar').style.width=(st.page/7*100)+'%';
- document.getElementById('topstat').innerHTML=st.page+'/7<small>'+(st.page===7?'Rezultati':'ÖSD A2')+'</small>';
- prev.disabled=st.page===0;next.textContent=st.page===0?'Počni test →':st.page===6?'Završi i oceni ✓':st.page===7?'Vrati na početak ↺':'Nastavi →';
- if(st.page===7){const copy=document.getElementById('copyResult');copy.onclick=()=>{const g=grade();const txt='DE-MAX ÖSD A2 Test 1 | '+(st.name||'Učenik')+' | Lesen '+(g.r1+g.r2)+'/25 | Hören '+(g.w1+g.w2+g.w3)+'/30 | Ukupno '+g.total+'/55 | Schreiben '+wordCount(st.mail)+' Wörter';if(navigator.clipboard?.writeText)navigator.clipboard.writeText(txt).then(()=>notify('Rezultat kopiran')).catch(()=>notify('Kopiranje nije dostupno'));else notify(txt)};
- document.getElementById('reset').onclick=()=>{if(confirm('Obrisati sve odgovore i početi ponovo?')){st=JSON.parse(JSON.stringify(DEFAULT));save();render()}}}
- if(st.page>=3&&st.page<=5){
+ st.page=Math.max(0,Math.min(LAST,st.page));save();
+ main.innerHTML='<div id="pageContent">'+PAGES[st.page]()+'</div>';
+ document.getElementById('bar').style.width=(st.page/LAST*100)+'%';
+ document.getElementById('topstat').innerHTML=st.page+'/'+LAST+'<small>'+(st.page===LAST?'Rezultati':'ÖSD A2')+'</small>';
+ prev.disabled=st.page===0;
+ next.textContent=st.page===0?'Počni test →':st.page===LAST-1?'Završi i oceni ✓':st.page===LAST?'Na početak ↺':'Nastavi →';
+ requestAnimationFrame(fitPage);
+ if(st.page===LAST){const copy=document.getElementById('copyResult');copy.onclick=()=>{const g=grade();const txt='DE-MAX ÖSD A2 Test 1 | '+(st.name||'Učenik')+' | Lesen '+(g.r1+g.r2)+'/25 | Hören '+(g.w1+g.w2+g.w3)+'/30 | Ukupno '+g.total+'/55 | Schreiben '+wordCount(st.mail)+' Wörter';if(navigator.clipboard?.writeText)navigator.clipboard.writeText(txt).then(()=>notify('Rezultat kopiran')).catch(()=>notify('Kopiranje nije dostupno'));else notify(txt)};
+ document.getElementById('reset').onclick=()=>{if(confirm('Obrisati sve odgovore i početi ponovo?')){st=JSON.parse(JSON.stringify(DEFAULT));st.flowV2=true;save();render()}}}
+ if(st.page>=17&&st.page<=19){
  const audio=document.getElementById('player'),signal=document.getElementById('audiosignal');
  audio.addEventListener('error',()=>{signal.textContent='Snimak nije dostupan na serveru. Izaberi MP3 sa uređaja ispod.'});
- audio.addEventListener('canplay',()=>{signal.textContent='Snimak je spreman. Pritisni ▶ za slušanje.'});
- document.getElementById('localAudio').addEventListener('change',e=>{const file=e.target.files[0];if(!file)return;if(objectAudio)URL.revokeObjectURL(objectAudio);objectAudio=URL.createObjectURL(file);audio.src=objectAudio;audio.load();signal.textContent='Učitan fajl: '+file.name;});}
+ audio.addEventListener('canplay',()=>{signal.textContent='Snimak je spreman. Pritisnite ▶.'});
+ document.getElementById('localAudio').addEventListener('change',e=>{const file=e.target.files[0];if(!file)return;if(objectAudio)URL.revokeObjectURL(objectAudio);objectAudio=URL.createObjectURL(file);audio.src=objectAudio;audio.load();signal.textContent='Učitan: '+file.name;});
+ }
 }
+window.addEventListener('resize',()=>requestAnimationFrame(fitPage),{passive:true});
+window.visualViewport?.addEventListener('resize',()=>requestAnimationFrame(fitPage),{passive:true});
 function notify(s){const el=document.createElement('div');el.className='toast';el.textContent=s;document.body.append(el);setTimeout(()=>el.remove(),2800)}
 main.addEventListener('input',e=>{
  const t=e.target;
@@ -141,7 +215,7 @@ main.addEventListener('change',e=>{
  save();
 });
 prev.onclick=()=>{if(st.page>0){st.page--;render()}};
-next.onclick=()=>{if(st.page===0){st.started=Date.now();st.page=1}else if(st.page<7)st.page++;else st.page=0;render()};
+next.onclick=()=>{if(st.page===0){st.started=Date.now();st.page=1}else if(st.page<LAST)st.page++;else st.page=0;render()};
 render();
 </script>
 </body></html>
