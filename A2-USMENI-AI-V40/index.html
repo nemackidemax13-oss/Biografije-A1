@@ -2547,18 +2547,8 @@ async function handleButton(action){
 // iPhone/Android: tokom korisničkog klika otvori mikrofon, a posle pitanja slušaj automatski.
 for(const id of ["begin","introBack","chooseBack","chooseNext","speakNext","speakBack"]){
  $(id).addEventListener("click",()=>{
-  const audio=dmWarmAudioContext();
-  // Kratak ton od 75ms na prvom dodiru; otkljucava audio u iOS/Android.
-  // Nikada se ne pokrece na ucitavanje stranice bez korisnickog gesta.
-  if(id==="begin"&&audio&&audio.state!=="closed"){
-   try{
-    const osc=audio.createOscillator(),gain=audio.createGain();
-    osc.type="sine";osc.frequency.value=660;gain.gain.value=0.018;
-    osc.connect(gain);gain.connect(audio.destination);
-    osc.start();osc.stop(audio.currentTime+0.075);
-    osc.onended=()=>{try{osc.disconnect();gain.disconnect()}catch(e){}};
-   }catch(e){}
-  }
+  dmWarmAudioContext();
+  // Otkljucaj audio na dodir. Ne pokreci beep koji moze prekinuti prvi nemacki izgovor.
   try{window.speechSynthesis?.resume()}catch(e){}
   if(id==="introBack"&&app.intro===0)return;
   if(id==="speakNext"&&app.question===1&&app.topic===app.chosen.length-1)return;
