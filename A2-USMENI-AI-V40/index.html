@@ -679,7 +679,7 @@ const app={screen:"intro",intro:0,offer:[],chosen:[],topic:0,question:-1,questio
 function shuffled(arr){const a=arr.slice();for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function clean(s){return String(s||"").trim()}
 function text(id,s){$(id).textContent=s}
-function stage(name,pill){app.screen=name;if(name!=="choose"&&typeof dmChooseStop==="function")dmChooseStop(true);document.getElementById("header").style.display="none";if(name!=="introExam"&&name!=="speaking"&&typeof dmReleaseStream==="function")dmReleaseStream();document.querySelectorAll(".screen").forEach(x=>x.classList.toggle("active",x.id===name));text("stagePill",pill);$("micLight").classList.remove("live");window.scrollTo(0,0);document.querySelectorAll(".scroll").forEach(x=>x.scrollTop=0)}
+function stage(name,pill){app.screen=name;if(name!=="choose"&&typeof dmChooseStop==="function")dmChooseStop(true);document.getElementById("header").style.display="none";if(name!=="introExam"&&name!=="speaking"&&name!=="v40part2"&&typeof dmReleaseStream==="function")dmReleaseStream();document.querySelectorAll(".screen").forEach(x=>x.classList.toggle("active",x.id===name));text("stagePill",pill);$("micLight").classList.remove("live");window.scrollTo(0,0);document.querySelectorAll(".scroll").forEach(x=>x.scrollTop=0)}
 function respondKey(){if(app.screen==="introExam")return "intro-"+app.intro;if(app.screen==="speaking")return "theme-"+app.chosen[app.topic]+"-q-"+app.question;return ""}
 function textarea(){return app.screen==="introExam"?$("introText"):$("speakText")}
 function statusSet(s){let id=app.screen==="introExam"?"introStatus":"speakStatus";if($(id))text(id,s)}
