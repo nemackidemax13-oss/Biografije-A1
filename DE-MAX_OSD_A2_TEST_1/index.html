@@ -935,6 +935,45 @@ main.mail-writing-active .a2-mail-writing-layout > .stage-label{
  font-size:9px!important;line-height:1.1!important;margin:0 0 1px!important;flex:0 0 auto!important;
 }
 
+
+/* V35: compact email action buttons directly above the mobile software keyboard. */
+main.mail-writing-active .ai-mail-controls{
+ display:flex!important;align-items:stretch!important;
+ flex:0 0 auto!important;width:100%!important;
+ min-height:0!important;margin:2px 0 0!important;padding:0!important;
+ gap:5px!important;position:relative!important;z-index:2!important;
+}
+main.mail-writing-active .ai-mail-controls .btn,
+main.mail-writing-active.mail-keyboard .ai-mail-controls .btn{
+ flex:1 1 0!important;min-width:0!important;
+ height:30px!important;min-height:30px!important;max-height:30px!important;
+ padding:3px 5px!important;font-size:10px!important;font-weight:850!important;
+ border-radius:6px!important;line-height:1.1!important;white-space:nowrap!important;
+}
+main.mail-writing-active.mail-keyboard .ai-mail-controls{
+ display:flex!important;visibility:visible!important;opacity:1!important;
+ flex:0 0 30px!important;min-height:30px!important;max-height:30px!important;
+ order:3!important;margin:0 0 2px!important;gap:4px!important;
+}
+main.mail-writing-active.mail-keyboard .a2-mail-writing-editor{
+ order:2!important;flex:1 1 0!important;min-height:0!important;
+}
+main.mail-writing-active.mail-keyboard .a2-writing-questions{order:1!important}
+main.mail-writing-active.mail-keyboard .ai-mail-status{
+ display:none!important;
+}
+main.mail-writing-active.mail-keyboard .a2-mail-writing-layout{justify-content:flex-start!important}
+@media(max-height:400px){
+ main.mail-writing-active.mail-keyboard .ai-mail-controls,
+ main.mail-writing-active.mail-keyboard .ai-mail-controls .btn{
+  height:27px!important;min-height:27px!important;max-height:27px!important;
+ }
+ main.mail-writing-active.mail-keyboard .ai-mail-controls{flex-basis:27px!important}
+ main.mail-writing-active.mail-keyboard .ai-mail-controls .btn{
+  padding:2px 4px!important;font-size:9.5px!important;
+ }
+}
+
 </style>
 </head>
 <body>
