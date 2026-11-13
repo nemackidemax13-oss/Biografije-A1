@@ -1473,7 +1473,7 @@ function fitPage(){
    Hören 1 and 3: once; Hören 2: twice consecutively. Older localStorage locks
    are intentionally ignored because they previously left audio stuck. */
 function setupExamAudio(page){
- const idx=page-5, required=idx===1?2:1;
+ const idx=page-5, required=1; // supplied Track 5 already contains its recorded repeat
  const audio=document.getElementById('player');
  const status=document.getElementById('audiosignal');
  const bar=document.getElementById('audioBar');
@@ -1545,7 +1545,9 @@ function setupExamAudio(page){
  });
  audio.addEventListener('error',()=>{
   if(!valid()||finished)return;
-  offerStart('Snimak se nije učitao. Proverite internet i pokušajte ponovo.');
+  const field=document.getElementById('audioFileLabel');if(field)field.hidden=false;
+  status.textContent='MP3 nije dostupan na serveru. Izaberite snimak sa uređaja.';
+  fallback.hidden=true;
  });
  fallback.addEventListener('click',()=>{
   if(!valid()||finished)return;
@@ -1760,6 +1762,19 @@ main.addEventListener('change',e=>{
  if(t.dataset.sp!==undefined){const i=Number(t.dataset.sp),j=Number(t.dataset.sport);st.w3[i]=t.checked?[...new Set([...st.w3[i],j])]:st.w3[i].filter(x=>x!==j)}
  save();
 });
+
+main.addEventListener('change',e=>{
+ if(e.target?.id!=='audioFromPhone')return;
+ const file=e.target.files?.[0],audio=document.getElementById('player');
+ if(!file||!audio)return;
+ if(objectAudio)URL.revokeObjectURL(objectAudio);
+ objectAudio=URL.createObjectURL(file);
+ audio.src=objectAudio;audio.load();
+ const field=document.getElementById('audioFileLabel');if(field)field.hidden=true;
+ const status=document.getElementById('audiosignal');if(status)status.textContent='MP3 je učitan. Reprodukcija…';
+ audio.play().catch(()=>{const b=document.getElementById('audioFallback');if(b){b.hidden=false;b.textContent='▶ Pokreni slušanje';}});
+});
+
 prev.onclick=()=>{if(st.page>0){st.page--;render()}};
 next.onclick=()=>{if(st.page===LAST-1){checkEmailAI(true);return;}if(st.page===0){st.started=Date.now();st.page=1}else if(st.page<LAST)st.page++;else st.page=0;render()};
 render();
