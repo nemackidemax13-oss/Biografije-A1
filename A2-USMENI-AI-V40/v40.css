@@ -1,0 +1,81 @@
+
+/* DE-MAX A2 USMENI AI V40 - separate layer over V30 */
+:root{--v40-blue:#1957bd;--v40-dark:#142d50;--v40-red:#d8263f;--v40-green:#078657}
+#intro h1::after{content:" · AI V40";color:#e22940;font-size:.65em;display:inline-block;margin-left:5px}
+#intro .intro-sub{line-height:1.55}
+#intro .v40-intro-info{margin:10px auto 0;max-width:420px;background:#f0f7ff;border:1px solid #cdddf4;padding:11px;border-radius:12px;color:#294c79;font-size:11px;line-height:1.48}
+#v40part2{background:#fff;color:#172d4d;overflow:hidden}
+#v40part2 .v40-head{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:11px 13px;background:#f3f7ff;border-bottom:1px solid #dce8f6}
+#v40part2 .v40-head h2{margin:0;font-size:18px}
+#v40part2 .v40-head small{display:block;color:#6a819e;font-size:10px;font-weight:700}
+#v40part2 .v40-inner{padding:10px 12px 6px;overflow-y:auto;min-height:0;flex:1}
+#v40part2 .v40-task{background:#f3f7ff;border:1px solid #d5e3fa;border-radius:13px;padding:10px;margin-bottom:9px}
+#v40part2 .v40-task strong{display:block;color:#154a9c;font-size:14px;margin-bottom:3px}
+#v40part2 .v40-task p{font-size:12px;line-height:1.45;margin:0}
+.v40-points{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:9px}
+.v40-point{padding:7px 6px;border:1px solid #ccdcf3;border-radius:9px;background:white;display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700}
+.v40-point span{font-size:17px}
+.v40-part2-prompt{border-radius:13px;background:linear-gradient(115deg,#132f65,#245ac2);padding:13px;margin:7px 0;color:white}
+.v40-part2-prompt small{display:block;color:#cfe1ff;font-size:10px;font-weight:800;margin-bottom:6px}
+.v40-part2-prompt strong{font-size:16px;line-height:1.42;display:block;overflow-wrap:anywhere}
+.v40-part2-prompt p{font-size:11px;margin:6px 0 0;opacity:.9}
+.v40-part2-response{border:1px solid #d6e3f5;border-radius:12px;padding:9px;margin-top:8px}
+.v40-part2-response label{display:block;font-size:10px;font-weight:900;color:#647f9d;letter-spacing:.35px;margin-bottom:5px}
+.v40-part2-response textarea{border:0;background:white;color:#18365e;width:100%;min-height:70px;resize:vertical;font-size:14px;line-height:1.4;outline:none}
+.v40-status{background:#edf5ff;border-radius:8px;padding:8px 9px;color:#385d87;font-weight:700;font-size:11px;min-height:32px}
+.v40-toolbar{display:flex;gap:7px;margin:8px 0;flex-wrap:wrap}
+.v40-toolbar .btn{flex:1;min-width:115px}
+.v40-actions{padding:9px 12px calc(9px + env(safe-area-inset-bottom));display:grid;grid-template-columns:1fr 1fr;gap:7px;border-top:1px solid #dce8f6;background:white;flex:none}
+.v40-actions button{font-size:12px}
+.v40-actions .full{grid-column:1/-1}
+.v40-mini{font-size:11px;color:#7489a1;line-height:1.4;margin-top:6px}
+.v40-chat{display:flex;flex-direction:column;gap:6px;margin:7px 0;max-height:140px;overflow:auto}
+.v40-chat-row{padding:7px 9px;border-radius:9px;background:#f0f6ff;color:#17417c;font-size:11px;line-height:1.4}
+.v40-chat-row.student{background:#effaf3;color:#136244;margin-left:20px}
+.v40-chat-row b{display:block;font-size:9px;letter-spacing:.3px}
+.v40-topics{font-weight:800;font-size:11px;color:#3564a6}
+.v40-done{color:#0c8056}
+.v40-score-card{background:#f2f7ff;border:1px solid #cee0fb;border-radius:15px;padding:12px;margin:8px 0}
+.v40-score-card h3{font-size:15px;margin:0 0 6px}
+.v40-score-table{width:100%;border-collapse:collapse;font-size:11px}
+.v40-score-table td{border-bottom:1px solid #dde7f5;padding:7px 4px;vertical-align:top}
+.v40-score-table td:last-child{text-align:right;font-weight:800;white-space:nowrap}
+.v40-pdf-btn{display:block;margin:8px 0 10px;width:100%;border:0;background:#0c8559;color:white;border-radius:12px;padding:12px;font-weight:850;cursor:pointer}
+.v40-pdf-btn:disabled{opacity:.5}
+.v40-note{font-size:11px;color:#607b9c;line-height:1.45}
+.v40-credits{font-size:10px;color:#8193aa;text-align:center;padding:9px 4px}
+.v40-report-layout{font-family:Arial,Helvetica,sans-serif!important;color:#162e50;background:#fff;width:750px;max-width:750px;padding:30px 35px;line-height:1.45}
+.v40-report-layout *{box-sizing:border-box}
+.v40-report-layout header{display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #cf2940;padding-bottom:13px;margin-bottom:15px}
+.v40-report-layout h1{font-size:27px;color:#c9203a;margin:0}
+.v40-report-layout h2{font-size:17px;margin:22px 0 10px;color:#16417c;border-bottom:1px solid #cad7e8;padding-bottom:6px}
+.v40-report-layout h3{font-size:13px;margin:13px 0 7px;color:#183d73}
+.v40-report-layout p{font-size:11px;line-height:1.5;margin:4px 0}
+.v40-report-layout .v40-report-info{background:#f2f6fc;border-radius:9px;padding:12px;margin:12px 0}
+.v40-report-layout table{width:100%;border-collapse:collapse;font-size:11px;margin:10px 0}
+.v40-report-layout th,.v40-report-layout td{border:1px solid #cfdbeb;text-align:left;padding:7px}
+.v40-report-layout th{background:#eaf1fa}
+.v40-report-layout .v40-report-answer{background:#f8fbff;border-left:3px solid #2e69be;padding:9px 12px;margin:7px 0;break-inside:avoid}
+.v40-report-layout .v40-report-answer .de{font-size:12px;font-weight:700;color:#163c74}
+.v40-report-layout .v40-report-answer .sr{font-size:11px;color:#607795}
+.v40-report-layout .v40-report-footer{font-size:10px;border-top:1px solid #d4dfe9;margin-top:20px;padding-top:9px;color:#687a95}
+.v40-pdf-host{position:fixed;z-index:2147483646;left:0;top:0;width:100vw;height:100vh;background:#f0f4fa;overflow:auto;display:flex;justify-content:center;padding:14px}
+.v40-loading{border-radius:10px;padding:10px;background:#f0f7ff;color:#1651a5;font-size:12px;font-weight:750;margin:7px 0}
+@media(max-height:750px){
+#v40part2 .v40-inner{padding:7px 10px 3px}
+#v40part2 .v40-task{padding:8px;margin-bottom:7px}
+.v40-points{gap:5px;margin-top:6px}
+.v40-point{padding:5px}
+.v40-part2-prompt{padding:10px;margin:5px 0}
+.v40-part2-response textarea{min-height:50px}
+.v40-toolbar{margin:5px 0}
+.v40-chat{max-height:90px}
+}
+@media print{
+body{background:white!important}
+#app{display:none!important}
+.v40-pdf-host{position:static!important;width:auto!important;height:auto!important;padding:0!important;display:block!important;background:white!important;overflow:visible!important}
+.v40-report-layout{width:auto!important;max-width:none!important;padding:0!important}
+.v40-report-layout h2,.v40-report-layout .v40-report-answer{break-inside:avoid}
+@page{size:A4;margin:14mm}
+}
