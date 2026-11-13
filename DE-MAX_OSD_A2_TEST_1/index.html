@@ -219,6 +219,17 @@ main.reading-scroll .lesen1-text{
   word-break:normal;
   margin-inline:0;
 }
+
+/* V17: justify all five Lesen 2 paragraphs on both edges, like Lesen 1 */
+main.reading-scroll .lesen2-text{
+ text-align:justify;
+ text-align-last:left;
+ hyphens:auto;
+ -webkit-hyphens:auto;
+ overflow-wrap:break-word;
+ word-break:normal;
+ margin-inline:0;
+}
 </style>
 </head>
 <body>
@@ -296,7 +307,7 @@ function r1(){return intro('Lesen • Aufgabe 1','Die passende Überschrift','Pr
 TEXTS.map((t,i)=>'<div class="card"><div class="qtop"><b>Text '+(i+1)+'</b><span class="pill">3 Punkte</span></div><p class="passage lesen1-text" lang="de">'+esc(t)+'</p>'+getSelect(i)+'</div>').join('')}
 function r2(){return intro('Lesen • Aufgabe 2','65 Jahre ohne ernsten Streit','Prvo pročitajte tekst, a zatim kod svakog pitanja označite tačan odgovor A, B ili C. (10 bodova)')+
 
-'<details class="card tinted" open><summary>Lesetext anzeigen / ausblenden</summary><div style="margin-top:10px">'+STORY.map(x=>'<p class="passage">'+esc(x)+'</p>').join('')+'</div></details>'+
+'<details class="card tinted" open><summary>Lesetext anzeigen / ausblenden</summary><div style="margin-top:10px">'+STORY.map(x=>'<p class="passage lesen2-text" lang="de">'+esc(x)+'</p>').join('')+'</div></details>'+
 '<div class="card goldish"><p class="small" style="margin:0">Beispiel: Herr und Frau Böhm sind seit 65 Jahren ein Ehepaar. (C)</p></div>'+
 QS.map((q,i)=>'<div class="card"><div class="qtop"><b>'+(i+1)+'. '+esc(q[0])+'</b><span class="pill">2 Punkte</span></div><div class="choices">'+['A','B','C'].map((c,j)=>'<label class="choice"><input type="radio" name="r2-'+i+'" data-r2="'+i+'" value="'+c+'" '+(st.r2[i]===c?'checked':'')+'><b>'+c+'</b> '+esc(q[j+1])+'</label>').join('')+'</div></div>').join('')}
 
