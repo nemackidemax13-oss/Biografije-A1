@@ -1786,7 +1786,7 @@ $("restart").onclick=()=>{app.evaluations={};app.inFlight={};app.grammarReviews=
  * iOS/Android fallback: MediaRecorder + DE-MAX transcribe Worker.
  * Ne prebacuje učenika na sledeće pitanje samostalno.
  */
-const DM_DIRECT_MIC_URL=location.origin+location.pathname+"?v=20261113-v42-v30mic";
+const DM_DIRECT_MIC_URL=location.origin+location.pathname+"?v=20261113-v44-replit-ios-android";
 const DM_EMBEDDED=window.self!==window.top;
 const DM_MIC={
  stream:null,pending:null,allowed:false,permitGeneration:0,
@@ -1823,8 +1823,17 @@ function dmReleaseStream(){
 async function dmPermit(fromTap){
  if(dmTrackLive())return true;
  if(DM_MIC.pending)return DM_MIC.pending;
- // Probaj automatski, kao radni A1 AUTO_IFRAME.
- // Pregledac i dalje sam odlucuje o dozvoli mikrofona.
+ // A Replit iframe must delegate microphone access; the child cannot bypass it.
+ try{
+  const policy=document.permissionsPolicy||document.featurePolicy;
+  if(policy?.allowsFeature?.("microphone")===false){
+   DM_MIC.lastError="IframePolicyBlocked";
+   dmMicStatus('Replit iframe mora da ima allow="microphone; autoplay". Ako je mikrofon blokiran, otvorite direktan HTTPS link.',true);
+   if(window.parent!==window)window.parent.postMessage({source:"DEMAX_A2_V40",kind:"microphone",state:"iframe-policy-blocked"},"*");
+   return false;
+  }
+ }catch(e){}
+ // The device and browser must still authorize microphone access.
  if(!window.isSecureContext){
   dmMicStatus("Mikrofon radi samo preko bezbednog HTTPS linka. Otvori direktnu GitHub aplikaciju.",true);return false
  }
@@ -2607,6 +2616,25 @@ document.addEventListener("visibilitychange",()=>{
   }
  }
 });
+
+ // iPhone + Android: prepare microphone as soon as the page is opened.
+ // If a user tap is required, the green Start button retries during the gesture.
+ function dmAutoPrepareMobileMic(){
+  if(!dmMobileRecognizer()||dmTrackLive()||DM_MIC.pending||
+     DM_MIC.lastError==="IframePolicyBlocked"||document.visibilityState==="hidden")return;
+  dmPermit(false).then(ok=>{
+   if(window.parent!==window)try{
+    window.parent.postMessage({source:"DEMAX_A2_V40",kind:"microphone",state:ok?"allowed":"blocked"},"*");
+   }catch(e){}
+  }).catch(()=>{});
+ }
+ if(dmMobileRecognizer()){
+  setTimeout(dmAutoPrepareMobileMic,160);
+  window.addEventListener("pageshow",()=>{
+   if(DM_MIC.permissionEverGranted&&!dmTrackLive()&&!DM_MIC.pending)
+    dmAutoPrepareMobileMic();
+  });
+ }
 
 </script>
 <script>
