@@ -175,16 +175,31 @@ function grade(){
  const w3=w3rows.reduce((n,v)=>n+v,0);
  return {r1,r2,w1,w2,w3,w3rows,noteok,total:r1+r2+w1+w2+w3};
 }
-function result(){const g=grade();const items=[['Lesen – Aufgabe 1',g.r1,15],['Lesen – Aufgabe 2',g.r2,10],['Hören – Aufgabe 1',g.w1,10],['Hören – Aufgabe 2',g.w2,10],['Hören – Aufgabe 3',g.w3,10]];
- const checks=['C','E','K','B','G'];
- return intro('DE-MAX • Ergebnis','Rezultati testa','Automatska provera za Lesen i Hören. Schreiben zahteva nastavnikovu procenu.')+
- '<div class="card" style="text-align:center;padding:21px"><div class="sub">Ukupan rezultat</div><div class="score">'+g.total+' <small>/ 55 Punkte</small></div><div class="pill" style="margin-top:8px">'+Math.round(100*g.total/55)+'% urađenosti</div><p class="small">Lesen: '+(g.r1+g.r2)+'/25 • Hören: '+(g.w1+g.w2+g.w3)+'/30</p></div>'+
- '<div class="card">'+items.map(x=>'<div class="resultline"><span>'+x[0]+'</span><strong>'+x[1]+' / '+x[2]+'</strong></div>').join('')+'</div>'+
- '<div class="card greenish"><b style="font-size:12px">Bodovanje prema modelu ÖSD A2</b><p class="small">Za Lesen je navedena minimalna granica 5/25, za Hören 6/30. Ovo nije zvaničan rezultat ispita: pisani mejl nije ocenjen i ukupan prolaz se ovde ne potvrđuje.</p></div>'+
- '<details class="card"><summary>Tačni odgovori i ispravke • Lesen</summary><div style="margin-top:10px">'+checks.map((c,i)=>'<div class="review">Aufgabe 1 · Text '+(i+1)+': <code>'+c+'</code> '+(st.r1[i]===c?'✔':'· tvoj odgovor: '+(esc(st.r1[i])||'—'))+'</div>').join('')+['C','A','A','A','A'].map((c,i)=>'<div class="review">Aufgabe 2 · Nr. '+(i+1)+': <code>'+c+'</code> '+(st.r2[i]===c?'✔':'· tvoj odgovor: '+(esc(st.r2[i])||'—'))+'</div>').join('')+'</div></details>'+
- '<details class="card"><summary>Tačni odgovori i ispravke • Hören</summary><div style="margin-top:10px"><b style="font-size:12px">Aufgabe 1</b><p class="small">Sonne, Gewitter, Wind, 25 Grad.</p><b style="font-size:12px">Aufgabe 2</b><p class="small">Freitag · Salat · 2 Euro · 19 Uhr (7 Uhr abends) · 734 56 82.</p><b style="font-size:12px">Aufgabe 3</b>'+SPORTSKEY.map((arr,i)=>'<div class="review">'+(i+1)+'. '+arr.map(j=>SPORTS[j]).join(', ')+' <strong>('+g.w3rows[i]+'/2)</strong></div>').join('')+'</div></details>'+
- '<details class="card"><summary>Schreiben • Tvoj mejl</summary><div class="letter" style="margin-top:10px;white-space:pre-wrap;overflow-wrap:anywhere">'+(esc(st.mail)||'Mejl nije napisan.')+'</div><p class="small">'+wordCount(st.mail)+' reči. Tekst treba da pregleda nastavnik.</p></details>'+
- '<div class="card"><button class="btn soft" style="width:100%" id="copyResult">Kopiraj rezultat</button><button class="btn danger" style="width:100%;margin-top:8px" id="reset">Počni novi test (obriši odgovore)</button></div>'}
+
+function result(){
+ const g=grade(), tab=st.resultTab||'score';
+ let area='';
+ if(tab==='score'){
+ const rows=[['Lesen • Aufgabe 1',g.r1,15],['Lesen • Aufgabe 2',g.r2,10],['Hören • Aufgabe 1',g.w1,10],['Hören • Aufgabe 2',g.w2,10],['Hören • Aufgabe 3',g.w3,10]];
+ area='<div class="card" style="text-align:center;padding:13px"><div class="sub">Ukupan rezultat</div><div class="score">'+g.total+' <small>/55</small></div><p class="small" style="margin:4px 0 0">Lesen '+(g.r1+g.r2)+'/25 · Hören '+(g.w1+g.w2+g.w3)+'/30</p></div>'+
+ '<div class="card">'+rows.map(x=>'<div class="result-row" style="padding:6px 0"><div class="l">'+x[0]+'</div><div class="r">'+x[1]+' / '+x[2]+'</div></div>').join('')+'</div>'+
+ '<p class="small">Minimum za Lesen 5 bodova, za Hören 6 bodova. Schreiben ocenjuje nastavnik; ovo nije zvanična ÖSD ocena.</p>';
+ }else if(tab==='lesen'){
+ area='<div class="card"><h3>Aufgabe 1 · 15 bodova</h3>'+
+ ['C','E','K','B','G'].map((v,i)=>'<div class="result-row" style="padding:6px 0"><span>Text '+(i+1)+'</span><strong>'+v+' · ti: '+esc(st.r1[i]||'—')+'</strong></div>').join('')+'</div>'+
+ '<div class="card"><h3>Aufgabe 2 · 10 bodova</h3>'+
+ ['C','A','A','A','A'].map((v,i)=>'<div class="result-row" style="padding:6px 0"><span>Frage '+(i+1)+'</span><strong>'+v+' · ti: '+esc(st.r2[i]||'—')+'</strong></div>').join('')+'</div>';
+ }else if(tab==='horen'){
+ area='<div class="card"><h3>Aufgabe 1 · Wetter</h3><p class="small">Sonne · Gewitter · Wind · 25 Grad</p><h3>Aufgabe 2 · Abschlussfeier</h3><p class="small">Freitag · Salat · 2 Euro · 19 Uhr · 734 56 82</p></div>'+
+ '<div class="card"><h3>Aufgabe 3 · Sport</h3>'+SPORTSKEY.map((arr,i)=>'<div class="result-row" style="padding:5px 0"><span>Person '+(i+1)+'</span><strong style="font-size:10px;max-width:75%;text-align:right">'+arr.map(j=>SPORTS[j]).join(', ')+'</strong></div>').join('')+'</div>';
+ }else{
+ area='<div class="card"><h3>Tvoj mejl</h3><div style="white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;line-height:1.5">'+(esc(st.mail)||'Mejl nije napisan.')+'</div><p class="small">'+wordCount(st.mail)+' Wörter · Za pregled kod nastavnika.</p></div>';
+ }
+ return '<div class="stage-label">DE-MAX · ÖSD A2</div><h1 class="stage-title">Rezultati testa</h1>'+
+ '<div class="result-tabs">'+[['score','Bodovi'],['lesen','Lesen'],['horen','Hören'],['mail','Mejl']].map(x=>'<button type="button" data-result="'+x[0]+'" class="'+(tab===x[0]?'active':'')+'">'+x[1]+'</button>').join('')+'</div>'+
+ '<div class="result-details">'+area+'</div>'+
+ '<div style="display:flex;gap:8px;margin-top:8px"><button class="btn soft" id="copyResult" style="flex:1">Kopiraj rezultat</button><button class="btn danger" id="reset" style="flex:1">Novi test ↺</button></div>';
+}
 
 const PAGES=[cover,lesenIntro,
 ()=>r1Item(0),()=>r1Item(1),()=>r1Item(2),()=>r1Item(3),()=>r1Item(4),
@@ -222,6 +237,8 @@ window.visualViewport?.addEventListener('resize',()=>requestAnimationFrame(fitPa
 function notify(s){const el=document.createElement('div');el.className='toast';el.textContent=s;document.body.append(el);setTimeout(()=>el.remove(),2800)}
 
 main.addEventListener('click',e=>{
+ const resultTab=e.target.closest('[data-result]');
+ if(resultTab){st.resultTab=resultTab.dataset.result;save();render();return;}
  const b=e.target.closest('[data-person]');
  if(b){
  st.speaker=Number(b.dataset.person);save();
