@@ -463,6 +463,62 @@ main.mail-writing-active.mail-keyboard .ai-mail-status{display:none!important}
 /* A dynamic visual viewport height allows standalone mobile page to shrink with keyboard. */
 @media(max-width:649px){#app{height:var(--live-app-height,100dvh)!important}}
 
+
+/* V24 - Lesen 1: ten reference headings are ALWAYS visible, only page scrolls. */
+main.reading-scroll .lesen-titles-reference{display:block!important;padding:11px 10px!important}
+main.reading-scroll .lesen-titles-heading{margin:0 0 8px;font-size:13px;color:#254d83;font-weight:900}
+main.reading-scroll .lesen-titles-reference .headings{display:grid!important;gap:4px!important}
+main.reading-scroll .lesen-titles-reference .headings>div{font-size:var(--read-size,14px)!important;line-height:1.35;padding:7px 8px}
+main.reading-scroll .lesen-titles-reference .headings b{color:#154986;font-weight:950}
+/* Hören 1: use every available screen row with large, touch-friendly answers. */
+main.hearing-one{overflow:hidden!important;padding:7px 9px 7px!important}
+main.hearing-one #pageContent{height:100%!important;min-height:0!important;display:flex;flex-direction:column;transform:none!important}
+main.hearing-one .h1-full-mobile{height:100%;min-height:0;display:flex;flex-direction:column;gap:7px}
+main.hearing-one .h1-full-mobile>.stage-label{flex:0 0 auto;margin:0;font-size:11px}
+main.hearing-one .h1-full-mobile>.stage-title{flex:0 0 auto;margin:0;font-size:clamp(20px,5.2vw,25px)}
+main.hearing-one .h1-instructions{flex:0 0 auto;margin:0!important;font-size:12px;line-height:1.4}
+main.hearing-one .h1-full-mobile .exam-audio{flex:0 0 auto}
+main.hearing-one .h1-answers{flex:1 1 0;min-height:0;display:flex;flex-direction:column;margin:0!important;padding:11px!important}
+main.hearing-one .h1-answers .qtop{flex:0 0 auto;margin-bottom:8px}
+main.hearing-one .h1-answers .qtop b{font-size:13px}
+main.hearing-one .h1-answers .twocol{
+ flex:1 1 0;min-height:0;display:grid!important;
+ grid-template-columns:repeat(2,minmax(0,1fr))!important;
+ grid-template-rows:repeat(4,minmax(0,1fr));gap:8px
+}
+main.hearing-one .h1-answers .check{
+ display:flex;align-items:center;min-height:0;height:100%;font-size:clamp(12px,3.5vw,15px);
+ font-weight:850;padding:10px 8px;border-radius:12px;line-height:1.25;overflow-wrap:anywhere
+}
+main.hearing-one .h1-answers .check input{width:17px;height:17px;flex:0 0 auto}
+main.hearing-one .h1-count{flex:0 0 auto;margin:7px 0 0!important;font-size:12px;font-weight:800}
+@media(max-height:550px){
+ main.hearing-one .h1-full-mobile{gap:4px}
+ main.hearing-one .h1-full-mobile>.stage-title{font-size:18px}
+ main.hearing-one .h1-instructions{font-size:10px;line-height:1.2}
+ main.hearing-one .h1-answers{padding:6px!important}
+ main.hearing-one .h1-answers .twocol{gap:4px}
+ main.hearing-one .h1-answers .check{font-size:11px;padding:4px}
+}
+/* Michael's complete mail fits on the screen in a single, full-height reading card.
+   On very short screens the letter itself can scroll, avoiding clipped lines. */
+main.mail-prompt-active{overflow:hidden!important;padding:7px 9px 7px!important}
+main.mail-prompt-active #pageContent{height:100%!important;min-height:0!important;transform:none!important;display:flex;flex-direction:column}
+main.mail-prompt-active .mail-prompt-full{display:flex;flex-direction:column;min-height:0;height:100%;gap:6px}
+main.mail-prompt-active .mail-prompt-full>.stage-label{flex:0 0 auto;margin:0}
+main.mail-prompt-active .mail-prompt-full>.stage-title{flex:0 0 auto;margin:0;font-size:clamp(18px,5vw,23px)}
+main.mail-prompt-active .mail-prompt-instructions{flex:0 0 auto;margin:0!important;line-height:1.2}
+main.mail-prompt-active .mail-prompt-card{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;margin:0!important;padding:12px!important;overflow:hidden}
+main.mail-prompt-active .mail-prompt-sender{flex:0 0 auto;padding:0 0 7px;border-bottom:1px solid #ccdaeb;font-size:12px}
+main.mail-prompt-active .mail-prompt-letter{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;line-height:1.5;font-size:clamp(11px,3.25vw,13px);margin:8px 0 0!important}
+main.mail-prompt-active .mail-prompt-letter p{margin:0 0 8px!important}
+@media(max-height:650px){
+ main.mail-prompt-active .mail-prompt-full{gap:4px}
+ main.mail-prompt-active .mail-prompt-card{padding:8px!important}
+ main.mail-prompt-active .mail-prompt-letter{font-size:11px;line-height:1.35;margin-top:5px!important}
+ main.mail-prompt-active .mail-prompt-letter p{margin-bottom:5px!important}
+}
+
 </style>
 </head>
 <body>
@@ -537,7 +593,7 @@ function r2Item(i){const q=QS[i];return '<div class="stage-label">LESEN · Aufga
 
 function r1(){return intro('Lesen • Aufgabe 1','Die passende Überschrift','Pročitajte 10 naslova i 5 tekstova. Za svaki tekst izaberite odgovarajući naslov. (15 bodova)')+
 
-'<details class="card lesen-titles-reference"><summary>Pregled 10 naslova (A–K) · dodirni za prikaz</summary><div class="headings" style="margin-top:11px">'+H.map((h,i)=>'<div><b>'+h+'</b> '+esc(HEAD[i])+'</div>').join('')+'</div></details>'+
+'<section class="card lesen-titles-reference" aria-label="Svih deset naslova"><h3 class="lesen-titles-heading">10 naslova (A–K) – stalno prikazani</h3><div class="headings">'+H.map((h,i)=>'<div><b>'+h+'</b> '+esc(HEAD[i])+'</div>').join('')+'</div></section>'+
 TEXTS.map((t,i)=>'<div class="card"><div class="qtop"><b>Text '+(i+1)+'</b><span class="pill">3 Punkte</span></div><p class="passage lesen1-text" lang="de">'+esc(t)+'</p>'+getSelect(i)+'</div>').join('')}
 function r2(){return intro('Lesen • Aufgabe 2','65 Jahre ohne ernsten Streit','Prvo pročitajte tekst, a zatim kod svakog pitanja označite tačan odgovor A, B ili C. (10 bodova)')+
 
@@ -552,9 +608,9 @@ function player(i){
  '<button type="button" id="audioFallback" class="audio-start" hidden>▶ Pokreni slušanje</button>'+
  '<audio id="player" autoplay playsinline preload="auto" src="./audio/track-'+i+'.mp3"></audio></div>';
 }
-function h1(){return '<div class="stage-label">HÖREN · Aufgabe 1 · 10 bodova</div><h1 class="stage-title">Das Wetter am Wochenende</h1>'+
-'<p class="small" style="margin:0 0 7px">Slušate dva teksta istog sadržaja. Označite četiri odgovora.</p>'+player(1)+
-'<div class="card"><div class="qtop"><b>Wählen Sie vier Antworten</b><span class="pill">10 Punkte</span></div><div class="twocol">'+WEATHER.map((w,i)=>'<label class="check"><input type="checkbox" data-w1="'+i+'" '+checked(st.w1,i)+'>'+esc(w)+'</label>').join('')+'</div><p class="small" id="weatherCount" style="margin:5px 0 0">'+st.w1.length+' / 4 izabrano</p></div>'}
+function h1(){return '<section class="h1-full-mobile"><div class="stage-label">HÖREN · Aufgabe 1 · 10 bodova</div><h1 class="stage-title">Das Wetter am Wochenende</h1>'+
+'<p class="small h1-instructions">Slušate dva teksta istog sadržaja. Označite četiri odgovora.</p>'+player(1)+
+'<div class="card h1-answers"><div class="qtop"><b>Wählen Sie vier Antworten</b><span class="pill">10 Punkte</span></div><div class="twocol">'+WEATHER.map((w,i)=>'<label class="check"><input type="checkbox" data-w1="'+i+'" '+checked(st.w1,i)+'>'+esc(w)+'</label>').join('')+'</div><p class="small h1-count" id="weatherCount">'+st.w1.length+' / 4 izabrano</p></div></section>'}
 function h2(){const lab=['Letzter Kurstag','Zum Essen mitnehmen','Für Getränke (Euro)','Anrufen ab (Uhr)','Telefonnummer'];return '<div class="stage-label">HÖREN · Aufgabe 2 · 10 bodova</div><h1 class="stage-title">Notizen – Abschlussfeier</h1>'+
 '<p class="small h2-instructions" style="margin:0 0 7px">Slušate poruku dva puta. Dopunite pet beleški.</p>'+player(2)+
 '<div class="card hearing2-card"><div class="qtop"><b>✎ Notizblatt</b><span class="pill">10 Punkte</span></div><div class="note-grid">'+lab.map((l,i)=>'<div class="note-row"><label class="fieldlabel" for="n'+i+'">'+(i+1)+'. '+esc(l)+'</label><input id="n'+i+'" data-w2="'+i+'" class="field" type="text" inputmode="'+(i>=2?'numeric':'text')+'" autocomplete="off" placeholder="'+(['Wochentag','Essen','Betrag','Stunde','Nummer'][i])+'" value="'+esc(st.w2[i])+'"></div>').join('')+'</div></div>'}
@@ -568,15 +624,15 @@ function schreibenIntro(){
 return '<div class="intro-screen"><div class="intro-cover"><div class="intro-eyebrow">SCHREIBEN · ÖSD A2</div><h1>Pisanje mejla</h1>'+
 '<p>Pročitajte postavku mejla, odgovorite na sva četiri pitanja i napišite oko 50 reči. Mejl mora imati najmanje 26 reči da bi bio ocenjen.</p>'+
 '<div class="total-points">15 <small>bodova</small></div><div class="min-points">Minimum 3 boda za prolaz</div></div>'+
-'<div class="summary-task"><b>TL (dužina) + A (ispunjenost zadatka)</b><span class="pill">± bodovi</span></div>'+
+'<div class="summary-task"><b>TL · Dužina teksta</b><span class="pill">0–3 boda odbitka</span></div>'+
+'<div class="summary-task"><b>A · Ispunjenost zadatka</b><span class="pill">1 bod / do 2 odbitka</span></div>'+
 '<div class="summary-task"><b>K (primerenost) + T (povezanost)</b><span class="pill">2 + 2</span></div>'+ '<div class="summary-task"><b>L (leksika) + F (tačnost)</b><span class="pill">5 + 5</span></div>'+
 '<div class="summary-total">Ukupno 15 bodova / Prolaz 3 boda</div>'+
 '<p class="small" style="text-align:center">Mejl mora imati najmanje 26 reči da bi bio ocenjen.</p></div>';
 }
-function mailPrompt(){return '<div class="stage-label">SCHREIBEN · E-Mail</div><h1 class="stage-title">Eine E-Mail an Michael</h1><p class="small">Pročitajte poruku koju šalje Michael.</p>'+
-'<div class="card tinted"><div class="between"><b style="font-size:12px">Von: Michael</b><small class="small">Betreff: Reise</small></div>'+
-'<div class="letter" style="margin-top:6px"><p>Liebe/Lieber …,</p><p>wie geht es dir? Stell dir vor, ich fahre nächste Woche nach Österreich. Dort werde ich Wien, Salzburg und Innsbruck besuchen. Ich freue mich sehr darauf. Hast du schon einmal eine Reise gemacht? Wohin bist du gefahren? Was gibt es bei dir Neues?</p><p>Wir haben uns so lange nicht mehr gesehen. Nach meiner Reise müssen wir uns unbedingt treffen. Dann zeige ich dir auch meine Fotos.</p><p>Wann hast du Zeit?</p><p>Bis bald und liebe Grüße<br>Michael</p></div></div>'+
-'<div class="card goldish"><b style="font-size:12px">Aufgabe</b><p class="small" style="margin:3px 0 0">Napišite odgovor od oko 50 reči, odgovorite na sva 4 pitanja i na kraju dodajte pozdrav.</p></div>'}
+function mailPrompt(){return '<section class="mail-prompt-full"><div class="stage-label">SCHREIBEN · E-Mail</div><h1 class="stage-title">Eine E-Mail an Michael</h1><p class="small mail-prompt-instructions">Pročitajte celu poruku koju šalje Michael.</p>'+
+'<div class="card tinted mail-prompt-card"><div class="between mail-prompt-sender"><b>Von: Michael</b><small class="small">Betreff: Reise</small></div>'+
+'<div class="letter mail-prompt-letter"><p>Liebe/Lieber …,</p><p>wie geht es dir? Stell dir vor, ich fahre nächste Woche nach Österreich. Dort werde ich Wien, Salzburg und Innsbruck besuchen. Ich freue mich sehr darauf. Hast du schon einmal eine Reise gemacht? Wohin bist du gefahren? Was gibt es bei dir Neues?</p><p>Wir haben uns so lange nicht mehr gesehen. Nach meiner Reise müssen wir uns unbedingt treffen. Dann zeige ich dir auch meine Fotos.</p><p>Wann hast du Zeit?</p><p>Bis bald und liebe Grüße<br>Michael</p></div></div></section>'}
 
 /* Match the writing questions layout of VEZBAJ-MEJLOVE-A2 (Michael / Reise).
    Original four exam prompts, German blue; optional Serbian translation in red. */
@@ -832,7 +888,7 @@ if(!st.flowV12){if(Number(st.page)>=8)st.page=Math.min(11,Number(st.page)+1);st.
 function fitPage(){
  const content=document.getElementById('pageContent');if(!content)return;
  content.style.transform='';
- if(st.page===1||st.page===2||st.page===3||st.page===6||st.page===7||st.page===LAST||st.page===LAST-1)return; // Full-screen Lesen intro; scrollable tasks and flexible writing
+ if(st.page===1||st.page===2||st.page===3||st.page===5||st.page===6||st.page===7||st.page===9||st.page===LAST||st.page===LAST-1)return; // Full-screen Lesen intro; scrollable tasks and flexible writing
  const h=main.clientHeight,n=content.scrollHeight;
  const ratio=h&&n?Math.min(1,(h-2)/n):1;
  content.style.transform='scale('+Math.max(.5,ratio)+')';
@@ -936,6 +992,7 @@ function render(){
  main.classList.toggle('reading-scroll',st.page===2||st.page===3);
  main.classList.toggle('lesen-intro-active',st.page===1);
  main.classList.toggle('hearing-one',st.page===5);
+ main.classList.toggle('mail-prompt-active',st.page===9);
  main.classList.toggle('hearing2-scroll',st.page===6);
  main.classList.toggle('h2-keyboard',st.page===6&&document.activeElement?.matches?.('[data-w2]'));
  main.classList.toggle('hearing-three',st.page===7);
