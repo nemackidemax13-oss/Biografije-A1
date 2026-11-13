@@ -582,7 +582,7 @@ function validWorkerUrl(value){
  }catch(e){return false}
 }
 </script>
-<link rel="stylesheet" href="./v40.css?v=20261113-v41-mic">
+<link rel="stylesheet" href="./v40.css?v=20261113-v42-v30mic">
 </head>
 <body>
 <div id="app">
@@ -1786,7 +1786,7 @@ $("restart").onclick=()=>{app.evaluations={};app.inFlight={};app.grammarReviews=
  * iOS/Android fallback: MediaRecorder + DE-MAX transcribe Worker.
  * Ne prebacuje učenika na sledeće pitanje samostalno.
  */
-const DM_DIRECT_MIC_URL=location.origin+location.pathname+"?v=20261113-v41-mic";
+const DM_DIRECT_MIC_URL=location.origin+location.pathname+"?v=20261113-v42-v30mic";
 const DM_EMBEDDED=window.self!==window.top;
 const DM_MIC={
  stream:null,pending:null,allowed:false,permitGeneration:0,
@@ -2806,5 +2806,5 @@ document.addEventListener("visibilitychange",()=>{
 </script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" async></script>
-<script src="./v40.js?v=20261113-v41-mic"></script>
+<script src="./v40.js?v=20261113-v42-v30mic"></script>
 </body></html>
