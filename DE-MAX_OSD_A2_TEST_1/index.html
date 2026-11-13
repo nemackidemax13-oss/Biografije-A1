@@ -138,6 +138,18 @@ footer #next{min-width:0;flex:1 1 auto;white-space:nowrap}
 .home-brand-logo{width:110px;height:110px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:27px;background:linear-gradient(140deg,#ffdf9b,#e8aa4d);color:#15294c;box-shadow:0 10px 25px #1c315333, inset 0 1px 0 #fff7;font-size:30px;font-weight:1000;letter-spacing:-1.5px;line-height:1.04;user-select:none}
 .home-brand-logo span{display:block}
 @media(max-height:600px){.home-center{gap:17px}.home-brand-logo{width:86px;height:86px;border-radius:22px;font-size:25px}}
+
+main.results-scroll{overflow-y:auto!important;touch-action:pan-y!important;overscroll-behavior-y:contain;scrollbar-width:thin}
+main.results-scroll #pageContent{transform:none!important}
+main.results-scroll .result-tabs{position:sticky;top:0;background:#f5f8fd;z-index:5;padding:5px 0}
+main.results-scroll .solution-detail{display:grid;grid-template-columns:minmax(72px,.8fr) minmax(0,1.4fr);gap:8px;border-bottom:1px solid #e6edf5;padding:9px 0;font-size:11px}
+main.results-scroll .solution-detail>span:last-child{text-align:right;overflow-wrap:anywhere}
+main.results-scroll .solution-detail small{display:block;font-size:11px}
+main.results-scroll .solution-detail strong{display:block;margin-top:4px}
+main.results-scroll .result-row{padding:9px 0;font-size:11px}
+main.results-scroll .result-row .r{color:#224d80}
+main.results-scroll .mail-result{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;line-height:1.65}
+main.results-scroll .card{margin-bottom:10px}
 </style>
 </head>
 <body>
@@ -238,6 +250,15 @@ function speakerCard(i){return '<div class="card"><div class="qtop"><b>'+(i+1)+'
 function h3(){return '<section class="h3-screen"><div class="stage-label">HÖREN · Aufgabe 3 · 10 bodova</div><h1 class="stage-title">Welchen Sport betreiben Sie?</h1>'+
 '<p class="small h3-help">Slušate pet osoba. Za svaku označite odgovarajuće sportove.</p>'+player(3)+
 '<div class="speaker-stack">'+[0,1,2,3,4].map(i=>speakerCard(i)).join('')+'</div></section>'}
+function schreibenIntro(){
+return '<div class="intro-screen"><div class="intro-cover"><div class="intro-eyebrow">SCHREIBEN · ÖSD A2</div><h1>Pisanje mejla</h1>'+
+'<p>Pročitajte postavku mejla, odgovorite na sva četiri pitanja, 50 reči pišete, a minimum da bi bio ocenjen mejl potrebno je 25 reči.</p>'+
+'<div class="total-points">15 <small>bodova</small></div><div class="min-points">Minimum 3 boda za prolaz</div></div>'+
+'<div class="summary-task"><b>Četiri pitanja iz mejla</b><span class="pill">12 bodova</span></div>'+
+'<div class="summary-task"><b>Pozdrav, završetak, obim</b><span class="pill">3 boda</span></div>'+
+'<div class="summary-total">Ukupno 15 bodova / Prolaz 3 boda</div>'+
+'<p class="small" style="text-align:center">Mejl mora imati najmanje 25 reči da bi bio ocenjen.</p></div>';
+}
 function mailPrompt(){return '<div class="stage-label">SCHREIBEN · E-Mail</div><h1 class="stage-title">Eine E-Mail an Michael</h1><p class="small">Pročitajte poruku koju šalje Michael.</p>'+
 '<div class="card tinted"><div class="between"><b style="font-size:12px">Von: Michael</b><small class="small">Betreff: Reise</small></div>'+
 '<div class="letter" style="margin-top:6px"><p>Liebe/Lieber …,</p><p>wie geht es dir? Stell dir vor, ich fahre nächste Woche nach Österreich. Dort werde ich Wien, Salzburg und Innsbruck besuchen. Ich freue mich sehr darauf. Hast du schon einmal eine Reise gemacht? Wohin bist du gefahren? Was gibt es bei dir Neues?</p><p>Wir haben uns so lange nicht mehr gesehen. Nach meiner Reise müssen wir uns unbedingt treffen. Dann zeige ich dir auch meine Fotos.</p><p>Wann hast du Zeit?</p><p>Bis bald und liebe Grüße<br>Michael</p></div></div>'+
@@ -254,50 +275,92 @@ function mailEditor(){return '<div class="stage-label">SCHREIBEN · E-Mail</div>
 function wordCount(s){return String(s||'').trim().split(/\s+/).filter(Boolean).length}
 function digits(s){return String(s||'').replace(/\D/g,'')}
 function normalize(s){return String(s||'').trim().toLocaleLowerCase('de').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'')}
+
+function emailScore(){
+ const mail=String(st.mail||''),count=wordCount(mail),valid=count>=25;
+ const normalized=normalize(mail);
+ const has=(re)=>re.test(normalized);
+ const coverage=[
+  {label:'1. Hast du schon einmal eine Reise gemacht?',found:has(/\b(reise|urlaub|gereist|gefahren|geflogen|verreist|besucht|noch nie)\b/)},
+  {label:'2. Wohin bist du gefahren?',found:has(/\b(nach|in|im|auf|ans|zum|zur)\s+[a-z]{3,}/)&&has(/\b(gefahren|geflogen|gereist|besucht|urlaub|reise|war)\b/)},
+  {label:'3. Was gibt es bei dir Neues?',found:has(/\b(neu|neues|neuen|neuer|jetzt|seit|arbeit|schule|job|umzug|wohnung|baby|kind|prufung|kurs|gekauft|begonnen|angefangen|studium|heirat)\w*\b/)},
+  {label:'4. Wann hast du Zeit?',found:has(/\b(zeit|treffen|samstag|sonntag|montag|dienstag|mittwoch|donnerstag|freitag|wochenende|abends|morgen|nachste woche|nach deiner reise)\b/)}
+ ].map(q=>({...q,max:3,points:valid&&q.found?3:0}));
+ const formal=[
+  {label:'Pozdrav na početku',found:/^\s*(lieber|liebe|hallo|hi|guten tag)\b/i.test(mail)},
+  {label:'Pozdrav na kraju',found:/(liebe grusse|viele grusse|herzliche grusse|bis bald|mit freundlichen grussen|dein|deine)\b/.test(normalized)},
+  {label:'Približno 50 reči (40–70)',found:count>=40&&count<=70}
+ ].map(q=>({...q,max:1,points:valid&&q.found?1:0}));
+ return {count,valid,coverage,formal,points:coverage.reduce((sum,q)=>sum+q.points,0)+formal.reduce((sum,q)=>sum+q.points,0)};
+}
 function grade(){
  const rd1=['C','E','K','B','G'],rd2=['C','A','A','A','A'];
  const r1=st.r1.reduce((n,v,i)=>n+(v===rd1[i]?3:0),0);
  const r2=st.r2.reduce((n,v,i)=>n+(v===rd2[i]?2:0),0);
- const truth=[0,1,5,6],valid=st.w1.filter(i=>truth.includes(i)).length;
- let w1=st.w1.length>5?0:[0,1,4,7,10][valid];if(st.w1.length===5)w1=Math.max(0,w1-3);
+ const correct=[0,1,5,6],hit=st.w1.filter(i=>correct.includes(i)).length;
+ let w1=st.w1.length>5?0:[0,1,4,7,10][hit];if(st.w1.length===5)w1=Math.max(0,w1-3);
  const noteok=[
- ['freitag','fr','fr.'].some(x=>normalize(st.w2[0])===normalize(x)),
+ ['freitag','fr','fr.'].some(v=>normalize(st.w2[0])===normalize(v)),
  normalize(st.w2[1])==='salat',
  ['2','zwei','2euro','zwo'].includes(normalize(st.w2[2])),
  ['19','7','19uhr','7uhr','19:00','19.00','7:00','7.00','19h'].includes(String(st.w2[3]).trim().toLowerCase().replace(/\s/g,'')),
- digits(st.w2[4])==='7345682'];
+ digits(st.w2[4])==='7345682'
+ ];
  const w2=noteok.filter(Boolean).length*2;
- const w3rows=st.w3.map((vals,i)=>{let errs=0;for(let s=0;s<5;s++)if(vals.includes(s)!==SPORTSKEY[i].includes(s))errs++;return Math.max(0,2-errs)});
- const w3=w3rows.reduce((n,v)=>n+v,0);
- return {r1,r2,w1,w2,w3,w3rows,noteok,total:r1+r2+w1+w2+w3};
+ const w3rows=st.w3.map((vals,i)=>{let errors=0;for(let j=0;j<5;j++)if(vals.includes(j)!==SPORTSKEY[i].includes(j))errors++;return Math.max(0,2-errors)});
+ const w3=w3rows.reduce((sum,n)=>sum+n,0);
+ const mail=emailScore(),lesen=r1+r2,horen=w1+w2+w3,total=lesen+horen+mail.points;
+ const pass=total>=35&&lesen>=5&&horen>=6&&mail.points>=3&&mail.valid;
+ return {r1,r2,w1,w2,w3,w3rows,noteok,mail,lesen,horen,total,pass};
 }
-
+function solutionRow(name,actual,expected,points,max){
+ return '<div class="solution-detail"><span>'+esc(name)+'</span><span><small>Tvoj: <b>'+esc(actual||'—')+'</b></small><small>Tačno: <b>'+esc(expected)+'</b></small><strong class="'+(points===max?'ok':'bad')+'">'+points+' / '+max+'</strong></span></div>';
+}
 function result(){
- const g=grade(), tab=st.resultTab||'score';
+ const g=grade(),tab=st.resultTab||'score';
+ const resultline=(name,pts,max)=>'<div class="result-row"><span class="l">'+esc(name)+'</span><strong class="r">'+pts+' / '+max+'</strong></div>';
  let area='';
  if(tab==='score'){
- const rows=[['Lesen • Aufgabe 1',g.r1,15],['Lesen • Aufgabe 2',g.r2,10],['Hören • Aufgabe 1',g.w1,10],['Hören • Aufgabe 2',g.w2,10],['Hören • Aufgabe 3',g.w3,10]];
- area='<div class="card" style="text-align:center;padding:13px"><div class="sub">Ukupan rezultat</div><div class="score">'+g.total+' <small>/55</small></div><p class="small" style="margin:4px 0 0">Lesen '+(g.r1+g.r2)+'/25 · Hören '+(g.w1+g.w2+g.w3)+'/30</p></div>'+
- '<div class="card">'+rows.map(x=>'<div class="result-row" style="padding:6px 0"><div class="l">'+x[0]+'</div><div class="r">'+x[1]+' / '+x[2]+'</div></div>').join('')+'</div>'+
- '<p class="small">Minimum za Lesen 5 bodova, za Hören 6 bodova. Schreiben ocenjuje nastavnik; ovo nije zvanična ÖSD ocena.</p>';
+   area='<div class="card center"><div class="sub">Ukupan rezultat</div><div class="score">'+g.total+' <small>/ 70</small></div><h3 class="'+(g.pass?'ok':'bad')+'">'+(g.pass?'POLOŽENO':'NIJE POLOŽENO')+'</h3><p class="small">Za prolaz najmanje 35/70 i minimum po oblastima.</p></div>'+
+   '<div class="card">'+
+   resultline('Lesen · Aufgabe 1',g.r1,15)+resultline('Lesen · Aufgabe 2',g.r2,10)+
+   resultline('Hören · Aufgabe 1',g.w1,10)+resultline('Hören · Aufgabe 2',g.w2,10)+resultline('Hören · Aufgabe 3',g.w3,10)+
+   resultline('Schreiben · E-Mail (procena)',g.mail.points,15)+'</div>'+
+   '<div class="card greenish">'+
+   resultline('LESEN · ukupno',g.lesen,25)+resultline('HÖREN · ukupno',g.horen,30)+resultline('E-MAIL · ukupno',g.mail.points,15)+
+   '<p class="small">Pragovi: Lesen 5/25 · Hören 6/30 · E-Mail 3/15. E-Mail kraći od 25 reči ne dobija bodove.</p></div>'+
+   '<p class="small">Automatska procena mejla je orijentaciona. Konačna ocena jezičke tačnosti zahteva nastavnika.</p>';
  }else if(tab==='lesen'){
- area='<div class="card"><h3>Aufgabe 1 · 15 bodova</h3>'+
- ['C','E','K','B','G'].map((v,i)=>'<div class="result-row" style="padding:6px 0"><span>Text '+(i+1)+'</span><strong>'+v+' · ti: '+esc(st.r1[i]||'—')+'</strong></div>').join('')+'</div>'+
- '<div class="card"><h3>Aufgabe 2 · 10 bodova</h3>'+
- ['C','A','A','A','A'].map((v,i)=>'<div class="result-row" style="padding:6px 0"><span>Frage '+(i+1)+'</span><strong>'+v+' · ti: '+esc(st.r2[i]||'—')+'</strong></div>').join('')+'</div>';
+   area='<div class="card"><h3>Lesen · Aufgabe 1 · '+g.r1+'/15</h3>'+
+   ['C','E','K','B','G'].map((v,i)=>solutionRow('Text '+(i+1),st.r1[i],v,st.r1[i]===v?3:0,3)).join('')+'</div>'+
+   '<div class="card"><h3>Lesen · Aufgabe 2 · '+g.r2+'/10</h3>'+
+   ['C','A','A','A','A'].map((v,i)=>solutionRow('Frage '+(i+1),st.r2[i],v,st.r2[i]===v?2:0,2)).join('')+'</div>'+
+   '<div class="card greenish"><b>Ukupno Lesen: '+g.lesen+'/25</b><p class="small">Minimum 5 bodova · '+(g.lesen>=5?'Prag ostvaren':'Prag nije ostvaren')+'</p></div>';
  }else if(tab==='horen'){
- area='<div class="card"><h3>Aufgabe 1 · Wetter</h3><p class="small">Sonne · Gewitter · Wind · 25 Grad</p><h3>Aufgabe 2 · Abschlussfeier</h3><p class="small">Freitag · Salat · 2 Euro · 19 Uhr · 734 56 82</p></div>'+
- '<div class="card"><h3>Aufgabe 3 · Sport</h3>'+SPORTSKEY.map((arr,i)=>'<div class="result-row" style="padding:5px 0"><span>Person '+(i+1)+'</span><strong style="font-size:10px;max-width:75%;text-align:right">'+arr.map(j=>SPORTS[j]).join(', ')+'</strong></div>').join('')+'</div>';
+   const weather=['Sonne','Gewitter','18 Grad','Regen','Nebel','Wind','25 Grad','Wolken'];
+   const nw=['Freitag','Salat','2 Euro','19 Uhr','734 56 82'];
+   area='<div class="card"><h3>Hören · Aufgabe 1 · '+g.w1+'/10</h3>'+
+   '<p class="small">Tvoj: '+esc(st.w1.map(i=>weather[i]).filter(Boolean).join(', ')||'—')+'</p><p class="small">Tačno: <b>Sonne, Gewitter, Wind, 25 Grad</b></p></div>'+
+   '<div class="card"><h3>Hören · Aufgabe 2 · '+g.w2+'/10</h3>'+
+   nw.map((v,i)=>solutionRow('Notiz '+(i+1),st.w2[i],v,g.noteok[i]?2:0,2)).join('')+'</div>'+
+   '<div class="card"><h3>Hören · Aufgabe 3 · '+g.w3+'/10</h3>'+
+   SPORTSKEY.map((v,i)=>solutionRow((i+1)+'. '+(i%2===0?'Sprecherin':'Sprecher'),st.w3[i].map(k=>SPORTS[k]).join(', '),v.map(k=>SPORTS[k]).join(', '),g.w3rows[i],2)).join('')+'</div>'+
+   '<div class="card greenish"><b>Ukupno Hören: '+g.horen+'/30</b><p class="small">Minimum 6 bodova · '+(g.horen>=6?'Prag ostvaren':'Prag nije ostvaren')+'</p></div>';
  }else{
- area='<div class="card"><h3>Tvoj mejl</h3><div style="white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;line-height:1.5">'+(esc(st.mail)||'Mejl nije napisan.')+'</div><p class="small">'+wordCount(st.mail)+' Wörter · Za pregled kod nastavnika.</p></div>';
+   area='<div class="card"><h3>E-Mail · '+g.mail.points+'/15</h3>'+
+   (!g.mail.valid?'<p class="bad">Mejl ima '+g.mail.count+' reči. Za ocenjivanje treba najmanje 25 reči.</p>':'<p class="small">'+g.mail.count+' reči · minimum 3/15 za prolaz.</p>')+
+   [...g.mail.coverage,...g.mail.formal].map(q=>'<div class="result-row"><span>'+esc(q.label)+'</span><b class="'+(q.points?'ok':'bad')+'">'+q.points+'/'+q.max+'</b></div>').join('')+
+   '<p class="small">Ocenjivanje je orijentaciono: prepoznate fraze ne mogu pouzdano oceniti gramatiku i smisao. Nastavnik proverava tekst.</p></div>'+
+   '<div class="card"><h3>Tvoj mejl</h3><p class="mail-result">'+esc(st.mail||'Mejl nije napisan.')+'</p></div>'+
+   '<details class="card"><summary>Primer ispravno napisanog mejla</summary><p class="mail-result">Lieber Michael, vielen Dank für deine E-Mail. Mir geht es gut. Ja, ich bin letztes Jahr nach Deutschland gefahren und habe Berlin besucht. Bei mir gibt es Neuigkeiten: Ich habe einen neuen Deutschkurs begonnen. Am Samstag nach deiner Reise habe ich Zeit. Wir können uns im Café treffen. Liebe Grüße, Ali</p></details>';
  }
  return '<div class="stage-label">DE-MAX · ÖSD A2</div><h1 class="stage-title">Rezultati testa</h1>'+
- '<div class="result-tabs">'+[['score','Bodovi'],['lesen','Lesen'],['horen','Hören'],['mail','Mejl']].map(x=>'<button type="button" data-result="'+x[0]+'" class="'+(tab===x[0]?'active':'')+'">'+x[1]+'</button>').join('')+'</div>'+
+ '<div class="result-tabs">'+[['score','Bodovi'],['lesen','Lesen'],['horen','Hören'],['mail','E-Mail']].map(([k,v])=>'<button type="button" data-result="'+k+'" class="'+(tab===k?'active':'')+'">'+v+'</button>').join('')+'</div>'+
  '<div class="result-details">'+area+'</div>'+
  '<div style="display:flex;gap:8px;margin-top:8px"><button class="btn soft" id="copyResult" style="flex:1">Kopiraj rezultat</button><button class="btn danger" id="reset" style="flex:1">Novi test ↺</button></div>';
 }
 
-const PAGES=[cover,lesenIntro,r1,r2,horenIntro,h1,h2,h3,mailPrompt,mailEditor,result];
+const PAGES=[cover,lesenIntro,r1,r2,horenIntro,h1,h2,h3,schreibenIntro,mailPrompt,mailEditor,result];
 const LAST=PAGES.length-1;
 if(!st.flowV2){st.page=0;st.flowV2=true;st.speaker=0;save()}
 if(!st.flowV3){
@@ -305,10 +368,11 @@ if(!st.flowV3){
  st.page=p<=1?p:p<=6?2:p<=15?3:p===16?4:p===17?5:p===18?6:p===19?7:p===20?8:p===21?9:10;
  st.flowV3=true;save();
 }
+if(!st.flowV12){if(Number(st.page)>=8)st.page=Math.min(11,Number(st.page)+1);st.flowV12=true;save();}
 function fitPage(){
  const content=document.getElementById('pageContent');if(!content)return;
  content.style.transform='';
- if(st.page===2||st.page===3||st.page===7)return; // Lesen and Hören 3: original height, vertical scrolling
+ if(st.page===2||st.page===3||st.page===7||st.page===LAST)return; // Scrolling tasks and results
  const h=main.clientHeight,n=content.scrollHeight;
  const ratio=h&&n?Math.min(1,(h-2)/n):1;
  content.style.transform='scale('+Math.max(.5,ratio)+')';
@@ -399,6 +463,7 @@ function render(){
  prev.hidden=st.page===0;main.style.setProperty('--read-size',Math.max(11,Math.min(24,Number(st.fontSize)||14))+'px');
  main.classList.toggle('reading-scroll',st.page===2||st.page===3);
  main.classList.toggle('hearing-three',st.page===7);
+ main.classList.toggle('results-scroll',st.page===LAST);
  main.innerHTML='<div id="pageContent">'+PAGES[st.page]()+'</div>';
  main.scrollTop=0;
  document.getElementById('bar').style.width=(st.page/LAST*100)+'%';
@@ -410,7 +475,7 @@ function render(){
  prev.disabled=st.page===0;
  next.textContent=st.page===0?'Počni test →':st.page===LAST-1?'Završi i oceni ✓':st.page===LAST?'Na početak ↺':'Nastavi →';
  requestAnimationFrame(fitPage);
- if(st.page===LAST){const copy=document.getElementById('copyResult');copy.onclick=()=>{const g=grade();const txt='DE-MAX ÖSD A2 Test 1 | Lesen '+(g.r1+g.r2)+'/25 | Hören '+(g.w1+g.w2+g.w3)+'/30 | Ukupno '+g.total+'/55 | Schreiben '+wordCount(st.mail)+' Wörter';if(navigator.clipboard?.writeText)navigator.clipboard.writeText(txt).then(()=>notify('Rezultat kopiran')).catch(()=>notify('Kopiranje nije dostupno'));else notify(txt)};
+ if(st.page===LAST){const copy=document.getElementById('copyResult');copy.onclick=()=>{const g=grade();const txt='DE-MAX ÖSD A2 Test 1 | Lesen '+g.lesen+'/25 | Hören '+g.horen+'/30 | E-Mail '+g.mail.points+'/15 | Ukupno '+g.total+'/70 | '+(g.pass?'POLOŽENO':'NIJE POLOŽENO')+' | E-Mail automatska procena';if(navigator.clipboard?.writeText)navigator.clipboard.writeText(txt).then(()=>notify('Rezultat kopiran')).catch(()=>notify('Kopiranje nije dostupno'));else notify(txt)};
  document.getElementById('reset').onclick=()=>{if(confirm('Obrisati sve odgovore i početi ponovo?')){st=JSON.parse(JSON.stringify(DEFAULT));st.flowV2=true;st.flowV3=true;save();render()}}}
  if(st.page>=5&&st.page<=7)setupExamAudio(st.page);
 }
