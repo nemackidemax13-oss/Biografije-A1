@@ -208,6 +208,17 @@ main.mail-writing-active #pageContent{height:100%;min-height:0;display:flex;flex
  .a2-mail-writing-editor{padding:6px!important;min-height:88px}
  .a2-mail-writing-layout .ai-mail-status{font-size:9px;padding:4px 6px;max-height:48px}
 }
+
+/* V16: Lesen 1 text aligned evenly to both left and right edges */
+main.reading-scroll .lesen1-text{
+  text-align:justify;
+  text-align-last:left;
+  hyphens:auto;
+  -webkit-hyphens:auto;
+  overflow-wrap:break-word;
+  word-break:normal;
+  margin-inline:0;
+}
 </style>
 </head>
 <body>
@@ -282,7 +293,7 @@ function r2Item(i){const q=QS[i];return '<div class="stage-label">LESEN · Aufga
 function r1(){return intro('Lesen • Aufgabe 1','Die passende Überschrift','Pročitajte 10 naslova i 5 tekstova. Za svaki tekst izaberite odgovarajući naslov. (15 bodova)')+
 
 '<details class="card" open><summary>10 Überschriften (A–K)</summary><div class="headings" style="margin-top:11px">'+H.map((h,i)=>'<div><b>'+h+'</b> '+esc(HEAD[i])+'</div>').join('')+'</div></details>'+
-TEXTS.map((t,i)=>'<div class="card"><div class="qtop"><b>Text '+(i+1)+'</b><span class="pill">3 Punkte</span></div><p class="passage">'+esc(t)+'</p>'+getSelect(i)+'</div>').join('')}
+TEXTS.map((t,i)=>'<div class="card"><div class="qtop"><b>Text '+(i+1)+'</b><span class="pill">3 Punkte</span></div><p class="passage lesen1-text" lang="de">'+esc(t)+'</p>'+getSelect(i)+'</div>').join('')}
 function r2(){return intro('Lesen • Aufgabe 2','65 Jahre ohne ernsten Streit','Prvo pročitajte tekst, a zatim kod svakog pitanja označite tačan odgovor A, B ili C. (10 bodova)')+
 
 '<details class="card tinted" open><summary>Lesetext anzeigen / ausblenden</summary><div style="margin-top:10px">'+STORY.map(x=>'<p class="passage">'+esc(x)+'</p>').join('')+'</div></details>'+
