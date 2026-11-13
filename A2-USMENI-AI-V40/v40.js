@@ -17,7 +17,7 @@ const scenarios=[
 ];
 const V={serial:0,ready:new Set(),part:null,stream:null,rec:null,ctx:null,interval:0,chunks:[],working:false,transcribing:false,native:null,nativeTimer:null,nativeRetry:0,nativeLast:0,nativeSeq:0};
 const originalSpeak=showSpeak,originalResults=showResults;
-const V40_DIRECT_URL=location.origin+location.pathname+"?v=20261113-v48-v30-webspeech";
+const V40_DIRECT_URL=location.origin+location.pathname+"?v=20261113-v49-replit-zvuk";
 function micPolicyAllowed(){
  try{const p=document.permissionsPolicy||document.featurePolicy;return p?.allowsFeature?.("microphone")??null}catch(e){return null}
 }
@@ -155,14 +155,39 @@ function vOpen(){
 showResults=function(){vOpen()};
 function say(de,then){
  if(!window.speechSynthesis||!window.SpeechSynthesisUtterance){then?.();return}
- try{
-  speechSynthesis.cancel();
-  const u=new SpeechSynthesisUtterance(de);u.lang="de-DE";u.rate=.86;
-  let done=false;const finish=()=>{if(!done){done=true;then?.()}};
-  u.onend=finish;u.onerror=finish;
-  speechSynthesis.speak(u);
-  setTimeout(finish,Math.max(6500,de.length*150));
- }catch(e){then?.()}
+ const synth=window.speechSynthesis;
+ let done=false,watchdog=null,retry=0;
+ const finish=()=>{
+  if(done)return;done=true;
+  if(watchdog){clearTimeout(watchdog);watchdog=null}
+  then?.();
+ };
+ const play=()=>{
+  if(done)return;
+  try{
+   // WebView: nepotrebni cancel() moze odmah prekinuti novo pitanje.
+   if(synth.speaking||synth.pending)synth.cancel();
+   const u=new SpeechSynthesisUtterance(de);
+   u.lang="de-DE";u.rate=.88;u.volume=1;u.pitch=1;
+   if(retry===0&&typeof dmRefreshVoices==="function"){
+    dmRefreshVoices();if(A2_VOICE.voices?.length)u.voice=A2_VOICE.voices[0];
+   }
+   u.onend=finish;
+   u.onerror=e=>{
+    if(done)return;
+    if(retry===0&&["interrupted","canceled","audio-busy","synthesis-failed"].includes(e?.error)){
+     retry=1;
+     if(watchdog){clearTimeout(watchdog);watchdog=null}
+     status("🔊 Ponovo pokrećem nemački izgovor…");
+     setTimeout(play,320);
+    }else finish();
+   };
+   try{synth.resume()}catch(e){}
+   synth.speak(u);
+   watchdog=setTimeout(finish,Math.max(7000,de.length*160));
+  }catch(e){finish()}
+ };
+ play();
 }
 async function permit(){
  if(dmUseNativeSpeechFirst())return true;
