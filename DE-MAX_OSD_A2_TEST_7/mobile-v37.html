@@ -1456,7 +1456,7 @@ function fitPage(){
    Hören 1 and 3: once; Hören 2: twice consecutively. Older localStorage locks
    are intentionally ignored because they previously left audio stuck. */
 function setupExamAudio(page){
- const idx=page-5, required=idx===1?2:1;
+ const idx=page-5, required=1; /* The authentic Hören 2 MP3 already repeats its message twice. */
  const audio=document.getElementById('player');
  const status=document.getElementById('audiosignal');
  const bar=document.getElementById('audioBar');
@@ -1758,21 +1758,7 @@ MICHAEL_QUESTIONS.splice(0,MICHAEL_QUESTIONS.length,
  {de:'Wann hast du Zeit?',sr:'Kada imaš vremena?'},
  {de:'Was können wir zusammen unternehmen?',sr:'Šta možemo zajedno da radimo?'});
 PAGES[9]=()=>'<section class="mail-prompt-full"><div class="stage-label">SCHREIBEN · E-Mail</div><h1 class="stage-title">Eine E-Mail an Josy</h1><p class="small mail-prompt-instructions">Pročitajte celu poruku koju šalje Josy.</p><div class="card tinted mail-prompt-card"><div class="between mail-prompt-sender"><b>Von: Josy</b><small class="small">Betreff: Neue Wohnung</small></div><div class="letter mail-prompt-letter" lang="de"><p>Liebe/Lieber …,</p><p>seit du umgezogen bist, denke ich oft an dich. Bitte erzähle: Wie ist deine neue Wohnung? Ich hoffe, du fühlst dich wohl. Es ist bestimmt aufregend, in eine andere Stadt zu ziehen. Was gefällt dir dort am besten? Ich möchte dich gerne bald besuchen kommen und mir alles ansehen. Wann hast du Zeit? Und was können wir zusammen unternehmen?</p><p>Ich freue mich schon sehr auf dich!</p><p>Alles Liebe — Josy</p></div></div></section>';
-for(let page=5;page<=7;page++){
- const previous=PAGES[page];
- PAGES[page]=()=>previous().replace('</audio></div>','</audio><label class="aux" style="margin-top:6px">Ako snimak nije učitan, izaberite odgovarajući MP3: <input class="choose-mp3" type="file" accept="audio/*,.mp3"/></label></div>');
-}
-const originalAudioSetup=setupExamAudio;
-setupExamAudio=function(page){
- originalAudioSetup(page);
- const input=document.querySelector('.choose-mp3');
- const audio=document.getElementById('player');
- if(input&&audio)input.addEventListener('change',()=>{
-  const f=input.files&&input.files[0];if(!f)return;
-  if(objectAudio)URL.revokeObjectURL(objectAudio);
-  objectAudio=URL.createObjectURL(f);audio.src=objectAudio;audio.currentTime=0;audio.play().catch(()=>{});
- });
-};
+/* The three MP3 files are hosted in this test's audio folder. */
 
 render();
 /* Mobile back-forward cache must not reopen another student's completed test. */
