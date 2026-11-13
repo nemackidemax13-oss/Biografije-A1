@@ -758,6 +758,10 @@ main.mail-writing-active.mail-keyboard .mail-word-meter{
  margin-top:3px!important;
 }
 
+
+/* V28: Hören 3 title directly BELOW the compact player. */
+main.hearing-three .h3-title-below-player{margin:6px 0 6px!important;font-size:clamp(18px,5vw,22px)!important;line-height:1.2!important;text-align:center!important;color:#173b6a}
+main.hearing-three .h3-help{margin:0 0 8px!important}
 </style>
 </head>
 <body>
@@ -856,8 +860,9 @@ function h2(){const lab=['Letzter Kurstag','Zum Essen mitnehmen','Für Getränke
 function speakerCard(i){return '<div class="card"><div class="qtop"><b>'+(i+1)+'. '+(i%2===0?'Sprecherin':'Sprecher')+'</b><span class="pill">2 Punkte</span></div>'+
 '<p class="small">Koje sportove osoba navodi? Moguće je više odgovora.</p>'+
 '<div class="rowchecks">'+SPORTS.map((n,j)=>'<label class="sport"><input type="checkbox" data-sp="'+i+'" data-sport="'+j+'" '+checked(st.w3[i],j)+'>'+esc(n)+'</label>').join('')+'</div></div>'}
-function h3(){return '<section class="h3-screen"><div class="stage-label">HÖREN · Aufgabe 3 · 10 bodova</div><h1 class="stage-title">Welchen Sport betreiben Sie?</h1>'+
-'<p class="small h3-help">Slušate pet osoba. Za svaku označite odgovarajuće sportove.</p>'+player(3)+
+function h3(){return '<section class="h3-screen"><div class="stage-label">HÖREN · Aufgabe 3 · 10 bodova</div>'+player(3)+
+'<h1 class="stage-title h3-title-below-player">Welchen Sport betreiben Sie?</h1>'+
+'<p class="small h3-help">Slušate pet osoba. Za svaku označite odgovarajuće sportove.</p>'+
 '<div class="speaker-stack">'+[0,1,2,3,4].map(i=>speakerCard(i)).join('')+'</div></section>'}
 function schreibenIntro(){
 return '<div class="intro-screen"><div class="intro-cover"><div class="intro-eyebrow">SCHREIBEN · ÖSD A2</div><h1>Pisanje mejla</h1>'+
