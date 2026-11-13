@@ -201,6 +201,7 @@ async function finishAudio(){
  if(!V.rec||V.rec.state==="inactive"||V.transcribing)return;
  V.transcribing=true;
  if(V.interval)clearInterval(V.interval);V.interval=0;
+ if(V.ctx){try{V.ctx.close()}catch(e){}V.ctx=null}
  const rec=V.rec,chunks=V.chunks;
  const stopped=new Promise(resolve=>{rec.addEventListener("stop",resolve,{once:true});setTimeout(resolve,1700)});
  try{rec.stop()}catch(e){}
@@ -359,12 +360,7 @@ pdf.onclick=async()=>{
 };
 const oldRestart=q("restart")?.onclick;
 if(q("restart"))q("restart").onclick=()=>{vStop();V.part=null;V.ready.clear();V.serial++;oldRestart?.();scorePanel.replaceChildren()};
-document.addEventListener("visibilitychange",()=>{
- if(document.visibilityState==="hidden"&&V.rec?.state==="recording"){
-  // Do not finalize while device is displaying a permissions or app prompt.
-  if(V.interval)clearInterval(V.interval);V.interval=0;
-  status("Mikrofon je pauziran dok je aplikacija u pozadini; vratite se i nastavite.");
- }
-});
+/* Keep the MediaRecorder active when a mobile permission prompt briefly hides the page.
+   Do not pause its monitor permanently or switch to another question. */
 window.addEventListener("pagehide",vStop);
 })();
