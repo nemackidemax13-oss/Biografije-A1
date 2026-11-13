@@ -961,7 +961,7 @@ function mailEditor(){
  '<div class="card a2-mail-writing-editor"><div class="between a2-writing-editor-bar"><label class="fieldlabel" for="emailAnswer">✎ PIŠI MEJL</label><b class="pill" id="wordCount">'+wordCount(st.mail)+' reči</b></div>'+
  '<textarea class="field editor" id="emailAnswer" placeholder="Lieber Michael,&#10;&#10;vielen Dank für deine E-Mail. ...">'+esc(st.mail)+'</textarea>'+ 
 '<div class="mail-word-meter" id="mailWordMeter" role="progressbar" aria-label="Najmanje 26 reči za ocenjivanje" aria-valuemin="0" aria-valuemax="26" aria-valuenow="'+Math.min(26,wordCount(st.mail))+'"><div class="mail-word-fill '+(wordCount(st.mail)>=26?'met':'below')+'" id="mailWordFill" style="width:'+Math.min(100,wordCount(st.mail)/26*100)+'%"></div></div></div>'+
- '<div class="ai-mail-controls"><button type="button" id="aiGradeBtn" class="btn primary" style="flex:1">✦ Proveri mejl Cloudflare AI</button><button type="button" id="skipAiBtn" class="btn back">Ostali bodovi</button></div>'+
+ '<div class="ai-mail-controls"><button type="button" id="aiGradeBtn" class="btn primary" style="flex:1">✦ Proveri mejl</button><button type="button" id="skipAiBtn" class="btn back">Ostali bodovi</button></div>'+
  '<p id="aiStatus" role="status" class="ai-mail-status">Cloudflare AI proverava 26–50 reči. <span id="aiWorkerConnection" class="ai-worker-connection">Proveravam vezu sa Workerom…</span></p>'+
  '</section>';
 }
