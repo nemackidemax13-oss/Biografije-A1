@@ -823,6 +823,95 @@ main.results-scroll .result-details .result-row {
  .summary-task>.pill{font-size:9px!important;padding:4px 6px!important}
 }
 
+
+/* V33: keyboard never covers Hören 2 answers or the email writing area.
+   The actual visual viewport determines app height when a mobile keyboard opens. */
+@media(max-width:649px){
+ #app{height:var(--live-app-height,100dvh)!important;max-height:var(--live-app-height,100dvh)!important}
+ #app.keyboard-input-open>footer{display:none!important}
+ #app.keyboard-input-open main{flex:1 1 0!important;min-height:0!important;padding-bottom:env(safe-area-inset-bottom,0px)!important}
+}
+/* Hören 2: mini audio is in the normal flow; five entry lines above the keyboard. */
+main.hearing2-scroll.h2-keyboard{
+ overflow:hidden!important;touch-action:manipulation!important;
+ padding:3px 7px 4px!important
+}
+main.hearing2-scroll.h2-keyboard #pageContent{
+ display:flex!important;flex-direction:column!important;
+ height:100%!important;min-height:0!important;
+ overflow:hidden!important;transform:none!important
+}
+main.hearing2-scroll.h2-keyboard .exam-audio{
+ flex:0 0 auto!important;position:static!important;z-index:auto!important;
+ padding:2px 7px!important;margin:0 0 3px!important;max-height:40px!important
+}
+main.hearing2-scroll.h2-keyboard .hearing2-card{
+ display:flex!important;flex-direction:column!important;
+ flex:1 1 0!important;min-height:0!important;overflow:hidden!important;
+ padding:3px 5px!important;margin:0!important
+}
+main.hearing2-scroll.h2-keyboard .note-grid{
+ flex:1 1 0!important;min-height:0!important;
+ display:grid!important;grid-template-rows:repeat(5,minmax(31px,1fr))!important;
+ overflow-y:auto!important;overflow-x:hidden!important;
+ overscroll-behavior:contain!important;
+ -webkit-overflow-scrolling:touch!important;gap:2px!important
+}
+main.hearing2-scroll.h2-keyboard .note-row{
+ min-height:31px!important;max-height:none!important;
+ padding:2px 5px!important
+}
+main.hearing2-scroll.h2-keyboard .note-row .field{
+ height:27px!important;max-height:27px!important;min-height:27px!important;
+ font-size:16px!important;scroll-margin:8px!important
+}
+/* Four German questions occupy the top, and a flexible textarea stays below. */
+main.mail-writing-active.mail-keyboard{
+ display:block!important;overflow:hidden!important;touch-action:manipulation!important;
+ padding:3px 8px 4px!important
+}
+main.mail-writing-active.mail-keyboard #pageContent{
+ height:100%!important;min-height:0!important;overflow:hidden!important;
+ display:flex!important;flex-direction:column!important;transform:none!important
+}
+main.mail-writing-active.mail-keyboard .a2-mail-writing-layout{
+ height:100%!important;min-height:0!important;
+ display:flex!important;flex-direction:column!important;gap:3px!important
+}
+main.mail-writing-active .a2-writing-questions,
+main.mail-writing-active.mail-keyboard .a2-writing-questions{
+ flex:0 0 auto!important;max-height:none!important;min-height:0!important;
+ height:auto!important;overflow:visible!important;padding:6px 9px!important
+}
+main.mail-writing-active .a2-writing-questions-head{
+ justify-content:flex-start!important;margin-bottom:3px!important
+}
+main.mail-writing-active .a2-writing-questions ol{
+ gap:4px!important;padding-left:19px!important
+}
+main.mail-writing-active .a2-mail-writing-editor{
+ flex:1 1 0!important;height:0!important;min-height:80px!important;
+ max-height:none!important;margin:0!important;overflow:hidden!important
+}
+main.mail-writing-active.mail-keyboard .a2-mail-writing-editor{
+ flex:1 1 0!important;height:0!important;min-height:0!important;
+ max-height:none!important;margin:0!important;padding:5px!important;overflow:hidden!important
+}
+main.mail-writing-active.mail-keyboard .a2-mail-writing-editor #emailAnswer{
+ flex:1 1 0!important;min-height:35px!important;height:auto!important;
+ overflow-y:auto!important;-webkit-overflow-scrolling:touch!important;
+}
+main.mail-writing-active.mail-keyboard .ai-mail-controls,
+main.mail-writing-active.mail-keyboard .ai-mail-status{display:none!important}
+@media(max-height:420px){
+ main.mail-writing-active .a2-writing-questions,
+ main.mail-writing-active.mail-keyboard .a2-writing-questions{padding:3px 6px!important}
+ main.mail-writing-active .a2-writing-questions ol{gap:2px!important}
+ main.mail-writing-active .a2-writing-questions li{font-size:10px!important;line-height:1.1!important}
+}
+/* Without Serbian translation the questions no longer need a button or extra row. */
+main.mail-writing-active .a2-writing-questions li>.sr{display:none!important}
+
 </style>
 </head>
 <body>
@@ -955,11 +1044,9 @@ const MICHAEL_QUESTIONS=[
   {de:'Wann hast du Zeit?',sr:'Kada imaš vremena?'}
 ];
 function writingQuestions(){
- const shown=Boolean(st.mailSrVisible);
- return '<section class="a2-writing-questions'+(shown?' show-sr':'')+'" aria-label="Četiri pitanja i prevodi">'+
-  '<div class="a2-writing-questions-head"><h3>ČETIRI PITANJA'+(shown?' <span>· prevod crveno</span>':'')+'</h3>'+
-  '<button id="a2QuestionTranslate" type="button" aria-label="'+(shown?'Sakrij srpski prevod pitanja':'Prikaži srpski prevod pitanja')+'" aria-pressed="'+shown+'">'+(shown?'🇷🇸 SAKRIJ PREVOD':'🇷🇸 PREVOD SRPSKI')+'</button></div>'+
-  '<ol>'+MICHAEL_QUESTIONS.map(q=>'<li><span class="de">'+esc(q.de)+'</span><span class="sr">'+esc(q.sr)+'</span></li>').join('')+'</ol></section>';
+ return '<section class="a2-writing-questions" aria-label="Četiri pitanja">'+
+  '<div class="a2-writing-questions-head"><h3>ČETIRI PITANJA</h3></div>'+
+  '<ol>'+MICHAEL_QUESTIONS.map(q=>'<li><span class="de">'+esc(q.de)+'</span></li>').join('')+'</ol></section>';
 }
 function mailEditor(){
  return '<section class="a2-mail-writing-layout">'+
@@ -1351,6 +1438,7 @@ function render(){
  main.classList.toggle('results-scroll',st.page===LAST);
  main.classList.toggle('mail-writing-active',st.page===LAST-1);
  main.classList.remove('mail-keyboard');
+ document.getElementById('app').classList.remove('keyboard-input-open','h2-keyboard-mode');
  main.innerHTML='<div id="pageContent">'+PAGES[st.page]()+'</div>';
  main.scrollTop=0;
  document.getElementById('bar').style.width=(st.page/LAST*100)+'%';
@@ -1411,11 +1499,15 @@ function updateH2Keyboard(){
  const container=main;
  container.classList.toggle('h2-keyboard',keyboardLikely);
  document.getElementById('app').classList.toggle('h2-keyboard-mode',keyboardLikely);
+ document.getElementById('app').classList.toggle('keyboard-input-open',keyboardLikely);
+ if(keyboardLikely)requestAnimationFrame(syncMobileViewportHeight);
 }
 main.addEventListener('focusin',e=>{
  if(st.page!==6||!e.target.matches?.('[data-w2]'))return;
  h2Focused=e.target;
  updateH2Keyboard();
+ syncMobileViewportHeight();
+ requestAnimationFrame(keepFocusedInputAboveKeyboard);
 });
 main.addEventListener('focusout',e=>{
  if(st.page!==6||!e.target.matches?.('[data-w2]'))return;
@@ -1433,17 +1525,39 @@ window.visualViewport?.addEventListener('resize',()=>{
 /* Track available height without restarting audio or rendering the input. */
 function syncMobileViewportHeight(){
  const vv=window.visualViewport;
- const available=vv&&Number.isFinite(vv.height)?vv.height:window.innerHeight;
+ const available=vv&&Number.isFinite(vv.height)?Math.min(vv.height,window.innerHeight):window.innerHeight;
  if(available>100)document.documentElement.style.setProperty('--live-app-height',Math.floor(available)+'px');
 }
+
+function keepFocusedInputAboveKeyboard(){
+ if(st.page===6){
+  const focused=document.activeElement;
+  if(focused?.matches?.('[data-w2]')){
+   const list=main.querySelector('.note-grid');
+   const item=focused.closest('.note-row');
+   if(list&&item){
+    const top=item.offsetTop-list.offsetTop;
+    const bottom=top+item.offsetHeight;
+    if(top<list.scrollTop)list.scrollTop=top;
+    else if(bottom>list.scrollTop+list.clientHeight)list.scrollTop=bottom-list.clientHeight+3;
+   }
+  }
+ }
+ // No forced body scroll for the email. The editor is sized inside the
+ // shrunken visual viewport and remains immediately above the keyboard.
+}
+
 function updateMailKeyboard(){
  const mailFocused=st.page===LAST-1&&document.activeElement?.id==='emailAnswer';
  main.classList.toggle('mail-keyboard',Boolean(mailFocused));
+ document.getElementById('app').classList.toggle('keyboard-input-open',Boolean(mailFocused));
+ if(mailFocused)requestAnimationFrame(syncMobileViewportHeight);
 }
 main.addEventListener('focusin',e=>{
  if(st.page===LAST-1&&e.target.id==='emailAnswer'){
   updateMailKeyboard();
   requestAnimationFrame(syncMobileViewportHeight);
+  requestAnimationFrame(keepFocusedInputAboveKeyboard);
  }
 });
 main.addEventListener('focusout',e=>{
@@ -1456,25 +1570,12 @@ main.addEventListener('focusout',e=>{
 });
 window.addEventListener('resize',syncMobileViewportHeight,{passive:true});
 window.visualViewport?.addEventListener('resize',syncMobileViewportHeight,{passive:true});
+window.visualViewport?.addEventListener('resize',()=>requestAnimationFrame(keepFocusedInputAboveKeyboard),{passive:true});
 window.visualViewport?.addEventListener('scroll',syncMobileViewportHeight,{passive:true});
 syncMobileViewportHeight();
 
 
 document.getElementById('app').addEventListener('click',e=>{
- const translate=e.target.closest('#a2QuestionTranslate');
- if(translate){
-   st.mailSrVisible=!Boolean(st.mailSrVisible);save();
-   const panel=main.querySelector('.a2-writing-questions');
-   if(panel){
-     panel.classList.toggle('show-sr',Boolean(st.mailSrVisible));
-     const title=panel.querySelector('h3');
-     if(title)title.innerHTML='ČETIRI PITANJA'+(st.mailSrVisible?' <span>· prevod crveno</span>':'');
-     translate.textContent=st.mailSrVisible?'🇷🇸 SAKRIJ PREVOD':'🇷🇸 PREVOD SRPSKI';
-     translate.setAttribute('aria-label',st.mailSrVisible?'Sakrij srpski prevod pitanja':'Prikaži srpski prevod pitanja');
-     translate.setAttribute('aria-pressed',String(st.mailSrVisible));
-   }
-   return;
- }
  const chooseHeading=e.target.closest('[data-title-picker]');
  if(chooseHeading){openTitlePicker(Number(chooseHeading.dataset.titlePicker));return;}
  const aiBtn=e.target.closest('#aiGradeBtn, #retryAiResult');
