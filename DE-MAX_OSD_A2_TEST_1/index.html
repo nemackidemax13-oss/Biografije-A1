@@ -457,6 +457,9 @@ main.mail-writing-active.mail-keyboard .ai-mail-status{display:none!important}
  main.mail-writing-active.mail-keyboard .a2-writing-questions-head h3{font-size:10px!important}
  main.mail-writing-active.mail-keyboard #a2QuestionTranslate{font-size:8px!important;padding:2px 4px!important;min-height:23px!important}
 }
+/* Keep the progress line even while Hören 2's keyboard is showing. */
+#app:has(main.hearing2-scroll.h2-keyboard) header.only-progress{display:block!important}
+#app:has(main.hearing2-scroll.h2-keyboard) header.only-progress .progress{display:block!important}
 /* A dynamic visual viewport height allows standalone mobile page to shrink with keyboard. */
 @media(max-width:649px){#app{height:var(--live-app-height,100dvh)!important}}
 
