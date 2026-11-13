@@ -1331,7 +1331,7 @@ function grade(){
  ];
  
 const w2=noteok.filter(Boolean).length*2;
- const w3rows=st.w3.map((vals,i)=>{let errors=0;for(let j=0;j<5;j++)if(vals.includes(j)!==SPORTSKEY[i].includes(j))errors++;return Math.max(0,2-errors)});
+ const w3rows=st.w3.map((vals,i)=>{if(!vals.length)return 0;let errors=0;for(let j=0;j<5;j++)if(vals.includes(j)!==SPORTSKEY[i].includes(j))errors++;return Math.max(0,2-errors)});
  const w3=w3rows.reduce((sum,n)=>sum+n,0);
  const mail=emailScore(),lesen=r1+r2,horen=w1+w2+w3,total=lesen+horen+mail.points;
  const pass=mail.graded&&total>=35&&lesen>=5&&horen>=6&&mail.points>=3&&mail.valid;
@@ -1452,7 +1452,7 @@ function fitPage(){
    Hören 1 and 3: once; Hören 2: twice consecutively. Older localStorage locks
    are intentionally ignored because they previously left audio stuck. */
 function setupExamAudio(page){
- const idx=page-5, required=idx===1?2:1;
+ const idx=page-5, required=1; // Originalni drugi MP3 već sadrži dva slušanja.
  const audio=document.getElementById('player');
  const status=document.getElementById('audiosignal');
  const bar=document.getElementById('audioBar');
