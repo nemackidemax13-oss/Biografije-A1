@@ -233,7 +233,7 @@ main.reading-scroll .lesen2-text{
 </style>
 </head>
 <body>
-<div id="app"><header><div class="headrow"><div class="brand"><div><b>DE-MAX TUTIN</b><small>A2 • Test 1 • Od 2013. sa Vama</small></div></div><div class="topstat" id="topstat">0/7<small>vežbanje</small></div></div><div class="progress"><div id="bar"></div></div></header><main id="main"></main><footer><button id="prev" class="btn back" type="button">← Nazad</button><div id="fontFooter" class="footer-font-controls" hidden><button type="button" data-font-adjust="-1" class="footer-font-button" aria-label="Smanji veličinu teksta" title="Smanji tekst">−</button><button type="button" data-font-adjust="1" class="footer-font-button" aria-label="Povećaj veličinu teksta" title="Povećaj tekst">+</button></div><button id="next" class="btn primary" type="button">Nastavi →</button></footer></div>
+<div id="app"><header><div class="headrow"><div class="brand"><div><b>DE-MAX TUTIN</b><small>A2 • Test 1 • Sa Vama od 2013</small></div></div><div class="topstat" id="topstat">0/7<small>vežbanje</small></div></div><div class="progress"><div id="bar"></div></div></header><main id="main"></main><footer><button id="prev" class="btn back" type="button">← Nazad</button><div id="fontFooter" class="footer-font-controls" hidden><button type="button" data-font-adjust="-1" class="footer-font-button" aria-label="Smanji veličinu teksta" title="Smanji tekst">−</button><button type="button" data-font-adjust="1" class="footer-font-button" aria-label="Povećaj veličinu teksta" title="Povećaj tekst">+</button></div><button id="next" class="btn primary" type="button">Nastavi →</button></footer></div>
 <script>
 'use strict';
 const KEY='demax-osd-a2-model-1-20261113';
@@ -273,7 +273,7 @@ function checked(a,i){return a.includes(i)?'checked':''}
 function heading(k){return '<div class="sub">'+esc(k)+'</div>'}
 function intro(k,name,detail){return heading(k)+'<h1>'+name+'</h1><p class="instructions">'+detail+'</p>'}
 function getSelect(i){return '<select aria-label="Überschrift für Text '+(i+1)+'" class="field" data-r1="'+i+'"><option value="">– Überschrift wählen –</option>'+H.map((h,j)=>'<option value="'+h+'" '+(st.r1[i]===h?'selected':'')+'>'+h+' · '+esc(HEAD[j])+'</option>').join('')+'</select>'}
-function cover(){return '<section class="home-center"><h1>A2 TEST</h1><img class="home-uploaded-logo" src="./assets/demax-logo-user.webp" width="210" height="210" alt="DE-MAX logo" loading="eager"></section>'}
+function cover(){return '<section class="home-center"><h1>A2 TEST</h1></section>'}
 
 function lesenIntro(){
 return '<div class="intro-screen"><div class="intro-cover"><div class="intro-eyebrow">LESEN · ÖSD A2</div><h1>Razumevanje</h1><p>Pročitajte zadatke i odaberite tačne odgovore.</p><div class="total-points">25 <small>bodova</small></div><div class="min-points">Minimum 5 bodova za prolaz</div></div>'+
@@ -316,7 +316,7 @@ function player(i){
  '<div id="audiosignal" role="status" class="audio-status" aria-live="polite">Automatsko slušanje</div>'+
  '<div class="audio-progress"><div id="audioBar"></div></div>'+
  '<button type="button" id="audioFallback" class="audio-start" hidden>▶ Pokreni slušanje</button>'+
- '<audio id="player" playsinline preload="auto" src="./audio/track-'+i+'.mp3"></audio></div>';
+ '<audio id="player" autoplay playsinline preload="auto" src="./audio/track-'+i+'.mp3"></audio></div>';
 }
 function h1(){return '<div class="stage-label">HÖREN · Aufgabe 1 · 10 bodova</div><h1 class="stage-title">Das Wetter am Wochenende</h1>'+
 '<p class="small" style="margin:0 0 7px">Slušate dva teksta istog sadržaja. Označite četiri odgovora.</p>'+player(1)+
@@ -606,80 +606,92 @@ function fitPage(){
 
 /* Hören 1 and 3 run once. Hören 2 runs twice. If the browser rejects autoplay,
    the user can trigger the first playback with a single button. */
+
+/* Each time the student enters a Hören page, start its playback immediately
+   from the Next navigation gesture. Playback quotas are enforced per page visit:
+   Hören 1 and 3: once; Hören 2: twice consecutively. Older localStorage locks
+   are intentionally ignored because they previously left audio stuck. */
 function setupExamAudio(page){
  const idx=page-5, required=idx===1?2:1;
- if(!Array.isArray(st.audioUsed)||st.audioUsed.length!==3)st.audioUsed=[false,false,false];
- if(!Array.isArray(st.audioRounds)||st.audioRounds.length!==3)st.audioRounds=[0,0,0];
  const audio=document.getElementById('player');
  const status=document.getElementById('audiosignal');
  const bar=document.getElementById('audioBar');
  const fallback=document.getElementById('audioFallback');
  if(!audio||!status||!bar||!fallback)return;
- const valid=()=>st.page===page && audio.isConnected;
- const showFallback=(message,label)=>{
-   if(!valid())return;
-   status.textContent=message;
-   fallback.textContent=label||'▶ Pokreni slušanje';
-   fallback.hidden=false;
+ let completed=0,finished=false;
+ const valid=()=>st.page===page&&audio.isConnected;
+ const updateProgress=()=>{
+  if(!valid())return;
+  const duration=audio.duration;
+  bar.style.width=Number.isFinite(duration)&&duration>0?Math.min(100,Math.max(0,100*audio.currentTime/duration))+'%':'0%';
  };
- const progress=()=>{
-   if(!valid())return;
-   const pct=audio.duration>0&&Number.isFinite(audio.duration)?Math.min(100,(audio.currentTime/audio.duration)*100):0;
-   bar.style.width=pct+'%';
+ const offerStart=(message)=>{
+  if(!valid()||finished)return;
+  status.textContent=message;
+  fallback.hidden=false;
+  fallback.textContent='▶ Pokreni slušanje';
  };
- function start(round){
-   if(!valid())return;
-   if(round===0&&st.audioUsed[idx]){
-     status.textContent='Ovo slušanje je već pokrenuto i ne može se ponavljati.';
-     fallback.hidden=true;return;
-   }
-   fallback.hidden=true;
-   status.textContent='Učitavanje slušanja '+(round+1)+'/'+required+'…';
-   let promise;
-   try{promise=audio.play()}catch(e){
-     showFallback('Za početak slušanja dodirnite ▶.','▶ Pokreni slušanje');
-     return;
-   }
-   Promise.resolve(promise).then(()=>{
-     if(!valid())return;
-     if(!st.audioUsed[idx]){st.audioUsed[idx]=true;save();}
-     status.textContent='Slušanje '+(round+1)+'/'+required+' je u toku';
-   }).catch(()=>{
-     if(!valid())return;
-     showFallback('Telefon zahteva dodir za pokretanje zvuka.','▶ Pokreni slušanje');
+ function startCurrentRound(){
+  if(!valid()||finished)return;
+  fallback.hidden=true;
+  status.textContent='Pokreće se slušanje '+(completed+1)+'/'+required+'…';
+  let p;
+  try{
+   // Call play synchronously while the Next-button user gesture is still active.
+   p=audio.play();
+  }catch(err){
+   offerStart('Telefon zahteva dodir za reprodukciju zvuka.');
+   return;
+  }
+  if(p&&typeof p.then==='function'){
+   p.then(()=>{
+    if(!valid()||finished)return;
+    fallback.hidden=true;
+    status.textContent='Slušanje '+(completed+1)+'/'+required+' je u toku';
+   }).catch(err=>{
+    if(!valid()||finished)return;
+    offerStart(err?.name==='NotAllowedError'
+      ?'Telefon blokira automatski zvuk. Dodirnite ▶ samo za početak.'
+      :'Snimak nije pokrenut. Dodirnite ▶ da pokušate ponovo.');
    });
+  }
  }
- audio.addEventListener('timeupdate',progress);
+ audio.autoplay=true;
+ audio.playsInline=true;
+ audio.preload='auto';
+ audio.addEventListener('timeupdate',updateProgress);
+ audio.addEventListener('playing',()=>{
+  if(!valid()||finished)return;
+  fallback.hidden=true;
+  status.textContent='Slušanje '+(completed+1)+'/'+required+' je u toku';
+ });
+ audio.addEventListener('waiting',()=>{
+  if(valid()&&!finished&&!audio.paused)status.textContent='Učitava se zvuk…';
+ });
  audio.addEventListener('ended',()=>{
-   if(!valid())return;
-   st.audioRounds[idx]=Math.min(required,(Number(st.audioRounds[idx])||0)+1);save();
-   if(st.audioRounds[idx]<required){
-      bar.style.width='0%';
-      audio.currentTime=0;
-      start(st.audioRounds[idx]);
-   }else{
-      status.textContent='Slušanje završeno ('+required+'/'+required+').';
-      bar.style.width='100%';
-      fallback.hidden=true;
-   }
+  if(!valid()||finished)return;
+  completed++;
+  if(completed<required){
+   bar.style.width='0%';
+   audio.currentTime=0;
+   startCurrentRound();
+  }else{
+   finished=true;
+   bar.style.width='100%';
+   fallback.hidden=true;
+   status.textContent='Slušanje završeno ('+required+'/'+required+').';
+  }
  });
  audio.addEventListener('error',()=>{
-   if(!valid())return;
-   if(!st.audioUsed[idx])showFallback('Snimak se nije učitao. Pokušajte ponovo.','▶ Pokušaj ponovo');
-   else status.textContent='Snimak se prekinuo. Proverite internet.';
+  if(!valid()||finished)return;
+  offerStart('Snimak se nije učitao. Proverite internet i pokušajte ponovo.');
  });
  fallback.addEventListener('click',()=>{
-   if(!valid()||st.audioRounds[idx]>=required)return;
-   start(st.audioRounds[idx]);
+  if(!valid()||finished)return;
+  startCurrentRound();
  });
- if(st.audioRounds[idx]>=required){
-   status.textContent='Slušanje završeno ('+required+'/'+required+').';
-   bar.style.width='100%';
- }else if(st.audioUsed[idx]){
-   status.textContent='Ovo slušanje je već pokrenuto i ne može se ponavljati.';
- }else{
-   start(0);
- }
+ // No stale audioUsed/audioRounds guards: entering a page cannot stay locked.
+ startCurrentRound();
 }
 
 function render(){
