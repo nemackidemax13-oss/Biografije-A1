@@ -17,10 +17,49 @@ const scenarios=[
 ];
 const V={serial:0,ready:new Set(),part:null,stream:null,rec:null,ctx:null,interval:0,chunks:[],working:false,transcribing:false};
 const originalSpeak=showSpeak,originalResults=showResults;
+const V40_DIRECT_URL=location.origin+location.pathname+"?v=20261113-v41-mic";
+function micPolicyAllowed(){
+ try{const p=document.permissionsPolicy||document.featurePolicy;return p?.allowsFeature?.("microphone")??null}catch(e){return null}
+}
+function sendMicStatus(state){
+ if(window.parent!==window)try{window.parent.postMessage({source:"DEMAX_A2_V40",kind:"microphone",state},"*")}catch(e){}
+}
+function micBlockedMessage(){
+ return "Replit ili pregledač blokira mikrofon u ugrađenom prikazu. Otvorite direktni HTTPS link u Chrome/Safari i dozvolite mikrofon.";
+}
+function micFallbackLink(afterEl){
+ const a=document.createElement("a");
+ a.href=V40_DIRECT_URL;a.target="_blank";a.rel="noopener noreferrer";
+ a.className="v40-mic-direct";
+ a.textContent="↗ Otvori direktno sa mikrofonom";
+ afterEl?.insertAdjacentElement("afterend",a);
+ return a;
+}
+const oldDmPermitV40=dmPermit;
+dmPermit=async function(fromTap){
+ if(micPolicyAllowed()===false){
+  sendMicStatus("blocked");return false;
+ }
+ const ok=await oldDmPermitV40(fromTap);
+ sendMicStatus(ok?"allowed":"blocked");
+ return ok;
+};
 const intro=document.querySelector("#intro .intro-sub");
 if(intro)intro.innerHTML="ÖSD A2 · AI simulacija V40<br>Predstavljanje · 5 tema · 10 pitanja · Drugi deo";
 const introBtn=q("begin");
-if(introBtn)introBtn.insertAdjacentHTML("afterend",'<p class="v40-mini" style="text-align:center;padding:8px">Nova V40 verzija: adaptivna pitanja, drugi deo usmenog ispita, analiza i PDF izveštaj.</p>');
+if(introBtn){
+ const micTools=document.createElement("div");micTools.className="v40-mic-tools";
+ micTools.innerHTML='<button type="button" class="btn soft" id="v40testmic">🎙 Dozvoli / proveri mikrofon</button><span id="v40micintro" class="v40-mini" aria-live="polite">Za rad u Replitu dozvolite mikrofon.</span>';
+ introBtn.insertAdjacentElement("afterend",micTools);
+ micFallbackLink(micTools);
+ q("v40testmic").addEventListener("click",async()=>{
+  const msg=q("v40micintro");msg.textContent="Proveravam dozvolu mikrofona…";
+  if(micPolicyAllowed()===false){msg.textContent=micBlockedMessage();sendMicStatus("blocked");return}
+  const ok=await dmPermit(true);
+  msg.textContent=ok?"✓ Mikrofon je dozvoljen. Pritisnite „Započni simulaciju”.":micBlockedMessage();
+ });
+ if(micPolicyAllowed()===false){q("v40micintro").textContent=micBlockedMessage();sendMicStatus("blocked")}
+}
 function fallbackTopicQuestion(topic,context,number){
  const low=norm(context).toLowerCase(),n=topic.title.split(" · ")[0];
  const list={
@@ -82,9 +121,11 @@ part.innerHTML='<div class="v40-head"><div><h2>Teil 2 · Gemeinsam planen</h2><s
 '<div id="v40chat" class="v40-chat"></div><div class="v40-part2-prompt"><small>PRÜFERIN / PRÜFER</small><strong id="v40prompt"></strong></div>'+
 '<div class="v40-part2-response"><label for="v40answer">VAŠ NEMAČKI ODGOVOR · MIKROFON ILI RUČNI UNOS</label><textarea id="v40answer" lang="de" placeholder="Govor će biti transkribovan ovde, a možete i sami uneti odgovor."></textarea></div>'+
 '<div class="v40-toolbar"><button id="v40mic" class="btn soft">🎙 Govori</button><button id="v40stop" class="btn red">■ Završi govor</button><button id="v40repeat" class="btn soft">🔊 Ponovi pitanje</button></div>'+
-'<div class="v40-status" id="v40status">Spremno za drugi deo.</div><p class="v40-mini">Automatski završetak nakon 7 sekundi tišine; ako mikrofon nije dostupan, unesite tekst. Nema automatskog prelaska dalje.</p></div>'+
+'<div class="v40-status" id="v40status">Spremno za drugi deo.</div><p class="v40-mini">Automatski završetak nakon 5 sekundi tišine; ako mikrofon nije dostupan, unesite tekst. Nema automatskog prelaska dalje.</p></div>'+
 '<div class="v40-actions"><button id="v40change" class="btn soft">↻ Nova tema</button><button id="v40next" class="btn green">Pokreni razgovor ›</button><button id="v40done" class="btn red full">Završi drugi deo i prikaži rezultate ✓</button></div>';
 document.querySelector("#app main").append(part);
+const directPart2=micFallbackLink(q("v40status"));
+directPart2.id="v40direct";directPart2.hidden=true;
 function status(x){q("v40status").textContent=x}
 function scenario(){return scenarios[V.part.index]}
 function vStop(){
@@ -122,9 +163,10 @@ function say(de,then){
 }
 async function permit(){
  if(V.stream?.getAudioTracks().some(x=>x.readyState==="live"))return true;
- if(!navigator.mediaDevices?.getUserMedia){status("Ovaj pregledac ne podržava mikrofon. Odgovor možete upisati.");return false}
- try{V.stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});return true}
- catch(e){status("Dozvolite mikrofon ili upišite odgovor ručno.");return false}
+ if(micPolicyAllowed()===false){status(micBlockedMessage());sendMicStatus("blocked");q("v40direct").hidden=false;return false}
+ if(!navigator.mediaDevices?.getUserMedia){status("Ovaj pregledač ne podržava mikrofon. Otvorite direktno ili unesite odgovor.");q("v40direct").hidden=false;sendMicStatus("blocked");return false}
+ try{V.stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true,channelCount:{ideal:1},sampleRate:{ideal:48000}}});sendMicStatus("allowed");q("v40direct").hidden=true;return true}
+ catch(e){status(micBlockedMessage());sendMicStatus("blocked");q("v40direct").hidden=false;return false}
 }
 function listen(){
  if(!V.part?.started||V.part.finished||V.rec?.state==="recording")return;
@@ -136,18 +178,22 @@ function listen(){
   V.chunks=[];
   V.rec.ondataavailable=e=>{if(e.data?.size)V.chunks.push(e.data)};
   V.rec.start(1200);
-  status("🔴 Slušam odgovor. Odbrojavanje 7 sekundi počinje nakon prestanka govora.");
+  status("🔴 Slušam odgovor. Odbrojavanje 5 sekundi počinje nakon prestanka govora.");
   try{
    const C=window.AudioContext||window.webkitAudioContext;if(!C)return;
    V.ctx=new C();V.ctx.resume?.().catch(()=>{});
    const source=V.ctx.createMediaStreamSource(V.stream),an=V.ctx.createAnalyser();an.fftSize=1024;source.connect(an);
-   const buf=new Uint8Array(1024);let heard=false,last=Date.now();
+   const buf=new Uint8Array(1024);let heard=false,last=Date.now(),noiseFloor=.004,strongFrames=0;
    V.interval=setInterval(()=>{
-    if(!V.rec||V.rec.state!=="recording"||V.ctx?.state!=="running")return;
+    if(!V.rec||V.rec.state!=="recording"||V.ctx?.state!=="running"||V.transcribing)return;
     an.getByteTimeDomainData(buf);let power=0;for(const v of buf){const x=(v-128)/128;power+=x*x}
-    if(Math.sqrt(power/1024)>.018){heard=true;last=Date.now()}
-    if(heard&&Date.now()-last>7000)finishAudio();
-   },200);
+    const rms=Math.sqrt(power/1024),threshold=Math.min(.035,Math.max(.0065,noiseFloor*2));
+    if(rms>threshold){strongFrames++;if(strongFrames>=2){heard=true;last=Date.now()}}
+    else{strongFrames=0;if(!heard)noiseFloor=noiseFloor*.94+rms*.06}
+    if(heard){const remaining=Math.max(0,5000-(Date.now()-last));
+      if(remaining<5000)status("Tišina: "+Math.ceil(remaining/1000)+" s · Odgovor se završava, bez prelaska dalje.");
+      if(remaining===0)finishAudio();}
+   },130);
   }catch(e){status("🔴 Snimam odgovor. Pritisnite „Završi govor” kada završite.")}
  }catch(e){status("Mikrofon ne može da snima. Upišite odgovor.")}
 }
@@ -313,5 +359,12 @@ pdf.onclick=async()=>{
 };
 const oldRestart=q("restart")?.onclick;
 if(q("restart"))q("restart").onclick=()=>{vStop();V.part=null;V.ready.clear();V.serial++;oldRestart?.();scorePanel.replaceChildren()};
+document.addEventListener("visibilitychange",()=>{
+ if(document.visibilityState==="hidden"&&V.rec?.state==="recording"){
+  // Do not finalize while device is displaying a permissions or app prompt.
+  if(V.interval)clearInterval(V.interval);V.interval=0;
+  status("Mikrofon je pauziran dok je aplikacija u pozadini; vratite se i nastavite.");
+ }
+});
 window.addEventListener("pagehide",vStop);
 })();
