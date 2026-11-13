@@ -2283,6 +2283,9 @@ function dmSpeechRecognize(){
    return;
   }
   if(!dmTrackLive()&&(reason==="not-allowed"||reason==="service-not-allowed")){
+   DM_MIC.wantListening=false;
+   dmCancelNoAnswer();
+   dmMarkLive(false);
    dmMicStatus("🎙 Mikrofon nije dozvoljen u ovom prikazu. Izgovor pitanja i unos teksta su dostupni.",true);
    return;
   }
@@ -2561,7 +2564,9 @@ for(const id of ["begin","introBack","chooseBack","chooseNext","speakNext","spea
 }
 for(const btn of document.querySelectorAll('[data-act="repeat"]')){
  btn.addEventListener("click",()=>{
-  if(!dmTrackLive()&&!DM_MIC.pending)dmPermit(true);
+  // "Poslusaj pitanje" radi nezavisno od mikrofona.
+  dmWarmAudioContext();
+  try{window.speechSynthesis?.resume()}catch(e){}
  },true);
 }
 const oldRestartA2=$("restart").onclick;
