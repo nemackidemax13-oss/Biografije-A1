@@ -1284,7 +1284,7 @@ function result(){
  const resultline=(name,pts,max)=>'<div class="result-row"><span class="l">'+esc(name)+'</span><strong class="r">'+pts+' / '+max+'</strong></div>';
  let area='';
  if(tab==='score'){
-   area='<div class="card center"><div class="sub">'+(g.mail.graded?'Ukupan rezultat':'Trenutno poznati bodovi')+'</div><div class="score">'+(g.mail.graded?g.total:g.lesen+g.horen)+' <small>/ 70</small></div><h3 class="'+(!g.mail.graded?'':g.pass?'ok':'bad')+'">'+(!g.mail.graded?'AI PROVERA MEJLA NIJE ZAVRŠENA':g.pass?'POLOŽENO':'NIJE POLOŽENO')+'</h3><p class="small">Za prolaz najmanje 35/70 i minimum po oblastima.</p></div>'+
+   area='<div class="card center"><div class="sub">'+(g.mail.graded?'Ukupan rezultat':'Trenutno poznati bodovi')+'</div><div class="score">'+(g.mail.graded?g.total:g.lesen+g.horen)+' <small>/ 70</small></div><h3 class="'+(!g.mail.graded?'':g.pass?'ok':'bad')+'">'+(!g.mail.graded?'SCHREIBEN – ČEKA OCENU NASTAVNIKA':g.pass?'POLOŽENO':'NIJE POLOŽENO')+'</h3><p class="small">Za prolaz najmanje 35/70 i minimum po oblastima.</p></div>'+
    '<div class="card">'+
    resultline('Lesen · Aufgabe 1',g.r1,15)+resultline('Lesen · Aufgabe 2',g.r2,10)+
    resultline('Hören · Aufgabe 1',g.w1,10)+resultline('Hören · Aufgabe 2',g.w2,10)+resultline('Hören · Aufgabe 3',g.w3,10)+
@@ -1501,10 +1501,10 @@ function render(){
  prev.disabled=st.page===0;
  next.textContent=st.page===0?'Počni test →':st.page===LAST-1?'Završi i oceni ✓':st.page===LAST?'Na početak ↺':'Nastavi →';
  requestAnimationFrame(fitPage);
- if(st.page===LAST){const copy=document.getElementById('copyResult');copy.onclick=()=>{const g=grade();const txt='DE-MAX ÖSD A2 Test 1 | Lesen '+g.lesen+'/25 | Hören '+g.horen+'/30 | E-Mail '+g.mail.points+'/15 | Ukupno '+g.total+'/70 | '+(g.pass?'POLOŽENO':'NIJE POLOŽENO')+' | E-Mail automatska procena';if(navigator.clipboard?.writeText)navigator.clipboard.writeText(txt).then(()=>notify('Rezultat kopiran')).catch(()=>notify('Kopiranje nije dostupno'));else notify(txt)};
+ if(st.page===LAST){const copy=document.getElementById('copyResult');copy.onclick=()=>{const g=grade();const txt='DE-MAX ÖSD A2 Übungssatz 5 | Lesen '+g.lesen+'/25 | Hören '+g.horen+'/30 | E-Mail '+g.mail.points+'/15 | Ukupno '+g.total+'/70 | '+(g.pass?'POLOŽENO':'NIJE POLOŽENO')+' | Schreiben: ručna provera';if(navigator.clipboard?.writeText)navigator.clipboard.writeText(txt).then(()=>notify('Rezultat kopiran')).catch(()=>notify('Kopiranje nije dostupno'));else notify(txt)};
  document.getElementById('reset').onclick=()=>{if(confirm('Obrisati sve odgovore i početi ponovo?')){st=freshA2Test();save();render()}}}
  if(st.page>=5&&st.page<=7)setupExamAudio(st.page);
- if(st.page===LAST-1)/* Ovaj set nema povezanog Milena AI Workera */
+ if(st.page===LAST-1){ /* Milena: nema pogrešne provere preko Michael Workera */ }
 }
 window.addEventListener('resize',()=>requestAnimationFrame(fitPage),{passive:true});
 window.visualViewport?.addEventListener('resize',()=>requestAnimationFrame(fitPage),{passive:true});
