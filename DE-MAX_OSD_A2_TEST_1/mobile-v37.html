@@ -2235,10 +2235,19 @@ function syncMobileViewportHeight(){
  let available=raw;
  const since=editing?Date.now()-keyboardFocusStartedAt:0;
  const keyboardNotReported=editing && keyboardFullHeight>260 &&
-   raw>keyboardFullHeight*.84 && since>250;
+   raw>keyboardFullHeight*.84 && since>250 &&
+   !(st.page===LAST-1 && emailKeyboardSawShrink); // Never fake a keyboard after observed close.
  if(keyboardNotReported){
   // Keyboard overlays an unresized iframe: use the space ABOVE it.
   available=Math.min(raw,Math.max(205,Math.floor(keyboardFullHeight*.55)));
+ }
+ /* V46 MOBILE EMAIL KEYBOARD RESTORE: use true visible viewport bottom when Android pans. */
+ if(editing && st.page===LAST-1 && vv && visual<inner-70 &&
+    !document.documentElement.style.getPropertyValue('--live-app-top') &&
+    !document.documentElement.style.getPropertyValue('--live-app-offset-top') &&
+    !document.documentElement.style.getPropertyValue('--live-vv-top')){
+   const top=Number.isFinite(vv.offsetTop)?Math.max(0,vv.offsetTop):0;
+   available=Math.min(inner,Math.round(available+Math.min(52,top)));
  }
  if(editing&&available>100){
    document.documentElement.style.setProperty('--live-app-height',Math.floor(available)+'px');
@@ -2281,6 +2290,7 @@ function keepFocusedInputAboveKeyboard(){
  // shrunken visual viewport and remains immediately above the keyboard.
 }
 
+/* V46 MOBILE EMAIL KEYBOARD RESTORE */
 /* V43 MAIL KEYBOARD RECOVERY: Android Back / iOS Done may hide keyboard without blurring textarea. */
 let emailKeyboardSawShrink=false;
 let emailKeyboardDismissed=false;
@@ -2316,6 +2326,18 @@ main.addEventListener('pointerdown',e=>{
  }
 });
 window.addEventListener('resize',()=>{if(st.page===LAST-1)requestAnimationFrame(updateMailKeyboard)},{passive:true});
+/* V46: mobile keyboard can close without blur or window.resize; visualViewport.resize is decisive. */
+window.visualViewport?.addEventListener('resize',()=>{
+ if(st.page!==LAST-1)return;
+ requestAnimationFrame(()=>{
+  updateMailKeyboard();
+  syncMobileViewportHeight();
+  if(emailKeyboardDismissed)document.documentElement.style.removeProperty('--live-app-height');
+ });
+},{passive:true});
+window.visualViewport?.addEventListener('scroll',()=>{
+ if(st.page===LAST-1)requestAnimationFrame(updateMailKeyboard);
+},{passive:true});
 main.addEventListener('focusin',e=>{
  if(st.page===LAST-1&&e.target.id==='emailAnswer'){
   emailKeyboardSawShrink=false;emailKeyboardDismissed=false;
