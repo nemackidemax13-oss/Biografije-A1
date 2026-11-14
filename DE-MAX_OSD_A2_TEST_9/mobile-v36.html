@@ -1138,7 +1138,7 @@ function h1(){return '<section class="h1-full-mobile"><div class="stage-label">H
 '<div class="card h1-answers"><div class="qtop"><b>Wählen Sie vier Antworten</b><span class="pill">10 Punkte</span></div><div class="twocol">'+WEATHER.map((w,i)=>'<label class="check"><input type="checkbox" data-w1="'+i+'" '+checked(st.w1,i)+'>'+esc(w)+'</label>').join('')+'</div><p class="small h1-count" id="weatherCount">'+st.w1.length+' / 4 izabrano</p></div></section>'}
 function h2(){const lab=['Für wann (Tag)','Ab (Uhr)','Bus Nummer','Was einpacken','Handynummer: 0664 /'];return '<div class="stage-label">HÖREN · Aufgabe 2 · 10 bodova</div><h1 class="stage-title">Zimmer-Reservierung</h1>'+
 '<p class="small h2-instructions" style="margin:0 0 7px">Slušate poruku dva puta. Dopunite pet beleški.</p>'+player(2)+
-'<div class="card hearing2-card"><div class="qtop"><b>✎ Notizblatt</b><span class="pill">10 Punkte</span></div><div class="note-grid">'+lab.map((l,i)=>'<div class="note-row"><label class="fieldlabel" for="n'+i+'">'+(i+1)+'. '+esc(l)+'</label><input id="n'+i+'" data-w2="'+i+'" class="field" type="text" inputmode="'+(i>=2?'numeric':'text')+'" autocomplete="off" placeholder="'+(['Wochentag','12:30','Bus','Was mitnehmen?','Nummer'][i])+'" value="'+esc(st.w2[i])+'"></div>').join('')+'</div></div>'}
+'<div class="card hearing2-card"><div class="qtop"><b>✎ Notizblatt</b><span class="pill">10 Punkte</span></div><div class="note-grid">'+lab.map((l,i)=>'<div class="note-row"><label class="fieldlabel" for="n'+i+'">'+(i+1)+'. '+esc(l)+'</label><input id="n'+i+'" data-w2="'+i+'" class="field" type="text" inputmode="'+([1,2,4].includes(i)?'numeric':'text')+'" autocomplete="off" placeholder="'+(['Wochentag','12:30','Bus','Was mitnehmen?','Nummer'][i])+'" value="'+esc(st.w2[i])+'"></div>').join('')+'</div></div>'}
 function speakerCard(i){return '<div class="card"><div class="qtop"><b>'+(i+1)+'. '+(i%2===0?'Sprecherin':'Sprecher')+'</b><span class="pill">2 Punkte</span></div>'+
 '<p class="small">Šta osoba želi da nauči? Moguće je više odgovora.</p>'+
 '<div class="rowchecks">'+SPORTS.map((n,j)=>'<label class="sport"><input type="checkbox" data-sp="'+i+'" data-sport="'+j+'" '+checked(st.w3[i],j)+'>'+esc(n)+'</label>').join('')+'</div></div>'}
@@ -1370,15 +1370,15 @@ function result(){
    '';
  }else if(tab==='lesen'){
    area='<div class="card"><h3>Lesen · Aufgabe 1 · '+g.r1+'/15</h3>'+
-   ['C','E','K','B','G'].map((v,i)=>solutionRow('Text '+(i+1),st.r1[i],v,st.r1[i]===v?3:0,3)).join('')+'</div>'+
+   ['E','G','K','C','H'].map((v,i)=>solutionRow('Text '+(i+1),st.r1[i],v,st.r1[i]===v?3:0,3)).join('')+'</div>'+
    '<div class="card"><h3>Lesen · Aufgabe 2 · '+g.r2+'/10</h3>'+
-   ['C','A','A','A','A'].map((v,i)=>solutionRow('Frage '+(i+1),st.r2[i],v,st.r2[i]===v?2:0,2)).join('')+'</div>'+
+   ['B','B','C','A','C'].map((v,i)=>solutionRow('Frage '+(i+1),st.r2[i],v,st.r2[i]===v?2:0,2)).join('')+'</div>'+
    '<div class="card greenish"><b>Ukupno Lesen: '+g.lesen+'/25</b><p class="small">Minimum 5 bodova · '+(g.lesen>=5?'Prag ostvaren':'Prag nije ostvaren')+'</p></div>';
  }else if(tab==='horen'){
-   const weather=['Sonne','Gewitter','18 Grad','Regen','Nebel','Wind','25 Grad','Wolken'];
-   const nw=['Freitag','Salat','2 Euro','19 Uhr','734 56 82'];
+   const weather=WEATHER;
+   const nw=['Mittwoch','12:30 Uhr','84','Fahrkarte','3169758'];
    area='<div class="card"><h3>Hören · Aufgabe 1 · '+g.w1+'/10</h3>'+
-   '<p class="small">Tvoj: '+esc(st.w1.map(i=>weather[i]).filter(Boolean).join(', ')||'—')+'</p><p class="small">Tačno: <b>Sonne, Gewitter, Wind, 25 Grad</b></p></div>'+
+   '<p class="small">Tvoj: '+esc(st.w1.map(i=>weather[i]).filter(Boolean).join(', ')||'—')+'</p><p class="small">Tačno: <b>Haushalt, Essen, Filme und Bücher, Einkäufe</b></p></div>'+
    '<div class="card"><h3>Hören · Aufgabe 2 · '+g.w2+'/10</h3>'+
    nw.map((v,i)=>solutionRow('Notiz '+(i+1),st.w2[i],v,g.noteok[i]?2:0,2)).join('')+'</div>'+
    '<div class="card"><h3>Hören · Aufgabe 3 · '+g.w3+'/10</h3>'+
