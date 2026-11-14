@@ -1,5 +1,5 @@
 /* DE-MAX TUTIN — Samostalni A2 WORKER za Cloudflare
-   Izdanje: 01.11.2026 — A2 Worker V3 / 5 dodatnih ispravki / 13 zadataka
+   Izdanje: 01.11.2026 — A2 Worker V3 / 5 dodatnih ispravki / 14 zadataka (uključujući Milenu – Lukas ist da!)
    Uputstvo:
    1. Otvori Cloudflare > Workers & Pages > a2mejlovi > Edit Code.
    2. Zameni POSTOJECI KOD kompletnim sadrzajem ovog TXT fajla.
@@ -460,7 +460,7 @@ export default {
   const origin=request.headers.get("Origin")||"";
   if(request.method==="GET"&&url.pathname==="/health"){
    return jsonResponse({
-    status:"ok",worker:"a2mejlovi",version:"20261101-a2-26-50",
+    status:"ok",worker:"a2mejlovi",version:"20261114-a2-14-milena",
     openaiConfigured:Boolean(env.OPENAI_API_KEY),
     verificationVersion:"a2-de-max-50-words-rubric-v2",
     minWords:26,maxWords:50,tasks:A2_MAILS.length,attemptsLimitedByWorker:false
