@@ -1424,6 +1424,63 @@ main.mail-writing-active.mail-keyboard .a2-mail-writing-layout{justify-content:f
   overflow-y:auto!important;resize:none!important;
  }
 }
+/* V44: compact email toolbar, more room for writing; only Schreiben. */
+@media(max-width:649px){
+ #app>main.mail-writing-active .a2-writing-editor-bar{
+  flex:0 0 13px!important;height:13px!important;min-height:13px!important;
+  max-height:13px!important;margin:0!important;padding:0 1px!important;gap:3px!important;
+ }
+ #app>main.mail-writing-active .a2-writing-editor-bar .fieldlabel{
+  font-size:8.5px!important;line-height:1!important;margin:0!important;font-weight:750!important;
+ }
+ #app>main.mail-writing-active #wordCount{
+  font-size:8px!important;line-height:1!important;min-height:13px!important;
+  max-height:13px!important;padding:2px 4px!important;border-radius:5px!important;
+ }
+ #app>main.mail-writing-active #emailAnswer{
+  font-size:15px!important;line-height:1.28!important;
+  padding:3px 6px!important;overflow-y:auto!important;resize:none!important;
+ }
+ #app:not(.keyboard-input-open)>main.mail-writing-active{
+  flex:1 1 0!important;min-height:0!important;padding-bottom:2px!important;
+ }
+ #app:not(.keyboard-input-open)>main.mail-writing-active .a2-writing-questions{
+  margin-top:10px!important;
+ }
+ #app:not(.keyboard-input-open)>main.mail-writing-active .a2-mail-writing-editor{
+  flex:1 1 0!important;height:0!important;min-height:45px!important;
+  max-height:none!important;padding:2px 4px!important;gap:1px!important;overflow:hidden!important;
+ }
+ #app:not(.keyboard-input-open)>main.mail-writing-active #emailAnswer{
+  flex:1 1 0!important;height:auto!important;min-height:25px!important;max-height:100%!important;
+ }
+ #app:not(.keyboard-input-open)>main.mail-writing-active .ai-mail-status{
+  max-height:28px!important;font-size:9px!important;padding:2px 5px!important;
+ }
+ #app.keyboard-input-open>main.mail-writing-active.mail-keyboard{
+  padding:14px 7px 0!important;
+ }
+ #app.keyboard-input-open>main.mail-writing-active.mail-keyboard .a2-writing-questions{
+  margin-top:8px!important;padding-top:4px!important;max-height:calc(100% - 87px)!important;
+ }
+ #app.keyboard-input-open>main.mail-writing-active.mail-keyboard .a2-mail-writing-editor{
+  flex:1 1 0!important;height:0!important;min-height:27px!important;max-height:none!important;
+  padding:2px 4px!important;gap:1px!important;margin:0!important;overflow:hidden!important;
+ }
+ #app.keyboard-input-open>main.mail-writing-active.mail-keyboard #emailAnswer{
+  flex:1 1 0!important;height:auto!important;min-height:19px!important;
+  max-height:100%!important;padding:2px 6px!important;
+ }
+ #app.keyboard-input-open>main.mail-writing-active.mail-keyboard .ai-mail-controls,
+ #app.keyboard-input-open>main.mail-writing-active.mail-keyboard .ai-mail-controls .btn{
+  flex-basis:30px!important;height:30px!important;min-height:30px!important;max-height:30px!important;
+ }
+}
+@supports(-webkit-touch-callout:none){
+ @media(max-width:649px){
+  #app>main.mail-writing-active #emailAnswer{font-size:16px!important}
+ }
+}
 </style>
 </head>
 <body>
@@ -2110,7 +2167,7 @@ function syncMobileViewportHeight(){
  const visual=vv&&Number.isFinite(vv.height)&&vv.height>100?vv.height:inner;
  const raw=Math.max(100,Math.min(inner,visual));
  const mobile=window.innerWidth<=649;
- const editing=mobile&&isTypingInExam();
+ const editing=mobile&&isTypingInExam()&&!(st.page===LAST-1&&emailKeyboardDismissed);
  const width=window.innerWidth;
  if(keyboardViewportWidth!==width){
   keyboardViewportWidth=width;
