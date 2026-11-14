@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="sr">
-<head><meta name="app-version" content="V36-20261113-horen2-nav-above-keyboard"><meta name="app-version" content="V35-20261113-compact-mail-buttons-above-keyboard"><meta name="app-version" content="V34-20261113-exercise-labels-right"><meta name="app-version" content="V33-20261113-keyboard-horen2-email-no-translation"><meta name="app-version" content="V32-20261113-fresh-exam-at-every-open"><meta name="app-version" content="V30-20261113-proveri-mejl-label"><meta name="app-version" content="V29-20261113-score-column-right"><meta name="app-version" content="V28-20261113-horen3-heading-below-player">
+<head><meta name="app-version" content="V37-20261114-keyboard-viewport-horen2-email"><meta name="app-version" content="V36-20261113-horen2-nav-above-keyboard"><meta name="app-version" content="V35-20261113-compact-mail-buttons-above-keyboard"><meta name="app-version" content="V34-20261113-exercise-labels-right"><meta name="app-version" content="V33-20261113-keyboard-horen2-email-no-translation"><meta name="app-version" content="V32-20261113-fresh-exam-at-every-open"><meta name="app-version" content="V30-20261113-proveri-mejl-label"><meta name="app-version" content="V29-20261113-score-column-right"><meta name="app-version" content="V28-20261113-horen3-heading-below-player">
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
 <meta name="theme-color" content="#102447"><meta name="description" content="DE-MAX Tutin — interaktivni ÖSD A2 Test 10: Lesen, Hören i Schreiben">
 <title>DE-MAX | ÖSD A2 – Test 10</title>
@@ -1028,6 +1028,78 @@ main.mail-writing-active.mail-keyboard .a2-mail-writing-layout{justify-content:f
  }
 }
 
+
+/* V37 (2026-11-14): keyboard-safe viewport for Hören 2 and Schreiben only.
+   Anchor the whole application to the currently visible mobile viewport
+   (including iOS visualViewport.offsetTop), not the obscured layout viewport. */
+@media(max-width:649px){
+  #app.keyboard-input-open{
+    position:fixed!important;
+    top:var(--live-app-offset-top,0px)!important;
+    left:0!important;right:0!important;bottom:auto!important;
+    width:100%!important;
+    height:var(--live-app-height,100dvh)!important;
+    min-height:0!important;
+    max-height:var(--live-app-height,100dvh)!important;
+    display:flex!important;flex-direction:column!important;
+    overflow:hidden!important;
+  }
+  #app.keyboard-input-open main{
+    flex:1 1 0!important;
+    min-height:0!important;
+    overflow:hidden!important;
+  }
+  #app.keyboard-input-open.h2-keyboard-mode main.hearing2-scroll .note-grid{
+    min-height:0!important;
+    grid-template-rows:repeat(5,minmax(28px,1fr))!important;
+    overflow-y:auto!important;
+    touch-action:pan-y!important;
+    overscroll-behavior:contain!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+  #app.keyboard-input-open.h2-keyboard-mode main.hearing2-scroll .note-row{
+    min-height:28px!important;
+  }
+  #app.keyboard-input-open main.mail-writing-active.mail-keyboard .a2-mail-writing-layout{
+    display:flex!important;flex-direction:column!important;
+    min-height:0!important;height:100%!important;overflow:hidden!important;
+  }
+  #app.keyboard-input-open main.mail-writing-active.mail-keyboard .a2-writing-questions{
+    flex:0 0 auto!important;
+    max-height:clamp(90px,40%,138px)!important;
+    min-height:0!important;
+    overflow-y:auto!important;
+    overscroll-behavior:contain!important;
+  }
+  #app.keyboard-input-open main.mail-writing-active.mail-keyboard .a2-mail-writing-editor{
+    flex:1 1 0!important;
+    min-height:42px!important;
+    height:0!important;
+    overflow:hidden!important;
+  }
+  #app.keyboard-input-open main.mail-writing-active.mail-keyboard #emailAnswer{
+    flex:1 1 0!important;
+    min-height:23px!important;
+    overflow-y:auto!important;
+    font-size:16px!important;
+  }
+  #app.keyboard-input-open main.mail-writing-active.mail-keyboard .ai-mail-controls{
+    flex:0 0 30px!important;
+    display:flex!important;
+    visibility:visible!important;
+    opacity:1!important;
+    width:100%!important;
+    min-height:30px!important;
+    max-height:30px!important;
+    order:3!important;
+  }
+  #app.keyboard-input-open main.mail-writing-active.mail-keyboard .ai-mail-controls .btn{
+    min-height:30px!important;
+    max-height:30px!important;
+    display:inline-flex!important;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1667,8 +1739,7 @@ main.addEventListener('focusin',e=>{
  if(st.page!==6||!e.target.matches?.('[data-w2]'))return;
  h2Focused=e.target;
  updateH2Keyboard();
- syncMobileViewportHeight();
- requestAnimationFrame(keepFocusedInputAboveKeyboard);
+ settleMobileKeyboardLayout();
 });
 main.addEventListener('focusout',e=>{
  if(st.page!==6||!e.target.matches?.('[data-w2]'))return;
@@ -1686,8 +1757,24 @@ window.visualViewport?.addEventListener('resize',()=>{
 /* Track available height without restarting audio or rendering the input. */
 function syncMobileViewportHeight(){
  const vv=window.visualViewport;
- const available=vv&&Number.isFinite(vv.height)?Math.min(vv.height,window.innerHeight):window.innerHeight;
- if(available>100)document.documentElement.style.setProperty('--live-app-height',Math.floor(available)+'px');
+ const layoutHeight=window.innerHeight||document.documentElement.clientHeight;
+ const visualHeight=vv&&Number.isFinite(vv.height)?vv.height:layoutHeight;
+ // Browser/toolbars and virtual keyboards can resize the visual and layout
+ // viewport at different times. Use the smaller height, never the obscured one.
+ const available=Math.min(layoutHeight,visualHeight);
+ if(available>100){
+  document.documentElement.style.setProperty('--live-app-height',Math.floor(available)+'px');
+ }
+ // iOS Safari can pan the visual viewport downward as it focuses an input.
+ // Place the fixed keyboard-mode app at its visible top edge.
+ const top=vv&&Number.isFinite(vv.offsetTop)?Math.max(0,vv.offsetTop):0;
+ document.documentElement.style.setProperty('--live-app-offset-top',Math.round(top)+'px');
+}
+function settleMobileKeyboardLayout(){
+ // Re-measure after the soft keyboard finishes its opening animation.
+ const refresh=()=>{syncMobileViewportHeight();keepFocusedInputAboveKeyboard();};
+ requestAnimationFrame(refresh);
+ [90,220,420].forEach(delay=>setTimeout(refresh,delay));
 }
 
 function keepFocusedInputAboveKeyboard(){
@@ -1697,10 +1784,11 @@ function keepFocusedInputAboveKeyboard(){
    const list=main.querySelector('.note-grid');
    const item=focused.closest('.note-row');
    if(list&&item){
-    const top=item.offsetTop-list.offsetTop;
-    const bottom=top+item.offsetHeight;
-    if(top<list.scrollTop)list.scrollTop=top;
-    else if(bottom>list.scrollTop+list.clientHeight)list.scrollTop=bottom-list.clientHeight+3;
+    // offsetTop is relative to an offsetParent, not always the note-grid.
+    // Client rectangles work consistently when Android/iOS resizes the view.
+    const a=list.getBoundingClientRect(),b=item.getBoundingClientRect();
+    if(b.top<a.top+3)list.scrollTop-=a.top+3-b.top;
+    else if(b.bottom>a.bottom-3)list.scrollTop+=b.bottom-a.bottom+3;
    }
   }
  }
@@ -1717,8 +1805,7 @@ function updateMailKeyboard(){
 main.addEventListener('focusin',e=>{
  if(st.page===LAST-1&&e.target.id==='emailAnswer'){
   updateMailKeyboard();
-  requestAnimationFrame(syncMobileViewportHeight);
-  requestAnimationFrame(keepFocusedInputAboveKeyboard);
+  settleMobileKeyboardLayout();
  }
 });
 main.addEventListener('focusout',e=>{
@@ -1732,7 +1819,7 @@ main.addEventListener('focusout',e=>{
 window.addEventListener('resize',syncMobileViewportHeight,{passive:true});
 window.visualViewport?.addEventListener('resize',syncMobileViewportHeight,{passive:true});
 window.visualViewport?.addEventListener('resize',()=>requestAnimationFrame(keepFocusedInputAboveKeyboard),{passive:true});
-window.visualViewport?.addEventListener('scroll',syncMobileViewportHeight,{passive:true});
+window.visualViewport?.addEventListener('scroll',()=>{syncMobileViewportHeight();requestAnimationFrame(keepFocusedInputAboveKeyboard);},{passive:true});
 syncMobileViewportHeight();
 
 
