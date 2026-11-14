@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="sr">
-<head><meta name="app-version" content="V36-20261114-test11-klett"><meta name="app-version" content="V35-20261113-compact-mail-buttons-above-keyboard"><meta name="app-version" content="V34-20261113-exercise-labels-right"><meta name="app-version" content="V33-20261113-keyboard-horen2-email-no-translation"><meta name="app-version" content="V32-20261113-fresh-exam-at-every-open"><meta name="app-version" content="V30-20261113-proveri-mejl-label"><meta name="app-version" content="V29-20261113-score-column-right"><meta name="app-version" content="V28-20261113-horen3-heading-below-player">
+<head><meta name="app-version" content="V37-20261114-test11-mobile-keyboard-viewport"><meta name="app-version" content="V36-20261114-test11-klett"><meta name="app-version" content="V35-20261113-compact-mail-buttons-above-keyboard"><meta name="app-version" content="V34-20261113-exercise-labels-right"><meta name="app-version" content="V33-20261113-keyboard-horen2-email-no-translation"><meta name="app-version" content="V32-20261113-fresh-exam-at-every-open"><meta name="app-version" content="V30-20261113-proveri-mejl-label"><meta name="app-version" content="V29-20261113-score-column-right"><meta name="app-version" content="V28-20261113-horen3-heading-below-player">
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
 <meta name="theme-color" content="#102447"><meta name="description" content="DE-MAX Tutin — interaktivni ÖSD A2 Test 11: Lesen, Hören i Schreiben">
 <title>DE-MAX | ÖSD A2 – Test 11</title>
@@ -1028,6 +1028,68 @@ main.mail-writing-active.mail-keyboard .a2-mail-writing-layout{justify-content:f
  }
 }
 
+
+/* V37: respect the visible part of the screen while the mobile keyboard is open.
+   Keep Hören 2 answers and the email editor + check buttons above the keyboard. */
+@media (max-width:649px){
+  #app.keyboard-input-open{
+    position:relative!important;
+    top:var(--live-app-top,0px)!important;
+    width:100%!important;
+    height:var(--live-app-height,100dvh)!important;
+    max-height:var(--live-app-height,100dvh)!important;
+    overflow:hidden!important;
+  }
+  #app.keyboard-input-open main.hearing2-scroll .note-grid{
+    overflow-y:auto!important;
+    overscroll-behavior-y:contain!important;
+    scroll-padding-top:5px!important;
+    scroll-padding-bottom:7px!important;
+  }
+  #app.keyboard-input-open main.mail-writing-active{
+    overflow:hidden!important;
+    padding:3px 7px 3px!important;
+  }
+  #app.keyboard-input-open main.mail-writing-active .a2-mail-writing-layout{
+    height:100%!important;
+    min-height:0!important;
+    gap:3px!important;
+  }
+  #app.keyboard-input-open main.mail-writing-active .a2-writing-questions{
+    flex:0 1 auto!important;
+    max-height:min(42%,145px)!important;
+    min-height:0!important;
+    height:auto!important;
+    overflow-y:auto!important;
+    overscroll-behavior:contain!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+  #app.keyboard-input-open main.mail-writing-active .a2-mail-writing-editor{
+    flex:1 1 0!important;
+    min-height:52px!important;
+    max-height:none!important;
+    height:0!important;
+    overflow:hidden!important;
+  }
+  #app.keyboard-input-open main.mail-writing-active #emailAnswer{
+    display:block!important;
+    flex:1 1 0!important;
+    min-height:32px!important;
+    max-height:100%!important;
+    overflow-y:auto!important;
+  }
+  #app.keyboard-input-open main.mail-writing-active .ai-mail-controls{
+    display:flex!important;
+    visibility:visible!important;
+    order:3!important;
+    position:relative!important;
+    flex:0 0 30px!important;
+    min-height:30px!important;
+    max-height:30px!important;
+    margin:0!important;
+    z-index:3!important;
+  }
+}
 </style>
 </head>
 <body>
@@ -1625,8 +1687,13 @@ window.visualViewport?.addEventListener('resize',()=>{
 /* Track available height without restarting audio or rendering the input. */
 function syncMobileViewportHeight(){
  const vv=window.visualViewport;
- const available=vv&&Number.isFinite(vv.height)?Math.min(vv.height,window.innerHeight):window.innerHeight;
- if(available>100)document.documentElement.style.setProperty('--live-app-height',Math.floor(available)+'px');
+ const layoutHeight=window.innerHeight||document.documentElement.clientHeight;
+ const available=vv&&Number.isFinite(vv.height)?Math.min(vv.height,layoutHeight):layoutHeight;
+ const offset=vv&&Number.isFinite(vv.offsetTop)?Math.max(0,vv.offsetTop):0;
+ if(available>100){
+  document.documentElement.style.setProperty('--live-app-height',Math.floor(available)+'px');
+  document.documentElement.style.setProperty('--live-app-top',Math.round(offset)+'px');
+ }
 }
 
 function keepFocusedInputAboveKeyboard(){
@@ -1636,15 +1703,15 @@ function keepFocusedInputAboveKeyboard(){
    const list=main.querySelector('.note-grid');
    const item=focused.closest('.note-row');
    if(list&&item){
-    const top=item.offsetTop-list.offsetTop;
-    const bottom=top+item.offsetHeight;
-    if(top<list.scrollTop)list.scrollTop=top;
-    else if(bottom>list.scrollTop+list.clientHeight)list.scrollTop=bottom-list.clientHeight+3;
+    const row=item.getBoundingClientRect();
+    const clip=list.getBoundingClientRect();
+    if(row.top<clip.top+3)list.scrollTop-=clip.top+3-row.top;
+    else if(row.bottom>clip.bottom-4)list.scrollTop+=row.bottom-clip.bottom+4;
    }
   }
  }
- // No forced body scroll for the email. The editor is sized inside the
- // shrunken visual viewport and remains immediately above the keyboard.
+ // The email questions may scroll independently; the editor and Proveri mejl
+ // button remain in the flex area directly above the mobile keyboard.
 }
 
 function updateMailKeyboard(){
