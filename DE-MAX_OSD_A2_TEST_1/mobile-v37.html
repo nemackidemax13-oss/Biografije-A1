@@ -1421,6 +1421,12 @@ main.mail-writing-active.mail-keyboard .a2-mail-writing-layout{justify-content:f
 }
 
 
+
+/* V41 RESET: only Hören 2 and E-Mail use keyboard-sized viewport. All other tasks use full screen. */
+@media(max-width:649px){
+ #app:not(.keyboard-input-open){position:relative!important;top:auto!important;bottom:auto!important;height:100dvh!important;max-height:100dvh!important}
+ #app:not(.keyboard-input-open)>footer{flex-shrink:0!important}
+}
 </style>
 </head>
 <body>
@@ -1948,6 +1954,11 @@ function render(){
  main.classList.toggle('mail-writing-active',st.page===LAST-1);
  main.classList.remove('mail-keyboard');
  document.getElementById('app').classList.remove('keyboard-input-open','h2-keyboard-mode');
+  /* The next task must not inherit a shortened keyboard viewport. */
+  document.documentElement.style.removeProperty('--live-app-height');
+  document.documentElement.style.removeProperty('--live-app-top');
+  document.documentElement.style.removeProperty('--live-app-offset-top');
+  document.documentElement.style.removeProperty('--live-vv-top');
  main.innerHTML='<div id="pageContent">'+PAGES[st.page]()+'</div>';
  main.scrollTop=0;
  document.getElementById('bar').style.width=(st.page/LAST*100)+'%';
@@ -2077,9 +2088,11 @@ function syncMobileViewportHeight(){
   // Keyboard overlays an unresized iframe: use the space ABOVE it.
   available=Math.min(raw,Math.max(205,Math.floor(keyboardFullHeight*.55)));
  }
- if(available>100){
-  document.documentElement.style.setProperty('--live-app-height',Math.floor(available)+'px');
- }
+ if(editing&&available>100){
+   document.documentElement.style.setProperty('--live-app-height',Math.floor(available)+'px');
+  }else if(!editing){
+   document.documentElement.style.removeProperty('--live-app-height');
+  }
 }
 function recheckKeyboardViewport(){
  clearTimeout(keyboardResizeCheck);
