@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="sr">
-<head><meta name="app-version" content="V37-20261114-keyboard-visible-horen2-email-check"><meta name="app-version" content="V35-20261113-compact-mail-buttons-above-keyboard"><meta name="app-version" content="V34-20261113-exercise-labels-right"><meta name="app-version" content="V33-20261113-keyboard-horen2-email-no-translation"><meta name="app-version" content="V32-20261113-fresh-exam-at-every-open"><meta name="app-version" content="V30-20261113-proveri-mejl-label"><meta name="app-version" content="V29-20261113-score-column-right"><meta name="app-version" content="V28-20261113-horen3-heading-below-player">
+<head><meta name="app-version" content="V40-20261114-shared-mobile-keyboard-fix"><meta name="app-version" content="V37-20261114-keyboard-visible-horen2-email-check"><meta name="app-version" content="V35-20261113-compact-mail-buttons-above-keyboard"><meta name="app-version" content="V34-20261113-exercise-labels-right"><meta name="app-version" content="V33-20261113-keyboard-horen2-email-no-translation"><meta name="app-version" content="V32-20261113-fresh-exam-at-every-open"><meta name="app-version" content="V30-20261113-proveri-mejl-label"><meta name="app-version" content="V29-20261113-score-column-right"><meta name="app-version" content="V28-20261113-horen3-heading-below-player">
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
 <meta name="theme-color" content="#102447"><meta name="description" content="DE-MAX Tutin — interaktivni ÖSD A2 Test 1: Lesen, Hören i Schreiben">
 <title>DE-MAX | ÖSD A2 – Test 1</title>
@@ -1118,6 +1118,309 @@ main.mail-writing-active.mail-keyboard .a2-mail-writing-layout{justify-content:f
  main.mail-writing-active.mail-keyboard .ai-mail-status{display:none!important}
 }
 
+
+/* Shared mobile keyboard layout from working Test 5 V40; no exam or audio changes. */
+/* V39 (2026-11-14): mobile keyboard-safe layout for Hören 2 and Schreiben.
+   Keep all task content in the visual viewport; preserve audio, exercise logic and scoring. */
+@media (max-width:649px) {
+  #app.keyboard-input-open {
+    height:var(--live-app-height,100dvh)!important;
+    max-height:var(--live-app-height,100dvh)!important;
+    min-height:0!important;
+    overflow:hidden!important;
+  }
+  #app.keyboard-input-open > main {
+    flex:1 1 0!important;
+    min-height:0!important;
+    overflow:hidden!important;
+  }
+
+  /* Hören 2: audio + editable exercise and Nazad/Nastavi above the keyboard. */
+  #app.keyboard-input-open.h2-keyboard-mode > footer {
+    display:flex!important;
+    flex:0 0 32px!important;
+    height:32px!important;
+    min-height:32px!important;
+    max-height:32px!important;
+    padding:2px 6px!important;
+  }
+  main.hearing2-scroll.h2-keyboard #pageContent {
+    display:flex!important;
+    flex-direction:column!important;
+    height:100%!important;
+    min-height:0!important;
+    overflow:hidden!important;
+    transform:none!important;
+  }
+  main.hearing2-scroll.h2-keyboard .exam-audio {
+    flex:0 0 auto!important;
+    max-height:44px!important;
+    margin-bottom:3px!important;
+  }
+  main.hearing2-scroll.h2-keyboard .hearing2-card {
+    flex:1 1 0!important;
+    min-height:0!important;
+    overflow:hidden!important;
+  }
+  main.hearing2-scroll.h2-keyboard .note-grid {
+    flex:1 1 0!important;
+    min-height:0!important;
+    grid-template-rows:repeat(5,minmax(30px,1fr))!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    -webkit-overflow-scrolling:touch!important;
+    overscroll-behavior:contain!important;
+  }
+  main.hearing2-scroll.h2-keyboard .note-row {
+    min-height:30px!important;
+  }
+  main.hearing2-scroll.h2-keyboard .note-row .field {
+    height:26px!important;
+    min-height:26px!important;
+    max-height:26px!important;
+    font-size:16px!important;
+    scroll-margin-block:6px!important;
+  }
+
+  /* Schreiben: four questions at the top, editor in the middle,
+     Proveri mejl and Ostali bodovi ALWAYS visible above the keyboard. */
+  #app.keyboard-input-open main.mail-writing-active.mail-keyboard {
+    flex:1 1 0!important;
+    min-height:0!important;
+    padding:3px 7px 3px!important;
+    overflow:hidden!important;
+  }
+  main.mail-writing-active.mail-keyboard #pageContent,
+  main.mail-writing-active.mail-keyboard .a2-mail-writing-layout {
+    display:flex!important;
+    flex-direction:column!important;
+    height:100%!important;
+    min-height:0!important;
+    max-height:100%!important;
+    overflow:hidden!important;
+    gap:3px!important;
+  }
+  main.mail-writing-active.mail-keyboard .a2-writing-questions {
+    display:block!important;
+    order:1!important;
+    flex:0 1 auto!important;
+    height:auto!important;
+    min-height:0!important;
+    max-height:calc(100% - 104px)!important;
+    padding:4px 7px!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    overscroll-behavior:contain!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+  main.mail-writing-active.mail-keyboard .a2-writing-questions-head {
+    margin-bottom:2px!important;
+  }
+  main.mail-writing-active.mail-keyboard .a2-writing-questions ol {
+    gap:2px!important;
+    padding-left:18px!important;
+  }
+  main.mail-writing-active.mail-keyboard .a2-writing-questions li {
+    font-size:10.5px!important;
+    line-height:1.14!important;
+  }
+  main.mail-writing-active.mail-keyboard .a2-mail-writing-editor {
+    display:flex!important;
+    flex-direction:column!important;
+    order:2!important;
+    flex:1 1 0!important;
+    height:0!important;
+    min-height:48px!important;
+    max-height:none!important;
+    padding:4px 6px!important;
+    margin:0!important;
+    overflow:hidden!important;
+  }
+  main.mail-writing-active.mail-keyboard .a2-mail-writing-editor #emailAnswer {
+    display:block!important;
+    flex:1 1 0!important;
+    height:auto!important;
+    min-height:26px!important;
+    max-height:100%!important;
+    padding:4px 6px!important;
+    overflow-y:auto!important;
+    font-size:16px!important;
+    resize:none!important;
+  }
+  main.mail-writing-active.mail-keyboard .ai-mail-controls {
+    display:flex!important;
+    visibility:visible!important;
+    opacity:1!important;
+    order:3!important;
+    flex:0 0 33px!important;
+    width:100%!important;
+    height:33px!important;
+    min-height:33px!important;
+    max-height:33px!important;
+    margin:0!important;
+    padding:0!important;
+    gap:5px!important;
+    position:relative!important;
+    z-index:5!important;
+  }
+  main.mail-writing-active.mail-keyboard .ai-mail-controls .btn {
+    display:inline-flex!important;
+    flex:1 1 0!important;
+    width:auto!important;
+    min-width:0!important;
+    height:33px!important;
+    min-height:33px!important;
+    max-height:33px!important;
+    padding:3px 5px!important;
+    font-size:10px!important;
+    line-height:1.1!important;
+    white-space:nowrap!important;
+  }
+  main.mail-writing-active.mail-keyboard .ai-mail-status {
+    display:none!important;
+  }
+}
+@media (max-width:649px) and (max-height:340px) {
+  main.mail-writing-active.mail-keyboard .a2-writing-questions {
+    max-height:calc(100% - 95px)!important;
+    padding:2px 5px!important;
+  }
+  main.mail-writing-active.mail-keyboard .a2-writing-questions li {
+    font-size:10px!important;
+    line-height:1.08!important;
+  }
+  main.mail-writing-active.mail-keyboard .a2-mail-writing-editor {
+    min-height:40px!important;
+  }
+  main.mail-writing-active.mail-keyboard .ai-mail-controls,
+  main.mail-writing-active.mail-keyboard .ai-mail-controls .btn {
+    height:30px!important;
+    min-height:30px!important;
+    max-height:30px!important;
+    flex-basis:30px!important;
+  }
+}
+
+
+/* V40: final keyboard visibility guarantee for Android/iOS and embedded frames. */
+@media(max-width:649px){
+  #app.keyboard-input-open{
+    height:var(--live-app-height,100dvh)!important;
+    max-height:var(--live-app-height,100dvh)!important;
+    overflow:hidden!important;
+  }
+  #app.keyboard-input-open > main{
+    flex:1 1 0!important;
+    min-height:0!important;
+    overflow:hidden!important;
+    padding-bottom:2px!important;
+  }
+  /* Hören 2: five fill-in answers and navigation directly above keyboard. */
+  #app.keyboard-input-open.h2-keyboard-mode > footer{
+    display:flex!important;
+    position:relative!important;
+    flex:0 0 32px!important;
+    height:32px!important;
+    min-height:32px!important;
+    max-height:32px!important;
+  }
+  main.hearing2-scroll.h2-keyboard{
+    height:100%!important;
+    min-height:0!important;
+  }
+  main.hearing2-scroll.h2-keyboard #pageContent{
+    height:100%!important;
+    min-height:0!important;
+    overflow:hidden!important;
+    display:flex!important;
+    flex-direction:column!important;
+  }
+  main.hearing2-scroll.h2-keyboard .hearing2-card{
+    flex:1 1 0!important;
+    min-height:0!important;
+    overflow:hidden!important;
+  }
+  main.hearing2-scroll.h2-keyboard .note-grid{
+    flex:1 1 0!important;
+    min-height:0!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    grid-template-rows:repeat(5,minmax(29px,1fr))!important;
+    overscroll-behavior:contain!important;
+    -webkit-overflow-scrolling:touch!important;
+  }
+  main.hearing2-scroll.h2-keyboard .note-row{
+    min-height:29px!important;
+  }
+  main.hearing2-scroll.h2-keyboard .note-row .field{
+    height:26px!important;
+    min-height:26px!important;
+    max-height:26px!important;
+    font-size:16px!important;
+  }
+  /* Schreiben: questions, editable email and both grading buttons stay above keyboard. */
+  main.mail-writing-active.mail-keyboard,
+  main.mail-writing-active.mail-keyboard #pageContent,
+  main.mail-writing-active.mail-keyboard .a2-mail-writing-layout{
+    height:100%!important;
+    min-height:0!important;
+    max-height:100%!important;
+    overflow:hidden!important;
+  }
+  main.mail-writing-active.mail-keyboard .a2-mail-writing-layout{
+    display:flex!important;
+    flex-direction:column!important;
+    gap:3px!important;
+  }
+  main.mail-writing-active.mail-keyboard .a2-writing-questions{
+    display:block!important;
+    order:1!important;
+    flex:0 1 auto!important;
+    min-height:0!important;
+    max-height:calc(100% - 100px)!important;
+    height:auto!important;
+    overflow-y:auto!important;
+    padding:3px 7px!important;
+  }
+  main.mail-writing-active.mail-keyboard .a2-mail-writing-editor{
+    order:2!important;
+    flex:1 1 0!important;
+    height:0!important;
+    min-height:42px!important;
+    overflow:hidden!important;
+  }
+  main.mail-writing-active.mail-keyboard .a2-mail-writing-editor #emailAnswer{
+    flex:1 1 0!important;
+    min-height:24px!important;
+    max-height:100%!important;
+    overflow-y:auto!important;
+    font-size:16px!important;
+  }
+  main.mail-writing-active.mail-keyboard .ai-mail-controls{
+    display:flex!important;
+    visibility:visible!important;
+    opacity:1!important;
+    order:3!important;
+    flex:0 0 32px!important;
+    height:32px!important;
+    min-height:32px!important;
+    max-height:32px!important;
+    width:100%!important;
+    margin:0!important;
+    z-index:6!important;
+  }
+  main.mail-writing-active.mail-keyboard .ai-mail-controls .btn{
+    display:inline-flex!important;
+    height:32px!important;
+    min-height:32px!important;
+    max-height:32px!important;
+    flex:1 1 0!important;
+    font-size:10px!important;
+    white-space:nowrap!important;
+  }
+}
+
+
 </style>
 </head>
 <body>
@@ -1729,11 +2032,71 @@ window.visualViewport?.addEventListener('resize',()=>{
  if(st.page===LAST-1)requestAnimationFrame(updateMailKeyboard);
 },{passive:true});
 /* Track available height without restarting audio or rendering the input. */
-function syncMobileViewportHeight(){
+function legacySyncMobileViewportHeight(){
  const vv=window.visualViewport;
  const available=vv&&Number.isFinite(vv.height)?Math.min(vv.height,window.innerHeight):window.innerHeight;
  if(available>100)document.documentElement.style.setProperty('--live-app-height',Math.floor(available)+'px');
 }
+
+/* V40: respect the actual mobile visual viewport. Some embedded browsers and
+   iframes do NOT resize when the software keyboard appears; reserve a safe
+   upper-screen writing area in that case without re-rendering the exam. */
+let keyboardFullHeight=0;
+let keyboardViewportWidth=0;
+let keyboardFocusStartedAt=0;
+let keyboardResizeCheck=0;
+function isTypingInExam(){
+ const el=document.activeElement;
+ return (st.page===6 && !!el?.matches?.('[data-w2]')) ||
+        (st.page===LAST-1 && el?.id==='emailAnswer');
+}
+function syncMobileViewportHeight(){
+ legacySyncMobileViewportHeight();
+ const vv=window.visualViewport;
+ const inner=Number.isFinite(window.innerHeight)?window.innerHeight:document.documentElement.clientHeight;
+ const visual=vv&&Number.isFinite(vv.height)&&vv.height>100?vv.height:inner;
+ const raw=Math.max(100,Math.min(inner,visual));
+ const mobile=window.innerWidth<=649;
+ const editing=mobile&&isTypingInExam();
+ const width=window.innerWidth;
+ if(keyboardViewportWidth!==width){
+  keyboardViewportWidth=width;
+  keyboardFullHeight=0;
+  keyboardFocusStartedAt=0;
+ }
+ if(!editing){
+  keyboardFocusStartedAt=0;
+  if(!keyboardFullHeight || raw>keyboardFullHeight*.83)keyboardFullHeight=raw;
+ }
+ if(editing&&!keyboardFocusStartedAt)keyboardFocusStartedAt=Date.now();
+ let available=raw;
+ const since=editing?Date.now()-keyboardFocusStartedAt:0;
+ const keyboardNotReported=editing && keyboardFullHeight>260 &&
+   raw>keyboardFullHeight*.84 && since>250;
+ if(keyboardNotReported){
+  // Keyboard overlays an unresized iframe: use the space ABOVE it.
+  available=Math.min(raw,Math.max(205,Math.floor(keyboardFullHeight*.55)));
+ }
+ if(available>100){
+  document.documentElement.style.setProperty('--live-app-height',Math.floor(available)+'px');
+ }
+}
+function recheckKeyboardViewport(){
+ clearTimeout(keyboardResizeCheck);
+ keyboardResizeCheck=setTimeout(()=>{
+  syncMobileViewportHeight();
+  requestAnimationFrame(keepFocusedInputAboveKeyboard);
+ },360);
+}
+
+
+/* V40 propagation: recalculate once the mobile keyboard animation finishes. */
+main.addEventListener('focusin',e=>{
+ if((st.page===6&&e.target.matches?.('[data-w2]')) || (st.page===LAST-1&&e.target.id==='emailAnswer')){
+  requestAnimationFrame(syncMobileViewportHeight);
+  recheckKeyboardViewport();
+ }
+});
 
 function keepFocusedInputAboveKeyboard(){
  if(st.page===6){
