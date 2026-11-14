@@ -1409,6 +1409,69 @@ main.mail-writing-active.mail-keyboard .a2-mail-writing-layout{justify-content:f
  #app:not(.keyboard-input-open){position:relative!important;top:auto!important;bottom:auto!important;height:100dvh!important;max-height:100dvh!important}
  #app:not(.keyboard-input-open)>footer{flex-shrink:0!important}
 }
+/* V42 MAIL ONLY: questions slightly lower while typing; buttons touch keyboard edge.
+   After closing keyboard the email editor fills the normal full-height test area.
+   Hören, tests, audio and scoring remain untouched. */
+@media (max-width:649px){
+ #app:not(.keyboard-input-open)>main.mail-writing-active{
+  flex:1 1 0!important;min-height:0!important;overflow:hidden!important;
+  padding:7px 8px 4px!important;
+ }
+ #app:not(.keyboard-input-open)>main.mail-writing-active #pageContent{
+  display:flex!important;flex-direction:column!important;
+  height:100%!important;max-height:100%!important;min-height:0!important;
+  overflow:hidden!important;transform:none!important;
+ }
+ #app:not(.keyboard-input-open)>main.mail-writing-active .a2-mail-writing-layout{
+  display:flex!important;flex-direction:column!important;flex:1 1 0!important;
+  height:100%!important;max-height:100%!important;min-height:0!important;gap:4px!important;
+ }
+ #app:not(.keyboard-input-open)>main.mail-writing-active .a2-writing-questions{
+  order:1!important;flex:0 1 auto!important;max-height:42%!important;
+  min-height:0!important;overflow-y:auto!important;
+ }
+ #app:not(.keyboard-input-open)>main.mail-writing-active .a2-mail-writing-editor{
+  order:2!important;display:flex!important;flex-direction:column!important;
+  flex:1 1 0!important;height:0!important;min-height:65px!important;
+  max-height:none!important;margin:0!important;overflow:hidden!important;
+ }
+ #app:not(.keyboard-input-open)>main.mail-writing-active .a2-mail-writing-editor #emailAnswer{
+  flex:1 1 0!important;height:auto!important;min-height:40px!important;max-height:100%!important;
+ }
+ #app:not(.keyboard-input-open)>main.mail-writing-active .ai-mail-controls{
+  order:3!important;display:flex!important;flex:0 0 32px!important;
+  height:32px!important;min-height:32px!important;max-height:32px!important;
+  margin:0!important;
+ }
+ #app:not(.keyboard-input-open)>main.mail-writing-active .ai-mail-status{
+  order:4!important;flex:0 0 auto!important;max-height:48px!important;overflow-y:auto!important;
+ }
+ #app.keyboard-input-open>main.mail-writing-active.mail-keyboard{
+  padding:10px 7px 0!important;min-height:0!important;overflow:hidden!important;
+ }
+ #app.keyboard-input-open>main.mail-writing-active.mail-keyboard #pageContent,
+ #app.keyboard-input-open>main.mail-writing-active.mail-keyboard .a2-mail-writing-layout{
+  display:flex!important;flex-direction:column!important;height:100%!important;
+  max-height:100%!important;min-height:0!important;overflow:hidden!important;
+ }
+ #app.keyboard-input-open>main.mail-writing-active.mail-keyboard .a2-mail-writing-layout{
+  gap:2px!important;
+ }
+ #app.keyboard-input-open>main.mail-writing-active.mail-keyboard .a2-writing-questions{
+  order:1!important;flex:0 1 auto!important;max-height:calc(100% - 101px)!important;
+  min-height:0!important;margin-top:3px!important;padding-top:5px!important;overflow-y:auto!important;
+ }
+ #app.keyboard-input-open>main.mail-writing-active.mail-keyboard .a2-mail-writing-editor{
+  order:2!important;flex:1 1 0!important;height:0!important;min-height:32px!important;
+  max-height:none!important;margin:0!important;padding:4px!important;overflow:hidden!important;
+ }
+ #app.keyboard-input-open>main.mail-writing-active.mail-keyboard .ai-mail-controls{
+  order:3!important;display:flex!important;flex:0 0 32px!important;
+  height:32px!important;min-height:32px!important;max-height:32px!important;
+  margin:0!important;padding:0!important;gap:4px!important;align-items:stretch!important;
+ }
+ #app.keyboard-input-open>main.mail-writing-active.mail-keyboard .ai-mail-status{display:none!important}
+}
 </style>
 </head>
 <body>
