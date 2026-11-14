@@ -1149,7 +1149,7 @@ function mailEditor(){
  '<textarea class="field editor" id="emailAnswer" placeholder="Liebe Milena,&#10;&#10;vielen Dank für deine E-Mail. ...">'+esc(st.mail)+'</textarea>'+ 
 '<div class="mail-word-meter" id="mailWordMeter" role="progressbar" aria-label="Najmanje 26 reči za ocenjivanje" aria-valuemin="0" aria-valuemax="26" aria-valuenow="'+Math.min(26,wordCount(st.mail))+'"><div class="mail-word-fill '+(wordCount(st.mail)>=26?'met':'below')+'" id="mailWordFill" style="width:'+Math.min(100,wordCount(st.mail)/26*100)+'%"></div></div></div>'+
  '<div class="ai-mail-controls"><button type="button" id="aiGradeBtn" class="btn primary" style="flex:1">✦ Proveri mejl</button><button type="button" id="skipAiBtn" class="btn back">Ostali bodovi</button></div>'+
- '<p id="aiStatus" role="status" class="ai-mail-status">Primenite četiri pitanja iz ove postavke. <span id="aiWorkerConnection" class="ai-worker-connection">AI provera za Milenu nije povezana.</span></p>'+
+ '<p id="aiStatus" role="status" class="ai-mail-status">AI proverava 4 pitanja za Milenu. <span id="aiWorkerConnection" class="ai-worker-connection">Proveravam A2 Worker…</span></p>'+
  '</section>';
 }
 
@@ -1161,7 +1161,7 @@ function normalize(s){return String(s||'').trim().toLocaleLowerCase('de').normal
 const EMAIL_AI_API='https://a2mejlovi.nemackidemax13.workers.dev/api/check-a2-email';
 const EMAIL_AI_HEALTH='https://a2mejlovi.nemackidemax13.workers.dev/health';
 const EMAIL_AI_VERSIONS=['a2-de-max-50-words-rubric-v2','a2-de-max-26-min-50-target-v3','a2-de-max-original-first-v4'];
-const EMAIL_INDEX_MICHAEL=1;
+const EMAIL_INDEX_MILENA=13;
 let aiPending=false;
 
 /* ÖSD ZA2: TL+A+K+T+L+F. Previous Worker speaks another rubric: AI maps to a
@@ -1225,9 +1225,12 @@ async function checkEmailWorkerStatus(){
   if(!res.ok)throw Error('HTTP '+res.status);
   const data=await res.json();
   if(!indicator.isConnected)return;
-  if(data?.status==='ok'&&data?.openaiConfigured===true){
-   indicator.textContent='• Cloudflare AI povezan';
+  if(data?.status==='ok'&&data?.openaiConfigured===true&&Number(data.tasks)>=14){
+   indicator.textContent='• Cloudflare AI spreman za Milenu';
    indicator.classList.add('connected');
+  }else if(data?.status==='ok'&&!(Number(data.tasks)>=14)){
+   indicator.textContent='• Worker treba ažurirati za Milenu';
+   indicator.classList.add('unavailable');
   }else if(data?.status==='ok'){
    indicator.textContent='• Worker radi, ali AI ključ nije podešen';
    indicator.classList.add('unavailable');
@@ -1251,10 +1254,64 @@ function validateAiResponse(data){
  return data;
 }
 async function checkEmailAI(thenShowResult){
- const msg='Za mejl Mileni AI Worker originalnog Testa 1 nije prilagođen novoj postavci. Nećemo prikazivati pogrešnu AI ocenu. Lesen i Hören se boduju automatski; Schreiben ocenjuje nastavnik.';
- setAiStatus(msg,true);
- if(thenShowResult){st.page=LAST;st.resultTab='score';render();}
+ if(aiPending)return;
+ const answer=String(st.mail||'').trim(),count=wordCount(answer);
+ if(count<26){
+  st.aiEmail=null;save();
+  setAiStatus('Mejl ima '+count+' reči. Ispod 26 reči: Schreiben 0/15.');
+  if(thenShowResult){st.page=LAST;st.resultTab='mail';render();}
+  return;
+ }
+ if(count>50){setAiStatus('Postojeći AI servis prihvata najviše 50 reči. Po pravilima ÖSD tekst od 40+ reči nema odbitak. Za duži mejl koristite ručnu proveru kriterijuma.',true);if(thenShowResult){st.page=LAST;st.resultTab='mail';render();}return;}
+ if(st.aiEmail?.answer===answer&&st.aiEmail?.response&&thenShowResult){
+  st.page=LAST;st.resultTab='score';render();return;
+ }
+ aiPending=true;
+ const checkButton=document.getElementById('aiGradeBtn');
+ const nextButton=document.getElementById('next');
+ if(checkButton)checkButton.disabled=true;
+ if(nextButton)nextButton.disabled=true;
+ setAiStatus('AI proverava sva 4 pitanja, gramatiku i ispravke…');
+ const controller=new AbortController();
+ const cancel=setTimeout(()=>controller.abort(),58000);
+ try{
+  const healthResponse=await fetch(EMAIL_AI_HEALTH,{
+   method:'GET',mode:'cors',credentials:'omit',cache:'no-store',signal:controller.signal
+  });
+  if(!healthResponse.ok)throw Error('Worker nije dostupan (health HTTP '+healthResponse.status+').');
+  const healthData=await healthResponse.json().catch(()=>({}));
+  if(!Number.isFinite(Number(healthData.tasks))||Number(healthData.tasks)<14)
+   throw Error('Cloudflare A2 Worker još nema mejl Mileni (14. zadatak). Objavite ažurirani Worker kod.');
+  if(healthData.openaiConfigured!==true)
+   throw Error('Cloudflare Worker nema aktivan OPENAI_API_KEY.');
+  const response=await fetch(EMAIL_AI_API,{
+   method:'POST',mode:'cors',credentials:'omit',cache:'no-store',
+   headers:{'Content-Type':'application/json','Accept':'application/json'},
+   signal:controller.signal,
+   body:JSON.stringify({mailIndex:EMAIL_INDEX_MILENA,answer})
+  });
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok)throw Error(String(data.error||('Cloudflare HTTP '+response.status)));
+  validateAiResponse(data);
+  if(data.mailIndex!==EMAIL_INDEX_MILENA||data.mailTitle!=='Lukas ist da!')
+   throw Error('AI odgovor ne pripada Mileninom mejlu. Proverite da li je objavljena nova verzija Workera.');
+  if(String(st.mail||'').trim()!==answer)throw Error('Tekst mejla je izmenjen tokom provere. Pokrenite novu proveru.');
+  st.aiEmail={answer,response:data,checkedAt:Date.now()};save();
+  const healthInfo=document.getElementById("aiWorkerConnection");
+  if(healthInfo){healthInfo.textContent="• Cloudflare AI odgovor primljen";healthInfo.classList.add("connected");}
+  setAiStatus('Cloudflare AI je ocenio mejl Mileni. Prikazana je orijentaciona ÖSD ocena, koju nastavnik može izmeniti.');
+  if(thenShowResult){st.page=LAST;st.resultTab='score';render();}
+ }catch(error){
+  const reason=error.name==='AbortError'?'server nije odgovorio na vreme':error instanceof TypeError?'veza sa Workerom nije uspela (mreža ili CORS)':error.message;
+  setAiStatus('AI provera nije uspela: '+reason+'. Tekst ostaje u tekućem testu.',true);
+  if(thenShowResult){st.page=LAST;st.resultTab='score';render();}
+ }finally{
+  clearTimeout(cancel);aiPending=false;
+  if(checkButton&&checkButton.isConnected)checkButton.disabled=false;
+  if(nextButton&&nextButton.isConnected)nextButton.disabled=false;
+ }
 }
+
 function grade(){
  const rd1=['E','F','D','I','K'],rd2=['C','B','C','B','C'];
  const r1=st.r1.reduce((n,v,i)=>n+(v===rd1[i]?3:0),0);
@@ -1501,10 +1558,10 @@ function render(){
  prev.disabled=st.page===0;
  next.textContent=st.page===0?'Počni test →':st.page===LAST-1?'Završi i oceni ✓':st.page===LAST?'Na početak ↺':'Nastavi →';
  requestAnimationFrame(fitPage);
- if(st.page===LAST){const copy=document.getElementById('copyResult');copy.onclick=()=>{const g=grade();const txt='DE-MAX ÖSD A2 Übungssatz 5 | Lesen '+g.lesen+'/25 | Hören '+g.horen+'/30 | E-Mail '+g.mail.points+'/15 | Ukupno '+g.total+'/70 | '+(g.pass?'POLOŽENO':'NIJE POLOŽENO')+' | Schreiben: ručna provera';if(navigator.clipboard?.writeText)navigator.clipboard.writeText(txt).then(()=>notify('Rezultat kopiran')).catch(()=>notify('Kopiranje nije dostupno'));else notify(txt)};
+ if(st.page===LAST){const copy=document.getElementById('copyResult');copy.onclick=()=>{const g=grade();const txt='DE-MAX ÖSD A2 Übungssatz 5 | Lesen '+g.lesen+'/25 | Hören '+g.horen+'/30 | E-Mail '+(g.mail.graded?g.mail.points:'—')+'/15 | Ukupno '+(g.mail.graded?g.total:'—')+'/70 | '+(g.mail.graded?(g.pass?'POLOŽENO':'NIJE POLOŽENO'):'ČEKA OCENU')+' | Schreiben: '+(g.mail.source==='teacher_adjusted'?'ocena nastavnika':g.mail.source==='ai_estimate'?'AI procena':'nije AI ocenjeno');if(navigator.clipboard?.writeText)navigator.clipboard.writeText(txt).then(()=>notify('Rezultat kopiran')).catch(()=>notify('Kopiranje nije dostupno'));else notify(txt)};
  document.getElementById('reset').onclick=()=>{if(confirm('Obrisati sve odgovore i početi ponovo?')){st=freshA2Test();save();render()}}}
  if(st.page>=5&&st.page<=7)setupExamAudio(st.page);
- if(st.page===LAST-1){ /* Milena: nema pogrešne provere preko Michael Workera */ }
+ if(st.page===LAST-1)checkEmailWorkerStatus();
 }
 window.addEventListener('resize',()=>requestAnimationFrame(fitPage),{passive:true});
 window.visualViewport?.addEventListener('resize',()=>requestAnimationFrame(fitPage),{passive:true});
