@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="sr">
-<head><meta name="app-version" content="A2-TEST-2-20261113"><meta name="app-version" content="V36-20261113-horen2-nav-above-keyboard"><meta name="app-version" content="V35-20261113-compact-mail-buttons-above-keyboard"><meta name="app-version" content="V34-20261113-exercise-labels-right"><meta name="app-version" content="V33-20261113-keyboard-horen2-email-no-translation"><meta name="app-version" content="V32-20261113-fresh-exam-at-every-open"><meta name="app-version" content="V30-20261113-proveri-mejl-label"><meta name="app-version" content="V29-20261113-score-column-right"><meta name="app-version" content="V28-20261113-horen3-heading-below-player">
+<head><meta name="app-version" content="A2-TEST-2-20261114-tap-answers"><meta name="app-version" content="V36-20261113-horen2-nav-above-keyboard"><meta name="app-version" content="V35-20261113-compact-mail-buttons-above-keyboard"><meta name="app-version" content="V34-20261113-exercise-labels-right"><meta name="app-version" content="V33-20261113-keyboard-horen2-email-no-translation"><meta name="app-version" content="V32-20261113-fresh-exam-at-every-open"><meta name="app-version" content="V30-20261113-proveri-mejl-label"><meta name="app-version" content="V29-20261113-score-column-right"><meta name="app-version" content="V28-20261113-horen3-heading-below-player">
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
 <meta name="theme-color" content="#102447"><meta name="description" content="DE-MAX Tutin — interaktivni ÖSD A2 Test 2: Lesen, Hören i Schreiben">
 <title>DE-MAX | ÖSD A2 – Test 2</title>
@@ -1029,17 +1029,28 @@ main.mail-writing-active.mail-keyboard .a2-mail-writing-layout{justify-content:f
 }
 
 
-/* Custom Hören 1 and Hören 3 selectors; downloadable audio fallback. */
-#app .h1-match-list{flex:1 1 0;min-height:0;overflow-y:auto;display:grid;grid-template-columns:1fr;gap:6px}
-#app .h1-match-row{display:grid;grid-template-columns:65px minmax(0,1fr);gap:6px;align-items:center;padding:3px 7px;background:#f5f9ff;border:1px solid #dce6f3;border-radius:9px;font-size:12px;font-weight:850}
-#app .h1-match-row select{font-size:12px;min-width:0;height:38px;min-height:38px;padding:6px 7px}
-#app main.hearing-one .h1-answers{min-height:0!important}
-#app .speaker-one{width:100%;padding:5px}
-#app .speaker-one select{font-size:14px;min-height:37px;padding:7px}
+/* Hören 1 i 3: jedno dodirno označavanje odgovora, bez dropdown menija. */
+#app .h1-matching-key{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;flex:0 0 auto}
+#app .h1-key-option{display:flex;align-items:center;gap:5px;background:#f5f9ff;border:1px solid #dce6f3;border-radius:8px;padding:4px 6px;font-size:clamp(9px,2.55vw,11px);font-weight:700;line-height:1.17;min-width:0;overflow-wrap:anywhere}
+#app .h1-key-option b{background:#254d85;color:#fff;display:grid;place-items:center;flex:0 0 21px;height:21px;border-radius:6px}
+#app .h1-match-list{flex:1 1 0;min-height:0;overflow-y:auto;display:grid;grid-template-columns:1fr;grid-template-rows:repeat(5,minmax(38px,1fr));gap:5px}
+#app .h1-match-row{display:flex;gap:6px;align-items:center;padding:4px 6px;background:#f5f9ff;border:1px solid #dce6f3;border-radius:9px}
+#app .h1-match-row>b{flex:0 0 44px;font-size:12px;color:#183f70}
+#app .h1-match-picks{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;flex:1;min-width:0}
+#app .h1-pick{position:relative;display:flex;align-items:center;justify-content:center;border:1px solid #bfcfe3;background:#fff;border-radius:8px;min-height:32px;font-size:13px;font-weight:900;cursor:pointer;color:#274d85}
+#app .h1-pick input{position:absolute;opacity:0;width:1px;height:1px}
+#app .h1-pick:has(input:checked){background:#d7f4e6;border:2px solid #078457;color:#076b49;box-shadow:0 0 0 1px #66c89b}
+#app .h1-pick:focus-within{outline:2px solid #2759af;outline-offset:2px}
+#app main.hearing-one .h1-answers{min-height:0!important;gap:6px}
+#app main.hearing-one .h1-answers .qtop{margin-bottom:0}
+#app .speaker-one{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:3px 0}
+#app .speaker-one .sport{min-height:37px;font-size:clamp(10px,2.8vw,12px);padding:7px 6px;line-height:1.2;cursor:pointer}
+#app .speaker-one .sport:has(input:checked){background:#d7f4e6;border-color:#078457;color:#076b49}
+#app .speaker-one input[type="radio"]{accent-color:#087f5f;flex:0 0 auto}
 #app .audio-file-label[hidden]{display:none!important}
 #app .audio-file-label{display:block;color:#ffe3a0;font-size:11px;padding:5px;background:#1e426d;border-radius:7px}
 #app .audio-file-label input{display:block;width:100%;font-size:11px;margin:4px 0}
-@media(max-height:590px){#app .h1-match-row{padding:2px 5px;font-size:11px}#app .h1-match-row select{min-height:31px;height:31px;font-size:11px}#app .h1-match-list{gap:3px}}
+@media(max-height:590px){#app .h1-match-list{gap:3px;grid-template-rows:repeat(5,minmax(31px,1fr))}#app .h1-match-row{padding:2px 4px}#app .h1-pick{min-height:27px;font-size:11px}#app .h1-key-option{padding:2px 4px;font-size:9px}#app .speaker-one .sport{padding:4px 5px;min-height:31px}}
 </style>
 </head>
 <body>
@@ -1125,9 +1136,12 @@ function player(i){
 }
 function h1(){
  return '<section class="h1-full-mobile"><div class="stage-label">HÖREN · Aufgabe 1 · 10 bodova</div><h1 class="stage-title">Fünf Alltagssituationen</h1>'+
- '<p class="small h1-instructions">Slušate pet kratkih razgovora. Za svaki izaberite odgovarajuću situaciju.</p>'+player(1)+
+ '<p class="small h1-instructions">Slušate pet kratkih razgovora. Za svaki Text označite jedan odgovor (A–F).</p>'+player(1)+
  '<div class="card h1-answers"><div class="qtop"><b>Ordnen Sie die Situationen zu</b><span class="pill">10 Punkte</span></div>'+
- '<div class="h1-match-list">'+[0,1,2,3,4].map(i=>'<label class="h1-match-row"><span>Text '+(i+1)+'</span><select class="field" data-w1-choice="'+i+'"><option value="">Izaberi situaciju</option>'+WEATHER.map((v,j)=>'<option value="'+j+'" '+(String(st.w1[i])===String(j)?'selected':'')+'>'+esc(v)+'</option>').join('')+'</select></label>').join('')+'</div></div></section>';
+ '<div class="h1-matching-key">'+WEATHER.map((v,j)=>'<div class="h1-key-option"><b>'+String.fromCharCode(65+j)+'</b><span>'+esc(v)+'</span></div>').join('')+'</div>'+
+ '<div class="h1-match-list">'+[0,1,2,3,4].map(i=>'<div class="h1-match-row"><b>Text '+(i+1)+'</b><div class="h1-match-picks" role="radiogroup" aria-label="Odgovor za Text '+(i+1)+'">'+
+ WEATHER.map((v,j)=>'<label class="h1-pick" title="'+esc(v)+'"><input type="radio" name="w1-'+i+'" data-w1-choice="'+i+'" value="'+j+'" '+(String(st.w1[i])===String(j)?'checked':'')+' aria-label="'+esc(v)+'"><span>'+String.fromCharCode(65+j)+'</span></label>').join('')+
+ '</div></div>').join('')+'</div></div></section>';
 }
 function h2(){
  const lab=['Wohnung frei ab (Monat)','Wohnungsgröße (m²)','Preis pro Monat (Euro)','Straße: …straße 23','Telefon 0650 / …'];
@@ -1139,8 +1153,9 @@ function h2(){
 function speakerCard(i){
  const g=['Sprecherin','Sprecher','Sprecherin','Sprecher','Sprecherin'];
  return '<div class="card"><div class="qtop"><b>'+(i+1)+'. '+g[i]+'</b><span class="pill">2 Punkte</span></div>'+
- '<div class="speaker-one"><select class="field" data-w3-choice="'+i+'" aria-label="Odgovor za tekst '+(i+1)+'"><option value="">Izaberi odgovor</option>'+
- SPORTS.map((v,j)=>'<option value="'+j+'" '+(st.w3[i]?.[0]===j?'selected':'')+'>'+esc(v)+'</option>').join('')+'</select></div></div>';
+ '<div class="speaker-one" role="radiogroup" aria-label="Odgovor za osobu '+(i+1)+'">'+SPORTS.map((v,j)=>'<label class="sport">'+
+ '<input type="radio" name="w3-'+i+'" data-w3-choice="'+i+'" value="'+j+'" '+(st.w3[i]?.[0]===j?'checked':'')+'>'+
+ '<span>'+esc(v)+'</span></label>').join('')+'</div></div>';
 }
 function h3(){
  return '<section class="h3-screen"><div class="stage-label">HÖREN · Aufgabe 3 · 10 bodova</div>'+player(3)+
