@@ -2,8 +2,8 @@
 <html lang="sr">
 <head><meta name="app-version" content="V36-20261113-horen2-nav-above-keyboard"><meta name="app-version" content="V35-20261113-compact-mail-buttons-above-keyboard"><meta name="app-version" content="V34-20261113-exercise-labels-right"><meta name="app-version" content="V33-20261113-keyboard-horen2-email-no-translation"><meta name="app-version" content="V32-20261113-fresh-exam-at-every-open"><meta name="app-version" content="V30-20261113-proveri-mejl-label"><meta name="app-version" content="V29-20261113-score-column-right"><meta name="app-version" content="V28-20261113-horen3-heading-below-player">
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
-<meta name="theme-color" content="#102447"><meta name="description" content="DE-MAX Tutin — interaktivni ÖSD A2 Test 10: Lesen, Hören i Schreiben">
-<title>DE-MAX | ÖSD A2 – Test 10</title>
+<meta name="theme-color" content="#102447"><meta name="description" content="DE-MAX Tutin — interaktivni ÖSD A2 Übungssatz 5: Lesen, Hören i Schreiben">
+<title>DE-MAX | ÖSD A2 – Übungssatz 5</title>
 <style>
 :root{--navy:#132749;--blue:#274d85;--green:#087d58;--gold:#f5c875;--ink:#172847;--muted:#687994;--line:#dce5f0;--bg:#f5f8fd}
 *{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden}body{font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;color:var(--ink);background:#dbe6f5}button,input,textarea,select{font:inherit}
@@ -1034,15 +1034,15 @@ main.mail-writing-active.mail-keyboard .a2-mail-writing-layout{justify-content:f
 <div id="app"><header class="only-progress" aria-label="Napredak testa"><div class="progress"><div id="bar"></div></div></header><main id="main"></main><footer><button id="prev" class="btn back" type="button">← Nazad</button><div id="fontFooter" class="footer-font-controls" hidden><button type="button" data-font-adjust="-1" class="footer-font-button" aria-label="Smanji veličinu teksta" title="Smanji tekst">−</button><button type="button" data-font-adjust="1" class="footer-font-button" aria-label="Povećaj veličinu teksta" title="Povećaj tekst">+</button></div><button id="next" class="btn primary" type="button">Nastavi →</button></footer></div>
 <script>
 'use strict';
-const KEY='demax-osd-a2-model-10-20261114';
+const KEY='demax-osd-a2-uebungssatz5-test10-20261114';
 const H=['A','B','C','D','E','F','G','H','I','K'];
-const HEAD=["Kaputte Haushaltsgeräte wieder wie neu","Ferien in der Natur mit Kindern","Junge Leute reparieren in ihrer Freizeit PCs","Diese Getränke machen wach","Geschäft für Damenmode öffnet die Türen","So kann jeder selbst Saft machen","Firma startet mit Online-Verkauf","Tipps für guten Schlaf","Limonade aus frischen Früchten","Besonderes Musikprogramm für den Sommer"];
-const TEXTS=["„Am besten beendet man den Tag mit Tee aus Melissenblättern – das hilft gegen Unruhe und Nervosität!“, so Dr. Friedrich Zische in seinem Buch „Fit für den nächsten Morgen“. Der Arzt und Gesundheitsberater empfiehlt auch eine Tasse warme Milch mit Honig zum Müdewerden. Aber Achtung: Kurz bevor man ins Bett geht, soll man keine großen Mengen trinken, denn das stört die Nachtruhe.","Seit über 100 Jahren stellt «Amman & Co» Kleidung für Frauen her. Bis jetzt gab es die eleganten Röcke, Blusen und Mäntel nur im Laden am Hauptplatz in Aeugstertal. Juniorchef Beat Amman hat das nun geändert: «Weil viele Kunden gerne im Internet bestellen, bieten wir die Kleider jetzt auch über unsere Webseite an. Wir liefern in alle europäischen Länder.»","Im „Hof-Laden“ von Familie Aicher aus Rohrbach warten viele gesunde und schmackhafte Produkte auf die Kunden. Perfekt für den Durst ist das berühmte „Obstkracherl“, das Birgit Aicher mit ihren Söhnen herstellt. Es besteht zu 70 % aus Mineralwasser, außerdem kommen reife Erdbeeren oder Marillen* dazu. „Das genaue Rezept kennt aber nur unsere Familie!“, erklärt Frau Aicher lachend. *Marille: österreichisch für Aprikose.","Fast jedes Wochenende klingelt es bei Wolfgang Mattle in Innsbruck. Der 17-Jährige hat zusammen mit Schulfreunden eine Hobby-Werkstatt eingerichtet – für Computer, die nicht funktionieren. Oft können die Jugendlichen die Probleme lösen. „Jeder kann zu uns kommen“, erklärt Mattle, „aber bitte nur mit Computern oder Laptops! Mit Kühlschränken oder Waschmaschinen haben wir keine Erfahrung!“","Du feierst gern draußen und magst Konzerte? Du schläfst gern im Wald unter freiem Himmel? Dann buche einen Aufenthalt im ‚Party-Park LaubWerk‘. Abends ab 21 Uhr spielen bei uns Livebands und danach kannst du in einem unserer gemütlichen Baumhäuser übernachten. Wir haben für Besucher ab 16 Jahren jeden Freitag und Samstag im Juli und August geöffnet. Reserviere jetzt unter www.hotel-laubwerk.baden-württemberg.de!"];
-const STORY=["Sonntags spazieren Wilhelm Ronacher und seine drei Töchter gerne durch ihr Heimatdorf Mooswald in den österreichischen Nockbergen. „Unseren Papa grüßen viele“, lacht Tochter Brigitte, „er ist hier geboren und wird in vierzehn Tagen 90 Jahre alt.“","Seit Wilhelm ein Kind war, hat sich in Mooswald viel geändert. „Elektrizität gab es damals erst im Gasthaus des Dorfes. Einen Supermarkt hatten wir auch nicht – Salz und Zucker mussten wir im Nachbarort kaufen“, erzählt Wilhelm. „Dabei lebten damals mehr Leute in Mooswald als jetzt.“","Als junger Mann wohnte Wilhelm zwölf Jahre lang in der Stadt Klagenfurt. Dort arbeitete er in der Firma eines Bekannten als Automechaniker. In seiner Freizeit besuchte der Fußballfan oft Spiele seines Lieblingsklubs „Klagenfurter AC“.","Weil Wilhelm wieder auf dem Land leben wollte, ist er zurück nach Mooswald gezogen und hat dort geheiratet. Zusammen mit seiner Frau vermietete er 40 Jahre lang Zimmer an Sommergäste. Selbst hat das Ehepaar nie Urlaub gemacht.","Heute haben die beiden viele Enkel und freuen sich auf Wilhelms Geburtstag. „Es gibt in Mooswald ein großes Gartenfest, das von Samstagmorgen bis zum Abend dauert“, erklärt Wilhelm, „auch Freunde aus Klagenfurt kommen!“ Wilhelm weiß, welches Geschenk er bekommt. Weil seine Vergangenheit für alle so spannend ist, hat Brigitte seine Erinnerungen aufgeschrieben. Nachmittags werden alle Enkel daraus vorlesen. Wilhelm freut sich schon sehr. „So ein Geschenk findet man in keinem Geschäft!“"];
-const QS=[["Früher gab es in Mooswald","ein Lebensmittelgeschäft.","nur in einem Gebäude Strom.","weniger Bewohner als heute."],["Mehrere Jahre hat Wilhelm","an einem anderen Ort gelebt.","eine Pkw-Werkstatt geleitet.","in einem Verein Sport gemacht."],["Wilhelm","feierte in der Stadt Hochzeit.","hatte mit vielen Touristen Kontakt.","reiste oft mit seiner Familie."],["Wilhelm feiert seinen Geburtstag","bei Bekannten in der Stadt.","einen ganzen Tag lang.","mit den Gästen im Haus."],["Wilhelms Familie","gefallen seine Geschichten von früher.","kauft ihm ein besonderes Buch.","möchte ihn am Abend überraschen."]];
-const WEATHER=["Freunde","Zeitung","Internet","Familie","Bewerbungen schreiben","Firmen anrufen","Jobmesse","Arbeitsamt"];
-const SPORTS=["Park","Stadt","Wald","Strand","Berge"];
-const SPORTSKEY=[[0,3],[1],[0,1,3],[0,2],[2,3]];
+const HEAD=["Museum plant Renovierung","Angebot: Fahrtraining bei Frost","Kliniken brauchen mehr Ärzte","Neue Ausstellung wartet auf Besucher","Auto-Veranstaltung bei jedem Wetter","Gesundheitsberufe: viele freie Stellen","Welche Pkws Männer am liebsten fahren","Moderne Wohnungen in alten Gebäuden","Sicher unterwegs in der kalten Jahreszeit","Sehenswürdigkeit für Geschichte-Interessierte"];
+const TEXTS=["Kommenden Freitag, 18. 8., findet wieder das jährliche Oldtimer-Treffen des Vereins Garacho in Basel statt. Dass es an diesem Tag regnen soll, stört die Fahrerinnen der 1960er-Sportwägen nicht. Mechanikerin Dete S. ist mit ihrem Mercedes 300 SL das erste Mal dabei. Ihren Partner hat sie zu Hause gelassen. «Wir sind nämlich ein Club für Damen, nicht für Herren», so die 52-Jährige.","Sie möchten eine Ausbildung machen und helfen gerne Menschen? Sie sind freundlich und sozial? Dann ist ein Job als Krankenpfleger für Sie das Richtige. Aktuelle Zahlen zeigen: Sowohl in österreichischen Krankenhäusern als auch in Pensionistenheimen wird es in den nächsten Jahren tausende Arbeitsplätze geben. Informieren Sie sich unter www.pflegeschulen-noe.at über verschiedene Pflege-Ausbildungen.","Nach einer längeren Pause wegen Umbauarbeiten und Reparaturen sind in der Kunsthalle Artefix wieder spannende künstlerische Arbeiten zu sehen. „Wir hatten Platzprobleme, jetzt ist unser Haus endlich viel größer und moderner“, freut sich Museumsdirektor Eberhard Bittner. Ab heute bis 15. Dezember zeigt die Kunsthalle Artefix nun Bilder von jungen Fotografen aus aller Welt.","Achtung, bald ist wieder Winter! Bei Schnee und Temperaturen unter null Grad kann es für Verkehrsteilnehmer auf den Straßen schnell gefährlich werden. Von 1. November bis 15. April brauchen Sie deshalb in Österreich Winterreifen für Ihren Wagen. Bitte denken Sie daran, die Reifen früh genug zu wechseln, oder vereinbaren Sie dafür einen Termin in Ihrer Werkstatt.","Holzhäuser, Handwerksbetriebe und Gaststätten aus dem 16. bis 19. Jahrhundert, Kräutergärten, Dorfläden und vieles mehr: Seit über 50 Jahren bietet das Freilichtmuseum Mühlenthal Gästen eine spannende Reise in die Vergangenheit. Lernen Sie Wohn- und Arbeitsformen aus früheren Zeiten kennen! Geöffnet ist jedes Jahr von 1. Mai bis 30. September. Der Eintrittspreis beträgt 10 Euro pro Person, Kinder bezahlen die Hälfte."];
+const STORY=["Im Kosser-Gymnasium in Mainz, Deutschland, gehört seit zwei Jahren ein besonderes Projekt zum Französischunterricht: In den achten Klassen stehen freitags Video-Chats mit Deutsch-Schülern der französischen Partnerschule Clotilde-Loreau in Paris auf dem Stundenplan. So verbessern sich die Schüler beider Nachbarländer in jener Fremdsprache, die sie schon seit mehreren Jahren lernen.","„Die kostenlosen Video-Chats waren die Idee meiner Schüler“, erklärt Lehrerin Martina Pfänder. „Als ich für mein Französisch- und Geografiestudium an der Universität war, habe ich Freunden in Frankreich noch Briefe geschrieben. Telefongespräche waren damals zu teuer.“","Heute sind Video-Gespräche für viele normal. Am Kosser-Gymnasium bekommen die Mädchen und Jungen dafür Laptops, auch private Mobiltelefone sind erlaubt. Die Gespräche finden immer im Turnsaal statt. Dort ist es laut, wenn alle reden. Aber das stört niemanden.","Achtklässler Michael Bauer aus Mainz-Ebersheim erzählt, dass er mit seiner Pariser Kollegin Louise zuerst immer Deutsch und dann Französisch spricht. „Wir beide lieben Filme, darüber reden wir oft. Wir sind wirklich gute Freunde.“","In 14 Tagen reisen zum ersten Mal mehrere Klassen der Pariser Partnerschule für eine Sprachwoche nach Mainz. Die Franzosen werden bei den Chat-Kollegen wohnen. Dadurch lernen sie noch mehr über das Leben im Nachbarland, als sie schon in den Chats erfahren haben. Auch vielen Eltern gefällt das Projekt. Sie sammeln Geld für Jugendliche, deren Väter und Mütter nicht viel verdienen. So können im Frühling auch alle Mainzer Achtklässler ihre Kollegen in Paris besuchen."];
+const QS=[["Martina Pfänder hat","früher ihre Bekannten im Ausland angerufen.","ihrer Klasse das Projekt vorgeschlagen.","zwei verschiedene Fächer studiert."],["Die Schüler des Kosser-Gymnasiums","chatten im Klassenzimmer mit den Pariser Schülern.","dürfen für das Projekt ihre Handys benutzen.","müssen in den Projektstunden leise sprechen."],["Michael Bauer sagt, dass er","die Chats gern in der Fremdsprache beginnt.","sich in seine Gesprächspartnerin verliebt hat.","und seine Bekannte dasselbe Interesse haben."],["Die französischen Schüler","bekommen bald Besuch von den deutschen Freunden.","haben die deutsche Kultur schon ein wenig kennengelernt.","waren mit ihren Lehrern heuer schon in Deutschland."],["Viele Eltern","bekommen die Reisekosten ihrer Kinder von der Schule bezahlt.","kritisieren, dass der Sprach-Aufenthalt im Nachbarland zu teuer ist.","unterstützen Schülerinnen und Schüler aus ärmeren Familien."]];
+const WEATHER=["Filme","Konzerte","Malkurse","Tanzgruppen","Kleidermarkt","Getränke-Bar","Theater-Workshops","Speisen"];
+const SPORTS=["Zeitung","E-Mails","Bücher","Anzeigen im Internet","Prospekte"];
+const SPORTSKEY=[[4],[0,2],[0,1,3],[0,1],[1,3]];
 const DEFAULT={page:0,name:'',r1:['','','','',''],r2:['','','','',''],w1:[],w2:['','','','',''],w3:[[],[],[],[],[]],mail:'',started:0};
 /* Every new page opening starts an independent student attempt on page 1.
    No previous answers or email are loaded from localStorage. */
@@ -1054,68 +1054,6 @@ function freshA2Test(){
 let st=freshA2Test();
 try{localStorage.removeItem(KEY)}catch(e){}
 let objectAudio=null;
-
-/* MP3 tracks originally supplied for Test 8. Larger files are stored losslessly
-   as two binary parts on GitHub because of the upload size limit.
-   Joining occurs before playback; exam questions and the player UI are unchanged. */
-const DEMAX_AUDIO_PARTS={
- 2:['./audio/track-2-a.part','./audio/track-2-b.part'],
- 3:['./audio/track-3-a.part','./audio/track-3-b.part']
-};
-const DEMAX_AUDIO_READY={};
-const DEMAX_AUDIO_PENDING={};
-function demaxPrepareAudio(n){
- if(n===1)return Promise.resolve('./audio/track-1.mp3');
- if(DEMAX_AUDIO_READY[n])return Promise.resolve(DEMAX_AUDIO_READY[n]);
- if(DEMAX_AUDIO_PENDING[n])return DEMAX_AUDIO_PENDING[n];
- const paths=DEMAX_AUDIO_PARTS[n];
- DEMAX_AUDIO_PENDING[n]=Promise.all(paths.map(async path=>{
-   const response=await fetch(path,{cache:'force-cache'});
-   if(!response.ok)throw new Error('Audio '+n+' HTTP '+response.status);
-   return response.arrayBuffer();
- })).then(buffers=>{
-   const blob=new Blob(buffers,{type:'audio/mpeg'});
-   const url=URL.createObjectURL(blob);
-   DEMAX_AUDIO_READY[n]=url;
-   return url;
- }).catch(error=>{
-   delete DEMAX_AUDIO_PENDING[n];
-   throw error;
- });
- return DEMAX_AUDIO_PENDING[n];
-}
-function demaxConnectExamAudio(page){
- const n=page-4;
- if(n===1){setupExamAudio(page);return;}
- const audio=document.getElementById('player');
- const status=document.getElementById('audiosignal');
- const fallback=document.getElementById('audioFallback');
- if(!audio||!status||!fallback)return;
- audio.pause();
- audio.removeAttribute('src');
- audio.load();
- const isCurrent=()=>st.page===page&&audio.isConnected;
- const ready=url=>{
-   if(!isCurrent())return;
-   fallback.onclick=null;
-   audio.src=url;
-   setupExamAudio(page);
- };
- if(DEMAX_AUDIO_READY[n]){ready(DEMAX_AUDIO_READY[n]);return;}
- status.textContent='Učitava se slušanje '+n+'…';
- fallback.hidden=true;
- function attempt(){
-   demaxPrepareAudio(n).then(ready).catch(()=>{
-     if(!isCurrent())return;
-     status.textContent='Snimak nije učitan. Proverite internet.';
-     fallback.textContent='▶ Učitaj slušanje';
-     fallback.hidden=false;
-     fallback.onclick=()=>{fallback.hidden=true;status.textContent='Učitava se slušanje…';attempt()};
-   });
- }
- attempt();
-}
-
 const main=document.getElementById('main'),prev=document.getElementById('prev'),next=document.getElementById('next');
 /* Keep answers only in memory during the current attempt. Reload starts a fresh test. */
 function save(){}
@@ -1125,19 +1063,19 @@ function heading(k){return '<div class="sub">'+esc(k)+'</div>'}
 function intro(k,name,detail){return heading(k)+'<h1>'+name+'</h1><p class="instructions">'+detail+'</p>'}
 function getSelect(i){const val=st.r1[i]||'',idx=H.indexOf(val);return '<button class="title-picker-button" type="button" data-title-picker="'+i+'" aria-haspopup="dialog" aria-label="Izaberi naslov za tekst '+(i+1)+'">'+
 '<span class="picker-letter">'+(val||'A–K')+'</span><span class="picker-label">'+(idx>=0?esc(HEAD[idx]):'Dodirni za izbor naslova')+'</span><span class="picker-caret">▾</span></button>'}
-function cover(){return '<section class="home-center"><h1>A2 TEST 10</h1><p class="home-school">Nemački jezik De-Max Tutin</p><p class="home-slogan">Sa Vama od 2013 godine</p></section>'}
+function cover(){return '<section class="home-center"><h1>A2 TEST</h1><p class="home-school">Nemački jezik De-Max Tutin</p><p class="home-slogan">Sa Vama od 2013 godine</p></section>'}
 
 function lesenIntro(){
 return '<div class="intro-screen lesen-full-intro"><div class="intro-cover"><div class="intro-eyebrow">LESEN · ÖSD A2</div><h1>Razumevanje</h1><p>Pročitajte zadatke i odaberite tačne odgovore.</p><div class="total-points">25 <small>bodova</small></div><div class="min-points">Minimum 5 bodova za prolaz</div></div>'+
-'<div class="summary-task"><b>1. Überschriften + Texte</b><span class="pill">15 bodova</span></div>'+
-'<div class="summary-task"><b>2. Lesetext + Fragen</b><span class="pill">10 bodova</span></div>'+
+'<div class="summary-task"><b>1. 10 Überschriften – 5 Texte</b><span class="pill">15 bodova</span></div>'+
+'<div class="summary-task"><b>2. Text + Fragen A, B, C</b><span class="pill">10 bodova</span></div>'+
 '<div class="summary-total">Ukupno 25 bodova / Prolaz 5 bodova</div></div>';
 }
 function horenIntro(){
 return '<div class="intro-screen horen-full-intro"><div class="intro-cover"><div class="intro-eyebrow">HÖREN · ÖSD A2</div><h1>Slušanje</h1><p>Slušate tri dela slušanja.</p><div class="total-points">30 <small>bodova</small></div><div class="min-points">Minimum 6 bodova za prolaz</div></div>'+
-'<div class="summary-task"><b>1. Wie findet man am besten Arbeit?</b><span class="pill">10 bodova</span></div>'+
-'<div class="summary-task"><b>2. Notizen – Neue Tageszeitung</b><span class="pill">10 bodova</span></div>'+
-'<div class="summary-task"><b>3. Wo gehen Sie gerne spazieren?</b><span class="pill">10 bodova</span></div>'+
+'<div class="summary-task"><b>1. Fest der Länder</b><span class="pill">10 bodova</span></div>'+
+'<div class="summary-task"><b>2. Reifen wechseln</b><span class="pill">10 bodova</span></div>'+
+'<div class="summary-task"><b>3. Was lesen Sie oft?</b><span class="pill">10 bodova</span></div>'+
 '<div class="summary-total">Ukupno 30 bodova / Prolaz 6 bodova</div></div>';
 }
 function r1Item(i){return '<div class="stage-label">LESEN · Aufgabe 1 · 15 bodova</div><h1 class="stage-title">Die passende Überschrift</h1>'+
@@ -1146,10 +1084,10 @@ function r1Item(i){return '<div class="stage-label">LESEN · Aufgabe 1 · 15 bod
 '<div class="card tinted"><label class="fieldlabel">Überschrift</label>'+getSelect(i)+'</div>'+
 '<p class="small">Svih 10 naslova nalazi se u padajućem meniju.</p>';}
 const storyGroups=[[0],[1],[2,3],[4]];
-function storyPart(i){return '<div class="stage-label">LESEN · Aufgabe 2 · 10 bodova</div><h1 class="stage-title">Ein besonderer Geburtstag</h1><p class="small">Pročitajte tekst. Deo '+(i+1)+' / 4.</p>'+
+function storyPart(i){return '<div class="stage-label">LESEN · Aufgabe 2 · 10 bodova</div><h1 class="stage-title">Sprache und Freundschaft kennen keine Grenzen</h1><p class="small">Pročitajte tekst. Deo '+(i+1)+' / 4.</p>'+
 '<div class="card reading-card tinted">'+storyGroups[i].map(j=>'<p class="passage">'+esc(STORY[j])+'</p>').join('')+'</div>'+
 '<div class="card goldish"><p class="small" style="margin:0">Posle teksta odgovorićete na pet pitanja A, B ili C.</p></div>';}
-function r2Item(i){const q=QS[i];return '<div class="stage-label">LESEN · Aufgabe 2 · 10 bodova</div><h1 class="stage-title">Ein besonderer Geburtstag</h1><p class="small">Frage '+(i+1)+' / 5</p>'+
+function r2Item(i){const q=QS[i];return '<div class="stage-label">LESEN · Aufgabe 2 · 10 bodova</div><h1 class="stage-title">Sprache und Freundschaft kennen keine Grenzen</h1><p class="small">Frage '+(i+1)+' / 5</p>'+
 '<div class="card"><div class="qtop"><b>'+esc(q[0])+'</b><span class="pill">2 Punkte</span></div><div class="choices">'+['A','B','C'].map((c,j)=>'<label class="choice"><input type="radio" name="r2-'+i+'" data-r2="'+i+'" value="'+c+'" '+(st.r2[i]===c?'checked':'')+'><b>'+c+'</b> '+esc(q[j+1])+'</label>').join('')+'</div></div>'+
 '<p class="small">Za povratak na originalni tekst koristite „Nazad”.</p>';}
 
@@ -1157,10 +1095,10 @@ function r1(){return intro('Lesen • Aufgabe 1','Die passende Überschrift','Pr
 
 '<section class="card lesen-titles-reference" aria-label="Svih deset naslova"><h3 class="lesen-titles-heading">10 naslova (A–K) – stalno prikazani</h3><div class="headings">'+H.map((h,i)=>'<div><b>'+h+'</b> '+esc(HEAD[i])+'</div>').join('')+'</div></section>'+
 TEXTS.map((t,i)=>'<div class="card"><div class="qtop"><b>Text '+(i+1)+'</b><span class="pill">3 Punkte</span></div><p class="passage lesen1-text" lang="de">'+esc(t)+'</p>'+getSelect(i)+'</div>').join('')}
-function r2(){return intro('Lesen • Aufgabe 2','Ein besonderer Geburtstag','Prvo pročitajte tekst, a zatim kod svakog pitanja označite tačan odgovor A, B ili C. (10 bodova)')+
+function r2(){return intro('Lesen • Aufgabe 2','Sprache und Freundschaft kennen keine Grenzen','Prvo pročitajte tekst, a zatim kod svakog pitanja označite tačan odgovor A, B ili C. (10 bodova)')+
 
 '<details class="card tinted" open><summary>Lesetext anzeigen / ausblenden</summary><div style="margin-top:10px">'+STORY.map(x=>'<p class="passage lesen2-text" lang="de">'+esc(x)+'</p>').join('')+'</div></details>'+
-'<div class="card goldish"><p class="small" style="margin:0">Beispiel: Wilhelm Ronacher ist der Vater mehrerer Kinder. (B)</p></div>'+
+'<div class="card goldish"><p class="small" style="margin:0">Beispiel: Die Projektstunden finden jede Woche statt. (A)</p></div>'+
 QS.map((q,i)=>'<div class="card"><div class="qtop"><b>'+(i+1)+'. '+esc(q[0])+'</b><span class="pill">2 Punkte</span></div><div class="choices">'+['A','B','C'].map((c,j)=>'<label class="choice"><input type="radio" name="r2-'+i+'" data-r2="'+i+'" value="'+c+'" '+(st.r2[i]===c?'checked':'')+'><b>'+c+'</b> '+esc(q[j+1])+'</label>').join('')+'</div></div>').join('')}
 
 function player(i){
@@ -1170,18 +1108,18 @@ function player(i){
  '<button type="button" id="audioFallback" class="audio-start" hidden>▶ Pokreni slušanje</button>'+
  '<audio id="player" autoplay playsinline preload="auto" src="./audio/track-'+i+'.mp3"></audio></div>';
 }
-function h1(){return '<section class="h1-full-mobile"><div class="stage-label">HÖREN · Aufgabe 1 · 10 bodova</div><h1 class="stage-title">Wie findet man am besten Arbeit?</h1>'+
+function h1(){return '<section class="h1-full-mobile"><div class="stage-label">HÖREN · Aufgabe 1 · 10 bodova</div><h1 class="stage-title">Was gibt es beim Fest der Länder?</h1>'+
 '<p class="small h1-instructions">Slušate dva teksta istog sadržaja. Označite četiri odgovora.</p>'+player(1)+
 '<div class="card h1-answers"><div class="qtop"><b>Wählen Sie vier Antworten</b><span class="pill">10 Punkte</span></div><div class="twocol">'+WEATHER.map((w,i)=>'<label class="check"><input type="checkbox" data-w1="'+i+'" '+checked(st.w1,i)+'>'+esc(w)+'</label>').join('')+'</div><p class="small h1-count" id="weatherCount">'+st.w1.length+' / 4 izabrano</p></div></section>'}
-function h2(){const lab=['Kostet (Euro pro Monat)','Zeitung kommt bis spätestens (Uhr)','Fernsehprogramm am','Geschenk','Telefonnummer: 089 /'];return '<div class="stage-label">HÖREN · Aufgabe 2 · 10 bodova</div><h1 class="stage-title">Notizen – Neue Tageszeitung</h1>'+
-'<p class="small h2-instructions" style="margin:0 0 7px">Poruka se u snimku ponavlja dva puta. Dopunite pet beleški.</p>'+player(2)+
-'<div class="card hearing2-card"><div class="qtop"><b>✎ Notizblatt</b><span class="pill">10 Punkte</span></div><div class="note-grid">'+lab.map((l,i)=>'<div class="note-row"><label class="fieldlabel" for="n'+i+'">'+(i+1)+'. '+esc(l)+'</label><input id="n'+i+'" data-w2="'+i+'" class="field" type="text" inputmode="'+([0,1,4].includes(i)?'decimal':'text')+'" autocomplete="off" placeholder="'+(['13','06:15','Samstag','Kamera','8471303'][i])+'" value="'+esc(st.w2[i])+'"></div>').join('')+'</div></div>'}
+function h2(){const lab=['Neuer Termin: Wochentag','Neuer Termin: Datum im Oktober','Büro geöffnet ab (Uhr)','In den Postkasten werfen','Telefonnummer: 075 /'];return '<div class="stage-label">HÖREN · Aufgabe 2 · 10 bodova</div><h1 class="stage-title">Reifenwechsel – Notizen</h1>'+
+'<p class="small h2-instructions" style="margin:0 0 7px">Slušate poruku dva puta. Dopunite pet beleški.</p>'+player(2)+
+'<div class="card hearing2-card"><div class="qtop"><b>✎ Notizblatt</b><span class="pill">10 Punkte</span></div><div class="note-grid">'+lab.map((l,i)=>'<div class="note-row"><label class="fieldlabel" for="n'+i+'">'+(i+1)+'. '+esc(l)+'</label><input id="n'+i+'" data-w2="'+i+'" class="field" type="text" inputmode="'+([1,2,4].includes(i)?'numeric':'text')+'" autocomplete="off" placeholder="'+(['Wochentag','Datum','Uhrzeit','Was?','7 Ziffern'][i])+'" value="'+esc(st.w2[i])+'"></div>').join('')+'</div></div>'}
 function speakerCard(i){return '<div class="card"><div class="qtop"><b>'+(i+1)+'. '+(i%2===0?'Sprecher':'Sprecherin')+'</b><span class="pill">2 Punkte</span></div>'+
-'<p class="small">Gde osoba voli da šeta? Moguće je više odgovora.</p>'+
+'<p class="small">Šta osoba često čita? Moguće je više odgovora.</p>'+
 '<div class="rowchecks">'+SPORTS.map((n,j)=>'<label class="sport"><input type="checkbox" data-sp="'+i+'" data-sport="'+j+'" '+checked(st.w3[i],j)+'>'+esc(n)+'</label>').join('')+'</div></div>'}
 function h3(){return '<section class="h3-screen"><div class="stage-label">HÖREN · Aufgabe 3 · 10 bodova</div>'+player(3)+
-'<h1 class="stage-title h3-title-below-player">Wo gehen Sie gerne spazieren?</h1>'+
-'<p class="small h3-help">Slušate pet osoba. Za svaku označite gde voli da šeta.</p>'+
+'<h1 class="stage-title h3-title-below-player">Was lesen Sie oft?</h1>'+
+'<p class="small h3-help">Slušate pet osoba. Za svaku označite šta ta osoba često čita.</p>'+
 '<div class="speaker-stack">'+[0,1,2,3,4].map(i=>speakerCard(i)).join('')+'</div></section>'}
 function schreibenIntro(){
 return '<div class="intro-screen"><div class="intro-cover"><div class="intro-eyebrow">SCHREIBEN · ÖSD A2</div><h1>Pisanje mejla</h1>'+
@@ -1193,17 +1131,11 @@ return '<div class="intro-screen"><div class="intro-cover"><div class="intro-eye
 '<div class="summary-total">Ukupno 15 bodova / Prolaz 3 boda</div>'+
 '<p class="small" style="text-align:center">Mejl mora imati najmanje 26 reči da bi bio ocenjen.</p></div>';
 }
-function mailPrompt(){return '<section class="mail-prompt-full"><div class="stage-label">SCHREIBEN · E-Mail</div><h1 class="stage-title">Eine E-Mail an Loris</h1><p class="small mail-prompt-instructions">Pročitajte celu poruku koju šalje Loris.</p>'+
-'<div class="card tinted mail-prompt-card"><div class="between mail-prompt-sender"><b>Von: Loris</b><small class="small">Betreff: 1. Arbeitstag</small></div>'+
-'<div class="letter mail-prompt-letter" lang="de"><p>Liebe/Lieber …,</p><p>wie du weißt, arbeite ich ab Montag in der gleichen Firma wie du. Wir haben ja darüber geredet, dass wir zusammen dorthin fahren können.</p><p>Wo und um wie viel Uhr treffen wir uns am Montag? Und mit welchem Verkehrsmittel können wir fahren? Mit dem Chef habe ich schon kurz gesprochen und ich bin schon neugierig auf meine Aufgaben. Was sind deine Aufgaben in der Firma? Gerne können wir nach der Arbeit etwas zusammen machen. Hast du einen Vorschlag?</p><p>Liebe Grüße — Loris</p></div></div></section>'}
+function mailPrompt(){return "<section class=\"mail-prompt-full\"><div class=\"stage-label\">SCHREIBEN · E-Mail</div><h1 class=\"stage-title\">Eine E-Mail an Milena</h1><p class=\"small mail-prompt-instructions\">Pročitajte celu poruku koju šalje Milena.</p><div class=\"card tinted mail-prompt-card\"><div class=\"between mail-prompt-sender\"><b>Von: Milena</b><small class=\"small\">Betreff: Lukas ist da!</small></div><div class=\"letter mail-prompt-letter\" lang=\"de\"><p>Liebe/Lieber …,</p><p>es gibt Neuigkeiten: Unsere Freunde Stephanie und Amir haben gestern einen Sohn bekommen! Er heißt Lukas und ist gesund.</p><p>Die beiden haben gemeint, dass wir ab nächster Woche vorbeikommen können. Wann sollen wir sie besuchen?</p><p>Bestimmt haben Stephanie und Amir jetzt viel zu tun. Wir haben ja gesagt, dass wir sie unterstützen möchten. Wie können wir ihnen am besten helfen? Wir brauchen auch noch ein Geschenk für das Baby. Was sollen wir kaufen? Und wo bekommen wir ein schönes Geschenk?</p><p>Liebe Grüße</p><p>Milena</p></div></div></section>";}
+
 /* Match the writing questions layout of VEZBAJ-MEJLOVE-A2 (Michael / Reise).
    Original four exam prompts, German blue; optional Serbian translation in red. */
-const MICHAEL_QUESTIONS=[
- {de:'Wo und um wie viel Uhr treffen wir uns?',sr:'Gde i u koliko sati se nalazimo?'},
- {de:'Mit welchem Verkehrsmittel können wir fahren?',sr:'Kojim prevoznim sredstvom možemo ići?'},
- {de:'Was sind deine Aufgaben in der Firma?',sr:'Koje su tvoje obaveze u firmi?'},
- {de:'Was können wir nach der Arbeit zusammen machen?',sr:'Šta možemo zajedno raditi posle posla?'}
-];
+const MICHAEL_QUESTIONS=[{"de":"Wann sollen wir Stephanie und Amir besuchen?","sr":"Kada treba da posetimo Stephanie i Amira?"},{"de":"Wie können wir ihnen am besten helfen?","sr":"Kako im možemo najbolje pomoći?"},{"de":"Was kaufen wir für das Baby?","sr":"Šta ćemo kupiti za bebu?"},{"de":"Wo bekommen wir ein schönes Geschenk?","sr":"Gde možemo naći lep poklon?"}];
 function writingQuestions(){
  return '<section class="a2-writing-questions" aria-label="Četiri pitanja">'+
   '<div class="a2-writing-questions-head"><h3>ČETIRI PITANJA</h3></div>'+
@@ -1214,10 +1146,10 @@ function mailEditor(){
  '<div class="stage-label">SCHREIBEN · E-Mail</div>'+
  writingQuestions()+
  '<div class="card a2-mail-writing-editor"><div class="between a2-writing-editor-bar"><label class="fieldlabel" for="emailAnswer">✎ PIŠI MEJL</label><b class="pill" id="wordCount">'+wordCount(st.mail)+' reči</b></div>'+
- '<textarea class="field editor" id="emailAnswer" placeholder="Lieber Loris,&#10;&#10;vielen Dank für deine E-Mail. ...">'+esc(st.mail)+'</textarea>'+ 
+ '<textarea class="field editor" id="emailAnswer" placeholder="Liebe Milena,&#10;&#10;vielen Dank für deine E-Mail. ...">'+esc(st.mail)+'</textarea>'+ 
 '<div class="mail-word-meter" id="mailWordMeter" role="progressbar" aria-label="Najmanje 26 reči za ocenjivanje" aria-valuemin="0" aria-valuemax="26" aria-valuenow="'+Math.min(26,wordCount(st.mail))+'"><div class="mail-word-fill '+(wordCount(st.mail)>=26?'met':'below')+'" id="mailWordFill" style="width:'+Math.min(100,wordCount(st.mail)/26*100)+'%"></div></div></div>'+
  '<div class="ai-mail-controls"><button type="button" id="aiGradeBtn" class="btn primary" style="flex:1">✦ Proveri mejl</button><button type="button" id="skipAiBtn" class="btn back">Ostali bodovi</button></div>'+
- '<p id="aiStatus" role="status" class="ai-mail-status">Cloudflare AI proverava 26–50 reči. <span id="aiWorkerConnection" class="ai-worker-connection">Proveravam vezu sa Workerom…</span></p>'+
+ '<p id="aiStatus" role="status" class="ai-mail-status">Primenite četiri pitanja iz ove postavke. <span id="aiWorkerConnection" class="ai-worker-connection">AI provera za Milenu nije povezana.</span></p>'+
  '</section>';
 }
 
@@ -1319,65 +1251,22 @@ function validateAiResponse(data){
  return data;
 }
 async function checkEmailAI(thenShowResult){
- if(aiPending)return;
- const answer=String(st.mail||'').trim(),count=wordCount(answer);
- if(count<26){
-  st.aiEmail=null;save();
-  setAiStatus('Mejl ima '+count+' reči. Ispod 26 reči: Schreiben 0/15.');
-  if(thenShowResult){st.page=LAST;st.resultTab='mail';render();}
-  return;
- }
- if(count>50){setAiStatus('Postojeći AI servis prihvata najviše 50 reči. Po pravilima ÖSD tekst od 40+ reči nema odbitak. Za duži mejl koristite ručnu proveru kriterijuma.',true);if(thenShowResult){st.page=LAST;st.resultTab='mail';render();}return;}
- if(st.aiEmail?.answer===answer&&st.aiEmail?.response&&thenShowResult){
-  st.page=LAST;st.resultTab='score';render();return;
- }
- aiPending=true;
- const checkButton=document.getElementById('aiGradeBtn');
- const nextButton=document.getElementById('next');
- if(checkButton)checkButton.disabled=true;
- if(nextButton)nextButton.disabled=true;
- setAiStatus('AI proverava sva 4 pitanja, gramatiku i ispravke…');
- const controller=new AbortController();
- const cancel=setTimeout(()=>controller.abort(),58000);
- try{
-  const response=await fetch(EMAIL_AI_API,{
-   method:'POST',mode:'cors',credentials:'omit',cache:'no-store',
-   headers:{'Content-Type':'application/json','Accept':'application/json'},
-   signal:controller.signal,
-   body:JSON.stringify({mailIndex:EMAIL_INDEX_MICHAEL,answer,examPrompt:'Loris – 1. Arbeitstag',questions:MICHAEL_QUESTIONS.map(q=>q.de)})
-  });
-  const data=await response.json().catch(()=>({}));
-  if(!response.ok)throw Error(String(data.error||('Cloudflare HTTP '+response.status)));
-  validateAiResponse(data);
-  if(String(st.mail||'').trim()!==answer)throw Error('Tekst mejla je izmenjen tokom provere. Pokrenite novu proveru.');
-  st.aiEmail={answer,response:data,checkedAt:Date.now()};save();
-  const healthInfo=document.getElementById("aiWorkerConnection");
-  if(healthInfo){healthInfo.textContent="• Cloudflare AI odgovor primljen";healthInfo.classList.add("connected");}
-  setAiStatus('Cloudflare AI provera je završena. ÖSD kriterijumi su obračunati kao predlog koji nastavnik može izmeniti.');
-  if(thenShowResult){st.page=LAST;st.resultTab='score';render();}
- }catch(error){
-  const reason=error.name==='AbortError'?'server nije odgovorio na vreme':error instanceof TypeError?'veza sa Workerom nije uspela (mreža ili CORS)':error.message;
-  setAiStatus('AI provera nije uspela: '+reason+'. Tekst ostaje u tekućem testu.',true);
-  if(thenShowResult){st.page=LAST;st.resultTab='score';render();}
- }finally{
-  clearTimeout(cancel);aiPending=false;
-  if(checkButton&&checkButton.isConnected)checkButton.disabled=false;
-  if(nextButton&&nextButton.isConnected)nextButton.disabled=false;
- }
+ const msg='Za mejl Mileni AI Worker originalnog Testa 1 nije prilagođen novoj postavci. Nećemo prikazivati pogrešnu AI ocenu. Lesen i Hören se boduju automatski; Schreiben ocenjuje nastavnik.';
+ setAiStatus(msg,true);
+ if(thenShowResult){st.page=LAST;st.resultTab='score';render();}
 }
-
 function grade(){
- const rd1=['H','G','I','C','K'],rd2=['B','A','B','B','A'];
+ const rd1=['E','F','D','I','K'],rd2=['C','B','C','B','C'];
  const r1=st.r1.reduce((n,v,i)=>n+(v===rd1[i]?3:0),0);
  const r2=st.r2.reduce((n,v,i)=>n+(v===rd2[i]?2:0),0);
- const correct=[0,2,5,7],hit=st.w1.filter(i=>correct.includes(i)).length;
+ const correct=[1,4,6,7],hit=st.w1.filter(i=>correct.includes(i)).length;
  let w1=st.w1.length>5?0:[0,1,4,7,10][hit];if(st.w1.length===5)w1=Math.max(0,w1-3);
  const noteok=[
-  ['13','13euro','13eur','dreizehn'].includes(normalize(st.w2[0])),
-  ['615','0615','viertelnachsechs'].includes(normalize(st.w2[1])) || ['615','0615'].includes(digits(st.w2[1])),
-  ['samstag','sa','samstags'].includes(normalize(st.w2[2])),
-  ['kamera','camera'].includes(normalize(st.w2[3])),
-  ['8471303','0898471303'].includes(digits(st.w2[4]))
+ ['montag','mo','mo.'].some(v=>normalize(st.w2[0])===normalize(v)),
+ ['27','27.','27 oktober','27. oktober','27.10'].includes(String(st.w2[1]||'').trim().toLowerCase()),
+ ['7:15','07:15','7.15','07.15','715','0715','viertel nach sieben'].includes(String(st.w2[2]||'').trim().toLowerCase()),
+ ['schlussel','schluessel','schlüssel'].some(v=>normalize(st.w2[3])===normalize(v)),
+ digits(st.w2[4])==='6227903'
  ];
  const w2=noteok.filter(Boolean).length*2;
  const w3rows=st.w3.map((vals,i)=>{let errors=0;for(let j=0;j<5;j++)if(vals.includes(j)!==SPORTSKEY[i].includes(j))errors++;return Math.max(0,2-errors)});
@@ -1406,15 +1295,15 @@ function result(){
    '';
  }else if(tab==='lesen'){
    area='<div class="card"><h3>Lesen · Aufgabe 1 · '+g.r1+'/15</h3>'+
-   ['H','G','I','C','K'].map((v,i)=>solutionRow('Text '+(i+1),st.r1[i],v,st.r1[i]===v?3:0,3)).join('')+'</div>'+
+   ['E','F','D','I','K'].map((v,i)=>solutionRow('Text '+(i+1),st.r1[i],v,st.r1[i]===v?3:0,3)).join('')+'</div>'+
    '<div class="card"><h3>Lesen · Aufgabe 2 · '+g.r2+'/10</h3>'+
-   ['B','A','B','B','A'].map((v,i)=>solutionRow('Frage '+(i+1),st.r2[i],v,st.r2[i]===v?2:0,2)).join('')+'</div>'+
+   ['C','B','C','B','C'].map((v,i)=>solutionRow('Frage '+(i+1),st.r2[i],v,st.r2[i]===v?2:0,2)).join('')+'</div>'+
    '<div class="card greenish"><b>Ukupno Lesen: '+g.lesen+'/25</b><p class="small">Minimum 5 bodova · '+(g.lesen>=5?'Prag ostvaren':'Prag nije ostvaren')+'</p></div>';
  }else if(tab==='horen'){
    const weather=WEATHER;
-   const nw=['13 Euro','06:15 Uhr','Samstag','Kamera','8471303'];
+   const nw=['Montag','27. Oktober','07:15 Uhr','Schlüssel','6227903'];
    area='<div class="card"><h3>Hören · Aufgabe 1 · '+g.w1+'/10</h3>'+
-   '<p class="small">Tvoj: '+esc(st.w1.map(i=>weather[i]).filter(Boolean).join(', ')||'—')+'</p><p class="small">Tačno: <b>Freunde, Internet, Firmen anrufen, Arbeitsamt</b></p></div>'+
+   '<p class="small">Tvoj: '+esc(st.w1.map(i=>weather[i]).filter(Boolean).join(', ')||'—')+'</p><p class="small">Tačno: <b>Konzerte, Kleidermarkt, Theater-Workshops, Speisen</b></p></div>'+
    '<div class="card"><h3>Hören · Aufgabe 2 · '+g.w2+'/10</h3>'+
    nw.map((v,i)=>solutionRow('Notiz '+(i+1),st.w2[i],v,g.noteok[i]?2:0,2)).join('')+'</div>'+
    '<div class="card"><h3>Hören · Aufgabe 3 · '+g.w3+'/10</h3>'+
@@ -1501,7 +1390,7 @@ function fitPage(){
    Hören 1 and 3: once; Hören 2: twice consecutively. Older localStorage locks
    are intentionally ignored because they previously left audio stuck. */
 function setupExamAudio(page){
- const idx=page-5, required=1; /* Track 2 already contains both readings. */
+ const idx=page-5, required=idx===1?2:1;
  const audio=document.getElementById('player');
  const status=document.getElementById('audiosignal');
  const bar=document.getElementById('audioBar');
@@ -1612,10 +1501,10 @@ function render(){
  prev.disabled=st.page===0;
  next.textContent=st.page===0?'Počni test →':st.page===LAST-1?'Završi i oceni ✓':st.page===LAST?'Na početak ↺':'Nastavi →';
  requestAnimationFrame(fitPage);
- if(st.page===LAST){const copy=document.getElementById('copyResult');copy.onclick=()=>{const g=grade();const txt='DE-MAX ÖSD A2 Test 8 | Lesen '+g.lesen+'/25 | Hören '+g.horen+'/30 | E-Mail '+g.mail.points+'/15 | Ukupno '+g.total+'/70 | '+(g.pass?'POLOŽENO':'NIJE POLOŽENO')+' | E-Mail automatska procena';if(navigator.clipboard?.writeText)navigator.clipboard.writeText(txt).then(()=>notify('Rezultat kopiran')).catch(()=>notify('Kopiranje nije dostupno'));else notify(txt)};
+ if(st.page===LAST){const copy=document.getElementById('copyResult');copy.onclick=()=>{const g=grade();const txt='DE-MAX ÖSD A2 Test 1 | Lesen '+g.lesen+'/25 | Hören '+g.horen+'/30 | E-Mail '+g.mail.points+'/15 | Ukupno '+g.total+'/70 | '+(g.pass?'POLOŽENO':'NIJE POLOŽENO')+' | E-Mail automatska procena';if(navigator.clipboard?.writeText)navigator.clipboard.writeText(txt).then(()=>notify('Rezultat kopiran')).catch(()=>notify('Kopiranje nije dostupno'));else notify(txt)};
  document.getElementById('reset').onclick=()=>{if(confirm('Obrisati sve odgovore i početi ponovo?')){st=freshA2Test();save();render()}}}
- if(st.page>=5&&st.page<=7)demaxConnectExamAudio(st.page);
- if(st.page===LAST-1)checkEmailWorkerStatus();
+ if(st.page>=5&&st.page<=7)setupExamAudio(st.page);
+ if(st.page===LAST-1)/* Ovaj set nema povezanog Milena AI Workera */
 }
 window.addEventListener('resize',()=>requestAnimationFrame(fitPage),{passive:true});
 window.visualViewport?.addEventListener('resize',()=>requestAnimationFrame(fitPage),{passive:true});
@@ -1789,9 +1678,6 @@ main.addEventListener('change',e=>{
 prev.onclick=()=>{if(st.page>0){st.page--;render()}};
 next.onclick=()=>{if(st.page===LAST-1){checkEmailAI(true);return;}if(st.page===0){st.started=Date.now();st.page=1}else if(st.page<LAST)st.page++;else st.page=0;render()};
 render();
-/* Preload audio while student completes Lesen; playback stays immediate on mobile. */
-demaxPrepareAudio(2).catch(()=>{});
-demaxPrepareAudio(3).catch(()=>{});
 /* Mobile back-forward cache must not reopen another student's completed test. */
 window.addEventListener('pageshow',event=>{if(event.persisted){st=freshA2Test();render();}});
 </script>
