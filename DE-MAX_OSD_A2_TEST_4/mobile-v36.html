@@ -73,7 +73,7 @@ function patchA2(s){
  s=s.replace('</body>',inject+'</body>');
  return s;
 }
-fetch('../DE-MAX_OSD_A2_TEST_1/mobile-v36.html?v=20261114-v43-mail-expanded',{cache:'no-cache'})
+fetch('../DE-MAX_OSD_A2_TEST_1/mobile-v36.html?v=20261114-v44-mail-compact',{cache:'no-cache'})
 .then(r=>{if(!r.ok)throw Error('HTTP '+r.status);return r.text()})
 .then(original=>{const updated=patchA2(original);document.open();document.write(updated);document.close();})
 .catch(err=>{document.querySelector('main').innerHTML='<b>Test nije učitan.</b><small>'+String(err.message).replace(/[<>&]/g,'')+'</small>';});
