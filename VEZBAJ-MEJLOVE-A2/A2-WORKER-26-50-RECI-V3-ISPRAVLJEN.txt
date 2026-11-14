@@ -188,6 +188,19 @@ const A2_MAILS = [
   ],
   "to": "Markus"
  }
+,
+ {
+  "title": "Lukas ist da!",
+  "situation": "Sie bekommen von Ihrer Freundin Milena folgendes E-Mail:",
+  "received": "Liebe/Lieber …,\n\nes gibt Neuigkeiten: Unsere Freunde Stephanie und Amir haben gestern einen Sohn bekommen! Er heißt Lukas und ist gesund.\n\nDie beiden haben gemeint, dass wir ab nächster Woche vorbeikommen können. Wann sollen wir sie besuchen?\n\nBestimmt haben Stephanie und Amir jetzt viel zu tun. Wir haben ja gesagt, dass wir sie unterstützen möchten. Wie können wir ihnen am besten helfen? Wir brauchen auch noch ein Geschenk für das Baby. Was sollen wir kaufen? Und wo bekommen wir ein schönes Geschenk?\n\nLiebe Grüße\nMilena",
+  "questions": [
+    "Wann sollen wir Stephanie und Amir besuchen?",
+    "Wie können wir ihnen am besten helfen?",
+    "Was kaufen wir für das Baby?",
+    "Wo bekommen wir ein schönes Geschenk?"
+  ],
+  "to": "Milena"
+}
 ];
 const A2_TASK_RULES = [
  "Ahmet: posao u pekari traje mesec dana, slobodan je nedeljom, pita za posetu SLEDEĆE NEDELJE. Odgovor treba da govori o učenikovom poslu, slobodnom vremenu i dostupnosti nedeljom, bez pripisivanja Ahmetovog posla učeniku.",
@@ -203,6 +216,8 @@ const A2_TASK_RULES = [
  "Paul: PROŠLE NEDELJE dobio je psa Bruna, šeta ga u parku. Učenik odgovara voli li životinje, da li je nekada imao ljubimca (Perfekt), da li je slobodan U NEDELJU za šetnju i šta će zajedno posle šetnje.",
  "Melanie: ima novu kuhinju, predlaže da U SUBOTU zajedno kuvate. Učenik odgovara da li je nekada kuvao nemačko jelo (Perfekt), šta želi da kuva, KADA može i šta treba da kupe (WIR).",
  "Markus: koncert je SLEDEĆEG PETKA OD 20 ČASOVA U STADTHALLE, već ima dve karte. Učenik piše voli li muziku, da li je ranije bio na koncertu (Perfekt), kada i gde će se sastati u skladu s početkom koncerta i šta će raditi posle."
+,
+ "Milena: Stephanie i Amir su JUČE dobili zdravog sina Lukasa (nisu roditelji Milena niti učenik). Poseta je dozvoljena TEK OD SLEDEĆE NEDELJE, ne ranije. Učenik odgovara Mileni o ZAJEDNIČKOJ poseti i pomoći: WIR (Wir können sie nächste Woche am ... besuchen; Wir können für sie kochen, putzen oder einkaufen), predlaže smislen konkretan poklon za BEBU (npr. Kleidung/Spielzeug) i navodi MESTO gde će WIR kupiti lep poklon (Babygeschäft/Kinderladen/Kaufhaus/online). Sve četiri tačke odvojeno; ne zahtevaj jedan određeni dan, samo da je poseta sledeće nedelje ili kasnije. Prihvati gramatički ispravne ekvivalentne formulacije i prirodne dogovore."
 ];
 const A2_OUTPUT_FORMAT = {
   type: "json_schema",
@@ -412,6 +427,7 @@ async function gradeA2(body, env) {
   };
   const score = rubric.questions + rubric.grammar + rubric.opening + rubric.closing + rubric.coherence;
   return { status: 200, data: {
+    mailIndex:index, mailTitle:task.title,
     score,
     maxScore: 15,
     passingScore: 3,
@@ -447,7 +463,7 @@ export default {
     status:"ok",worker:"a2mejlovi",version:"20261101-a2-26-50",
     openaiConfigured:Boolean(env.OPENAI_API_KEY),
     verificationVersion:"a2-de-max-50-words-rubric-v2",
-    minWords:26,maxWords:50,attemptsLimitedByWorker:false
+    minWords:26,maxWords:50,tasks:A2_MAILS.length,attemptsLimitedByWorker:false
    },200,origin);
   }
   if(url.pathname!=="/api/check-a2-email"){
