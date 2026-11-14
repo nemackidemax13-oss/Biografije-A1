@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="sr">
-<head><meta name="app-version" content="V36-20261113-horen2-nav-above-keyboard"><meta name="app-version" content="V35-20261113-compact-mail-buttons-above-keyboard"><meta name="app-version" content="V34-20261113-exercise-labels-right"><meta name="app-version" content="V33-20261113-keyboard-horen2-email-no-translation"><meta name="app-version" content="V32-20261113-fresh-exam-at-every-open"><meta name="app-version" content="V30-20261113-proveri-mejl-label"><meta name="app-version" content="V29-20261113-score-column-right"><meta name="app-version" content="V28-20261113-horen3-heading-below-player">
+<head><meta name="app-version" content="V37-20261114-keyboard-visible-horen2-email-check"><meta name="app-version" content="V35-20261113-compact-mail-buttons-above-keyboard"><meta name="app-version" content="V34-20261113-exercise-labels-right"><meta name="app-version" content="V33-20261113-keyboard-horen2-email-no-translation"><meta name="app-version" content="V32-20261113-fresh-exam-at-every-open"><meta name="app-version" content="V30-20261113-proveri-mejl-label"><meta name="app-version" content="V29-20261113-score-column-right"><meta name="app-version" content="V28-20261113-horen3-heading-below-player">
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
 <meta name="theme-color" content="#102447"><meta name="description" content="DE-MAX Tutin — interaktivni ÖSD A2 Test 1: Lesen, Hören i Schreiben">
 <title>DE-MAX | ÖSD A2 – Test 1</title>
@@ -1026,6 +1026,96 @@ main.mail-writing-active.mail-keyboard .a2-mail-writing-layout{justify-content:f
   min-height:0!important;grid-template-rows:repeat(5,minmax(31px,1fr))!important;
   overflow-y:auto!important;
  }
+}
+
+/* V37: the visible part of the mobile screen is the entire work area when
+   the software keyboard opens. Do not let a 100dvh ancestor hide controls. */
+@media(max-width:649px){
+ #app.keyboard-input-open{
+  height:var(--live-app-height,100dvh)!important;
+  max-height:var(--live-app-height,100dvh)!important;
+  min-height:0!important;
+  overflow:hidden!important;
+ }
+ #app.keyboard-input-open>main{
+  flex:1 1 0!important;min-height:0!important;
+  padding-bottom:2px!important;overflow:hidden!important;
+ }
+ /* Hören 2: the notes scroll INSIDE their card, never behind the keyboard.
+    The two navigation buttons remain at the bottom of the visible viewport. */
+ #app.keyboard-input-open.h2-keyboard-mode>footer{
+  display:flex!important;visibility:visible!important;
+  flex:0 0 32px!important;height:32px!important;
+  min-height:32px!important;max-height:32px!important;
+  padding:2px 6px!important;gap:5px!important;
+  position:relative!important;z-index:20!important;
+  background:white!important;
+ }
+ #app.keyboard-input-open.h2-keyboard-mode>footer #prev,
+ #app.keyboard-input-open.h2-keyboard-mode>footer #next{
+  display:inline-flex!important;min-width:0!important;
+  flex:1 1 0!important;height:27px!important;
+  min-height:27px!important;max-height:27px!important;
+  font-size:10px!important;padding:2px 5px!important;
+ }
+ #app.keyboard-input-open.h2-keyboard-mode main.hearing2-scroll{
+  display:flex!important;flex-direction:column!important;min-height:0!important;
+ }
+ #app.keyboard-input-open.h2-keyboard-mode main.hearing2-scroll #pageContent{
+  flex:1 1 0!important;min-height:0!important;height:100%!important;
+  max-height:100%!important;overflow:hidden!important;
+ }
+ #app.keyboard-input-open.h2-keyboard-mode main.hearing2-scroll .hearing2-card{
+  flex:1 1 0!important;min-height:0!important;overflow:hidden!important;
+ }
+ #app.keyboard-input-open.h2-keyboard-mode main.hearing2-scroll .note-grid{
+  flex:1 1 0!important;min-height:0!important;
+  overflow-y:auto!important;overflow-x:hidden!important;
+  grid-template-rows:repeat(5,minmax(31px,1fr))!important;
+  overscroll-behavior:contain!important;-webkit-overflow-scrolling:touch!important;
+ }
+ /* Schreiben: four questions at the top, writing area in the middle,
+    Proveri mejl + Ostali bodovi always directly above the keyboard. */
+ main.mail-writing-active.mail-keyboard{
+  min-height:0!important;overflow:hidden!important;
+ }
+ main.mail-writing-active.mail-keyboard #pageContent,
+ main.mail-writing-active.mail-keyboard .a2-mail-writing-layout{
+  min-height:0!important;height:100%!important;overflow:hidden!important;
+ }
+ main.mail-writing-active.mail-keyboard .a2-mail-writing-layout{
+  display:flex!important;flex-direction:column!important;gap:3px!important;
+ }
+ main.mail-writing-active.mail-keyboard .a2-writing-questions{
+  order:1!important;flex:0 1 auto!important;
+  min-height:0!important;max-height:min(44%,138px)!important;
+  height:auto!important;overflow-y:auto!important;overflow-x:hidden!important;
+  overscroll-behavior:contain!important;
+  -webkit-overflow-scrolling:touch!important;
+ }
+ main.mail-writing-active.mail-keyboard .a2-mail-writing-editor{
+  order:2!important;flex:1 1 0!important;height:auto!important;
+  min-height:60px!important;max-height:none!important;
+  display:flex!important;overflow:hidden!important;
+ }
+ main.mail-writing-active.mail-keyboard .a2-mail-writing-editor #emailAnswer{
+  flex:1 1 0!important;min-height:25px!important;height:auto!important;
+  max-height:100%!important;overflow-y:auto!important;
+ }
+ main.mail-writing-active.mail-keyboard .ai-mail-controls{
+  order:3!important;display:flex!important;visibility:visible!important;
+  opacity:1!important;flex:0 0 32px!important;
+  height:32px!important;min-height:32px!important;max-height:32px!important;
+  width:100%!important;margin:0!important;gap:5px!important;
+  position:relative!important;z-index:20!important;
+ }
+ main.mail-writing-active.mail-keyboard .ai-mail-controls .btn{
+  display:inline-flex!important;visibility:visible!important;
+  flex:1 1 0!important;min-width:0!important;
+  height:30px!important;min-height:30px!important;max-height:30px!important;
+  padding:2px 5px!important;font-size:10px!important;
+ }
+ main.mail-writing-active.mail-keyboard .ai-mail-status{display:none!important}
 }
 
 </style>
