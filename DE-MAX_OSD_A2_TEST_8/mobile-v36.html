@@ -2245,31 +2245,51 @@ function keepFocusedInputAboveKeyboard(){
 
 /* V46 MOBILE EMAIL KEYBOARD RESTORE */
 /* V43 MAIL KEYBOARD RECOVERY: Android Back / iOS Done may hide keyboard without blurring textarea. */
+/* V47 AUTOMATIC EMAIL KEYBOARD DISMISSAL: a Samsung Back press can dismiss
+   the soft keyboard while leaving the textarea focused and without a blur event.
+   Check the actual visual viewport periodically, not just on DOM focusout. */
 let emailKeyboardSawShrink=false;
 let emailKeyboardDismissed=false;
+let emailFullViewportHeight=0;
+let emailLastViewportHeight=0;
+let emailViewportWidth=0;
+function emailVisibleHeight(){
+ const inner=Number.isFinite(window.innerHeight)?window.innerHeight:document.documentElement.clientHeight;
+ const vv=window.visualViewport;
+ const visible=vv&&Number.isFinite(vv.height)&&vv.height>100?vv.height:inner;
+ return Math.max(100,Math.min(inner,visible));
+}
 function updateMailKeyboard(){
  const focused=st.page===LAST-1&&document.activeElement?.id==='emailAnswer';
- const vv=window.visualViewport;
- const visualHeight=vv&&Number.isFinite(vv.height)?vv.height:window.innerHeight;
- const available=Math.min(window.innerHeight||visualHeight,visualHeight);
- const fullHeight=Math.max(keyboardFullHeight||0,window.innerHeight||0);
+ const current=emailVisibleHeight();
+ const inner=Number.isFinite(window.innerHeight)?window.innerHeight:current;
+ if(emailViewportWidth!==window.innerWidth){
+  emailViewportWidth=window.innerWidth;
+  emailFullViewportHeight=0;
+  emailKeyboardSawShrink=false;
+  emailKeyboardDismissed=false;
+ }
  if(!focused){
   emailKeyboardSawShrink=false;
   emailKeyboardDismissed=false;
- }else if(fullHeight>290){
-  if(available<fullHeight-Math.max(88,Math.round(fullHeight*.15))){
+  if(current>240)emailFullViewportHeight=Math.max(emailFullViewportHeight,current);
+ }else{
+  const full=Math.max(emailFullViewportHeight,keyboardFullHeight||0,inner);
+  if(full>240)emailFullViewportHeight=Math.max(emailFullViewportHeight,full);
+  const difference=emailFullViewportHeight-current;
+  if(difference>Math.max(85,emailFullViewportHeight*.14)){
    emailKeyboardSawShrink=true;
-   emailKeyboardDismissed=false;
-  }else if(emailKeyboardSawShrink&&available>=fullHeight-55){
+   // Once dismissed, leave it dismissed until the user taps the editor again.
+  }else if(emailKeyboardSawShrink && difference<Math.max(42,emailFullViewportHeight*.065)){
    emailKeyboardDismissed=true;
   }
  }
- const show=Boolean(focused&&!emailKeyboardDismissed);
- main.classList.toggle('mail-keyboard',show);
- document.getElementById('app').classList.toggle('keyboard-input-open',show);
- if(!show)document.documentElement.style.removeProperty('--live-app-height');
+ const keyboardActive=Boolean(focused&&!emailKeyboardDismissed);
+ main.classList.toggle('mail-keyboard',keyboardActive);
+ document.getElementById('app').classList.toggle('keyboard-input-open',keyboardActive);
+ if(!keyboardActive)document.documentElement.style.removeProperty('--live-app-height');
  requestAnimationFrame(syncMobileViewportHeight);
- if(show)recheckKeyboardViewport();
+ if(keyboardActive)recheckKeyboardViewport();
 }
 main.addEventListener('pointerdown',e=>{
  if(st.page===LAST-1&&e.target?.id==='emailAnswer'&&emailKeyboardDismissed){
@@ -2291,6 +2311,37 @@ window.visualViewport?.addEventListener('resize',()=>{
 window.visualViewport?.addEventListener('scroll',()=>{
  if(st.page===LAST-1)requestAnimationFrame(updateMailKeyboard);
 },{passive:true});
+/* V47 viewport watcher: catches keyboard closing even when the embedded page
+   receives no resize event and the email textarea stays focused. */
+window.setInterval(()=>{
+ if(st.page!==LAST-1 || document.visibilityState==='hidden')return;
+ const current=emailVisibleHeight();
+ const focused=document.activeElement?.id==='emailAnswer';
+ if(!focused && current>240){
+  emailFullViewportHeight=Math.max(emailFullViewportHeight,current);
+ }
+ if(Math.abs(current-emailLastViewportHeight)>2 ||
+    (emailKeyboardSawShrink&&!emailKeyboardDismissed &&
+     emailFullViewportHeight>260 && current>=emailFullViewportHeight-55)){
+  emailLastViewportHeight=current;
+  updateMailKeyboard();
+ }
+},180);
+if(navigator.virtualKeyboard?.addEventListener){
+ navigator.virtualKeyboard.addEventListener('geometrychange',()=>{
+  if(st.page!==LAST-1)return;
+  const rect=navigator.virtualKeyboard.boundingRect;
+  if(rect && rect.height===0 && emailKeyboardSawShrink){
+   emailKeyboardDismissed=true;
+   document.getElementById('app').classList.remove('keyboard-input-open');
+   main.classList.remove('mail-keyboard');
+   document.documentElement.style.removeProperty('--live-app-height');
+  }
+  requestAnimationFrame(updateMailKeyboard);
+ });
+}
+
+
 main.addEventListener('focusin',e=>{
  if(st.page===LAST-1&&e.target.id==='emailAnswer'){
   emailKeyboardSawShrink=false;emailKeyboardDismissed=false;
