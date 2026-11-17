@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#10234b">
+<title>DE-MAX Tutin – A1 mejlovi | Mobilni prikaz na računaru</title>
+<style>
+:root {--device-width:390px;color-scheme:light;}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif}
+body{background:linear-gradient(145deg,#edf3ff 0%,#e2eaf7 100%);color:#132749}
+.layout{min-height:100dvh;display:flex;flex-direction:column;align-items:center;padding:13px 12px 18px;gap:10px}
+.toolbar{width:min(900px,100%);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;background:#fff;border:1px solid #d8e2f3;border-radius:14px;padding:10px 14px;box-shadow:0 3px 16px #0b255b0c}
+.heading{display:flex;flex-direction:column;gap:2px}
+.heading strong{font-size:15px;letter-spacing:.1px;color:#0e3478}
+.heading span{font-size:11px;color:#596c8d}
+.controls{display:flex;align-items:center;gap:5px}
+.controls button,.original-link{font-size:12px;font-weight:750;padding:8px 10px;border-radius:9px;border:1px solid #cddbf0;background:#f7faff;color:#153b7a;cursor:pointer;text-decoration:none;white-space:nowrap}
+.controls button[aria-pressed="true"]{color:white;background:#144eac;border-color:#144eac}
+.controls button:hover,.original-link:hover{filter:brightness(.95)}
+.phone{flex:none;width:min(var(--device-width),calc(100vw - 38px));height:min(844px,calc(100dvh - 119px));min-height:350px;border:6px solid #1a2945;border-radius:26px;overflow:hidden;background:white;box-shadow:0 18px 50px #1734633d}
+.phone iframe{display:block;width:100%;height:100%;border:0;background:white}
+.note{font-size:11px;color:#667897;text-align:center;margin:0}
+@media(max-width:620px){
+  html,body{height:100%;overflow:hidden}
+  .layout{display:block;padding:0;height:100dvh;min-height:0}
+  .toolbar,.note{display:none}
+  .phone{width:100%;height:100dvh;min-height:0;max-height:none;border:0;border-radius:0;box-shadow:none}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+  <div class="toolbar">
+    <div class="heading">
+      <strong>DE-MAX TUTIN · A1 MEJLOVI</strong>
+      <span>Mobilni prikaz na računaru — ista vežba, izgled telefona</span>
+    </div>
+    <div class="controls" aria-label="Širina telefona">
+      <button type="button" data-size="360" aria-pressed="false" title="Uži telefon">360 px</button>
+      <button type="button" data-size="390" aria-pressed="true" title="Standardni telefon">390 px</button>
+      <button type="button" data-size="430" aria-pressed="false" title="Širi telefon">430 px</button>
+      <a class="original-link" href="./iframe.html?v=20261101-bodovi-prolaz-4" target="_blank" rel="noopener">Originalni prikaz</a>
+    </div>
+  </div>
+  <main class="phone" aria-label="Mobilna vežba mejlova">
+    <iframe src="./iframe.html?v=20261101-bodovi-prolaz-4" title="DE-MAX A1 - vežbanje mejlova u mobilnom prikazu" allow="clipboard-read; clipboard-write"></iframe>
+  </main>
+  <p class="note">Unutar telefona možeš listati zadatke, pisati i proveravati mejlove.</p>
+</div>
+<script>
+document.querySelectorAll('[data-size]').forEach(button => {
+  button.addEventListener('click', () => {
+    document.documentElement.style.setProperty('--device-width', button.dataset.size + 'px');
+    document.querySelectorAll('[data-size]').forEach(item =>
+      item.setAttribute('aria-pressed', String(item === button)));
+  });
+});
+</script>
+</body>
+</html>
