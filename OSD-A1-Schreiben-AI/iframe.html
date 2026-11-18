@@ -10,19 +10,11 @@
     html, body { width: 100%; height: 100%; margin: 0; padding: 0; overflow: hidden; background: #fff; }
     * { box-sizing: border-box; }
     .iframe-container { position: fixed; inset: 0; width: 100%; height: var(--frame-height); overflow: hidden; background: #fff; display:flex; flex-direction:column; }
-    .exit-toolbar { display:flex; flex:0 0 38px; align-items:center; padding:4px 10px; border-bottom:1px solid #d8e4f5; background:#f0f5ff; }
-    #exitMail { display:inline-flex; align-items:center; justify-content:center; min-height:29px; border:0; border-radius:7px; padding:5px 11px; background:#c61e32; color:#fff; text-decoration:none; font:800 12px/1.15 system-ui,-apple-system,"Segoe UI",sans-serif; touch-action:manipulation; }
-    #exitMail:focus-visible { outline:3px solid #286ee0;outline-offset:2px; }
     iframe { display:block; flex:1 1 0; min-height:0; width:100%; height:100%; border:0; margin:0; padding:0; background:#fff; }
-    #exitStatus { padding-left:10px; font:600 11px/1.2 system-ui,sans-serif; color:#ae2e34; }
   </style>
 </head>
 <body>
   <main class="iframe-container" aria-label="DE-MAX A1 – aplikacija za pisanje mejlova">
-    <nav class="exit-toolbar" aria-label="Izlaz iz mejlova">
-      <a id="exitMail" href="#" target="_top">← Izađi</a>
-      <span id="exitStatus" role="status" aria-live="polite"></span>
-    </nav>
     <iframe
       id="demax-mail-frame"
       src="./?v=embed-exit-1&amp;mail_embedded_wrapper=1"
@@ -33,14 +25,10 @@
     ></iframe>
   </main>
   <script>
+    // Velicina roditeljskog okvira prati vidljivi deo ekrana na mobilnom.
     (() => {
       const qs = new URLSearchParams(location.search);
       const child = document.getElementById('demax-mail-frame');
-      const exit = document.getElementById('exitMail');
-      const status = document.getElementById('exitStatus');
-
-      // 'return' je pouzdan izbor za povratak u tacnu stranicu druge aplikacije.
-      // Bez njega koristi se referrer, koji na drugim domenima moze imati samo pocetnu adresu.
       let back = null;
       try {
         const candidate = qs.get('return') || document.referrer;
@@ -51,34 +39,11 @@
           back = parsed;
         }
       } catch {}
-
-      // Unutrasnji iframe ne crta drugo dugme; spoljasnja traka je uvek dostupna.
       if (back) {
-        exit.href = back.href;
         const url = new URL(child.getAttribute('src'), location.href);
         url.searchParams.set('return', back.href);
         child.src = url.href;
       }
-      exit.addEventListener('click', event => {
-        if (window.parent !== window) {
-          // Roditeljska aplikacija moze ukloniti iframe po prijemu prve poruke.
-          window.parent.postMessage({type:'demax:emails:close'}, '*');
-          // Kompatibilnost sa ranijim integracijama u aplikaciju De-Max.
-          window.parent.postMessage({type:'demax:email-return'}, '*');
-        }
-        if (back) {
-          // Link target="_top" vraca direktno u spoljasnju aplikaciju na korisnicki klik.
-          // Sandbox glavne aplikacije mora dopustati top-navigation-by-user-activation.
-          return;
-        }
-        event.preventDefault();
-        if (window.parent === window && window.history.length > 1) {
-          window.history.back();
-        } else {
-          status.textContent = 'Za povratak koristite Nazad u glavnoj aplikaciji.';
-        }
-      });
-
       const resizeFrame = () => {
         const viewport = window.visualViewport;
         const height = Math.max(200, Math.round(viewport ? viewport.height : window.innerHeight));

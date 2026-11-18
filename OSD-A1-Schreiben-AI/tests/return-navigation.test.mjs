@@ -4,6 +4,7 @@ import test from 'node:test';
 import vm from 'node:vm';
 
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+const wrapper = readFileSync(new URL('../iframe.html', import.meta.url), 'utf8');
 const script = html.match(/<script id="demax-exercise-return">([\s\S]*?)<\/script>/)[1];
 const course = 'https://de-max-a-1-aplikacija.replit.app/course/a1-priprema';
 const preview = 'https://navigation-test.archer.replit.dev';
@@ -175,4 +176,10 @@ test('before initialization a fast click cannot follow a stale production link o
     assert.equal(/\bhref=/.test(anchor), false);
     assert.equal(anchor.includes('target="_top"'), false);
   }
+});
+
+test('embedded email wrapper has no Izađi button and keeps the writing app full-screen', () => {
+  assert.doesNotMatch(wrapper, /id="exitMail"|Izađi|exit-toolbar/i);
+  assert.match(wrapper, /id="demax-mail-frame"/);
+  assert.match(wrapper, /visualViewport/);
 });
