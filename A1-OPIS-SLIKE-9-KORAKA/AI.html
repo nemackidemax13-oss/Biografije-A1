@@ -1443,7 +1443,7 @@ function pauseMode(mode){if(!synth)return;if(readingMode!==mode){playRows(mode);
 function toggleDialogueTranslation(){
  const area=$("dialogue"),button=$("translationDialogue");
  const showing=area.classList.toggle("hide-translation")===false;
- button.textContent=showing?"Sakrij prevod":"Prevod";button.setAttribute("aria-pressed",String(showing));
+ button.textContent="Prevod";button.setAttribute("aria-pressed",String(showing));
  requestAnimationFrame(()=>paginateDialogue(readingMode==="dialog"?readingIndex:dialoguePages[dialoguePageIndex]?.[0]||0));
 }
 $("translationDialogue").onclick=toggleDialogueTranslation;
@@ -1720,7 +1720,7 @@ $("fontMinus").onclick=()=>changeFullFont(-.1);
 $("translateFull").onclick=()=>{
  fullTranslated=!fullTranslated;
  $("fullDescription").classList.toggle("show-serbian",fullTranslated);
- $("translateFull").textContent=fullTranslated?"Sakrij prevod":"Prevod";
+ $("translateFull").textContent="Prevod";
  $("translateFull").setAttribute("aria-pressed",String(fullTranslated));
  requestAnimationFrame(fitFullDescription);
 };
@@ -1870,7 +1870,7 @@ $("summaryTranslate").onclick=()=>{
  if(next)renderSummaryBilingual();
  $("summarySerbian").hidden=!next;
  document.querySelector("#screen1 .summary-editor-wrap").classList.toggle("with-translation",next);
- $("summaryTranslate").textContent=next?"Sakrij prevod":"Prevod";
+ $("summaryTranslate").textContent="Prevod";
  $("summaryTranslate").setAttribute("aria-pressed",String(next));
  if(next&&summaryEdited)$("summaryStatus").textContent="Prevod je izvorni AI prevod, pre izmena nemačkog teksta.";
 };
