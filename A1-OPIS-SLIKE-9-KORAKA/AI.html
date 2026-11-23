@@ -1097,6 +1097,15 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
 }
 
 #aiWait[hidden]{display:none!important}#screen0.ai-waiting .demax-text-brand{display:none!important}#screen0.ai-waiting #status{display:none!important}#screen0 #aiWait{flex:0 0 auto;min-height:0;width:100%;box-sizing:border-box;display:flex;justify-content:center;align-items:center;padding:2px 6px;color:inherit}#aiWait .wait-card{width:100%;max-width:420px;display:grid;grid-template-columns:48px 1fr;column-gap:9px;align-items:center;text-align:left;padding:3px 0;box-sizing:border-box}#aiWait .wait-ring{grid-row:1 / 5;width:42px;height:42px;border:3px solid #dcece2;border-top-color:#169447;border-radius:50%;display:grid;place-items:center;position:relative}#aiWait .wait-ring:before{content:'';position:absolute;inset:-3px;border:3px solid transparent;border-top-color:#169447;border-radius:50%;animation:aiWaitSpin 1.4s linear infinite}#aiWait strong{font-size:19px;color:#169447}#aiWait h2{font-size:14px;line-height:1.15;margin:0}#aiWait p{font-size:12px;line-height:1.2;margin:1px 0}#aiWait progress{width:100%;height:5px;accent-color:#169447;margin:2px 0}#aiWaitHint{font-size:11px!important}@keyframes aiWaitSpin{to{transform:rotate(360deg)}}@media(prefers-reduced-motion:reduce){#aiWait .wait-ring:before{animation:none}}
+
+/* Slightly larger complete photos; keep the existing page layout. */
+#screen0.photo-added #photo0{max-height:52dvh!important;max-width:min(100%,calc(100vw - 53px))!important}
+#screen1 .summary-image-wrap{flex-basis:clamp(140px,27dvh,260px)!important;height:clamp(140px,27dvh,260px)!important}
+#screen2 .full-photo-line{flex-basis:clamp(118px,23dvh,220px)!important;height:clamp(118px,23dvh,220px)!important}
+#screen3 .dialogue-wide-photo{flex-basis:clamp(106px,21dvh,205px)!important;height:clamp(106px,21dvh,205px)!important}
+@media(max-height:650px){#screen1 .summary-image-wrap{flex-basis:clamp(100px,22dvh,158px)!important;height:clamp(100px,22dvh,158px)!important}#screen2 .full-photo-line,#screen3 .dialogue-wide-photo{flex-basis:clamp(80px,18dvh,118px)!important;height:clamp(80px,18dvh,118px)!important}}
+@media(max-height:620px){#screen0.photo-added #photo0{max-height:42dvh!important}}
+#screen1 .summary-auto[aria-pressed="true"],#screen3 .dialogue-auto[aria-pressed="true"]{box-shadow:inset 0 0 0 2px #ffffff88!important;background:#116d3b!important}
 </style></head><body><main class="app">
 <header class="header"><h1>Opis slike</h1></header>
 <section class="screen active" id="screen0"><div class="scroll"><div class="panel"><h2 class="title" id="uploadHeading">Ubaci sliku za opis</h2><label class="upload"><span class="upload-icon">📷</span><span class="upload-title">Izaberi fotografiju</span><span class="upload-sub">Dodirni ovde za galeriju ili kameru</span><input id="file" type="file" accept="image/*"></label><div class="photo-reveal" id="photoReveal"><span class="photo-glow" aria-hidden="true"></span><img class="picture" id="photo0" alt="Izabrana slika"><span class="photo-success" aria-hidden="true">✓</span><span class="sparkle sp1" aria-hidden="true">✦</span><span class="sparkle sp2" aria-hidden="true">✧</span><span class="sparkle sp3" aria-hidden="true">✦</span></div><p class="status" id="status">Prvo izaberi sliku.</p></div><div id="aiWait" hidden role="status" aria-live="polite"><div class="wait-card"><div class="wait-ring"><strong id="aiWaitNumber" aria-hidden="true">30</strong></div><h2>Molimo, sačekajte...</h2><p>Opis slike i dijalog se pripremaju.</p><progress id="aiWaitProgress" max="30" value="0" aria-label="Procenjeni napredak"></progress><p id="aiWaitHint" aria-live="off">Procenjeno preostalo vreme: 30 s</p></div></div><div class="demax-text-brand" aria-label="De-Max A1"><span>De-Max</span><strong>A1</strong></div><input id="endpoint" type="hidden" value="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev"></div><div class="footer upload-footer"><button class="action pale" id="resumeAfterGeneration" type="button" hidden>Nastavi opis ❯</button><button class="action green" id="analyze" disabled>Automatski opiši sliku</button></div></section>
@@ -1263,7 +1272,7 @@ function updateDialogueAudioUI(){
   b.textContent=active?"■":"▶";b.setAttribute("aria-pressed",String(active));
  }
  const auto=$("readDialogue");
- if(auto){const playing=readingMode==="dialog"&&dialogueAuto;auto.textContent=playing?"■ Auto STOP":"▶ Auto";auto.setAttribute("aria-pressed",String(playing))}
+ if(auto){const playing=readingMode==="dialog"&&dialogueAuto;auto.textContent="▶ Auto";auto.setAttribute("aria-pressed",String(playing))}
 }
 
 function pauseMode(mode){if(!synth)return;if(readingMode!==mode)return;if(!paused){synth.pause();paused=true;$((mode==="desc"?"descriptionStatus":"dialogueStatus")).textContent="Čitanje pauzirano."}else{synth.resume();paused=false;$((mode==="desc"?"descriptionStatus":"dialogueStatus")).textContent="Čitanje nastavljeno."}}
@@ -1414,7 +1423,7 @@ fullTranslated=false;renderFullDescription();$("translateFull").textContent="Pre
 generatedLocked=true;reachedDialogue=false;
 setStatus("Moj opis, detaljan opis i dijalog su spremni.");if(activeDialogue.length)aiWaitReadySound();view(1);
 }catch(e){setStatus("Greška: "+e.message,true)}finally{stopAIWait();syncGenerationGate()}};
-$("readDialogue").onclick=()=>{if(readingMode==="dialog"&&dialogueAuto&&!paused){stopSpeech();return}if(readingMode==="dialog"&&paused){synth.resume();paused=false;updateDialogueAudioUI();return}playRows("dialog",0,true)};
+$("readDialogue").onclick=()=>{if(readingMode==="dialog"&&dialogueAuto){stopSpeech();return}if(readingMode==="dialog"&&paused){synth.resume();paused=false;updateDialogueAudioUI();return}playRows("dialog",0,true)};
 $("pauseDialogue").onclick=()=>pauseMode("dialog");
 $("stopDialogue").onclick=()=>stopSpeech();
 
@@ -1556,7 +1565,7 @@ $("translateFull").onclick=()=>{
 function updateSummaryAudioUI(){
  const b=$("summaryAuto");if(!b)return;
  const playing=readingMode==="summary";
- b.textContent=playing?"■ Auto STOP":"▶ Auto";b.setAttribute("aria-pressed",String(playing));
+ b.textContent="▶ Auto";b.setAttribute("aria-pressed",String(playing));
  const pause=$("summaryPause");
  if(pause){
   pause.textContent=playing&&paused?"▶":"⏸";
@@ -1662,7 +1671,7 @@ function playSummary(){
  next()
 }
 $("summaryAuto").onclick=()=>{
- if(readingMode==="summary"){if(paused){synth.resume();paused=false;updateSummaryAudioUI()}else stopSpeech();return}
+ if(readingMode==="summary"){stopSpeech();return}
  playSummary()
 };
 $("summaryPause").onclick=()=>{
