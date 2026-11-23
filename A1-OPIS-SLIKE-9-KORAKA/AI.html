@@ -1111,6 +1111,21 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
 #screen1 .summary-image-wrap{flex-basis:clamp(155px,34dvh,320px)!important;height:clamp(155px,34dvh,320px)!important;width:100%!important;padding:0!important}
 #screen1 .summary-image-wrap #photo1{object-fit:contain!important;width:100%!important;height:100%!important}
 @media(max-height:650px){#screen1 .summary-image-wrap{flex-basis:clamp(110px,28dvh,180px)!important;height:clamp(110px,28dvh,180px)!important}}
+
+/* DE-MAX countdown v6: larger intact photo, balanced single-row controls */
+#screen1 .summary-image-wrap{flex-basis:clamp(165px,39dvh,365px)!important;height:clamp(165px,39dvh,365px)!important}
+#screen2 .full-photo-line{flex-basis:clamp(125px,26dvh,245px)!important;height:clamp(125px,26dvh,245px)!important}
+#screen1 .summary-controls,#screen3 .dialogue-toolbar{display:flex!important;align-items:center!important;flex-wrap:nowrap!important;gap:4px!important}
+#screen1 .summary-controls button,#screen3 .dialogue-toolbar button{height:30px!important;min-height:30px!important;line-height:1.1!important;min-width:0!important}
+#screen1 .summary-controls .summary-stop,#screen1 .summary-controls .summary-translate,#screen3 .dialogue-toolbar .dialogue-stop,#screen3 .dialogue-toolbar .dialogue-translate{flex:0 1 auto!important;padding:2px 5px!important;font-size:10px!important}
+#screen1 .summary-controls .summary-size,#screen3 .dialogue-toolbar .dialogue-size{flex:0 0 32px!important;width:32px!important;max-width:32px!important;font-size:17px!important;padding:0!important}
+#screen2 .full-right-tools{align-items:center!important;gap:4px!important}
+#screen2 .full-font-btn{width:32px!important;min-width:32px!important;height:26px!important;line-height:24px!important;font-size:16px!important}
+#screen2 .full-mini-auto,#screen2 .full-mini-translate{height:26px!important;min-height:26px!important;line-height:20px!important}
+#screen2 .full-mini-translate{padding:2px 4px!important}
+@media(max-height:650px){#screen1 .summary-image-wrap{flex-basis:clamp(110px,31dvh,200px)!important;height:clamp(110px,31dvh,200px)!important}#screen2 .full-photo-line{flex-basis:clamp(85px,20dvh,135px)!important;height:clamp(85px,20dvh,135px)!important}}
+@media(max-width:360px){#screen1 .summary-controls,#screen3 .dialogue-toolbar{gap:2px!important}#screen1 .summary-controls .summary-size,#screen3 .dialogue-toolbar .dialogue-size{flex-basis:28px!important;width:28px!important;max-width:28px!important}}
+
 </style></head><body><main class="app">
 <header class="header"><h1>Opis slike</h1></header>
 <section class="screen active" id="screen0"><div class="scroll"><div class="panel"><h2 class="title" id="uploadHeading">Ubaci sliku za opis</h2><label class="upload"><span class="upload-icon">📷</span><span class="upload-title">Izaberi fotografiju</span><span class="upload-sub">Dodirni ovde za galeriju ili kameru</span><input id="file" type="file" accept="image/*"></label><div class="photo-reveal" id="photoReveal"><span class="photo-glow" aria-hidden="true"></span><img class="picture" id="photo0" alt="Izabrana slika"><span class="photo-success" aria-hidden="true">✓</span><span class="sparkle sp1" aria-hidden="true">✦</span><span class="sparkle sp2" aria-hidden="true">✧</span><span class="sparkle sp3" aria-hidden="true">✦</span></div><p class="status" id="status">Prvo izaberi sliku.</p></div><div id="aiWait" hidden role="status" aria-live="polite"><div class="wait-card"><div class="wait-ring"><strong id="aiWaitNumber" aria-hidden="true">30</strong></div><h2>Molimo, sačekajte...</h2><p>Opis slike i dijalog se pripremaju.</p><progress id="aiWaitProgress" max="30" value="0" aria-label="Procenjeni napredak"></progress><p id="aiWaitHint" aria-live="off">Procenjeno preostalo vreme: 30 s</p></div></div><div class="demax-text-brand" aria-label="De-Max A1"><span>De-Max</span><strong>A1</strong></div><input id="endpoint" type="hidden" value="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev"></div><div class="footer upload-footer"><button class="action pale" id="resumeAfterGeneration" type="button" hidden>Nastavi opis ❯</button><button class="action green" id="analyze" disabled>Automatski opiši sliku</button></div></section>
