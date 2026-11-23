@@ -1161,6 +1161,38 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
  #screen1 .summary-controls,#screen3 .dialogue-toolbar{gap:4px!important}
 }
 
+
+/* DE-MAX countdown v9 — continuous edge-to-edge equal-height controls */
+#screen1 .summary-panel,#screen2 .full-description-panel{align-items:stretch!important}
+#screen1 .summary-controls,#screen3 .dialogue-toolbar{
+ display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr))!important;
+ align-self:stretch!important;align-items:stretch!important;justify-content:stretch!important;
+ width:100%!important;max-width:none!important;min-width:0!important;
+ margin:0!important;padding:0!important;gap:3px!important;
+}
+#screen1 .summary-controls > button,#screen3 .dialogue-toolbar > button{
+ box-sizing:border-box!important;display:flex!important;align-items:center!important;justify-content:center!important;
+ width:100%!important;min-width:0!important;max-width:none!important;
+ height:32px!important;min-height:32px!important;max-height:32px!important;
+ margin:0!important;padding:0 1px!important;white-space:nowrap!important;
+ justify-self:stretch!important;align-self:stretch!important;transform:none!important;
+}
+#screen1 .summary-controls > .summary-size,#screen3 .dialogue-toolbar > .dialogue-size{font-size:19px!important}
+#screen1 .summary-controls > .summary-pause{font-size:17px!important}
+#screen2 .full-list-toolbar{
+ display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;
+ width:100%!important;max-width:none!important;align-self:stretch!important;
+ margin:0!important;padding:0!important;gap:3px!important;
+}
+#screen2 .full-list-toolbar .full-right-tools{display:contents!important}
+#screen2 .full-list-toolbar button{
+ display:flex!important;align-items:center!important;justify-content:center!important;
+ width:100%!important;min-width:0!important;max-width:none!important;
+ height:30px!important;min-height:30px!important;max-height:30px!important;
+ margin:0!important;padding:0 1px!important;white-space:nowrap!important;
+}
+#screen2 .full-list-toolbar .full-font-btn{font-size:19px!important}
+
 </style></head><body><main class="app">
 <header class="header"><h1>Opis slike</h1></header>
 <section class="screen active" id="screen0"><div class="scroll"><div class="panel"><h2 class="title" id="uploadHeading">Ubaci sliku za opis</h2><label class="upload"><span class="upload-icon">📷</span><span class="upload-title">Izaberi fotografiju</span><span class="upload-sub">Dodirni ovde za galeriju ili kameru</span><input id="file" type="file" accept="image/*"></label><div class="photo-reveal" id="photoReveal"><span class="photo-glow" aria-hidden="true"></span><img class="picture" id="photo0" alt="Izabrana slika"><span class="photo-success" aria-hidden="true">✓</span><span class="sparkle sp1" aria-hidden="true">✦</span><span class="sparkle sp2" aria-hidden="true">✧</span><span class="sparkle sp3" aria-hidden="true">✦</span></div><p class="status" id="status">Prvo izaberi sliku.</p></div><div id="aiWait" hidden role="status" aria-live="polite"><div class="wait-card"><div class="wait-ring"><strong id="aiWaitNumber" aria-hidden="true">30</strong></div><h2>Molimo, sačekajte...</h2><p>Opis slike i dijalog se pripremaju.</p><progress id="aiWaitProgress" max="30" value="0" aria-label="Procenjeni napredak"></progress><p id="aiWaitHint" aria-live="off">Procenjeno preostalo vreme: 30 s</p></div></div><div class="demax-text-brand" aria-label="De-Max A1"><span>De-Max</span><strong>A1</strong></div><input id="endpoint" type="hidden" value="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev"></div><div class="footer upload-footer"><button class="action pale" id="resumeAfterGeneration" type="button" hidden>Nastavi opis ❯</button><button class="action green" id="analyze" disabled>Automatski opiši sliku</button></div></section>
