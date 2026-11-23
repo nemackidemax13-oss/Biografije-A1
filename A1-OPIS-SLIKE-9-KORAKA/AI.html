@@ -1320,6 +1320,29 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
 #screen3 .dialogue-head-copy #scene{width:100%!important;flex:1 1 100%!important;text-align:center!important;margin:0 auto!important}
 #screen3 .dialogue-head-copy .title{display:none!important}
 
+/* DE-MAX v21 – ordered detailed description, mobile reading cards */
+#screen2 .full-description-panel{gap:5px!important;padding:5px!important}
+#screen2 .detail-heading-v21{font:850 15px/1.15 system-ui,Arial;text-align:center;color:#183f70;margin:0}
+#screen2 .full-photo-line{flex:0 0 clamp(85px,23dvh,215px)!important;height:clamp(85px,23dvh,215px)!important;background:#f1f6fc!important}
+#screen2 .full-photo-line #photo2{object-fit:contain!important;width:auto!important;height:100%!important;max-width:100%!important;max-height:100%!important}
+#screen2 .full-list-toolbar{display:grid!important;grid-template-columns:1.25fr 1.15fr .8fr .8fr!important;gap:5px!important}
+#screen2 .full-list-toolbar .full-right-tools{display:contents!important}
+#screen2 .full-list-toolbar button{height:35px!important;min-height:35px!important;max-height:35px!important;font-weight:800}
+#screen2 #fullDescription{border:0!important;background:transparent!important;padding:2px!important}
+#screen2 #fullDescription .full-step{border:0!important;padding:0!important;margin:0!important}
+#screen2 #fullDescription .full-step-title{font:800 12px/1.25 system-ui,Arial!important;color:#365a7e!important;text-shadow:none!important;margin:1px 0 5px!important}
+#screen2 #fullDescription .full-step-lines{gap:5px!important}
+#screen2 #fullDescription .full-line{display:grid!important;grid-template-columns:25px minmax(0,1fr) 32px;align-items:center!important;gap:6px!important;border:1px solid #d8e7dc!important;border-radius:9px!important;background:#f5fbf7!important;padding:6px!important;margin:0!important;min-height:42px!important}
+#screen2 #fullDescription .detail-number-v21{display:grid;place-items:center;background:#168447;color:white;border-radius:50%;width:23px;height:23px;font:800 11px/1 system-ui,Arial;align-self:start;margin-top:2px}
+#screen2 #fullDescription .full-step-de{font-size:calc(16px * var(--font-scale,1))!important;line-height:1.28!important;color:#126339!important;font-weight:750!important;white-space:normal!important}
+#screen2 #fullDescription .full-step-sr{font-size:calc(12.5px * var(--font-scale,1))!important;line-height:1.24!important;color:#b5273c!important;margin-top:4px!important}
+#screen2 #fullDescription .full-line-play{width:32px!important;height:32px!important;min-height:32px!important;border-radius:8px!important;font-size:13px!important}
+#screen2 #fullDescription .full-line.audio-active{background:#fff2bf!important;border-color:#dfb527!important}
+#screen2 .desc-page-nav{height:34px!important;min-height:34px!important;flex-basis:34px!important;border-radius:8px!important}
+#screen2 .desc-page-nav button{height:30px!important;min-height:30px!important;width:52px!important;flex-basis:52px!important;font-size:17px!important}
+#screen2 #descPageLabel{font-size:11px!important}
+#screen2 .footer .action{min-height:36px!important}
+@media(max-height:690px){#screen2 .full-photo-line{flex-basis:clamp(66px,17dvh,112px)!important;height:clamp(66px,17dvh,112px)!important}#screen2 #fullDescription .full-line{padding:4px!important;gap:4px!important}#screen2 .full-description-panel{gap:3px!important}}
 </style></head><body><main class="app">
 <header class="header"><h1>Opis slike</h1></header>
 <section class="screen active" id="screen0"><div class="scroll"><div class="panel"><h2 class="title" id="uploadHeading">Ubaci sliku za opis</h2><label class="upload"><span class="upload-icon">📷</span><span class="upload-title">Izaberi fotografiju</span><span class="upload-sub">Dodirni ovde za galeriju ili kameru</span><input id="file" type="file" accept="image/*"></label><div class="photo-reveal" id="photoReveal"><span class="photo-glow" aria-hidden="true"></span><img class="picture" id="photo0" alt="Izabrana slika"><span class="photo-success" aria-hidden="true">✓</span><span class="sparkle sp1" aria-hidden="true">✦</span><span class="sparkle sp2" aria-hidden="true">✧</span><span class="sparkle sp3" aria-hidden="true">✦</span></div><p class="status" id="status">Prvo izaberi sliku.</p></div><div id="aiWait" hidden role="status" aria-live="polite"><div class="wait-card"><div class="wait-ring" aria-hidden="true"></div><h2>Molimo, sačekajte…</h2><p>AI analizira fotografiju.</p><p class="wait-sub">Pripremamo opis slike i dijalog na nemačkom jeziku.</p></div></div><div class="demax-text-brand" aria-label="De-Max A1"><span>De-Max</span><strong>A1</strong></div><input id="endpoint" type="hidden" value="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev"></div><div class="footer upload-footer"><button class="action pale" id="resumeAfterGeneration" type="button" hidden>Nastavi opis ❯</button><button class="action green" id="analyze" disabled>Automatski opiši sliku</button></div></section>
@@ -1338,14 +1361,14 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
  <label class="summary-label" for="summaryGerman">Moj kompletan opis na nemačkom</label>
  <div class="summary-editor-wrap"><textarea id="summaryGerman" class="summary-editor" lang="de" spellcheck="false" aria-label="Kompletan opis slike na nemačkom koji možeš uređivati"></textarea><div id="summaryReading" class="summary-reading" lang="de" role="status" aria-label="Označavanje nemačkog teksta tokom izgovora" hidden></div><div id="summarySerbian" class="summary-serbian" lang="sr" hidden aria-label="Srpski prevod kompletnog opisa"></div></div>
  <p id="summaryStatus" class="summary-status" role="status" aria-live="polite" aria-atomic="true"></p>
-</div></div><div class="footer"><button class="action red" type="button" id="summaryBack" aria-label="Nazad" title="Nazad">❮</button><button class="action green" type="button" id="summaryDetail">Dijalog ❯</button></div></section>
+</div></div><div class="footer"><button class="action red" type="button" id="summaryBack" aria-label="Nazad" title="Nazad">❮</button><button class="action green" type="button" id="summaryDetail">Detaljan opis ❯</button></div></section>
 <section class="screen" id="screen2"><div class="scroll full-description-scroll"><div class="panel full-description-panel">
  <div class="full-photo-line"><img class="picture small" id="photo2" alt="Slika za detaljan opis"></div>
- <div class="full-list-toolbar"><button class="full-mini-auto" id="autoFull" type="button" aria-label="Automatsko slušanje trenutne stranice opisa" aria-pressed="false">▶ Auto</button><div class="full-right-tools"><button class="full-mini-translate" id="translateFull" type="button" aria-pressed="false">Prevod</button><button class="full-font-btn" id="fontPlus" type="button" aria-label="Uvećaj tekst" title="Uvećaj tekst">+</button><button class="full-font-btn" id="fontMinus" type="button" aria-label="Smanji tekst" title="Smanji tekst">−</button></div></div>
- <div id="fullDescription" class="full-description-text full-structured-description" role="region" aria-label="Moj opis slike na nemačkom jeziku: koraci 1 do 6 ili 7 do 9"></div>
+ <h2 class="detail-heading-v21">Detaljan opis slike</h2><div class="full-list-toolbar"><button class="full-mini-auto" id="autoFull" type="button" aria-label="Automatsko slušanje trenutne stranice opisa" aria-pressed="false">▶ Auto</button><div class="full-right-tools"><button class="full-mini-translate" id="translateFull" type="button" aria-pressed="false">Prevod</button><button class="full-font-btn" id="fontPlus" type="button" aria-label="Uvećaj tekst" title="Uvećaj tekst">+</button><button class="full-font-btn" id="fontMinus" type="button" aria-label="Smanji tekst" title="Smanji tekst">−</button></div></div>
+ <div id="fullDescription" class="full-description-text full-structured-description" role="region" aria-label="Detaljan opis: sve rečenice redom"></div>
  <nav class="desc-page-nav" aria-label="Listanje koraka opisa"><button type="button" id="descPrev" aria-label="Prethodna stranica opisa">❮</button><span id="descPageLabel" aria-live="polite">Stranica 1/2</span><button type="button" id="descNext" aria-label="Sledeća stranica opisa">❯</button></nav>
  <p class="muted" id="fullStatus">Kompletan tekst na nemačkom.</p></div></div><div class="footer"><button class="action pale" id="backFromFull">❮ Moj opis</button><button class="action green" id="goDialogue">Dijalog ❯</button></div></section>
-<section class="screen" id="screen3"><div class="scroll" id="dialogueScroll"><div class="panel dialogue-top"><div class="dialogue-wide-photo"><img class="picture small" id="photo3" alt="Fotografija za vežbu dijaloga"></div><div class="dialogue-head-row"><div class="dialogue-head-copy"><h2 class="title">3. Dijalog A i B · Učenici</h2><div id="scene" class="pill">Situacija prema slici</div></div></div><div class="dialogue-toolbar" role="group" aria-label="Slušanje, prevod i veličina teksta"><button class="dialogue-auto" id="readDialogue" type="button" aria-pressed="false">▶ Auto</button><button class="dialogue-pause" id="pauseDialogue" type="button" aria-label="Pauziraj ili nastavi slušanje">⏸</button><button class="dialogue-stop" id="stopDialogue" type="button">■ Stop</button><button class="dialogue-translate" id="translationDialogue" type="button" aria-pressed="false">Prevod</button><button class="dialogue-size" id="dialogueFontMinus" type="button" aria-label="Smanji tekst dijaloga">−</button><button class="dialogue-size" id="dialogueFontPlus" type="button" aria-label="Uvećaj tekst dijaloga">+</button></div><p class="muted" id="dialogueStatus" style="text-align:center">Dodirni ▶ uz rečenicu ili uključi Auto.</p></div><div id="dialogue" class="hide-translation" aria-label="Dijalog učenika A i B bez skrolovanja"></div><div class="dialogue-page-nav" id="dialoguePager"><button type="button" id="dialoguePrev" aria-label="Prethodne replike">❮</button><span id="dialoguePageLabel" aria-live="polite"></span><button type="button" id="dialogueNext" aria-label="Sledeće replike">❯</button></div></div><div class="footer"><button class="action pale" id="backToDescription">❮ Moj opis</button><button class="action gold" id="restart">Nova slika ↻</button></div></section>
+<section class="screen" id="screen3"><div class="scroll" id="dialogueScroll"><div class="panel dialogue-top"><div class="dialogue-wide-photo"><img class="picture small" id="photo3" alt="Fotografija za vežbu dijaloga"></div><div class="dialogue-head-row"><div class="dialogue-head-copy"><h2 class="title">3. Dijalog A i B · Učenici</h2><div id="scene" class="pill">Situacija prema slici</div></div></div><div class="dialogue-toolbar" role="group" aria-label="Slušanje, prevod i veličina teksta"><button class="dialogue-auto" id="readDialogue" type="button" aria-pressed="false">▶ Auto</button><button class="dialogue-pause" id="pauseDialogue" type="button" aria-label="Pauziraj ili nastavi slušanje">⏸</button><button class="dialogue-stop" id="stopDialogue" type="button">■ Stop</button><button class="dialogue-translate" id="translationDialogue" type="button" aria-pressed="false">Prevod</button><button class="dialogue-size" id="dialogueFontMinus" type="button" aria-label="Smanji tekst dijaloga">−</button><button class="dialogue-size" id="dialogueFontPlus" type="button" aria-label="Uvećaj tekst dijaloga">+</button></div><p class="muted" id="dialogueStatus" style="text-align:center">Dodirni ▶ uz rečenicu ili uključi Auto.</p></div><div id="dialogue" class="hide-translation" aria-label="Dijalog učenika A i B bez skrolovanja"></div><div class="dialogue-page-nav" id="dialoguePager"><button type="button" id="dialoguePrev" aria-label="Prethodne replike">❮</button><span id="dialoguePageLabel" aria-live="polite"></span><button type="button" id="dialogueNext" aria-label="Sledeće replike">❯</button></div></div><div class="footer"><button class="action pale" id="backToDescription">❮ Detaljan opis</button><button class="action gold" id="restart">Nova slika ↻</button></div></section>
 <div class="journey-progress" id="journeyProgress" role="progressbar" aria-label="Napredak: slika, moj opis i dijalog" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="journey-progress-fill" id="journeyFill"></div></div>
 </main>
 <script src="../DE_MAX_A1_DIJALOZI_40_DATA_01.js?v=20261018"></script>
@@ -1372,10 +1395,10 @@ function stopAIWait(){$("aiWait").hidden=true;$("screen0").classList.remove("ai-
 function startAIWait(){initAIWaitAudio();$("file").disabled=true;$("aiWait").hidden=false;$("screen0").classList.add("ai-waiting");}
 function setStatus(t,bad=false){$("status").textContent=t;$("status").className="status"+(bad?" error":"")}
 function updateJourneyProgress(){
- const amount=currentPage===0?0:currentPage===1?50:100;
+ const amount=[0,33,67,100][currentPage]??0;
  $("journeyFill").style.width=amount+"%";
  $("journeyProgress").setAttribute("aria-valuenow",String(amount));
- $("journeyProgress").setAttribute("aria-valuetext",currentPage===3?"3. Dijalog":currentPage===1?"2. Moj opis slike":"1. Slika");
+ $("journeyProgress").setAttribute("aria-valuetext",["Slika","Moj opis","Detaljan opis","Dijalog"][currentPage]);
 }
 function syncGenerationGate(){
  const locked=generatedLocked&&!reachedDialogue;
@@ -1386,7 +1409,7 @@ function syncGenerationGate(){
  if(locked&&currentPage===0)setStatus("Nova slika je dostupna tek kada dođeš do dijaloga.");
 }
 function view(n){
- if(n===2)n=3;
+ 
  stopSpeech();currentPage=n;
  if(n===3&&generatedLocked)reachedDialogue=true;
  syncGenerationGate();
@@ -1525,7 +1548,8 @@ try{
   visualAccuracyInstructions:"PRECIZNOST I REDOSLED SU OBAVEZNI. Opisi samo ono sto je stvarno vidljivo na priloženoj fotografiji, bez izmisljanja. PRE PISANJA proveri broj osoba, polozaj (sedi= sitzt, stoji=steht), levu i desnu stranu, odecu, boje, kosu, bradu, naocare, predmete i mesto. KOMPLETAN OPIS mora da ide ovim redom: (1) UVOD, npr. 'Auf diesem Bild sehe ich zwei Personen, einen Mann und eine Frau.' samo ako su tacno dve osobe i upravo muskarac i zena. (2) MESTO, npr. 'Die Personen sind im Supermarkt.' iskljucivo ako supermarket jeste prepoznatljiv. (3) PRVA OSOBA: opisi SVE vidljive detalje PRVE osobe zajedno, bez prelazenja na drugu osobu: polozaj i leva/desna strana, stas, naocare, brada, odeca redom po komadima i bojama, kosa, na kraju procena godina uz 'Ich denke ... ungefaehr ...', samo ako je procena opravdana. (4) DRUGA OSOBA: opisi SVE vidljive detalje druge osobe zajedno po ISTOM redosledu; nikada nemoj mesati muskarca i zenu po recenicama. Ako su vidljivi muskarac i zena, prvo opisi CELOG MUSKARCA, zatim CELU ZENU, nezavisno od toga ko je levo/desno. Kod vise osoba opisi svaku osobu u jednoj povezanoj celini. (5) TEK NA KRAJU opisi stvari u prvom planu, police, objekte i pozadinu, samo ono sto se zaista vidi. (6) Ako je opravdano, moze blaga pretpostavka sa 'Ich denke ...', ali nikad kao sigurna cinjenica. (7) Zavrsi sa 'Das war meine Bildbeschreibung.' Primeri strukture: 'Der Mann ist schlank. Der Mann steht rechts. Der Mann traegt eine Brille. Der Mann hat einen kurzen Bart. Der Mann traegt eine schwarze Jacke. Der Mann traegt einen roten Pullover. Der Mann hat kurze dunkelbraune Haare. Ich denke, der Mann ist ungefaehr 30 Jahre alt.' PA TEK ONDA 'Die Frau ist schlank. Die Frau steht links. Die Frau traegt einen beigen Mantel. Die Frau traegt einen roten Schal. Die Frau traegt eine schwarze Bluse. Die Frau hat mittellange blonde Haare. Ich denke, die Frau ist ungefaehr 30 Jahre alt.' PA TEK ONDA 'Auf dem Bild sehe ich ein Regal. Im Hintergrund sehe ich noch ein Regal.' To su SAMO primeri jezika i redosleda, NIKAKO tvrdnje koje smeju automatski da se primene na drugu sliku! Ako osoba sedi, nikada ne pisi da stoji. Ne izmisljaj radnje, razgovore, prodavnicu, robu, godine, boju, pol ili predmete. Radnju i nameru nagovesti samo ako postoji vizuelno opravdanje, inace preskoci. Isto pravilo redosleda primeni na moj kompletan opis, opis u 10 koraka i zavrsni sazetak; 10 koraka zadrzi u postojecem formatu bez ukidanja koraka, ali u sastavljenom opisu grupisi recenice po osobi. Koristi jednostavne prirodne recenice A1 na gramaticki ispravnom nemackom, sa srpskim prevodom.",
   dialogueAccuracyInstructions:"NAPRAVI PRIRODAN STVARNI A1 DIJALOG A i B PREMA KONKRETNOJ FOTOGRAFIJI. Pre pisanja proveri ko je gde, ko sedi ili stoji, ko sta drzi, sta osoba gleda i sta je oko nje. Izaberi situaciju samo prema vidljivom kontekstu. Ako fotografija jasno prikazuje supermarket i kupovinu, razgovor moze biti prirodan dijalog o tacno prepoznatljivim namirnicama, ceni ili izboru; ako prikazuje recepciju, razgovor na recepciji; ako auto-radionicu, razgovor o popravci. To su samo primeri, ne preslikavaj ih na neodgovarajucu fotografiju. Dve osobe razgovaraju smisleno, odgovaraju jedna drugoj i zadrzavaju iste uloge tokom celog dijaloga. Ne ubacuj nevidljive predmete, proizvode ili izmisljene potvrde da su nesto uradili; prirodne replike mogu biti hipoteticki scenario za vezbu i ne smeju se predstavljati kao cinjenica da se razgovor zaista desio na slici. Ako namera ili kontekst nisu jasni, koristi jednostavan neutralan dijalog o vidljivim predmetima i okruzenju. Bez mesanja jakne i haljine, sedenja i stajanja, pogresne odece ili pogresne strane. Svaka replika mora biti jednostavna, realisticna, gramaticki tacna i sa odgovarajucim srpskim prevodom."
  };
- const normalizeAIResponse=(raw)=>{
+ baseRequest.visualAccuracyInstructions += " DODATNO, OBAVEZNO: u kompletnom opisu steps[9] prvo UVOD i MESTO, zatim sve recenice o muskarcu (prva Der Mann, naredne kada je isti subjekat Er; opis polozaja i radnje, izgled, odeca, kosa, godine, i Ich denke, der Mann ist ... za ulogu ako je opravdano), tek zatim sve recenice o zeni (prva Die Frau, naredne Sie, ista struktura i Ich denke, die Frau ist ...), zatim zajednicka radnja ako je vidljiva, predmeti, pozadina i zavrsetak. Za dve osobe istog pola jasno navedi links/rechts pri prelasku na drugu osobu, pa koristi Er ili Sie samo kad je jasno na koga se odnosi. Ne vracaj se na prethodnu osobu. Za decu koristi Das Kind/Es, Der Junge/Er ili Das Maedchen/Es. steps[9].lines mora da ima svaku recenicu iz steps[9].de tacno istim redom, bez dodatnih, ponovljenih ili izostavljenih recenica; svaka ima odgovarajuci sr prevod. Ne dodaj nevidljive detalje. Ova pravila imaju prednost nad ranijim primerima ponavljanja Der Mann i Die Frau.";
+  const normalizeAIResponse=(raw)=>{
   let d=raw;
   if(typeof d==="string"){try{d=JSON.parse(d)}catch{return null}}
   if(d&&typeof d.result==="object"&&!Array.isArray(d.steps))d=d.result;
@@ -1620,13 +1644,12 @@ if(activeDialogue.length)$("scene").textContent="Dijalog prema slici: "+String(d
 // Druga stranica uvek koristi iste AI recenice kao koraci 1–9.
 const summarySource=data.steps[9]||{};
 // V97: Detaljan opis = samo proverene recenice iz celog opisa, bez naziva kategorija.
-const cleanDetailLines=normalizeStepLines(summarySource).filter(x=>String(x.de||"").trim());
-fullSteps=[];
-for(let i=0;i<cleanDetailLines.length;i+=7){const lines=cleanDetailLines.slice(i,i+7);fullSteps.push({title:"",de:lines.map(x=>x.de).join(" "),sr:lines.map(x=>x.sr).join(" "),lines});}
-descriptionPage=0;
 const summaryDE=String(summarySource.de||data.description||data.steps.slice(0,9).map(x=>x.de||"").join(" ")).trim();
-const summarySR=String(summarySource.sr||data.steps.slice(0,9).map(x=>x.sr||"").join(" ")).trim();
-$("summaryGerman").value=summaryDE;
+ const summarySR=String(summarySource.sr||data.steps.slice(0,9).map(x=>x.sr||"").join(" ")).trim();
+ detailOriginalLines=alignDetailLines(summaryDE,normalizeStepLines({...summarySource,de:summaryDE,sr:summarySR}),summarySR);
+ rebuildDetail(summaryDE,detailOriginalLines);
+ fullFontScale=1;
+ $("summaryGerman").value=summaryDE;
 $("summarySerbian").textContent=summarySR||"Prevod trenutno nije dostupan.";
 $("summarySerbian").dataset.sourceTranslation=summarySR||"";
 $("summarySerbian").hidden=true;
@@ -1659,6 +1682,29 @@ function normalizeStepLines(step){
  const balanced=serbian.length===german.length;
  return german.map((de,i)=>({de,sr:balanced?serbian[i]:""}));
 }
+let detailOriginalLines=[],detailSourceText="";
+function alignDetailLines(value,source,paragraph=""){
+ const german=separateGermanSentences(value);
+ const sr=separateGermanSentences(paragraph);
+ const key=t=>String(t||"").trim().replace(/\s+/gu," ").replace(/[.!?]+$/u,"");
+ const exactOrder=german.length===source.length&&german.every((de,i)=>key(de)===key(source[i].de));
+ return german.map((de,i)=>{
+  const matches=source.filter(x=>key(x.de)===key(de));
+  const match=exactOrder?source[i]:matches.length===1?matches[0]:null;
+  return {de,sr:match?.sr||(sr.length===german.length?sr[i]:"")};
+ });
+}
+function rebuildDetail(value,source){
+ detailSourceText=String(value||"").trim();
+ const lines=alignDetailLines(detailSourceText,source);
+ fullSteps=[];
+ const perPage=window.innerHeight<690?3:4;
+ for(let i=0;i<lines.length;i+=perPage){
+  const part=lines.slice(i,i+perPage);
+  fullSteps.push({title:"Rečenice "+(i+1)+"–"+(i+part.length),de:part.map(x=>x.de).join(" "),sr:part.map(x=>x.sr).join(" "),lines:part});
+ }
+ descriptionPage=0;
+}
 function renderFullDescription(){
  const field=$("fullDescription");field.replaceChildren();field.classList.toggle("show-serbian",fullTranslated);
  fullAudioLines=[];
@@ -1675,8 +1721,8 @@ function renderFullDescription(){
    const line=document.createElement("div");line.className="full-line";
    const lineText=document.createElement("div");lineText.className="full-line-copy";
    const de=document.createElement("span");de.className="full-step-de";de.textContent=sentence.de;
-   de.contentEditable="true";de.spellcheck=false;de.setAttribute("aria-label","Nemačka rečenica "+(j+1)+" koraka "+(i+1));
-   const sr=document.createElement("div");sr.className="full-step-sr";sr.textContent=sentence.sr;
+   de.lang="de";de.setAttribute("aria-label","Nemačka rečenica "+(fullAudioLines.length+1));
+   const sr=document.createElement("div");sr.className="full-step-sr";sr.lang="sr";sr.textContent=sentence.sr||"Prevod ove rečenice nije dostupan.";
    de.addEventListener("input",()=>{
     const changed=de.innerText.trim();
     sentence.de=changed;
@@ -1688,7 +1734,8 @@ function renderFullDescription(){
    const listen=document.createElement("button");listen.type="button";listen.className="full-line-play";listen.textContent="▶";listen.setAttribute("aria-label","Slušaj ili zaustavi rečenicu "+(index+1));listen.title="Slušaj / Stop";
    listen.onclick=()=>toggleFullLine(index);
    lineText.append(de,sr);
-   line.append(lineText,listen);sentences.append(line);
+   const number=document.createElement("span");number.className="detail-number-v21";number.textContent=String(index+1);number.setAttribute("aria-hidden","true");
+    line.append(number,lineText,listen);sentences.append(line);
    fullAudioLines.push({line,de,listen,section,stepIndex:i});
   });
   // Legacy Worker sends one paragraph translation for multiple German sentences.
@@ -1698,7 +1745,7 @@ function renderFullDescription(){
    backup.textContent=step.sr||"";
    section.append(sentences,backup);
   }else{section.append(sentences)}
-  field.append(section);
+  section.prepend(title);field.append(section);
  });
  updateFullAudioUI();showDescriptionPage(descriptionPage,false);
 }
@@ -1713,7 +1760,8 @@ function showDescriptionPage(page,stopAudio=true){
  }
  $("descPrev").disabled=next===0;
  $("descNext").disabled=next===totalPages-1;
- $("descPageLabel").textContent="Stranica "+(next+1)+"/"+totalPages;
+ $("descPageLabel").textContent="Stranica "+(next+1)+"/"+totalPages+" · "+fullAudioLines.length+" reč.";
+ $("goDialogue").textContent=next===totalPages-1?"Dijalog ❯":"Sledeće ❯";
  updateJourneyProgress();
  $("fullDescription").scrollTop=0;
  requestAnimationFrame(fitFullDescription);
@@ -1722,15 +1770,15 @@ $("descPrev").onclick=()=>showDescriptionPage(descriptionPage-1);
 $("descNext").onclick=()=>showDescriptionPage(descriptionPage+1);
 function fitFullDescription(){
  const field=$("fullDescription");if(!field||currentPage!==2)return;
- field.style.zoom="1";field.style.overflowY="hidden";
+ field.style.zoom="1";field.style.setProperty("overflow-y","hidden","important");
  field.style.setProperty("--font-scale",String(fullFontScale));
  let scale=1;
  for(let i=0;i<80&&field.scrollHeight>field.clientHeight+1;i++){
-  scale=Math.max(.55,scale-.01);field.style.zoom=String(scale);
-  if(scale<=.55)break;
+  scale=Math.max(.82,scale-.01);field.style.zoom=String(scale);
+  if(scale<=.82)break;
  }
  // Very long AI texts remain readable: allow scrolling only when absolutely necessary.
- if(field.scrollHeight>field.clientHeight+2)field.style.overflowY="auto";
+ if(field.scrollHeight>field.clientHeight+2)field.style.setProperty("overflow-y","auto","important");
 }
 window.addEventListener("resize",()=>{if(currentPage===2)requestAnimationFrame(fitFullDescription)});
 function updateFullAudioUI(){
@@ -1746,7 +1794,7 @@ function startFullLine(index,auto=false){
  if(index>=fullAudioLines.length){stopSpeech();return}
  const line=fullAudioLines[index],text=line.de.innerText.trim();
  if(!text){if(auto)startFullLine(index+1,true);return}
- stopSpeech();showDescriptionPage(line.stepIndex>=6?1:0,false);readingMode="full";fullAudioIndex=index;fullAudioAuto=auto;
+ stopSpeech();showDescriptionPage(line.stepIndex,false);readingMode="full";fullAudioIndex=index;fullAudioAuto=auto;
  const ticket=voiceToken;
  updateFullAudioUI();
  const u=new SpeechSynthesisUtterance(text);u.lang="de-DE";u.rate=.83;
@@ -1760,7 +1808,7 @@ function toggleFullLine(index){
 }
 $("autoFull").onclick=()=>{
  if(fullAudioAuto){stopSpeech();return}
- const target=descriptionPage===0?0:fullAudioLines.findIndex(x=>x.stepIndex>=6);
+ const target=fullAudioLines.findIndex(x=>x.stepIndex===descriptionPage);
  startFullLine(Math.max(0,target),true);
 };
 function changeFullFont(delta){
@@ -1943,10 +1991,10 @@ $("summaryGerman").addEventListener("input",()=>{
 });
 $("resumeAfterGeneration").onclick=()=>{if(generatedLocked&&!reachedDialogue)view(1)};
 $("summaryBack").onclick=()=>view(0);
-$("summaryDetail").onclick=()=>{view(3);if(dialogRows.length)playRows("dialog")};
+$("summaryDetail").onclick=()=>{if(detailSourceText!==$("summaryGerman").value.trim()){rebuildDetail($("summaryGerman").value,detailOriginalLines);renderFullDescription()}view(2)};
 $("backFromFull").onclick=()=>view(1);
-$("goDialogue").onclick=()=>{view(3);if(dialogRows.length)playRows("dialog")};
-$("backToDescription").onclick=()=>view(1);
+$("goDialogue").onclick=()=>{if(descriptionPage<fullSteps.length-1){showDescriptionPage(descriptionPage+1);return}view(3);if(dialogRows.length)playRows("dialog")};
+$("backToDescription").onclick=()=>view(2);
 $("restart").onclick=()=>{
  if(!reachedDialogue){return}
  generatedLocked=false;reachedDialogue=false;
