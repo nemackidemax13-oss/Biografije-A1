@@ -1308,7 +1308,7 @@ function sampleBank(compact=false){
 
 function pageRows(mode){return mode==="desc"?descRows:mode==="dialog"?dialogRows:[]}
 function cleanHighlight(){document.querySelectorAll(".sentence.playing").forEach(el=>el.classList.remove("playing"))}
-function stopSpeech(){voiceToken++;paused=false;readingMode="";readingIndex=0;fullAudioIndex=-1;fullAudioAuto=false;dialogueAuto=false;if(synth)synth.cancel();cleanHighlight();clearSummaryHighlight();updateFullAudioUI();updateDialogueAudioUI();updateSummaryAudioUI()}
+function stopSpeech(){resumeSpeechAction=null;voiceToken++;paused=false;readingMode="";readingIndex=0;fullAudioIndex=-1;fullAudioAuto=false;dialogueAuto=false;if(synth)synth.cancel();cleanHighlight();clearSummaryHighlight();updateFullAudioUI();updateDialogueAudioUI();updateSummaryAudioUI()}
 function playRows(mode,index=0,auto=true){
  if(!synth){alert("Ovaj pregledač ne podržava izgovor.");return}
  stopSpeech();readingMode=mode;readingIndex=index;dialogueAuto=mode==="dialog"&&auto;
@@ -1379,11 +1379,12 @@ function updateDialogueAudioUI(){
   const active=readingMode==="dialog"&&readingIndex===i;
   b.textContent=active?"■":"▶";b.setAttribute("aria-pressed",String(active));
  }
+ const pauseButton=$("pauseDialogue");if(pauseButton){const isPaused=readingMode==="dialog"&&paused;pauseButton.textContent=isPaused?"▶ Nastavi":"⏸ Pauza";pauseButton.setAttribute("aria-pressed",String(isPaused));}
  const auto=$("readDialogue");
  if(auto){const playing=readingMode==="dialog"&&dialogueAuto;auto.textContent="▶ Auto";auto.setAttribute("aria-pressed",String(playing))}
 }
 
-function pauseMode(mode){if(!synth)return;if(readingMode!==mode)return;if(!paused){synth.pause();paused=true;$((mode==="desc"?"descriptionStatus":"dialogueStatus")).textContent="Čitanje pauzirano."}else{synth.resume();paused=false;$((mode==="desc"?"descriptionStatus":"dialogueStatus")).textContent="Čitanje nastavljeno."}}
+function pauseMode(mode){if(!synth)return;if(readingMode!==mode){playRows(mode);return;}if(paused){const resume=resumeSpeechAction;resumeSpeechAction=null;if(resume)resume();else playRows(mode,readingIndex,dialogueAuto);return;}const index=readingIndex,auto=dialogueAuto;voiceToken++;paused=true;synth.cancel();resumeSpeechAction=()=>playRows(mode,index,auto);$("dialogueStatus").textContent="Čitanje pauzirano.";updateDialogueAudioUI();}
 function toggleDialogueTranslation(){
  const area=$("dialogue"),button=$("translationDialogue");
  const showing=area.classList.toggle("hide-translation")===false;
@@ -1736,7 +1737,9 @@ $("summaryReading").onclick=()=>{
  if(readingMode==="summary")stopSpeech();
  $("summaryGerman").focus();
 };
-function playSummary(){
+let summaryResumeIndex=0;
+let resumeSpeechAction=null;
+function playSummary(startIndex=0){
  if(!synth){$("summaryStatus").textContent="Izgovor nije dostupan u ovom pregledaču.";return}
  const source=$("summaryGerman").value;
  const phrases=summaryPartsWithOffsets(source);
@@ -1746,13 +1749,14 @@ function playSummary(){
  $("summaryReading").hidden=false;
  $("summaryReading").scrollTop=$("summaryGerman").scrollTop;
  readingMode="summary";paused=false;
- const token=voiceToken;let i=0;
+ const token=voiceToken;let i=Math.max(0,Math.min(startIndex,phrases.length-1));
  updateSummaryAudioUI();
  function next(){
   if(token!==voiceToken||readingMode!=="summary"||paused)return;
   if(i>=phrases.length){
    stopSpeech();$("summaryStatus").textContent="Završeno čitanje kompletnog opisa.";return
   }
+  summaryResumeIndex=i;
   const part=phrases[i];
   $("summaryStatus").textContent="Izgovor: rečenica "+(i+1)+" / "+phrases.length;
   markSummarySpeechRange(part.start,part.end,false);
@@ -1783,9 +1787,11 @@ $("summaryAuto").onclick=()=>{
  playSummary()
 };
 $("summaryPause").onclick=()=>{
- if(readingMode!=="summary"||!synth)return;
- if(paused){synth.resume();paused=false;$("summaryStatus").textContent="Nastavljeno slušanje."}
- else{synth.pause();paused=true;$("summaryStatus").textContent="Slušanje pauzirano."}
+ if(!synth)return;
+ if(readingMode!=="summary"){playSummary();return;}
+ if(paused){const resume=resumeSpeechAction;resumeSpeechAction=null;if(resume)resume();else playSummary(summaryResumeIndex);return;}
+ const index=summaryResumeIndex;voiceToken++;paused=true;synth.cancel();resumeSpeechAction=()=>playSummary(index);
+ $("summaryStatus").textContent="Slušanje pauzirano.";
  updateSummaryAudioUI();
 };
 $("summaryStop").onclick=()=>{stopSpeech();$("summaryStatus").textContent="Slušanje zaustavljeno."};
