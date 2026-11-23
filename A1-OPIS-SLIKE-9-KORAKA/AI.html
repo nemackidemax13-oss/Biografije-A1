@@ -1300,6 +1300,19 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
 #aiWait .wait-card p{font-size:clamp(15px,4.2vw,19px)!important;line-height:1.35!important}
 #aiWait .wait-card p.wait-sub{font-size:clamp(13px,3.7vw,16px)!important}
 
+
+/* DE-MAX v19 — consistent adjustable font with or without translation */
+#screen1 .summary-editor-wrap #summaryGerman,
+#screen1 .summary-editor-wrap #summaryReading,
+#screen1 .summary-editor-wrap #summaryReading .speech-word,
+#screen1 .summary-editor-wrap #summarySerbian .bilingual-de{
+ font-size:var(--summary-de-size,13px)!important;
+}
+#screen1 .summary-editor-wrap #summarySerbian,
+#screen1 .summary-editor-wrap #summarySerbian .bilingual-sr{
+ font-size:var(--summary-sr-size,11px)!important;
+}
+
 </style></head><body><main class="app">
 <header class="header"><h1>Opis slike</h1></header>
 <section class="screen active" id="screen0"><div class="scroll"><div class="panel"><h2 class="title" id="uploadHeading">Ubaci sliku za opis</h2><label class="upload"><span class="upload-icon">📷</span><span class="upload-title">Izaberi fotografiju</span><span class="upload-sub">Dodirni ovde za galeriju ili kameru</span><input id="file" type="file" accept="image/*"></label><div class="photo-reveal" id="photoReveal"><span class="photo-glow" aria-hidden="true"></span><img class="picture" id="photo0" alt="Izabrana slika"><span class="photo-success" aria-hidden="true">✓</span><span class="sparkle sp1" aria-hidden="true">✦</span><span class="sparkle sp2" aria-hidden="true">✧</span><span class="sparkle sp3" aria-hidden="true">✦</span></div><p class="status" id="status">Prvo izaberi sliku.</p></div><div id="aiWait" hidden role="status" aria-live="polite"><div class="wait-card"><div class="wait-ring" aria-hidden="true"></div><h2>Molimo, sačekajte…</h2><p>AI analizira fotografiju.</p><p class="wait-sub">Pripremamo opis slike i dijalog na nemačkom jeziku.</p></div></div><div class="demax-text-brand" aria-label="De-Max A1"><span>De-Max</span><strong>A1</strong></div><input id="endpoint" type="hidden" value="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev"></div><div class="footer upload-footer"><button class="action pale" id="resumeAfterGeneration" type="button" hidden>Nastavi opis ❯</button><button class="action green" id="analyze" disabled>Automatski opiši sliku</button></div></section>
@@ -1771,11 +1784,16 @@ function updateSummaryAudioUI(){
  }
 }
 function updateSummaryFont(){
- const scale=summaryFontScale;
- $("screen1").style.setProperty("--summary-scale",String(scale));
- $("summaryGerman").style.fontSize=(Math.round(13*scale*10)/10)+"px";
- $("summaryReading").style.fontSize=(Math.round(13*scale*10)/10)+"px";
- $("summarySerbian").style.fontSize=(Math.round(11*scale*10)/10)+"px";
+ const wrap=document.querySelector("#screen1 .summary-editor-wrap");
+ const de=(Math.round(13*summaryFontScale*10)/10)+"px";
+ const sr=(Math.round(11*summaryFontScale*10)/10)+"px";
+ wrap.style.setProperty("--summary-de-size",de);
+ wrap.style.setProperty("--summary-sr-size",sr);
+ $("screen1").style.setProperty("--summary-scale",String(summaryFontScale));
+ $("summaryGerman").style.setProperty("font-size",de,"important");
+ $("summaryReading").style.setProperty("font-size",de,"important");
+ $("summarySerbian").style.setProperty("font-size",sr,"important");
+ $("summarySerbian").querySelectorAll(".bilingual-de,.bilingual-sr").forEach(el=>el.style.setProperty("font-size",el.classList.contains("bilingual-de")?de:sr,"important"));
 }
 
 /* Highlight the exact spoken word when the browser supplies speech onboundary
@@ -1897,6 +1915,7 @@ function renderSummaryBilingual(){
  translation.lang="sr";
  translation.textContent=translatedText||"Prevod trenutno nije dostupan.";
  panel.append(original,translation);
+ updateSummaryFont();
 }
 $("summaryTranslate").onclick=()=>{
  const next=$("summarySerbian").hidden;
@@ -1905,6 +1924,7 @@ $("summaryTranslate").onclick=()=>{
  document.querySelector("#screen1 .summary-editor-wrap").classList.toggle("with-translation",next);
  $("summaryTranslate").textContent="Prevod";
  $("summaryTranslate").setAttribute("aria-pressed",String(next));
+ updateSummaryFont();
  if(next&&summaryEdited)$("summaryStatus").textContent="Prevod je izvorni AI prevod, pre izmena nemačkog teksta.";
 };
 $("summaryPlus").onclick=()=>{summaryFontScale=Math.min(1.5,Math.round((summaryFontScale+.1)*10)/10);updateSummaryFont()};
