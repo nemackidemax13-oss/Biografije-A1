@@ -1140,9 +1140,13 @@ const synth=window.speechSynthesis;
 $("endpoint").value=DEFAULT_WORKER_URL;
 fetch("./shared.js").then(r=>r.text()).then(t=>{let p=t.indexOf("const BANK=");if(p<0)return;let a=p+11,b=t.indexOf("];",a);if(b<0)return;let data=JSON.parse(t.slice(a,b+1));if(Array.isArray(data))bank=data.filter(x=>x?.de&&x?.sr)}).catch(()=>{});
 
-let aiWaitTimer=null,aiWaitStarted=0;
+let aiWaitTimer=null,aiWaitStarted=0,aiWaitAudio=null,aiWaitLastSecond=-1;
+function initAIWaitAudio(){try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;if(!aiWaitAudio||aiWaitAudio.state==="closed")aiWaitAudio=new AC();if(aiWaitAudio.state==="suspended")aiWaitAudio.resume().catch(()=>{});}catch(e){}}
+function aiWaitTone(freq=650,delay=0,duration=.045){try{if(!aiWaitAudio||aiWaitAudio.state!=="running")return;const t=aiWaitAudio.currentTime+delay,o=aiWaitAudio.createOscillator(),g=aiWaitAudio.createGain();o.type="sine";o.frequency.value=freq;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.035,t+.008);g.gain.exponentialRampToValueAtTime(.0001,t+duration);o.connect(g);g.connect(aiWaitAudio.destination);o.start(t);o.stop(t+duration+.01);o.onended=()=>{o.disconnect();g.disconnect();};}catch(e){}}
+function aiWaitReadySound(){aiWaitTone(784,0,.13);aiWaitTone(1047,.14,.18);}
+
 function stopAIWait(){clearInterval(aiWaitTimer);aiWaitTimer=null;$("aiWait").hidden=true;$("screen0").classList.remove("ai-waiting");$("file").disabled=false;}
-function startAIWait(){clearInterval(aiWaitTimer);aiWaitStarted=Date.now();$("file").disabled=true;$("aiWait").hidden=false;$("screen0").classList.add("ai-waiting");const tick=()=>{const elapsed=Math.floor((Date.now()-aiWaitStarted)/1000),left=Math.max(0,30-elapsed);$("aiWaitNumber").textContent=left?String(left):"…";$("aiWaitHint").textContent=left?"Procenjeno preostalo vreme: "+left+" s":"Još malo… AI i dalje priprema sadržaj.";$("aiWaitProgress").value=Math.min(29,elapsed);if(!left)$("aiWaitProgress").removeAttribute("value");};tick();aiWaitTimer=setInterval(tick,250);}
+function startAIWait(){clearInterval(aiWaitTimer);initAIWaitAudio();aiWaitLastSecond=-1;aiWaitStarted=Date.now();$("file").disabled=true;$("aiWait").hidden=false;$("screen0").classList.add("ai-waiting");const tick=()=>{const elapsed=Math.floor((Date.now()-aiWaitStarted)/1000),left=Math.max(0,30-elapsed);if(left>0&&elapsed!==aiWaitLastSecond){aiWaitLastSecond=elapsed;aiWaitTone(left<=5?850:650);}$("aiWaitNumber").textContent=left?String(left):"…";$("aiWaitHint").textContent=left?"Procenjeno preostalo vreme: "+left+" s":"Još malo… AI i dalje priprema sadržaj.";$("aiWaitProgress").value=Math.min(29,elapsed);if(!left)$("aiWaitProgress").removeAttribute("value");};tick();aiWaitTimer=setInterval(tick,250);}
 function setStatus(t,bad=false){$("status").textContent=t;$("status").className="status"+(bad?" error":"")}
 function updateJourneyProgress(){
  const amount=currentPage===0?0:currentPage===1?33:currentPage===2?(descriptionPage===0?66:82):100;
@@ -1408,7 +1412,7 @@ $("summaryStatus").textContent="";
 summaryFontScale=1;summaryEdited=false;updateSummaryFont();
 fullTranslated=false;renderFullDescription();$("translateFull").textContent="Prevod";$("translateFull").setAttribute("aria-pressed","false");
 generatedLocked=true;reachedDialogue=false;
-setStatus("Moj opis, detaljan opis i dijalog su spremni.");view(1);
+setStatus("Moj opis, detaljan opis i dijalog su spremni.");if(activeDialogue.length)aiWaitReadySound();view(1);
 }catch(e){setStatus("Greška: "+e.message,true)}finally{stopAIWait();syncGenerationGate()}};
 $("readDialogue").onclick=()=>{if(readingMode==="dialog"&&dialogueAuto&&!paused){stopSpeech();return}if(readingMode==="dialog"&&paused){synth.resume();paused=false;updateDialogueAudioUI();return}playRows("dialog",0,true)};
 $("pauseDialogue").onclick=()=>pauseMode("dialog");
