@@ -1561,6 +1561,8 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
 #screen3 .footer #goUseful{white-space:normal!important;line-height:1.15!important}
 #screen8 .useful-title{font-size:clamp(17px,5.2vw,22px);text-wrap:balance}
 @media(max-height:500px){#screen9 .intro-title{font-size:22px}}
+/* V50: compact dialogue footer */
+#screen3 .footer #goUseful{font-size:clamp(10px,2.8vw,12px)!important;line-height:1.15!important;white-space:normal!important;text-wrap:balance;min-width:0!important}
 </style></head><body><main class="app">
 <header class="header"><h1>Opis slike</h1></header>
 <section class="screen active" id="screen0"><div class="scroll"><div class="panel"><h2 class="title" id="uploadHeading">Ubaci sliku za opis</h2><label class="upload"><span class="upload-icon">📷</span><span class="upload-title">Izaberi fotografiju</span><span class="upload-sub">Dodirni ovde za galeriju ili kameru</span><input id="file" type="file" accept="image/*"></label><div class="photo-reveal" id="photoReveal"><span class="photo-glow" aria-hidden="true"></span><img class="picture" id="photo0" alt="Izabrana slika"><span class="photo-success" aria-hidden="true">✓</span><span class="sparkle sp1" aria-hidden="true">✦</span><span class="sparkle sp2" aria-hidden="true">✧</span><span class="sparkle sp3" aria-hidden="true">✦</span></div><p class="status" id="status">Prvo izaberi sliku.</p></div><div id="aiWait" hidden role="status" aria-live="polite"><div class="wait-card"><div class="wait-ring" aria-hidden="true"></div><h2>Molimo, sačekajte…</h2><p>Fotografija se analizira.</p><p class="wait-sub">Pripremamo opis slike i dijalog na nemačkom jeziku.</p></div></div><div class="demax-text-brand" aria-label="De-Max A1"><span>De-Max</span><strong>A1</strong></div><input id="endpoint" type="hidden" value="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev"></div><div class="footer upload-footer"><button class="action green" id="resumeAfterGeneration" type="button" hidden>Nastavi opis ❯</button><button class="action green" id="analyze" disabled>Automatski opiši sliku</button></div></section>
@@ -1604,18 +1606,18 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
 <section class="screen lesson-intro" id="screen7" aria-labelledby="introTitle7">
 <div class="intro-body"><div class="intro-brand">De-Max <strong>A1</strong></div><h2 class="intro-title" id="introTitle7">Dijalog prema slici</h2><div class="intro-picture-wrap"><img class="intro-picture" id="photo7" alt="Fotografija za dijalog prema slici"></div></div>
 <div class="footer intro-footer"><button class="action red" type="button" id="introBack7">❮ Nazad</button><button class="action green" type="button" id="introStart7">Započni ❯</button></div></section>
-<section class="screen" id="screen3"><div class="scroll" id="dialogueScroll"><div class="panel dialogue-top"><div class="dialogue-wide-photo"><img class="picture small" id="photo3" alt="Fotografija za vežbu dijaloga"></div><div class="dialogue-head-row"><div class="dialogue-head-copy"><h2 class="title">3. Dijalog A i B · Učenici</h2><div id="scene" class="pill">Situacija prema slici</div></div></div><div class="dialogue-toolbar" role="group" aria-label="Slušanje, prevod i veličina teksta"><button class="dialogue-auto" id="readDialogue" type="button" aria-pressed="false">▶ Auto</button><button class="dialogue-pause" id="pauseDialogue" type="button" aria-label="Pauziraj ili nastavi slušanje">⏸</button><button class="dialogue-stop" id="stopDialogue" type="button">■ Stop</button><button class="dialogue-translate" id="translationDialogue" type="button" aria-pressed="false">Prevod</button><button class="dialogue-size" id="dialogueFontMinus" type="button" aria-label="Smanji tekst dijaloga">−</button><button class="dialogue-size" id="dialogueFontPlus" type="button" aria-label="Uvećaj tekst dijaloga">+</button></div><p class="muted" id="dialogueStatus" style="text-align:center">Dodirni ▶ uz rečenicu ili uključi Auto.</p></div><div id="dialogue" class="hide-translation" aria-label="Dijalog učenika A i B bez skrolovanja"></div><div class="dialogue-page-nav" id="dialoguePager"><button type="button" id="dialoguePrev" aria-label="Prethodna strana">❮</button><span id="dialoguePageLabel" aria-live="polite"></span><button type="button" id="dialogueNext" aria-label="Sledeća strana">❯</button></div></div><div class="footer"><button class="action red" id="backToDescription">❮ Nazad</button><button class="action green" id="goUseful">Korisne rečenice kod dijaloga ❯</button></div></section>
+<section class="screen" id="screen3"><div class="scroll" id="dialogueScroll"><div class="panel dialogue-top"><div class="dialogue-wide-photo"><img class="picture small" id="photo3" alt="Fotografija za vežbu dijaloga"></div><div class="dialogue-head-row"><div class="dialogue-head-copy"><h2 class="title">3. Dijalog A i B · Učenici</h2><div id="scene" class="pill">Situacija prema slici</div></div></div><div class="dialogue-toolbar" role="group" aria-label="Slušanje, prevod i veličina teksta"><button class="dialogue-auto" id="readDialogue" type="button" aria-pressed="false">▶ Auto</button><button class="dialogue-pause" id="pauseDialogue" type="button" aria-label="Pauziraj ili nastavi slušanje">⏸</button><button class="dialogue-stop" id="stopDialogue" type="button">■ Stop</button><button class="dialogue-translate" id="translationDialogue" type="button" aria-pressed="false">Prevod</button><button class="dialogue-size" id="dialogueFontMinus" type="button" aria-label="Smanji tekst dijaloga">−</button><button class="dialogue-size" id="dialogueFontPlus" type="button" aria-label="Uvećaj tekst dijaloga">+</button></div><p class="muted" id="dialogueStatus" style="text-align:center">Dodirni ▶ uz rečenicu ili uključi Auto.</p></div><div id="dialogue" class="hide-translation" aria-label="Dijalog učenika A i B bez skrolovanja"></div><div class="dialogue-page-nav" id="dialoguePager"><button type="button" id="dialoguePrev" aria-label="Prethodna strana">❮</button><span id="dialoguePageLabel" aria-live="polite"></span><button type="button" id="dialogueNext" aria-label="Sledeća strana">❯</button></div></div><div class="footer"><button class="action red" id="backToDescription">❮ Nazad</button><button class="action green" id="goUseful">Važne rečenice dijalog ❯</button></div></section>
 <section class="screen lesson-intro" id="screen9" aria-labelledby="introTitle9">
-<div class="intro-body"><div class="intro-brand">De-Max <strong>A1</strong></div><h2 class="intro-title" id="introTitle9">Korisne rečenice kod dijaloga</h2><div class="intro-picture-wrap"><img class="intro-picture" id="photo9" alt="Fotografija za korisne rečenice kod dijaloga"></div></div>
+<div class="intro-body"><div class="intro-brand">De-Max <strong>A1</strong></div><h2 class="intro-title" id="introTitle9">Važne rečenice</h2><div class="intro-picture-wrap"><img class="intro-picture" id="photo9" alt="Fotografija za važne rečenice"></div></div>
 <div class="footer intro-footer"><button class="action red" type="button" id="introBack9">❮ Nazad</button><button class="action green" type="button" id="introStart9">Započni ❯</button></div></section>
 <section class="screen" id="screen8"><div class="useful-body">
-<div class="useful-brand">De-Max <strong>A1</strong></div><h2 class="useful-title">Korisne rečenice kod dijaloga</h2>
-<p class="useful-sub">Rečenice iz dijaloga za svakodnevnu komunikaciju</p>
+<div class="useful-brand">De-Max <strong>A1</strong></div><h2 class="useful-title">Važne rečenice</h2>
+<p class="useful-sub">A1 izrazi za ovu situaciju i svakodnevni razgovor</p>
 <div class="useful-tools"><button type="button" id="usefulAuto">▶ Auto</button><button type="button" id="usefulStop">■ Stop</button><button type="button" id="usefulMinus" aria-label="Smanji slova">−</button><button type="button" id="usefulPlus" aria-label="Uvećaj slova">+</button></div>
-<div id="usefulList" aria-label="Korisne rečenice kod dijaloga sa prevodom"></div>
+<div id="usefulList" aria-label="Važne rečenice sa prevodom"></div>
 <nav id="usefulPager" aria-label="Listanje korisnih rečenica"><button type="button" id="usefulPrev" aria-label="Prethodna strana">❮</button><span id="usefulLabel" aria-live="polite"></span><button type="button" id="usefulNext" aria-label="Sledeća strana">❯</button></nav>
 </div><div class="footer"><button class="action red" id="usefulBack">❮ Nazad</button><button class="action green" id="restart">Nova slika ↻</button></div></section>
-<div class="journey-progress" id="journeyProgress" role="progressbar" aria-label="Napredak: slika, opis, dijalog i korisne rečenice" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="journey-progress-fill" id="journeyFill"></div></div>
+<div class="journey-progress" id="journeyProgress" role="progressbar" aria-label="Napredak: slika, opis, dijalog i važne rečenice" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="journey-progress-fill" id="journeyFill"></div></div>
 </main>
 <script src="../DE_MAX_A1_DIJALOZI_40_DATA_01.js?v=20261018"></script>
 <script src="../DE_MAX_A1_DIJALOZI_40_DATA_02.js?v=recepcija-39-v2"></script>
@@ -1655,7 +1657,7 @@ function updateJourneyProgress(){
  const amount=[0,11,33,78,56,22,44,67,100,89][currentPage]??0;
  $("journeyFill").style.width=amount+"%";
  $("journeyProgress").setAttribute("aria-valuenow",String(amount));
- $("journeyProgress").setAttribute("aria-valuetext",["Slika","Moj opis","Detaljan opis","Dijalog","Kompletan opis","Uvod u detaljan opis","Uvod u kompletan opis","Uvod u dijalog","Korisne rečenice kod dijaloga","Uvod u korisne rečenice kod dijaloga"][currentPage]);
+ $("journeyProgress").setAttribute("aria-valuetext",["Slika","Moj opis","Detaljan opis","Dijalog","Kompletan opis","Uvod u detaljan opis","Uvod u kompletan opis","Uvod u dijalog","Važne rečenice","Uvod u važne rečenice"][currentPage]);
 }
 function syncGenerationGate(){
  const locked=generatedLocked&&!reachedDialogue;
@@ -1724,12 +1726,12 @@ function showDialoguePage(page){
  dialoguePageIndex=Math.max(0,Math.min(page,dialoguePages.length-1));
  const visible=new Set(dialoguePages[dialoguePageIndex]);
  for(let i=0;i<dialogRows.length;i++)dialogRows[i].element.hidden=!visible.has(i);
- $("dialoguePager").classList.toggle("single-page",dialoguePages.length<=1);
- $("dialoguePager").style.visibility=dialoguePages.length>1?"visible":"hidden";
+ $("dialoguePager").classList.remove("single-page");
+ $("dialoguePager").style.visibility="visible";
  $("dialoguePrev").disabled=dialoguePageIndex===0;
  $("dialogueNext").disabled=dialoguePageIndex>=dialoguePages.length-1;
- $("dialoguePageLabel").textContent="Strana "+(dialoguePageIndex+1);
- $("goUseful").textContent=dialoguePageIndex<dialoguePages.length-1?"Sledeće ❯":"Korisne rečenice kod dijaloga ❯";
+ $("dialoguePageLabel").textContent="Strana "+(dialoguePageIndex+1)+" / "+Math.max(1,dialoguePages.length);
+ $("goUseful").textContent=dialoguePageIndex<dialoguePages.length-1?"Sledeće ❯":"Važne rečenice dijalog ❯";
 }
 function revealDialogueIndex(index){
  const page=dialoguePages.findIndex(arr=>arr.includes(index));
@@ -1806,7 +1808,7 @@ try{
   bankExamples:sampleBank(true).slice(0,65),
   expectedSteps:10,
   visualAccuracyInstructions:"OBAVEZNA STRUKTURA A1 OPISA SLIKE (V25). Prvo pažljivo pregledaj fotografiju: tačan broj i vrsta osoba, položaj svake osobe, radnja, mesto, izgled, odeća, predmeti i pozadina. Koristi gramatički ispravan, prirodan i jednostavan nemački A1 sa srpskim prevodom, uključujući umlaut (Verkäufer, über, ungefähr, trägt). Primeri ispod pokazuju samo strukturu, nikako ne prepisuj nevidljive činjenice.\n1. UVOD: uvek počni sa Auf diesem Bild sehe ich ... i navedi tačan broj osoba: npr. Auf diesem Bild sehe ich zwei Personen, einen Mann und eine Frau. Ako je jedna osoba, tri osobe, dve žene, dva muškarca ili dete, prilagodi broj i imenice.\n2. ULOGE: odmah posle uvoda, ako ih kontekst opravdava, jedna povezana rečenica: Ich denke, der Mann ist der Verkäufer und die Frau ist die Kundin. Ili Ich denke, die Frau ist die Ärztin und der Mann ist der Patient. Prilagodi uloge, rod i broj, i uključi dete ako je uloga jasna. Ako uloge nisu pouzdano prepoznatljive, ne izmišljaj ih. Ne ponavljaj istu pretpostavku kasnije.\n3. POLOŽAJ, MESTO, RADNJA I TEMA: navedi šta osobe stvarno rade. Primeri: Die Personen stehen. / Die Personen sitzen. / Die Personen fahren Fahrrad. / Die Personen laufen. / Die Personen knien. Ako su položaji različiti, navedi odvojeno, npr. Der Mann sitzt und die Frau steht. Ako fotografija sugeriše razgovor, Die Personen stehen und sprechen über etwas, vielleicht über den Preis. Ili Die Personen sitzen und sprechen über etwas, vielleicht über ihre Arbeit. Tema mora biti prirodna i povezana sa konkretnim kontekstom; možda (vielleicht) označava pretpostavku. Ako nema naznake razgovora, ne tvrdi da razgovaraju i ne dodaj temu. Navedi mesto u ovoj celini, npr. Die Personen sind in einer Bäckerei, samo ako je prepoznatljivo; možeš povezati mesto sa radnjom bez ponavljanja. Ako je samo jedna osoba, koristi jedninu.\n4. DETALJAN OPIS SVAKE OSOBE ZASEBNO: opiši prvog muškarca pa ženu ili obrnuto ako je prirodnije prema slici, ali NIKADA ne mešaj rečenice različitih osoba. Prvu rečenicu bloka započni sa Der Mann, Die Frau, Der Junge, Das Mädchen ili Das Kind; sledeće rečenice sa Er, Sie ili Es kada je referent jasan. Kod dve osobe istog pola koristi links/rechts ili drugu jasno vidljivu razliku pri prelasku na drugu osobu. Ako ima i dete ili više osoba, opiši svaku zasebno pre pozadine. Za svaku osobu navedi, ako je vidljivo: položaj ili strana bez nepotrebnog ponavljanja zajedničkog uvoda, izgled lica, izraz lica (lacht samo ako se zaista smeje), naočare, brada, boja i dužina kose, odeća i boje po komadima, obuća, torba ili predmet u ruci, radnja i približne godine (Ich denke, der Mann ist ungefähr ... Jahre alt). Pretpostavke o nameri, kupovini i ulozi označi sa Ich denke ili vielleicht i samo ako su opravdane. Ako se vidi da jedna osoba uslužuje drugu, navedi precizno ko koga uslužuje; bez izmišljanja. Ne vraćaj se na prethodnu osobu nakon početka narednog bloka.\n5. DODATNI PREDMETI I POZADINA: tek kada su sve osobe opisane, navedi vidljive stvari: Im Hintergrund sehe ich ... . Außerdem sehe ich ... . Koristi Im Hintergrund samo jednom. Razlikuj jedninu, množinu i nebrojive imenice: ein Brot / viele Brote, ein Regal / viele Regale, viele Äpfel, viel Obst und Gemüse, viele Lebensmittel, anderes Gebäck; nikad jednu stvar ako se jasno vidi više njih. Ne izmišljaj pozadinu, predmete, boje, količine ili detalje.\n6. ZAVRŠETAK: dodaj jednu kratku prirodnu završnu rečenicu koja odgovara situaciji, npr. Ich denke, die Kundin möchte etwas kaufen. / Ich denke, die Personen verbringen Zeit zusammen. / Ich denke, das Kind hat Spaß. / Ich denke, die Personen warten auf den Arzt. Upotrebi samo odgovarajuću, ne ponavljaj raniji sadržaj i ne izmišljaj. Ako nema opravdane situacione pretpostavke, koristi neutralan zaključak. Poslednja rečenica može biti Das war meine Bildbeschreibung.\nFORMAT: zadrži postojeći JSON sa svih 10 koraka, steps[9] (korak 10) je kompletan opis, uvek po ovom redosledu 1–6. steps[9].de je kompletan nemački tekst, steps[9].sr odgovarajući srpski prevod; steps[9].lines mora sadržati svaku rečenicu iz steps[9].de tačno istim redom, jednu rečenicu po elementu, sa odgovarajućim prevodom sr. Nema dodatnih, preskočenih, ponovljenih ili izmešanih rečenica. Ne razdvajaj jednu osobu na više nepovezanih blokova. Ova struktura ima prednost nad svim starijim primerima i bankExamples u zahtevu.",
-  dialogueAccuracyInstructions:"NAPRAVI PRIRODAN STVARNI A1 DIJALOG A i B PREMA KONKRETNOJ FOTOGRAFIJI. Pre pisanja proveri ko je gde, ko sedi ili stoji, ko sta drzi, sta osoba gleda i sta je oko nje. Izaberi situaciju samo prema vidljivom kontekstu. Ako fotografija jasno prikazuje supermarket i kupovinu, razgovor moze biti prirodan dijalog o tacno prepoznatljivim namirnicama, ceni ili izboru; ako prikazuje recepciju, razgovor na recepciji; ako auto-radionicu, razgovor o popravci. To su samo primeri, ne preslikavaj ih na neodgovarajucu fotografiju. Dve osobe razgovaraju smisleno, odgovaraju jedna drugoj i zadrzavaju iste uloge tokom celog dijaloga. Ne ubacuj nevidljive predmete, proizvode ili izmisljene potvrde da su nesto uradili; prirodne replike mogu biti hipoteticki scenario za vezbu i ne smeju se predstavljati kao cinjenica da se razgovor zaista desio na slici. Ako namera ili kontekst nisu jasni, koristi jednostavan neutralan dijalog o vidljivim predmetima i okruzenju. Bez mesanja jakne i haljine, sedenja i stajanja, pogresne odece ili pogresne strane. Svaka replika mora biti jednostavna, realisticna, gramaticki tacna i sa odgovarajucim srpskim prevodom. V49: cilj je 16–20 naizmenicnih replika A/B, idealno 18, po jedna ili dve kratke prirodne A1 recenice. Razgovor ima uzajamni pozdrav, jasnu potrebu ili temu, 6–8 smislenih razmena pitanja i odgovora ili predloga i reakcija, dogovor odnosno prirodan zavrsetak i uzajamni pozdrav na kraju. Ne ponavljaj ista pitanja, ne koristi prazne replike niti prerano zavrsavaj. Koristi svakodnevne A1 izraze i konkretne detalje prikazane situacije. U prodavnici prema potrebi pitaj za proizvod, kolicinu, velicinu, cenu, probu ili pakovanje, nacin placanja; kod lekara za tegobe, trajanje, pregled i naredne korake bez izmisljene dijagnoze; u parku, kod kuce ili medju prijateljima za aktivnosti, predloge, vreme i dogovor. Biraj iskljucivo ono sto odgovara konkretnoj fotografiji. Koristi Sie sa nepoznatim osobama i du u bliskim odnosima, dosledno. U simulaciji dozvoli prirodna pitanja o ceni ili velicini, ali ne predstavljaj izmisljene detalje kao vizuelne cinjenice. Svaki odgovor reaguje na prethodnu repliku. Ako Worker ima drugaciji obavezan broj replika, prati njegovo pravilo i maksimalno razvij razgovor unutar tog broja."
+  dialogueAccuracyInstructions:"NAPRAVI PRIRODAN STVARNI A1 DIJALOG A i B PREMA KONKRETNOJ FOTOGRAFIJI. Pre pisanja proveri ko je gde, ko sedi ili stoji, ko sta drzi, sta osoba gleda i sta je oko nje. Izaberi situaciju samo prema vidljivom kontekstu. Ako fotografija jasno prikazuje supermarket i kupovinu, razgovor moze biti prirodan dijalog o tacno prepoznatljivim namirnicama, ceni ili izboru; ako prikazuje recepciju, razgovor na recepciji; ako auto-radionicu, razgovor o popravci. To su samo primeri, ne preslikavaj ih na neodgovarajucu fotografiju. Dve osobe razgovaraju smisleno, odgovaraju jedna drugoj i zadrzavaju iste uloge tokom celog dijaloga. Ne ubacuj nevidljive predmete, proizvode ili izmisljene potvrde da su nesto uradili; prirodne replike mogu biti hipoteticki scenario za vezbu i ne smeju se predstavljati kao cinjenica da se razgovor zaista desio na slici. Ako namera ili kontekst nisu jasni, koristi jednostavan neutralan dijalog o vidljivim predmetima i okruzenju. Bez mesanja jakne i haljine, sedenja i stajanja, pogresne odece ili pogresne strane. Svaka replika mora biti jednostavna, realisticna, gramaticki tacna i sa odgovarajucim srpskim prevodom. V49: cilj je 16–20 naizmenicnih replika A/B, idealno 18, po jedna ili dve kratke prirodne A1 recenice. Razgovor ima uzajamni pozdrav, jasnu potrebu ili temu, 6–8 smislenih razmena pitanja i odgovora ili predloga i reakcija, dogovor odnosno prirodan zavrsetak i uzajamni pozdrav na kraju. Ne ponavljaj ista pitanja, ne koristi prazne replike niti prerano zavrsavaj. Koristi svakodnevne A1 izraze i konkretne detalje prikazane situacije. U prodavnici prema potrebi pitaj za proizvod, kolicinu, velicinu, cenu, probu ili pakovanje, nacin placanja; kod lekara za tegobe, trajanje, pregled i naredne korake bez izmisljene dijagnoze; u parku, kod kuce ili medju prijateljima za aktivnosti, predloge, vreme i dogovor. Biraj iskljucivo ono sto odgovara konkretnoj fotografiji. Koristi Sie sa nepoznatim osobama i du u bliskim odnosima, dosledno. U simulaciji dozvoli prirodna pitanja o ceni ili velicini, ali ne predstavljaj izmisljene detalje kao vizuelne cinjenice. Svaki odgovor reaguje na prethodnu repliku. Ako Worker ima drugaciji obavezan broj replika, prati njegovo pravilo i maksimalno razvij razgovor unutar tog broja. Ako izlazna šema dozvoljava, dodaj zasebno polje importantSentences (10–12 objekata sa de i sr): samostalne, kratke, prirodne A1 fraze, pitanja i odgovore korisne i u drugim razgovorima u istoj prepoznatoj situaciji, bez konkretnih izmišljenih cena, imena ili vizuelnih činjenica. Ne menjaj postojeća obavezna polja."
  };
   const normalizeAIResponse=(raw)=>{
   let d=raw;
@@ -1896,8 +1898,9 @@ activeDialogue.forEach((l,i)=>{
  el.append(listen);$("dialogue").append(el);
  dialogRows.push({de,role,element:el,listen})
 });
-dialoguePages=[];dialoguePageIndex=0;renderUseful(activeDialogue);
+dialoguePages=[];dialoguePageIndex=0;
 let scene=scenes.find(s=>s.n===Number(data.sceneNumber));
+ renderUseful(activeDialogue,data,scene);
 if(activeDialogue.length)$("scene").textContent="Dijalog prema slici (simulacija): "+String(data.sceneName||scene?.sr||"situacija");
 // Druga stranica uvek koristi iste AI recenice kao koraci 1–9.
 const summarySource=data.steps[9]||{};
@@ -2333,15 +2336,44 @@ $("photo4").addEventListener("load",()=>{if(currentPage===4)requestAnimationFram
 
 
 let usefulRows=[],usefulPages=[],usefulPage=0,usefulScale=1;
-function renderUseful(lines){
+function situationalPhrases(data,scene,lines){
+ const context=[data?.sceneName,scene?.sr,scene?.de,scene?.roles].filter(Boolean).join(" ").toLowerCase();
+ const speech=lines.map(l=>l.de).join(" ");
+ const informal=/\b(du|dir|dich|dein\w*)\b/i.test(speech)&&!/\b(Sie|Ihnen|Ihr\w*)\b/.test(speech);
+ const general=[["Vielen Dank!","Hvala lepo!"],["Ja, gern.","Da, rado."],["Das ist in Ordnung.","To je u redu."],[informal?"Kannst du das bitte wiederholen?":"Können Sie das bitte wiederholen?",informal?"Možeš li to, molim te, da ponoviš?":"Možete li to, molim vas, da ponovite?"],["Ich habe eine Frage.","Imam jedno pitanje."],[informal?"Bis bald!":"Auf Wiedersehen!",informal?"Vidimo se uskoro!":"Doviđenja!"]];
+ const shop=[["Was möchten Sie?","Šta želite?"],["Wie viel kostet das?","Koliko to košta?"],["Haben Sie noch etwas anderes?","Imate li još nešto drugo?"],["Kann ich mit Karte bezahlen?","Mogu li da platim karticom?"],["Das ist alles, danke.","To je sve, hvala."]];
+ const rules=[
+ [/apotek|apothek|pharma/,[["Ich brauche etwas gegen Schmerzen.","Treba mi nešto protiv bolova."],["Wie oft soll ich das nehmen?","Koliko često treba to da uzimam?"],["Was kostet das?","Koliko to košta?"]]],
+ [/lekar|doktor|arzt|ärzt|bolnic|krankenhaus|praxis|zahn|stomatolog/,[["Was fehlt Ihnen?","Šta vam je?"],["Ich habe Schmerzen.","Imam bolove."],["Seit wann haben Sie Schmerzen?","Od kada imate bolove?"],["Was soll ich jetzt machen?","Šta sada treba da radim?"]]],
+ [/mehani|radionic|werkstatt|reparatur|auto servis/,[["Mein Auto hat ein Problem.","Moj auto ima problem."],["Können Sie das bitte prüfen?","Možete li to, molim vas, da proverite?"],["Wie lange dauert die Reparatur?","Koliko traje popravka?"],["Was kostet die Reparatur?","Koliko košta popravka?"]]],
+ [/pekar|bäckerei|backerei/,[["Ist das Brot frisch?","Da li je hleb svež?"],["Möchten Sie noch etwas?","Želite li još nešto?"],...shop]],
+ [/cveć|cvec|blumen/,[["Ich suche Blumen.","Tražim cveće."],["Haben Sie einen schönen Blumenstrauß?","Imate li lep buket cveća?"],...shop]],
+ [/obuć|obuc|schuh|butik|kleidung|bekleidung|odeć|odec|mode/,[["Haben Sie das in einer anderen Größe?","Imate li to u drugoj veličini?"],["Kann ich das anprobieren?","Mogu li to da probam?"],...shop]],
+ [/restoran|restaurant|kafi|café|cafe|imbiss/,[["Kann ich die Speisekarte haben?","Mogu li da dobijem jelovnik?"],["Ich möchte etwas trinken.","Želim nešto da popijem."],["Die Rechnung, bitte.","Račun, molim."],["Kann ich mit Karte bezahlen?","Mogu li da platim karticom?"]]],
+ [/supermarket|supermarkt|prodav|kupovin|einkauf|geschäft|markt|mesar|metzger|piljar|kasse/,shop],
+ [/biro|büro|amt|behörde|recepc|rezeption|schalter|termin/,[["Ich habe einen Termin.","Imam zakazan termin."],["Können Sie mir bitte helfen?","Možete li mi, molim vas, pomoći?"],["Welche Unterlagen brauche ich?","Koja dokumenta su mi potrebna?"],["Wann kann ich wiederkommen?","Kada mogu ponovo da dođem?"]]],
+ [/park|prirod|natur|spazier|brd|planin|berg|meer|strand|mor[u e]|napolju|draußen|ausflug|fahrrad|bicikl/,[["Wohin gehen wir?","Kuda idemo?"],["Wollen wir eine Pause machen?","Hoćemo li napraviti pauzu?"],["Wie ist das Wetter heute?","Kakvo je danas vreme?"],["Ist es noch weit?","Da li je još daleko?"]]],
+ [/kuć|kuc|wohnung|haus|stan|famil|haushalt|zuhause/,[["Was machen wir heute?","Šta ćemo danas raditi?"],["Kann ich helfen?","Mogu li da pomognem?"],["Was brauchen wir noch?","Šta nam je još potrebno?"]]]
+ ];
+ return {general,extra:rules.find(([re])=>re.test(context))?.[1]||[]};
+}
+function renderUseful(lines,data={},scene=null){
  const list=$("usefulList");list.replaceChildren();usefulRows=[];usefulPages=[];usefulPage=0;usefulScale=1;list.style.setProperty("--useful-scale","1");
- // Select actual bilingual replies, not invented phrases or translations.
- const seen=new Set();
- const candidates=lines.map((l,i)=>({...l,i})).filter(l=>{
-  const key=norm(l.de);if(!key||seen.has(key)||!l.sr.trim())return false;seen.add(key);return true;
- });
- const score=l=> (/\?/.test(l.de)?4:0)+(/\b(kann|können|möchte|möchten|brauche|habe|haben|suche|kostet|bitte|danke|gerne|gern|muss|mögen|würde|darf|dürfen|nehme)\b/i.test(l.de)?3:0)+(l.de.length>20?2:0)-(l.de.length>180?3:0);
- const picked=candidates.slice().sort((a,b)=>score(b)-score(a)||a.i-b.i).slice(0,12).sort((a,b)=>a.i-b.i);
+ const seen=new Set(),picked=[];
+ const append=(l,limit=22)=>{
+  if(picked.length>=limit)return;
+  const de=String(Array.isArray(l)?l[0]||"":l?.de||"").trim(),sr=String(Array.isArray(l)?l[1]||"":l?.sr||"").trim();
+  const key=norm(de);if(!key||!sr||seen.has(key)||de.length>180)return;
+  seen.add(key);picked.push({de,sr});
+ };
+ const ai=[data.importantSentences,data.important_sentences,data.usefulSentences,data.useful_sentences].find(a=>Array.isArray(a)&&a.length)||[];
+ const {general,extra}=situationalPhrases(data,scene,lines);
+ const score=l=>(/\?/.test(l.de)?4:0)+(/\b(kann|können|möchte|möchten|brauche|haben|suche|kostet|bitte|danke|gern|muss|darf|nehme)\b/i.test(l.de)?3:0)-(l.de.length>110?3:0)-(/\d|Euro\b/i.test(l.de)?4:0);
+ const candidates=lines.map((l,i)=>({...l,i})).sort((a,b)=>score(b)-score(a)||a.i-b.i);
+ ai.slice(0,10).forEach(l=>append(l,10));
+ extra.slice(0,6).forEach(l=>append(l,15));
+ candidates.slice(0,8).forEach(l=>append(l,16));
+ general.forEach(l=>append(l,22));
  picked.forEach((l,i)=>{
   const row=document.createElement("article");row.className="sentence useful-row";
   add(row,"useful-number",String(i+1));const copy=document.createElement("div");add(copy,"useful-de",l.de);add(copy,"useful-sr",l.sr);row.append(copy);
@@ -2349,7 +2381,7 @@ function renderUseful(lines){
   listen.onclick=()=>{if(readingMode==="useful"&&readingIndex===i)stopSpeech();else playRows("useful",i,false)};
   row.append(listen);list.append(row);usefulRows.push({de:l.de,element:row,listen});
  });
- if(!picked.length)add(list,"useful-sub","Nema dostupnih rečenica iz dijaloga.");
+ if(!picked.length)add(list,"useful-sub","Nema dostupnih važnih rečenica.");
 }
 function showUseful(page){
  if(!usefulPages.length){$("usefulPager").hidden=true;return}
