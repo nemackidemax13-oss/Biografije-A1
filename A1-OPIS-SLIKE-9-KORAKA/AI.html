@@ -1436,6 +1436,17 @@ const labels=["Opis osoba na slici","Razgovor osoba","Mesto osoba na slici","Izg
 const scenes=[...(window.DEMAX_SCENES||[]),...(window.DEMAX_NEW_SCENES||[])].sort((a,b)=>a.n-b.n);
 let summarySpeechTokens=[],fullFontScale=1,fullSteps=[],fullTranslated=false,fullAudioIndex=-1,fullAudioAuto=false,fullAudioLines=[],summaryFontScale=1,summaryEdited=false,dialogueFontScale=1,dialogueAuto=false,dialoguePages=[],dialoguePageIndex=0,descriptionPage=0;let imageData="",bank=[],descRows=[],dialogRows=[],currentPage=0,voiceToken=0,paused=false,readingMode="",readingIndex=0,generatedLocked=false,reachedDialogue=false;
 const synth=window.speechSynthesis;
+// Audio-only pronunciation aid for the colour beige; keep visible German spelling.
+// Preserve UTF-16 offsets so that word highlighting remains aligned.
+function germanSpeechText(value){
+ return String(value).replace(/\b(beige)(farben(?:e(?:m|n|r|s)?)?|[mnrs])?\b/giu,(word,stem,ending,offset,source)=>{
+  const base=stem[0]==="B"?"Beež":"beež";
+  const next=source.slice(offset+word.length);
+  const spoken=ending?base+"e"+ending:base+(/^\s+\p{Lu}/u.test(next)&&stem[0]!=="B"?"e":"");
+  return spoken.padEnd(word.length," ");
+ });
+}
+
 $("endpoint").value=DEFAULT_WORKER_URL;
 fetch("./shared.js").then(r=>r.text()).then(t=>{let p=t.indexOf("const BANK=");if(p<0)return;let a=p+11,b=t.indexOf("];",a);if(b<0)return;let data=JSON.parse(t.slice(a,b+1));if(Array.isArray(data))bank=data.filter(x=>x?.de&&x?.sr)}).catch(()=>{});
 
@@ -1504,7 +1515,7 @@ function playRows(mode,index=0,auto=true){
   const r=rows[readingIndex];if(mode==="dialog")revealDialogueIndex(readingIndex);cleanHighlight();
   if(r.element)r.element.classList.add("playing");
   updateDialogueAudioUI();
-  let u=new SpeechSynthesisUtterance(r.de);u.lang="de-DE";u.rate=.83;u.pitch=1;
+  let u=new SpeechSynthesisUtterance(germanSpeechText(r.de));u.lang="de-DE";u.rate=.83;u.pitch=1;
   u.onend=()=>{if(token!==voiceToken)return;readingIndex++;next()};
   u.onerror=e=>{if(token!==voiceToken)return;if(e.error==="canceled"||e.error==="interrupted")return;readingIndex++;next()};
   synth.speak(u)
@@ -1843,7 +1854,7 @@ function startFullLine(index,auto=false){
  const ticket=voiceToken;
  updateFullAudioUI();
  fitFullDescription();
- const u=new SpeechSynthesisUtterance(text);u.lang="de-DE";u.rate=.83;
+ const u=new SpeechSynthesisUtterance(germanSpeechText(text));u.lang="de-DE";u.rate=.83;
  u.onend=()=>{if(ticket!==voiceToken)return;if(auto)startFullLine(index+1,true);else stopSpeech()};
  u.onerror=e=>{if(ticket!==voiceToken)return;if(e.error==="canceled"||e.error==="interrupted")return;if(auto)startFullLine(index+1,true);else stopSpeech()};
  synth.speak(u);
@@ -1967,7 +1978,7 @@ function playSummary(startIndex=0){
   const part=phrases[i];
   $("summaryStatus").textContent="Izgovor: rečenica "+(i+1)+" / "+phrases.length;
   markSummarySpeechRange(part.start,part.end,false);
-  const u=new SpeechSynthesisUtterance(part.de);u.lang="de-DE";u.rate=.83;u.pitch=1;
+  const u=new SpeechSynthesisUtterance(germanSpeechText(part.de));u.lang="de-DE";u.rate=.83;u.pitch=1;
   let seenBoundary=false;
   u.onboundary=e=>{
    if(token!==voiceToken||readingMode!=="summary"||paused)return;
