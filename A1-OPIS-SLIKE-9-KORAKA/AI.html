@@ -2001,7 +2001,7 @@ function separateGermanSentences(value){
 function normalizeStepLines(step){
  const provided=Array.isArray(step.lines)?step.lines.filter(x=>x&&typeof x.de==="string"&&x.de.trim()):[];
  if(provided.length){
-  return provided.map(x=>({de:String(x.de).trim(),sr:String(x.sr||"").trim()}));
+  return provided.map(x=>({de:String(x.de).trim(),sr:String(x.sr||"").trim(),section:x.section,kind:x.kind,side:x.side,personIndex:x.personIndex}));
  }
  // Support older, already-deployed Cloudflare versions while waiting for the new code.
  const german=separateGermanSentences(step.de);
@@ -2018,7 +2018,7 @@ function alignDetailLines(value,source,paragraph=""){
  return german.map((de,i)=>{
   const matches=source.filter(x=>key(x.de)===key(de));
   const match=exactOrder?source[i]:matches.length===1?matches[0]:null;
-  return {de,sr:match?.sr||(sr.length===german.length?sr[i]:"")};
+  return {de,sr:match?.sr||(sr.length===german.length?sr[i]:""),section:match?.section,kind:match?.kind,side:match?.side,personIndex:match?.personIndex};
  });
 }
 let detailPages=[];
@@ -2333,6 +2333,23 @@ function completePerson(value){
  return {type,side};
 }
 function completeSections(rows){
+ // V61: Worker V137 supplies exact boundaries. Never infer them from a fixed count.
+ if(rows.length&&rows.every(r=>r.section==="intro"||r.section==="details"||(r.section==="person"&&Number.isInteger(r.personIndex)))){
+  const blocks=[];const names={Mann:"Opis čoveka",Frau:"Opis žene",Kind:"Opis deteta"};
+  const sides={links:" – levo",rechts:" – desno",Mitte:" – u sredini"};
+  for(let i=0;i<rows.length;i++){
+   const r=rows[i],key=r.section==="person"?"person:"+r.personIndex:r.section;
+   let block=blocks.at(-1);
+   if(!block||block.key!==key){
+    block={key,title:r.section==="intro"?"Uvod":r.section==="details"?"Detalji i kraj":(names[r.kind]||"Opis osobe")+(sides[r.side]||""),items:[]};
+    blocks.push(block);
+   }
+   block.items.push(i);
+  }
+  return blocks;
+ }
+ // Compatibility with older Workers, or text edited by the student.
+
  const result=[],counts={mann:0,frau:0,kind:0,person:0};
  const base={mann:"Opis čoveka",frau:"Opis žene",kind:"Opis deteta",person:"Opis osobe"};
  const intro={title:"Uvod",items:[]};result.push(intro);
@@ -2346,13 +2363,14 @@ function completeSections(rows){
   if(i===0){intro.items.push(i);continue}
   const individualDetail=/\b(?:links|rechts|linken Seite|rechten Seite|Jahre alt|trägt|Haare|Augen|Bart|Brille|groß|klein|Gesicht|sieht.{0,20}aus)\b/i.test(de);
   const combined=/\b(?:und|während)\s+(?:(?:ich denke,?\s+)?(?:der|die|das|ein|eine)\s+(?:Mann|Frau|Kind|Junge|Mädchen|Person|Kunde|Kundin|Arzt|Ärztin|Verkäufer|Verkäuferin)\b)/i.test(de);
-  const role=/^(?:Ich denke,?\s+|Ich glaube,?\s+)?(?:der|die|das)\s+(?:Mann|Frau|Kind|Junge|Mädchen|Person)\s+ist\s+(?:(?:ein|eine|der|die|das)\s+)?(?:Verkäufer(?:in)?|Kund(?:e|in)|Arzt|Ärztin|Patient(?:in)?|Mechaniker(?:in)?|Kellner(?:in)?|Lehrer(?:in)?|Mutter|Vater|Schüler(?:in)?)\s*[.!?]?$/i.test(de);
+  const role=/^(?:Ich denke,?\s+|Ich glaube,?\s+)?(?:der|die|das)\s+(?:Mann|Frau|Kind|Junge|Mädchen|Person)(?:\s+(?:links|rechts|in der Mitte))?\s+ist\s+(?:(?:ein|eine|der|die|das)\s+)?(?:Verkäufer(?:in)?|Kund(?:e|in)|Arzt|Ärztin|Patient(?:in)?|Mechaniker(?:in)?|Kellner(?:in)?|Lehrer(?:in)?|Mutter|Vater|Schüler(?:in)?|Gast|Rezeptionist(?:in)?|Kassierer(?:in)?|Reinigungskraft|Koch|Köchin|Bäcker(?:in)?)\s*[.!?]?$/i.test(de);
+  const combinedRoles=/^(?:Ich denke|Ich glaube),\s+/i.test(de)&&combined&&/\bist\s+(?:der|die|ein|eine)\s+/i.test(de)&&!/\b(?:Jahre alt|trägt|Haare|Augen|Bart|Brille|groß|klein|Gesicht)\b/i.test(de);
   const pronoun=/^(?:Ich denke,?\s+|Ich glaube,?\s+)?(Er|Es|Sie)\s+(\S+)/i.exec(de);
   const singular=pronoun&&(/^(?:er|es)$/i.test(pronoun[1])||/^(?:ist|hat|trägt|sitzt|steht|lacht|sieht|hält|möchte|kauft|arbeitet|braucht|spricht|geht|fährt)\b/i.test(pronoun[2]));
   if(!background&&details.test(de)){startDetails()}
   if(part===intro){
    const location=/(?:\bist (?:in |im |am |an |auf |bei |drinnen\b|draußen\b)|^Ich weiß nicht genau, wo )/i.test(de)&&!/\b(?:links|rechts|der Mitte|linken Seite|rechten Seite)\b/i.test(de);
-   if((!p&&!singular)||((combined||role||location)&&!individualDetail)){intro.items.push(i);continue}
+   if((!p&&!singular)||role||combinedRoles||((combined||location)&&!individualDetail)){intro.items.push(i);continue}
    if(p)startPerson(p);
    else startPerson({type:/^er$/i.test(pronoun[1])?"mann":/^es$/i.test(pronoun[1])?"kind":"frau",side:""});
   }else if(!background){
@@ -2379,7 +2397,7 @@ function renderComplete(){
   const copy=document.createElement("div"),de=document.createElement("div"),sr=document.createElement("div");
   de.className="complete-de";de.lang="de";de.textContent=sentence.de;sr.className="complete-sr";sr.lang="sr";sr.textContent=sentence.sr||"Prevod ove rečenice nije dostupan.";
   const play=document.createElement("button");play.type="button";play.className="complete-play";play.textContent="▶";play.setAttribute("aria-label","Slušaj rečenicu "+(i+1));play.onclick=()=>{if(readingMode==="complete"&&completeIndex===i)stopSpeech();else playComplete(i,false)};
-  copy.append(de,sr);row.append(number,copy,play);field.append(row);completeRows.push({row,play,de:sentence.de});
+  copy.append(de,sr);row.append(number,copy,play);field.append(row);completeRows.push({row,play,de:sentence.de,section:sentence.section,kind:sentence.kind,side:sentence.side,personIndex:sentence.personIndex});
  }
  updateCompleteAudioUI();
 }
