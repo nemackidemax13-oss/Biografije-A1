@@ -1572,6 +1572,8 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
 @media(max-height:650px){#screen4 .complete-photo,#screen4 .complete-photo #photo4{max-height:27dvh!important}#screen4 .complete-row{padding:3px 4px}}
 /* V54: redundant detailed-description views are disabled; keep legacy DOM for shared helpers. */
 #screen2,#screen5{display:none!important}
+/* V57: numbered thematic pages, with no extra sentence range in the footer. */
+#screen4 #completePageLabel{font-size:clamp(10px,3vw,12px)!important;line-height:1.15!important;font-weight:850!important}
 </style></head><body><main class="app">
 <header class="header"><h1>Opis slike</h1></header>
 <section class="screen active" id="screen0"><div class="scroll"><div class="panel"><h2 class="title" id="uploadHeading">Ubaci sliku za opis</h2><label class="upload"><span class="upload-icon">📷</span><span class="upload-title">Izaberi fotografiju</span><span class="upload-sub">Dodirni ovde za galeriju ili kameru</span><input id="file" type="file" accept="image/*"></label><div class="photo-reveal" id="photoReveal"><span class="photo-glow" aria-hidden="true"></span><img class="picture" id="photo0" alt="Izabrana slika"><span class="photo-success" aria-hidden="true">✓</span><span class="sparkle sp1" aria-hidden="true">✦</span><span class="sparkle sp2" aria-hidden="true">✧</span><span class="sparkle sp3" aria-hidden="true">✦</span></div><p class="status" id="status">Prvo izaberi sliku.</p></div><div id="aiWait" hidden role="status" aria-live="polite"><div class="wait-card"><div class="wait-ring" aria-hidden="true"></div><h2>Molimo, sačekajte…</h2><p>Fotografija se analizira.</p><p class="wait-sub">Pripremamo opis slike i dijalog na nemačkom jeziku.</p></div></div><div class="demax-text-brand" aria-label="De-Max A1"><span>De-Max</span><strong>A1</strong></div><input id="endpoint" type="hidden" value="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev"></div><div class="footer upload-footer"><button class="action green" id="resumeAfterGeneration" type="button" hidden>Nastavi opis ❯</button><button class="action green" id="analyze" disabled>Automatski opiši sliku</button></div></section>
@@ -2288,10 +2290,10 @@ function completePerson(value){
 }
 function completeSections(rows){
  const result=[],counts={mann:0,frau:0,kind:0,person:0};
- const base={mann:"Opis muškarca",frau:"Opis žene",kind:"Opis deteta",person:"Opis osobe"};
+ const base={mann:"Opis čoveka",frau:"Opis žene",kind:"Opis deteta",person:"Opis osobe"};
  const intro={title:"Uvod",items:[]};result.push(intro);
  let active=null,part=intro,background=false;
- const details=/^(?:Im Hintergrund|Im Vordergrund|Außerdem|Auf dem Tisch|Neben den Personen|Hinter den Personen|Das war meine Bildbeschreibung|Zum Schluss|Abschließend|Insgesamt|Das Bild zeigt|Auf dem Bild sind noch)\b/i;
+ const details=/^(?:Im Hintergrund|Im Vordergrund|Außerdem|Auf dem Tisch|Neben den Personen|Hinter den Personen|Das war meine Bildbeschreibung|Zum Schluss|Abschließend|Insgesamt|Das Bild zeigt|Auf dem Bild sind noch|Das Wetter|Es regnet|Es schneit|Es ist bewölkt|Die Sonne scheint|Ich sehe)\b/i;
  function title(p,n){return base[p.type]+(p.side==="links"?" – levo":p.side==="rechts"?" – desno":n>1?" "+n:"")}
  function startPerson(p){counts[p.type]++;active={...p,number:counts[p.type]};part={title:title(p,active.number),items:[]};result.push(part)}
  function startDetails(){background=true;part={title:"Detalji i kraj",items:[]};result.push(part)}
@@ -2305,7 +2307,8 @@ function completeSections(rows){
   const singular=pronoun&&(/^(?:er|es)$/i.test(pronoun[1])||/^(?:ist|hat|trägt|sitzt|steht|lacht|sieht|hält|möchte|kauft|arbeitet|braucht|spricht|geht|fährt)\b/i.test(pronoun[2]));
   if(!background&&details.test(de)){startDetails()}
   if(part===intro){
-   if(!p&&!singular||((combined||role)&&!individualDetail)){intro.items.push(i);continue}
+   const location=/(?:\bist (?:in |im |am |an |auf |bei |drinnen\b|draußen\b)|^Ich weiß nicht genau, wo )/i.test(de)&&!/\b(?:links|rechts|der Mitte|linken Seite|rechten Seite)\b/i.test(de);
+   if((!p&&!singular)||((combined||role||location)&&!individualDetail)){intro.items.push(i);continue}
    if(p)startPerson(p);
    else startPerson({type:/^er$/i.test(pronoun[1])?"mann":/^es$/i.test(pronoun[1])?"kind":"frau",side:""});
   }else if(!background){
@@ -2342,7 +2345,7 @@ function showCompletePage(page,resetScroll=true){
  completeRows.forEach((r,i)=>{r.row.hidden=!visible.has(i)});
  $("completePager").hidden=false;
  $("completePrev").disabled=completePage===0;$("completeNext").disabled=completePage>=completePages.length-1;
- $("completePageLabel").textContent="Strana "+(completePage+1)+" / "+Math.max(1,completePages.length)+" · "+(completePageTitles[completePage]||"Uvod")+(arr.length?" · "+(arr[0]+1)+"–"+(arr[arr.length-1]+1):"");
+ $("completePageLabel").textContent="Strana "+(completePage+1)+" / "+Math.max(1,completePages.length)+" · "+(completePageTitles[completePage]||"Uvod");
  $("completeDialogue").textContent=completePage<completePages.length-1?"Sledeće ❯":"Dijalog ❯";
  if(resetScroll)$("completeList").scrollTop=0;
 }
@@ -2360,7 +2363,7 @@ function paginateComplete(anchor=0){
   const flush=()=>{if(items.length){completePages.push(items);completePageTitles.push(section.title);items=[];height=0}};
   for(const i of section.items){
    const h=completeRows[i].row.getBoundingClientRect().height;
-   if(items.length&&(height+gap+h>available||(section.title==="Uvod"&&items.length>=4)))flush();
+   if(items.length&&height+gap+h>available)flush();
    height+=h+(items.length?gap:0);items.push(i);
   }
   flush();
