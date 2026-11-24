@@ -1663,7 +1663,7 @@ dialogueFontScale=1;$("dialogue").style.setProperty("--dialogue-font-scale","1")
 // V81 — A dialogue must describe the photographed item, not a generic scene script.
 const generatedDialogue=(Array.isArray(data.dialogue)?data.dialogue:[])
  .filter(x=>x&&typeof x.de==="string"&&x.de.trim()&&typeof x.sr==="string"&&x.sr.trim())
- .slice(0,12)
+ .slice(0,18)
  .map((x,i)=>({speaker:i%2?"B":"A",de:String(x.de),sr:String(x.sr)}));
 // Never invent a product via fallback to an unrelated original dialogue.
 const activeDialogue=generatedDialogue.length>=10?generatedDialogue:[];
@@ -1692,7 +1692,7 @@ activeDialogue.forEach((l,i)=>{
 });
 dialoguePages=[];dialoguePageIndex=0;
 let scene=scenes.find(s=>s.n===Number(data.sceneNumber));
-if(activeDialogue.length)$("scene").textContent="Dijalog prema slici: "+String(data.sceneName||scene?.sr||"situacija");
+if(activeDialogue.length)$("scene").textContent="Dijalog prema slici (simulacija): "+String(data.sceneName||scene?.sr||"situacija");
 // Druga stranica uvek koristi iste AI recenice kao koraci 1–9.
 const summarySource=data.steps[9]||{};
 // V97: Detaljan opis = samo proverene recenice iz celog opisa, bez naziva kategorija.
