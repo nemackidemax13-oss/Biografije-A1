@@ -1947,8 +1947,8 @@ try{
   return {...d,steps};
  };
  let data=null,lastError="";
- // V65: one shared 40-second deadline, including any quick retry and response body.
- const deadline=performance.now()+40000;
+ // V157: 55-second browser deadline, including transfer; Worker AI budget is 50 seconds.
+ const deadline=performance.now()+55000;
  for(let attempt=1;attempt<=2;attempt++){
   if(attempt===2&&deadline-performance.now()<12000)break;
   if(attempt===2)setStatus("Pokušavam kraći AI zahtev…");
@@ -1965,7 +1965,7 @@ try{
    data=normalizeAIResponse(raw);
    if(data)break;
    lastError="Cloudflare AI nije vratio nijedan upotrebljiv opis.";
-  }catch(e){lastError=e?.name==="AbortError"?"AI nije završio opis i dijalog u roku od 40 sekundi. Pokušaj ponovo.":String(e?.message||e);if(e?.name==="AbortError")break}
+  }catch(e){lastError=e?.name==="AbortError"?"AI nije završio opis i dijalog u predviđenom roku. Pokušaj ponovo.":String(e?.message||e);if(e?.name==="AbortError")break}
  }
  if(!data)throw Error(lastError+" Proveri Cloudflare Worker.");
 
