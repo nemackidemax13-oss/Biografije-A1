@@ -1631,15 +1631,11 @@ const labels=["Opis osoba na slici","Razgovor osoba","Mesto osoba na slici","Izg
 const scenes=[...(window.DEMAX_SCENES||[]),...(window.DEMAX_NEW_SCENES||[])].sort((a,b)=>a.n-b.n);
 let summarySpeechTokens=[],fullFontScale=1,fullSteps=[],fullTranslated=false,fullAudioIndex=-1,fullAudioAuto=false,fullAudioLines=[],summaryFontScale=.8,summaryEdited=false,dialogueFontScale=1,dialogueAuto=false,dialoguePages=[],dialoguePageIndex=0,descriptionPage=0;let imageData="",bank=[],descRows=[],dialogRows=[],currentPage=0,voiceToken=0,paused=false,readingMode="",readingIndex=0,generatedLocked=false,reachedDialogue=false;
 const synth=window.speechSynthesis;
-// Audio-only pronunciation aid for the colour beige; keep visible German spelling.
-// Preserve UTF-16 offsets so that word highlighting remains aligned.
+// V51: use the native German pronunciation of beige (French loanword, final voiced zh).
+// Do not replace it with the artificial "beež", which German voices can mispronounce.
+// Preserve original word forms (beige, beigen, beigefarben) and highlighting offsets.
 function germanSpeechText(value){
- return String(value).replace(/\b(beige)(farben(?:e(?:m|n|r|s)?)?|[mnrs])?\b/giu,(word,stem,ending,offset,source)=>{
-  const base=stem[0]==="B"?"Beež":"beež";
-  const next=source.slice(offset+word.length);
-  const spoken=ending?base+"e"+ending:base+(/^\s+\p{Lu}/u.test(next)&&stem[0]!=="B"?"e":"");
-  return spoken.padEnd(word.length," ");
- });
+ return String(value);
 }
 
 $("endpoint").value=DEFAULT_WORKER_URL;
