@@ -1619,7 +1619,7 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
 
 <div id="completeList" role="region" aria-label="Kompletan opis, rečenice i prevodi"></div>
 <div id="completeAudioControls" class="complete-audio-controls" role="group" aria-label="Brzina i automatsko slušanje kompletnog opisa">
-<button type="button" data-complete-rate="0.65" aria-pressed="false">Sporo</button>
+<button type="button" data-complete-rate="0.45" aria-pressed="false">Sporo</button>
 <button type="button" data-complete-rate="0.83" aria-pressed="true">Normalno</button>
 <button type="button" data-complete-rate="1.05" aria-pressed="false">Brzo</button>
 <button type="button" id="completeAuto" aria-pressed="false" aria-label="Automatsko slušanje od trenutne stranice">▶ Auto</button>
@@ -1659,7 +1659,10 @@ const synth=window.speechSynthesis;
 // Do not replace it with the artificial "beež", which German voices can mispronounce.
 // Preserve original word forms (beige, beigen, beigefarben) and highlighting offsets.
 function germanSpeechText(value){
- return String(value);
+ // V60: the valid alternative spelling "beig" is easily misread by TTS.
+ // Use the standard full spelling for an isolated colour, with unchanged
+ // correctly declined forms (beige, beigen, beigem, beiger, beiges).
+ return String(value).replace(/\bbei(g)\b/gi,word=>word+"e");
 }
 // Prefer a native German (Germany) voice, keeping the original German orthography
 // and inflected forms such as beige, beigen and beigefarben unchanged.
@@ -1669,7 +1672,8 @@ function germanUtterance(value){
  const voices=synth?.getVoices?.()||[];
  const native=voices.filter(v=>/^de[-_]DE$/i.test(v.lang));
  const german=native.length?native:voices.filter(v=>/^de(?:[-_]|$)/i.test(v.lang));
- const score=v=> (/premium|enhanced|natural|neural|online|google/i.test(v.name)?10:0)+(v.default?1:0);
+ const colour=/\bbei(?:g|ge|gem|gen|ger|ges|gefarben\w*)\b/i.test(u.text);
+ const score=v=> (/premium|enhanced|natural|neural|online|google/i.test(v.name)?10:0)+(v.default?1:0)+(colour&&/google deutsch|microsoft.*(?:katja|conrad|amala|killian)|anna|petra/i.test(v.name)?4:0);
  const voice=german.slice().sort((a,b)=>score(b)-score(a))[0];
  if(voice){u.voice=voice;u.lang=voice.lang.replace(/_/g,"-")}
  return u;
@@ -2441,7 +2445,7 @@ function playComplete(index,auto){
 }
 document.querySelectorAll("[data-complete-rate]").forEach(btn=>btn.onclick=()=>{
  const rate=Number(btn.dataset.completeRate);
- if(![.65,.83,1.05].includes(rate)||rate===completeRate)return;
+ if(![.45,.83,1.05].includes(rate)||rate===completeRate)return;
  const active=readingMode==="complete",index=completeIndex,auto=completeAutoActive;
  completeRate=rate;
  if(active&&index>=0)playComplete(index,auto);else updateCompleteAudioUI();
