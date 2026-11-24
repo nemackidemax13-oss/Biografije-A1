@@ -1669,6 +1669,30 @@ let aiWaitAudio=null;
 function initAIWaitAudio(){try{const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;if(!aiWaitAudio||aiWaitAudio.state==="closed")aiWaitAudio=new AC();if(aiWaitAudio.state==="suspended")aiWaitAudio.resume().catch(()=>{});}catch(e){}}
 function aiWaitTone(freq=650,delay=0,duration=.045){try{if(!aiWaitAudio||aiWaitAudio.state!=="running")return;const t=aiWaitAudio.currentTime+delay,o=aiWaitAudio.createOscillator(),g=aiWaitAudio.createGain();o.type="sine";o.frequency.value=freq;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.035,t+.008);g.gain.exponentialRampToValueAtTime(.0001,t+duration);o.connect(g);g.connect(aiWaitAudio.destination);o.start(t);o.stop(t+duration+.01);o.onended=()=>{o.disconnect();g.disconnect();};}catch(e){}}
 function aiWaitReadySound(){aiWaitTone(784,0,.13);aiWaitTone(1047,.14,.18);}
+/* V58: gentle, identical transition chime on each new learning section.
+   No downloaded audio, no additional AI request, no settings needed. */
+async function sectionTransitionSound(section){
+ try{
+  const AC=window.AudioContext||window.webkitAudioContext;
+  if(!AC)return;
+  if(!aiWaitAudio||aiWaitAudio.state==="closed")aiWaitAudio=new AC();
+  if(aiWaitAudio.state!=="running")await aiWaitAudio.resume();
+  if(currentPage!==section||aiWaitAudio.state!=="running")return;
+  const ctx=aiWaitAudio,start=ctx.currentTime+.015;
+  const notes=[[523.251,0,.29],[659.255,.12,.32],[783.991,.25,.48]];
+  for(const [freq,offset,duration] of notes){
+   const t=start+offset,o=ctx.createOscillator(),g=ctx.createGain();
+   o.type="sine";o.frequency.value=freq;
+   g.gain.setValueAtTime(.0001,t);
+   g.gain.exponentialRampToValueAtTime(.045,t+.025);
+   g.gain.exponentialRampToValueAtTime(.0001,t+duration);
+   o.connect(g);g.connect(ctx.destination);
+   o.start(t);o.stop(t+duration+.015);
+   o.onended=()=>{o.disconnect();g.disconnect();};
+  }
+ }catch(e){}
+}
+
 
 function stopAIWait(){$("aiWait").hidden=true;$("screen0").classList.remove("ai-waiting");$("file").disabled=false;}
 function startAIWait(){initAIWaitAudio();$("file").disabled=true;$("aiWait").hidden=false;$("screen0").classList.add("ai-waiting");}
@@ -1691,7 +1715,10 @@ function view(n){
  // V54: the redundant detailed-description screens are no longer part of the learning flow.
  if(n===2||n===5)n=6;
  
+ const previousPage=currentPage;
  stopSpeech();currentPage=n;
+ // Chime on the three forward chapter entrances only, not on back or page turns.
+ if((n===6&&previousPage===1)||(n===7&&previousPage===4)||(n===9&&previousPage===3))void sectionTransitionSound(n);
  if(n===8&&generatedLocked)reachedDialogue=true;
  syncGenerationGate();
  document.querySelector(".app").classList.toggle("study-page",n!==0);
