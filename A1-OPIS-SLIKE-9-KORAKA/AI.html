@@ -1917,10 +1917,10 @@ function showDescriptionPage(page,stopAudio=true){
  const arr=detailPages[next]||[],visible=new Set(arr);
  fullAudioLines.forEach((row,i)=>{row.line.hidden=!visible.has(i)});
  const range=$("detailRangeV22");
- if(range)range.textContent=arr.length?"Rečenice "+(arr[0]+1)+"–"+(arr[arr.length-1]+1)+" / "+fullAudioLines.length:"Nema rečenica";
+ if(range)range.textContent=arr.length?"Rečenice "+(arr[0]+1)+"–"+(arr[arr.length-1]+1):"Nema rečenica";
  $("descPrev").disabled=next===0;
  $("descNext").disabled=next===total-1;
- $("descPageLabel").textContent=arr.length?"Rečenice "+(arr[0]+1)+"–"+(arr[arr.length-1]+1)+" / "+fullAudioLines.length:"Stranica "+(next+1)+"/"+total;
+ $("descPageLabel").textContent=arr.length?"Rečenice "+(arr[0]+1)+"–"+(arr[arr.length-1]+1):"Stranica "+(next+1)+"/"+total;
  $("goDialogue").textContent=next===total-1?"Kompletan opis ❯":"Sledeće ❯";
  const field=$("fullDescription");field.scrollTop=0;
  fitFullDescription();
