@@ -1827,7 +1827,7 @@ try{
   })),
   bankExamples:sampleBank(true).slice(0,65),
   expectedSteps:10,
-  visualAccuracyInstructions:"OBAVEZNA STRUKTURA A1 OPISA SLIKE (V25). Prvo pažljivo pregledaj fotografiju: tačan broj i vrsta osoba, položaj svake osobe, radnja, mesto, izgled, odeća, predmeti i pozadina. Koristi gramatički ispravan, prirodan i jednostavan nemački A1 sa srpskim prevodom, uključujući umlaut (Verkäufer, über, ungefähr, trägt). Primeri ispod pokazuju samo strukturu, nikako ne prepisuj nevidljive činjenice.\n1. UVOD: uvek počni sa Auf diesem Bild sehe ich ... i navedi tačan broj osoba: npr. Auf diesem Bild sehe ich zwei Personen, einen Mann und eine Frau. Ako je jedna osoba, tri osobe, dve žene, dva muškarca ili dete, prilagodi broj i imenice.\n2. ULOGE: odmah posle uvoda, ako ih kontekst opravdava, jedna povezana rečenica: Ich denke, der Mann ist der Verkäufer und die Frau ist die Kundin. Ili Ich denke, die Frau ist die Ärztin und der Mann ist der Patient. Prilagodi uloge, rod i broj, i uključi dete ako je uloga jasna. Ako uloge nisu pouzdano prepoznatljive, ne izmišljaj ih. Ne ponavljaj istu pretpostavku kasnije.\n3. POLOŽAJ, MESTO, RADNJA I TEMA: navedi šta osobe stvarno rade. Primeri: Die Personen stehen. / Die Personen sitzen. / Die Personen fahren Fahrrad. / Die Personen laufen. / Die Personen knien. Ako su položaji različiti, navedi odvojeno, npr. Der Mann sitzt und die Frau steht. Ako fotografija sugeriše razgovor, Die Personen stehen und sprechen über etwas, vielleicht über den Preis. Ili Die Personen sitzen und sprechen über etwas, vielleicht über ihre Arbeit. Tema mora biti prirodna i povezana sa konkretnim kontekstom; možda (vielleicht) označava pretpostavku. Ako nema naznake razgovora, ne tvrdi da razgovaraju i ne dodaj temu. Navedi mesto u ovoj celini, npr. Die Personen sind in einer Bäckerei, samo ako je prepoznatljivo; možeš povezati mesto sa radnjom bez ponavljanja. Ako je samo jedna osoba, koristi jedninu.\n4. DETALJAN OPIS SVAKE OSOBE ZASEBNO: opiši prvog muškarca pa ženu ili obrnuto ako je prirodnije prema slici, ali NIKADA ne mešaj rečenice različitih osoba. Prvu rečenicu bloka započni sa Der Mann, Die Frau, Der Junge, Das Mädchen ili Das Kind; sledeće rečenice sa Er, Sie ili Es kada je referent jasan. Kod dve osobe istog pola koristi links/rechts ili drugu jasno vidljivu razliku pri prelasku na drugu osobu. Ako ima i dete ili više osoba, opiši svaku zasebno pre pozadine. Za svaku osobu navedi, ako je vidljivo: položaj ili strana bez nepotrebnog ponavljanja zajedničkog uvoda, izgled lica, izraz lica (lacht samo ako se zaista smeje), naočare, brada, boja i dužina kose, odeća i boje po komadima, obuća, torba ili predmet u ruci, radnja i približne godine (Ich denke, der Mann ist ungefähr ... Jahre alt). Pretpostavke o nameri, kupovini i ulozi označi sa Ich denke ili vielleicht i samo ako su opravdane. Ako se vidi da jedna osoba uslužuje drugu, navedi precizno ko koga uslužuje; bez izmišljanja. Ne vraćaj se na prethodnu osobu nakon početka narednog bloka.\n5. DODATNI PREDMETI I POZADINA: tek kada su sve osobe opisane, navedi vidljive stvari: Im Hintergrund sehe ich ... . Außerdem sehe ich ... . Koristi Im Hintergrund samo jednom. Razlikuj jedninu, množinu i nebrojive imenice: ein Brot / viele Brote, ein Regal / viele Regale, viele Äpfel, viel Obst und Gemüse, viele Lebensmittel, anderes Gebäck; nikad jednu stvar ako se jasno vidi više njih. Ne izmišljaj pozadinu, predmete, boje, količine ili detalje.\n6. ZAVRŠETAK: dodaj jednu kratku prirodnu završnu rečenicu koja odgovara situaciji, npr. Ich denke, die Kundin möchte etwas kaufen. / Ich denke, die Personen verbringen Zeit zusammen. / Ich denke, das Kind hat Spaß. / Ich denke, die Personen warten auf den Arzt. Upotrebi samo odgovarajuću, ne ponavljaj raniji sadržaj i ne izmišljaj. Ako nema opravdane situacione pretpostavke, koristi neutralan zaključak. Poslednja rečenica može biti Das war meine Bildbeschreibung.\nFORMAT: zadrži postojeći JSON sa svih 10 koraka, steps[9] (korak 10) je kompletan opis, uvek po ovom redosledu 1–6. steps[9].de je kompletan nemački tekst, steps[9].sr odgovarajući srpski prevod; steps[9].lines mora sadržati svaku rečenicu iz steps[9].de tačno istim redom, jednu rečenicu po elementu, sa odgovarajućim prevodom sr. Nema dodatnih, preskočenih, ponovljenih ili izmešanih rečenica. Ne razdvajaj jednu osobu na više nepovezanih blokova. Za tematske stranice: ako je moguće, uvod neka ima tačno četiri kratke rečenice (broj osoba, uloge ili neutralno zapažanje, mesto, zajednička radnja). Nakon toga prvo kompletno opiši muškarca, zatim ženu, zatim dete ili druge osobe, svaku započni jasnim nazivom osobe (Der Mann, Die Frau, Das Kind; za isti pol links/rechts). Tek nakon svih osoba počni pozadinu sa Im Hintergrund ili Außerdem, zatim završetak. Ne izmišljaj detalje samo da bi popunio četiri rečenice. Ova struktura ima prednost nad svim starijim primerima i bankExamples u zahtevu.",
+  visualAccuracyInstructions:"OBAVEZNA STRUKTURA A1 OPISA SLIKE (V25). Prvo pažljivo pregledaj fotografiju: tačan broj i vrsta osoba, položaj svake osobe, radnja, mesto, izgled, odeća, predmeti i pozadina. Koristi gramatički ispravan, prirodan i jednostavan nemački A1 sa srpskim prevodom, uključujući umlaut (Verkäufer, über, ungefähr, trägt). Primeri ispod pokazuju samo strukturu, nikako ne prepisuj nevidljive činjenice.\n1. UVOD: uvek počni sa Auf diesem Bild sehe ich ... i navedi tačan broj osoba: npr. Auf diesem Bild sehe ich zwei Personen, einen Mann und eine Frau. Ako je jedna osoba, tri osobe, dve žene, dva muškarca ili dete, prilagodi broj i imenice.\n2. ULOGE: odmah posle uvoda, ako ih kontekst opravdava, jedna povezana rečenica: Ich denke, der Mann ist der Verkäufer und die Frau ist die Kundin. Ili Ich denke, die Frau ist die Ärztin und der Mann ist der Patient. Prilagodi uloge, rod i broj, i uključi dete ako je uloga jasna. Ako uloge nisu pouzdano prepoznatljive, ne izmišljaj ih. Ne ponavljaj istu pretpostavku kasnije.\n3. POLOŽAJ, MESTO, RADNJA I TEMA: navedi šta osobe stvarno rade. Primeri: Die Personen stehen. / Die Personen sitzen. / Die Personen fahren Fahrrad. / Die Personen laufen. / Die Personen knien. Ako su položaji različiti, navedi odvojeno, npr. Der Mann sitzt und die Frau steht. Ako fotografija sugeriše razgovor, Die Personen stehen und sprechen über etwas, vielleicht über den Preis. Ili Die Personen sitzen und sprechen über etwas, vielleicht über ihre Arbeit. Tema mora biti prirodna i povezana sa konkretnim kontekstom; možda (vielleicht) označava pretpostavku. Ako nema naznake razgovora, ne tvrdi da razgovaraju i ne dodaj temu. Navedi mesto u ovoj celini, npr. Die Personen sind in einer Bäckerei, samo ako je prepoznatljivo; možeš povezati mesto sa radnjom bez ponavljanja. Ako je samo jedna osoba, koristi jedninu.\n4. DETALJAN OPIS SVAKE OSOBE ZASEBNO: opiši prvog muškarca pa ženu ili obrnuto ako je prirodnije prema slici, ali NIKADA ne mešaj rečenice različitih osoba. Prvu rečenicu bloka započni sa Der Mann, Die Frau, Der Junge, Das Mädchen ili Das Kind; sledeće rečenice sa Er, Sie ili Es kada je referent jasan. Kod dve osobe istog pola koristi links/rechts ili drugu jasno vidljivu razliku pri prelasku na drugu osobu. Ako ima i dete ili više osoba, opiši svaku zasebno pre pozadine. Za svaku osobu navedi, ako je vidljivo: položaj ili strana bez nepotrebnog ponavljanja zajedničkog uvoda, izgled lica, izraz lica (lacht samo ako se zaista smeje), naočare, brada, boja i dužina kose, odeća i boje po komadima, obuća, torba ili predmet u ruci, radnja i približne godine (Ich denke, der Mann ist ungefähr ... Jahre alt). Pretpostavke o nameri, kupovini i ulozi označi sa Ich denke ili vielleicht i samo ako su opravdane. Ako se vidi da jedna osoba uslužuje drugu, navedi precizno ko koga uslužuje; bez izmišljanja. Ne vraćaj se na prethodnu osobu nakon početka narednog bloka.\n5. DODATNI PREDMETI I POZADINA: tek kada su sve osobe opisane, navedi vidljive stvari: Im Hintergrund sehe ich ... . Außerdem sehe ich ... . Koristi Im Hintergrund samo jednom. Razlikuj jedninu, množinu i nebrojive imenice: ein Brot / viele Brote, ein Regal / viele Regale, viele Äpfel, viel Obst und Gemüse, viele Lebensmittel, anderes Gebäck; nikad jednu stvar ako se jasno vidi više njih. Ne izmišljaj pozadinu, predmete, boje, količine ili detalje.\n6. ZAVRŠETAK: dodaj jednu kratku prirodnu završnu rečenicu koja odgovara situaciji, npr. Ich denke, die Kundin möchte etwas kaufen. / Ich denke, die Personen verbringen Zeit zusammen. / Ich denke, das Kind hat Spaß. / Ich denke, die Personen warten auf den Arzt. Upotrebi samo odgovarajuću, ne ponavljaj raniji sadržaj i ne izmišljaj. Ako nema opravdane situacione pretpostavke, koristi neutralan zaključak. Poslednja rečenica može biti Das war meine Bildbeschreibung.\nFORMAT: zadrži postojeći JSON sa svih 10 koraka, steps[9] (korak 10) je kompletan opis, uvek po ovom redosledu 1–6. steps[9].de je kompletan nemački tekst, steps[9].sr odgovarajući srpski prevod; steps[9].lines mora sadržati svaku rečenicu iz steps[9].de tačno istim redom, jednu rečenicu po elementu, sa odgovarajućim prevodom sr. Nema dodatnih, preskočenih, ponovljenih ili izmešanih rečenica. Ne razdvajaj jednu osobu na više nepovezanih blokova. Za tematske stranice OBAVEZNO: UVOD čine samo opšte rečenice o broju osoba, mestu, ulogama i zajedničkoj radnji, po mogućnosti četiri kratke rečenice. Ne stavljaj individualni položaj, izgled, godine ili odeću u uvod. Zatim zaseban blok za svakog muškarca, pa svaku ženu, pa svako dete ili drugu osobu. Prvu rečenicu SVAKOG bloka počni sa Der Mann / Die Frau / Das Kind ili odgovarajućim nazivom i navedi links/rechts ako je vidljivo (Der Mann ist rechts auf dem Bild). Kod dve osobe istog pola obavezno razlikuj položaj ili redni broj. Sve ostale rečenice o toj osobi napiši neposredno iza nje sa Er/Sie/Es. Ne prelazi na drugu osobu dok prva nije u potpunosti opisana. Ne vraćaj se na raniju osobu. Tek nakon SVIH osoba počni zasebnu završnu celinu sa Im Hintergrund ili Außerdem, opiši detalje i dodaj završetak. Ne mešaj pozadinu sa opisom pojedinačne osobe. Ne izmišljaj detalje samo da bi popunio četiri rečenice. Ova struktura ima prednost nad svim starijim primerima i bankExamples u zahtevu.",
   dialogueAccuracyInstructions:"NAPRAVI PRIRODAN STVARNI A1 DIJALOG A i B PREMA KONKRETNOJ FOTOGRAFIJI. Pre pisanja proveri ko je gde, ko sedi ili stoji, ko sta drzi, sta osoba gleda i sta je oko nje. Izaberi situaciju samo prema vidljivom kontekstu. Ako fotografija jasno prikazuje supermarket i kupovinu, razgovor moze biti prirodan dijalog o tacno prepoznatljivim namirnicama, ceni ili izboru; ako prikazuje recepciju, razgovor na recepciji; ako auto-radionicu, razgovor o popravci. To su samo primeri, ne preslikavaj ih na neodgovarajucu fotografiju. Dve osobe razgovaraju smisleno, odgovaraju jedna drugoj i zadrzavaju iste uloge tokom celog dijaloga. Ne ubacuj nevidljive predmete, proizvode ili izmisljene potvrde da su nesto uradili; prirodne replike mogu biti hipoteticki scenario za vezbu i ne smeju se predstavljati kao cinjenica da se razgovor zaista desio na slici. Ako namera ili kontekst nisu jasni, koristi jednostavan neutralan dijalog o vidljivim predmetima i okruzenju. Bez mesanja jakne i haljine, sedenja i stajanja, pogresne odece ili pogresne strane. Svaka replika mora biti jednostavna, realisticna, gramaticki tacna i sa odgovarajucim srpskim prevodom. V49: cilj je 16–20 naizmenicnih replika A/B, idealno 18, po jedna ili dve kratke prirodne A1 recenice. Razgovor ima uzajamni pozdrav, jasnu potrebu ili temu, 6–8 smislenih razmena pitanja i odgovora ili predloga i reakcija, dogovor odnosno prirodan zavrsetak i uzajamni pozdrav na kraju. Ne ponavljaj ista pitanja, ne koristi prazne replike niti prerano zavrsavaj. Koristi svakodnevne A1 izraze i konkretne detalje prikazane situacije. U prodavnici prema potrebi pitaj za proizvod, kolicinu, velicinu, cenu, probu ili pakovanje, nacin placanja; kod lekara za tegobe, trajanje, pregled i naredne korake bez izmisljene dijagnoze; u parku, kod kuce ili medju prijateljima za aktivnosti, predloge, vreme i dogovor. Biraj iskljucivo ono sto odgovara konkretnoj fotografiji. Koristi Sie sa nepoznatim osobama i du u bliskim odnosima, dosledno. U simulaciji dozvoli prirodna pitanja o ceni ili velicini, ali ne predstavljaj izmisljene detalje kao vizuelne cinjenice. Svaki odgovor reaguje na prethodnu repliku. Ako Worker ima drugaciji obavezan broj replika, prati njegovo pravilo i maksimalno razvij razgovor unutar tog broja. Ako izlazna šema dozvoljava, dodaj zasebno polje importantSentences (10–12 objekata sa de i sr): samostalne, kratke, prirodne A1 fraze, pitanja i odgovore korisne i u drugim razgovorima u istoj prepoznatoj situaciji, bez konkretnih izmišljenih cena, imena ili vizuelnih činjenica. Ne menjaj postojeća obavezna polja."
  };
   const normalizeAIResponse=(raw)=>{
@@ -2277,57 +2277,48 @@ $("backToDescription").onclick=()=>view(7);
 
 let completeRows=[],completePages=[],completePageTitles=[],completePage=0,completeIndex=-1;
 // Keep the original sentences and translations in order, with one person per thematic block.
-function completePerson(de){
- const m=String(de).trim().match(/^(?:(?:Ich denke|Ich glaube|Ich schätze),?\s+|(?:Links|Rechts|In der Mitte)(?: auf dem Bild)?\s+(?:ist|steht|sitzt|sehe ich)\s+)?(?:der|die|das|den|ein|eine|einen)\s+(?:(?:erste[nr]?|zweite[nr]?|dritte[nr]?|andere[nr]?|junge[nr]?|ältere[nr]?)\s+)?(Mann|Frau|Junge|Mädchen|Kind|Baby|Herr|Dame|Verkäuferin|Verkäufer|Kundin|Kunde|Ärztin|Arzt|Patientin|Patient|Mutter|Vater|Mechanikerin|Mechaniker|Kellnerin|Kellner|Lehrerin|Lehrer|Person)\b/i);
+function completePerson(value){
+ const de=String(value).trim().replace(/^(?:Ich denke|Ich glaube|Ich schätze),?\s+/i,"");
+ const m=de.match(/^(?:(?:Links|Rechts|In der Mitte|Auf der linken Seite|Auf der rechten Seite)(?: auf dem Bild| des Bildes| im Bild)?\s+(?:ist|steht|sitzt|sehe ich|befindet sich)\s+)?(?:der|die|das|den|ein|eine|einen)\s+(?:(?:erste[nr]?|zweite[nr]?|dritte[nr]?|andere[nr]?|junge[nr]?|ältere[nr]?)\s+)?(Mann|Frau|Junge|Mädchen|Kind|Baby|Herr|Dame|Verkäuferin|Verkäufer|Kundin|Kunde|Ärztin|Arzt|Patientin|Patient|Mutter|Vater|Mechanikerin|Mechaniker|Kellnerin|Kellner|Lehrerin|Lehrer|Schüler|Schülerin|Person)\b/i);
  if(!m)return null;
- const noun=m[1].toLowerCase(),prefix=m[0].toLowerCase(),tail=String(de).slice(m[0].length);
- const side=/\blinks\b/i.test(prefix)||/^\s+(?:ist |steht |sitzt )?links\b/i.test(tail)?"links":/\brechts\b/i.test(prefix)||/^\s+(?:ist |steht |sitzt )?rechts\b/i.test(tail)?"rechts":/\b(?:erste|erster|ersten)\b/i.test(prefix)?"1":/\b(?:zweite|zweiter|zweiten|andere|anderer|anderen)\b/i.test(prefix)?"2":"";
- const type=/^(junge|mädchen|kind|baby)$/.test(noun)?"kind":/^(mann|herr|verkäufer|kunde|arzt|patient|vater|mechaniker|kellner|lehrer)$/.test(noun)?"mann":/^(frau|dame|verkäuferin|kundin|ärztin|patientin|mutter|mechanikerin|kellnerin|lehrerin)$/.test(noun)?"frau":"person";
+ const noun=m[1].toLowerCase(),prefix=m[0].toLowerCase(),tail=de.slice(m[0].length);
+ const side=/\blinks\b|linken Seite/i.test(prefix)||/^\s+(?:(?:ist|steht|sitzt|befindet sich)\s+)?(?:links\b|auf der linken Seite)/i.test(tail)?"links":/\brechts\b|rechten Seite/i.test(prefix)||/^\s+(?:(?:ist|steht|sitzt|befindet sich)\s+)?(?:rechts\b|auf der rechten Seite)/i.test(tail)?"rechts":/\b(?:erste|erster|ersten)\b/i.test(prefix)?"1":/\b(?:zweite|zweiter|zweiten|andere|anderer|anderen)\b/i.test(prefix)?"2":"";
+ const type=/^(junge|mädchen|kind|baby)$/.test(noun)?"kind":/^(mann|herr|verkäufer|kunde|arzt|patient|vater|mechaniker|kellner|lehrer|schüler)$/.test(noun)?"mann":/^(frau|dame|verkäuferin|kundin|ärztin|patientin|mutter|mechanikerin|kellnerin|lehrerin|schülerin)$/.test(noun)?"frau":"person";
  return {type,side};
 }
 function completeSections(rows){
- const result=[];
- // V53: four sentences is a maximum, not a reason to move individual descriptions into the introduction.
- const firstIndividual=rows.findIndex((r,i)=>{
-  if(i===0)return false;
-  const de=String(r.de).trim();
-  if(/^(?:Im Hintergrund|Im Vordergrund|Außerdem|Zum Schluss|Das war meine Bildbeschreibung)\b/i.test(de))return true;
-  const p=completePerson(de);
-  if(!p)return /^(?:Er|Es|Ich denke,?\s+(?:er|sie|es))\b/i.test(de);
-  // Shared actions and combined role introductions belong to the introduction.
-  const combined=/\b(?:und|während)\s+(?:(?:ich denke,?\s+)?(?:der|die|das|ein|eine)\s+(?:Mann|Frau|Kind|Junge|Mädchen|Person|Kunde|Kundin|Arzt|Ärztin|Verkäufer|Verkäuferin)\b)/i.test(de);
-  if(combined&&!/\b(?:links|rechts|Jahre alt|trägt|Haare|Augen|Bart|Brille|groß|klein|Gesicht)\b/i.test(de))return false;
-  const role=/^(?:Ich denke,?\s+|Ich glaube,?\s+)?(?:der|die|das)\s+(?:Mann|Frau|Kind|Junge|Mädchen|Person)\s+ist\s+(?:(?:ein|eine|der|die|das)\s+)?(?:Verkäufer(?:in)?|Kund(?:e|in)|Arzt|Ärztin|Patient(?:in)?|Mechaniker(?:in)?|Kellner(?:in)?|Lehrer(?:in)?|Mutter|Vater|Schüler(?:in)?)\s*[.!?]?$/i.test(de);
-  return !role;
- });
- const introEnd=firstIndividual<0?Math.min(4,rows.length):Math.min(4,firstIndividual);
- const intro=rows.slice(0,introEnd).map((_,i)=>i);
- if(intro.length)result.push({title:"Uvod",items:intro});
- let active=null,part=null,background=false,previous=null;
- const counts={mann:0,frau:0,kind:0,person:0};
+ const result=[],counts={mann:0,frau:0,kind:0,person:0};
  const base={mann:"Opis muškarca",frau:"Opis žene",kind:"Opis deteta",person:"Opis osobe"};
- function start(title){part={title,items:[]};result.push(part)}
- function startPerson(p){counts[p.type]++;active=p;start(base[p.type]+(p.side==="links"?" – levo":p.side==="rechts"?" – desno":counts[p.type]>1?" "+counts[p.type]:""))}
- for(let j=0;j<introEnd;j++){
-  const p=completePerson(rows[j].de);
-  if(p)previous=p;
- }
- for(let i=introEnd;i<rows.length;i++){
-  const de=rows[i].de;
-  if(!background&&/^(?:Im Hintergrund|Im Vordergrund|Außerdem|Auf dem Tisch|Neben den Personen|Hinter den Personen|Das war meine Bildbeschreibung|Zum Schluss|Abschließend|Insgesamt)\b/i.test(de)){
-   background=true;start("Detalji i kraj");
-  }
-  if(!background){
-   const p=completePerson(de);
+ const intro={title:"Uvod",items:[]};result.push(intro);
+ let active=null,part=intro,background=false;
+ const details=/^(?:Im Hintergrund|Im Vordergrund|Außerdem|Auf dem Tisch|Neben den Personen|Hinter den Personen|Das war meine Bildbeschreibung|Zum Schluss|Abschließend|Insgesamt|Das Bild zeigt|Auf dem Bild sind noch)\b/i;
+ function title(p,n){return base[p.type]+(p.side==="links"?" – levo":p.side==="rechts"?" – desno":n>1?" "+n:"")}
+ function startPerson(p){counts[p.type]++;active={...p,number:counts[p.type]};part={title:title(p,active.number),items:[]};result.push(part)}
+ function startDetails(){background=true;part={title:"Detalji i kraj",items:[]};result.push(part)}
+ for(let i=0;i<rows.length;i++){
+  const de=String(rows[i].de).trim(),p=completePerson(de);
+  if(i===0){intro.items.push(i);continue}
+  const individualDetail=/\b(?:links|rechts|linken Seite|rechten Seite|Jahre alt|trägt|Haare|Augen|Bart|Brille|groß|klein|Gesicht|sieht.{0,20}aus)\b/i.test(de);
+  const combined=/\b(?:und|während)\s+(?:(?:ich denke,?\s+)?(?:der|die|das|ein|eine)\s+(?:Mann|Frau|Kind|Junge|Mädchen|Person|Kunde|Kundin|Arzt|Ärztin|Verkäufer|Verkäuferin)\b)/i.test(de);
+  const role=/^(?:Ich denke,?\s+|Ich glaube,?\s+)?(?:der|die|das)\s+(?:Mann|Frau|Kind|Junge|Mädchen|Person)\s+ist\s+(?:(?:ein|eine|der|die|das)\s+)?(?:Verkäufer(?:in)?|Kund(?:e|in)|Arzt|Ärztin|Patient(?:in)?|Mechaniker(?:in)?|Kellner(?:in)?|Lehrer(?:in)?|Mutter|Vater|Schüler(?:in)?)\s*[.!?]?$/i.test(de);
+  const pronoun=/^(?:Ich denke,?\s+|Ich glaube,?\s+)?(Er|Es|Sie)\s+(\S+)/i.exec(de);
+  const singular=pronoun&&(/^(?:er|es)$/i.test(pronoun[1])||/^(?:ist|hat|trägt|sitzt|steht|lacht|sieht|hält|möchte|kauft|arbeitet|braucht|spricht|geht|fährt)\b/i.test(pronoun[2]));
+  if(!background&&details.test(de)){startDetails()}
+  if(part===intro){
+   if(!p&&!singular||((combined||role)&&!individualDetail)){intro.items.push(i);continue}
+   if(p)startPerson(p);
+   else startPerson({type:/^er$/i.test(pronoun[1])?"mann":/^es$/i.test(pronoun[1])?"kind":"frau",side:""});
+  }else if(!background){
    if(p){
-    if(!active||p.type!==active.type||(p.side&&active.side&&p.side!==active.side)||(!active.side&&p.side&&/\b(zweite|zweiter|andere|anderer)\b/i.test(de)))startPerson(p);
-    else if(p.side&&!active.side)active.side=p.side;
-   }else if(!part){
-    const inferred=/^(?:Er|Ich denke,? er)\b/i.test(de)?{type:"mann",side:""}:/^(?:Sie|Ich denke,? sie)\b/i.test(de)?{type:"frau",side:""}:/^(?:Es|Ich denke,? es)\b/i.test(de)?{type:"kind",side:""}:previous;
-    if(inferred)startPerson(inferred);else start("Opis osoba");
+    if(!active||p.type!==active.type||(p.side&&active.side&&p.side!==active.side)||(!active.side&&p.side==="2"))startPerson(p);
+    else if(p.side&&!active.side){active.side=p.side;part.title=title(active,active.number)}
+   }
+   // A position expressed with a pronoun still belongs to the active person.
+   if(active&&!active.side&&singular){
+    const side=/\b(?:links|auf der linken Seite)\b/i.test(de)?"links":/\b(?:rechts|auf der rechten Seite)\b/i.test(de)?"rechts":"";
+    if(side){active.side=side;part.title=title(active,active.number)}
    }
   }
-  if(!part)start("Detalji i kraj");
   part.items.push(i);
  }
  return result.filter(p=>p.items.length);
@@ -2351,7 +2342,7 @@ function showCompletePage(page,resetScroll=true){
  completeRows.forEach((r,i)=>{r.row.hidden=!visible.has(i)});
  $("completePager").hidden=false;
  $("completePrev").disabled=completePage===0;$("completeNext").disabled=completePage>=completePages.length-1;
- $("completePageLabel").textContent="Strana "+(completePage+1)+" / "+Math.max(1,completePages.length)+" · "+(completePageTitles[completePage]||"Uvod");
+ $("completePageLabel").textContent="Strana "+(completePage+1)+" / "+Math.max(1,completePages.length)+" · "+(completePageTitles[completePage]||"Uvod")+(arr.length?" · "+(arr[0]+1)+"–"+(arr[arr.length-1]+1):"");
  $("completeDialogue").textContent=completePage<completePages.length-1?"Sledeće ❯":"Dijalog ❯";
  if(resetScroll)$("completeList").scrollTop=0;
 }
@@ -2369,7 +2360,7 @@ function paginateComplete(anchor=0){
   const flush=()=>{if(items.length){completePages.push(items);completePageTitles.push(section.title);items=[];height=0}};
   for(const i of section.items){
    const h=completeRows[i].row.getBoundingClientRect().height;
-   if(items.length&&height+gap+h>available)flush();
+   if(items.length&&(height+gap+h>available||(section.title==="Uvod"&&items.length>=4)))flush();
    height+=h+(items.length?gap:0);items.push(i);
   }
   flush();
