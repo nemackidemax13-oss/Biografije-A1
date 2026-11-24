@@ -1528,6 +1528,33 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
  #screen1 .summary-editor-wrap #summaryGerman::-webkit-scrollbar-thumb,#screen1 .summary-editor-wrap #summaryReading::-webkit-scrollbar-thumb,#screen1 .summary-editor-wrap #summarySerbian::-webkit-scrollbar-thumb{background:#d32e47!important;border:0!important;border-radius:8px!important}
  #screen1 .summary-editor-wrap #summaryGerman::-webkit-scrollbar-button,#screen1 .summary-editor-wrap #summaryReading::-webkit-scrollbar-button,#screen1 .summary-editor-wrap #summarySerbian::-webkit-scrollbar-button{display:none!important;width:0!important;height:0!important}
 }
+
+/* V47: final bilingual phrase practice; no additional audio API */
+#screen8 .useful-body{display:flex;flex:1 1 0;min-height:0;flex-direction:column;gap:4px;padding:5px;overflow:hidden}
+#screen8 .useful-brand{text-align:center;font:italic 850 20px/1.1 system-ui,Arial;color:#c92744}
+#screen8 .useful-brand strong{color:#174576;font-style:normal}
+#screen8 .useful-title{text-align:center;font:850 21px/1.15 system-ui,Arial;color:#174576;margin:0}
+#screen8 .useful-sub{text-align:center;font:600 10px/1.2 system-ui;color:#58738d;margin:0}
+#screen8 .useful-tools{display:flex;gap:4px;flex:none}
+#screen8 .useful-tools button{border:0;border-radius:6px;min-height:27px;font:800 12px system-ui;flex:1;background:#f3ba36;color:#35260e}
+#screen8 #usefulAuto{background:#168447;color:#fff;flex:2}
+#screen8 #usefulStop{background:#d32e47;color:#fff;flex:2}
+#screen8 #usefulList{display:flex;flex:1 1 0;min-height:0;flex-direction:column;gap:3px;overflow-y:auto;overscroll-behavior:contain;--useful-scale:1}
+#screen8 .useful-row{display:grid;grid-template-columns:20px minmax(0,1fr) 28px;gap:4px;align-items:center;padding:4px;flex:none;margin:0;background:#f5fbf7;border:1px solid #d8e7dc;border-radius:6px}
+#screen8 .useful-row[hidden]{display:none!important}
+#screen8 .useful-number{display:grid;place-items:center;background:#168447;color:white;border-radius:50%;width:18px;height:18px;font:800 10px system-ui}
+#screen8 .useful-de{font-size:calc(12px * var(--useful-scale));font-weight:750;line-height:1.3;color:#117740;overflow-wrap:anywhere}
+#screen8 .useful-sr{font-size:calc(10px * var(--useful-scale));line-height:1.28;color:#b5273c;margin-top:2px;overflow-wrap:anywhere}
+#screen8 .useful-play{border:0;border-radius:5px;background:#e4efe8;color:#126339;font:800 13px system-ui;width:28px;height:28px;padding:0}
+#screen8 .useful-row.playing{background:#fff2bf;border-color:#dfb527}
+#screen8 #usefulPager{display:flex;align-items:center;justify-content:space-between;flex:0 0 27px;border:1px solid #f5d0d5;background:#fff7f7;border-radius:7px;padding:1px 5px}
+#screen8 #usefulPager[hidden]{display:none!important}
+#screen8 #usefulPager button{width:44px;height:23px;border:0;background:#d32e47;color:white;border-radius:5px;font:900 15px system-ui;padding:0}
+#screen8 #usefulPager button:disabled{opacity:.35}
+#screen8 #usefulLabel{font:800 10px system-ui;color:#9d2435}
+#screen8 .footer .red{background:#d32e47!important;color:white!important}
+#screen8 .footer .green{background:#168447!important;color:white!important}
+#screen3 .footer #goUseful{background:#168447!important;color:white!important;font-size:12px!important}
 </style></head><body><main class="app">
 <header class="header"><h1>Opis slike</h1></header>
 <section class="screen active" id="screen0"><div class="scroll"><div class="panel"><h2 class="title" id="uploadHeading">Ubaci sliku za opis</h2><label class="upload"><span class="upload-icon">📷</span><span class="upload-title">Izaberi fotografiju</span><span class="upload-sub">Dodirni ovde za galeriju ili kameru</span><input id="file" type="file" accept="image/*"></label><div class="photo-reveal" id="photoReveal"><span class="photo-glow" aria-hidden="true"></span><img class="picture" id="photo0" alt="Izabrana slika"><span class="photo-success" aria-hidden="true">✓</span><span class="sparkle sp1" aria-hidden="true">✦</span><span class="sparkle sp2" aria-hidden="true">✧</span><span class="sparkle sp3" aria-hidden="true">✦</span></div><p class="status" id="status">Prvo izaberi sliku.</p></div><div id="aiWait" hidden role="status" aria-live="polite"><div class="wait-card"><div class="wait-ring" aria-hidden="true"></div><h2>Molimo, sačekajte…</h2><p>Fotografija se analizira.</p><p class="wait-sub">Pripremamo opis slike i dijalog na nemačkom jeziku.</p></div></div><div class="demax-text-brand" aria-label="De-Max A1"><span>De-Max</span><strong>A1</strong></div><input id="endpoint" type="hidden" value="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev"></div><div class="footer upload-footer"><button class="action green" id="resumeAfterGeneration" type="button" hidden>Nastavi opis ❯</button><button class="action green" id="analyze" disabled>Automatski opiši sliku</button></div></section>
@@ -1571,8 +1598,15 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
 <section class="screen lesson-intro" id="screen7" aria-labelledby="introTitle7">
 <div class="intro-body"><div class="intro-brand">De-Max <strong>A1</strong></div><h2 class="intro-title" id="introTitle7">Dijalog prema slici</h2><div class="intro-picture-wrap"><img class="intro-picture" id="photo7" alt="Fotografija za dijalog prema slici"></div></div>
 <div class="footer intro-footer"><button class="action red" type="button" id="introBack7">❮ Nazad</button><button class="action green" type="button" id="introStart7">Započni ❯</button></div></section>
-<section class="screen" id="screen3"><div class="scroll" id="dialogueScroll"><div class="panel dialogue-top"><div class="dialogue-wide-photo"><img class="picture small" id="photo3" alt="Fotografija za vežbu dijaloga"></div><div class="dialogue-head-row"><div class="dialogue-head-copy"><h2 class="title">3. Dijalog A i B · Učenici</h2><div id="scene" class="pill">Situacija prema slici</div></div></div><div class="dialogue-toolbar" role="group" aria-label="Slušanje, prevod i veličina teksta"><button class="dialogue-auto" id="readDialogue" type="button" aria-pressed="false">▶ Auto</button><button class="dialogue-pause" id="pauseDialogue" type="button" aria-label="Pauziraj ili nastavi slušanje">⏸</button><button class="dialogue-stop" id="stopDialogue" type="button">■ Stop</button><button class="dialogue-translate" id="translationDialogue" type="button" aria-pressed="false">Prevod</button><button class="dialogue-size" id="dialogueFontMinus" type="button" aria-label="Smanji tekst dijaloga">−</button><button class="dialogue-size" id="dialogueFontPlus" type="button" aria-label="Uvećaj tekst dijaloga">+</button></div><p class="muted" id="dialogueStatus" style="text-align:center">Dodirni ▶ uz rečenicu ili uključi Auto.</p></div><div id="dialogue" class="hide-translation" aria-label="Dijalog učenika A i B bez skrolovanja"></div><div class="dialogue-page-nav" id="dialoguePager"><button type="button" id="dialoguePrev" aria-label="Prethodna strana">❮</button><span id="dialoguePageLabel" aria-live="polite"></span><button type="button" id="dialogueNext" aria-label="Sledeća strana">❯</button></div></div><div class="footer"><button class="action red" id="backToDescription">❮ Nazad</button><button class="action green" id="restart">Nova slika ↻</button></div></section>
-<div class="journey-progress" id="journeyProgress" role="progressbar" aria-label="Napredak: slika, moj opis, detaljan opis, kompletan opis i dijalog" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="journey-progress-fill" id="journeyFill"></div></div>
+<section class="screen" id="screen3"><div class="scroll" id="dialogueScroll"><div class="panel dialogue-top"><div class="dialogue-wide-photo"><img class="picture small" id="photo3" alt="Fotografija za vežbu dijaloga"></div><div class="dialogue-head-row"><div class="dialogue-head-copy"><h2 class="title">3. Dijalog A i B · Učenici</h2><div id="scene" class="pill">Situacija prema slici</div></div></div><div class="dialogue-toolbar" role="group" aria-label="Slušanje, prevod i veličina teksta"><button class="dialogue-auto" id="readDialogue" type="button" aria-pressed="false">▶ Auto</button><button class="dialogue-pause" id="pauseDialogue" type="button" aria-label="Pauziraj ili nastavi slušanje">⏸</button><button class="dialogue-stop" id="stopDialogue" type="button">■ Stop</button><button class="dialogue-translate" id="translationDialogue" type="button" aria-pressed="false">Prevod</button><button class="dialogue-size" id="dialogueFontMinus" type="button" aria-label="Smanji tekst dijaloga">−</button><button class="dialogue-size" id="dialogueFontPlus" type="button" aria-label="Uvećaj tekst dijaloga">+</button></div><p class="muted" id="dialogueStatus" style="text-align:center">Dodirni ▶ uz rečenicu ili uključi Auto.</p></div><div id="dialogue" class="hide-translation" aria-label="Dijalog učenika A i B bez skrolovanja"></div><div class="dialogue-page-nav" id="dialoguePager"><button type="button" id="dialoguePrev" aria-label="Prethodna strana">❮</button><span id="dialoguePageLabel" aria-live="polite"></span><button type="button" id="dialogueNext" aria-label="Sledeća strana">❯</button></div></div><div class="footer"><button class="action red" id="backToDescription">❮ Nazad</button><button class="action green" id="goUseful">Korisne rečenice ❯</button></div></section>
+<section class="screen" id="screen8"><div class="useful-body">
+<div class="useful-brand">De-Max <strong>A1</strong></div><h2 class="useful-title">Korisne rečenice</h2>
+<p class="useful-sub">Rečenice iz dijaloga za svakodnevnu komunikaciju</p>
+<div class="useful-tools"><button type="button" id="usefulAuto">▶ Auto</button><button type="button" id="usefulStop">■ Stop</button><button type="button" id="usefulMinus" aria-label="Smanji slova">−</button><button type="button" id="usefulPlus" aria-label="Uvećaj slova">+</button></div>
+<div id="usefulList" aria-label="Korisne rečenice sa prevodom"></div>
+<nav id="usefulPager" aria-label="Listanje korisnih rečenica"><button type="button" id="usefulPrev" aria-label="Prethodna strana">❮</button><span id="usefulLabel" aria-live="polite"></span><button type="button" id="usefulNext" aria-label="Sledeća strana">❯</button></nav>
+</div><div class="footer"><button class="action red" id="usefulBack">❮ Nazad</button><button class="action green" id="restart">Nova slika ↻</button></div></section>
+<div class="journey-progress" id="journeyProgress" role="progressbar" aria-label="Napredak: slika, opis, dijalog i korisne rečenice" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="journey-progress-fill" id="journeyFill"></div></div>
 </main>
 <script src="../DE_MAX_A1_DIJALOZI_40_DATA_01.js?v=20261018"></script>
 <script src="../DE_MAX_A1_DIJALOZI_40_DATA_02.js?v=recepcija-39-v2"></script>
@@ -1609,10 +1643,10 @@ function stopAIWait(){$("aiWait").hidden=true;$("screen0").classList.remove("ai-
 function startAIWait(){initAIWaitAudio();$("file").disabled=true;$("aiWait").hidden=false;$("screen0").classList.add("ai-waiting");}
 function setStatus(t,bad=false){$("status").textContent=t;$("status").className="status"+(bad?" error":"")}
 function updateJourneyProgress(){
- const amount=[0,14,43,100,71,29,57,86][currentPage]??0;
+ const amount=[0,12,37,87,62,25,50,75,100][currentPage]??0;
  $("journeyFill").style.width=amount+"%";
  $("journeyProgress").setAttribute("aria-valuenow",String(amount));
- $("journeyProgress").setAttribute("aria-valuetext",["Slika","Moj opis","Detaljan opis","Dijalog","Kompletan opis","Uvod u detaljan opis","Uvod u kompletan opis","Uvod u dijalog"][currentPage]);
+ $("journeyProgress").setAttribute("aria-valuetext",["Slika","Moj opis","Detaljan opis","Dijalog","Kompletan opis","Uvod u detaljan opis","Uvod u kompletan opis","Uvod u dijalog","Korisne rečenice"][currentPage]);
 }
 function syncGenerationGate(){
  const locked=generatedLocked&&!reachedDialogue;
@@ -1625,12 +1659,13 @@ function syncGenerationGate(){
 function view(n){
  
  stopSpeech();currentPage=n;
- if(n===3&&generatedLocked)reachedDialogue=true;
+ if(n===8&&generatedLocked)reachedDialogue=true;
  syncGenerationGate();
  document.querySelector(".app").classList.toggle("study-page",n!==0);
- for(let i=0;i<8;i++)$("screen"+i).classList.toggle("active",i===n);
+ for(let i=0;i<9;i++)$("screen"+i).classList.toggle("active",i===n);
  updateJourneyProgress();
- if(n===3)requestAnimationFrame(()=>paginateDialogue());
+ if(n===3)requestAnimationFrame(()=>paginateDialogue(dialoguePages[dialoguePageIndex]?.[0]||0));
+ if(n===8)requestAnimationFrame(()=>paginateUseful(usefulPages[usefulPage]?.[0]||0));
  if(n===2)requestAnimationFrame(fitFullDescription);
  if(n===4)requestAnimationFrame(()=>paginateComplete(completeAnchor()));
 }
@@ -1652,9 +1687,9 @@ function sampleBank(compact=false){
 }
 
 
-function pageRows(mode){return mode==="desc"?descRows:mode==="dialog"?dialogRows:[]}
+function pageRows(mode){return mode==="desc"?descRows:mode==="dialog"?dialogRows:mode==="useful"?usefulRows:[]}
 function cleanHighlight(){document.querySelectorAll(".sentence.playing").forEach(el=>el.classList.remove("playing"))}
-function stopSpeech(){resumeSpeechAction=null;voiceToken++;paused=false;readingMode="";readingIndex=0;fullAudioIndex=-1;fullAudioAuto=false;dialogueAuto=false;if(synth)synth.cancel();cleanHighlight();clearSummaryHighlight();updateFullAudioUI();updateDialogueAudioUI();updateSummaryAudioUI();updateCompleteAudioUI()}
+function stopSpeech(){resumeSpeechAction=null;voiceToken++;paused=false;readingMode="";readingIndex=0;fullAudioIndex=-1;fullAudioAuto=false;dialogueAuto=false;if(synth)synth.cancel();cleanHighlight();clearSummaryHighlight();updateFullAudioUI();updateDialogueAudioUI();updateSummaryAudioUI();updateCompleteAudioUI();updateUsefulAudioUI()}
 function playRows(mode,index=0,auto=true){
  if(!synth){alert("Ovaj pregledač ne podržava izgovor.");return}
  stopSpeech();readingMode=mode;readingIndex=index;dialogueAuto=mode==="dialog"&&auto;
@@ -1662,11 +1697,11 @@ function playRows(mode,index=0,auto=true){
  function next(){
   if(token!==voiceToken||paused)return;
   if(readingIndex>=rows.length||(!auto&&readingIndex>index)){
-   cleanHighlight();readingMode="";dialogueAuto=false;updateDialogueAudioUI();return
+   cleanHighlight();readingMode="";dialogueAuto=false;updateDialogueAudioUI();updateUsefulAudioUI();return
   }
-  const r=rows[readingIndex];if(mode==="dialog")revealDialogueIndex(readingIndex);cleanHighlight();
+  const r=rows[readingIndex];if(mode==="dialog")revealDialogueIndex(readingIndex);if(mode==="useful")revealUseful(readingIndex);cleanHighlight();
   if(r.element)r.element.classList.add("playing");
-  updateDialogueAudioUI();
+  updateDialogueAudioUI();updateUsefulAudioUI();
   let u=new SpeechSynthesisUtterance(germanSpeechText(r.de));u.lang="de-DE";u.rate=.83;u.pitch=1;
   u.onend=()=>{if(token!==voiceToken)return;readingIndex++;next()};
   u.onerror=e=>{if(token!==voiceToken)return;if(e.error==="canceled"||e.error==="interrupted")return;readingIndex++;next()};
@@ -1685,6 +1720,7 @@ function showDialoguePage(page){
  $("dialoguePrev").disabled=dialoguePageIndex===0;
  $("dialogueNext").disabled=dialoguePageIndex>=dialoguePages.length-1;
  $("dialoguePageLabel").textContent="Strana "+(dialoguePageIndex+1);
+ $("goUseful").textContent=dialoguePageIndex<dialoguePages.length-1?"Sledeće ❯":"Korisne rečenice ❯";
 }
 function revealDialogueIndex(index){
  const page=dialoguePages.findIndex(arr=>arr.includes(index));
@@ -1852,7 +1888,7 @@ activeDialogue.forEach((l,i)=>{
  el.append(listen);$("dialogue").append(el);
  dialogRows.push({de,role,element:el,listen})
 });
-dialoguePages=[];dialoguePageIndex=0;
+dialoguePages=[];dialoguePageIndex=0;renderUseful(activeDialogue);
 let scene=scenes.find(s=>s.n===Number(data.sceneNumber));
 if(activeDialogue.length)$("scene").textContent="Dijalog prema slici (simulacija): "+String(data.sceneName||scene?.sr||"situacija");
 // Druga stranica uvek koristi iste AI recenice kao koraci 1–9.
@@ -2287,7 +2323,59 @@ $("introStart7").onclick=()=>{view(3);if(dialogRows.length)playRows("dialog")};
 window.addEventListener("resize",()=>{if(currentPage===4)requestAnimationFrame(()=>paginateComplete(completeAnchor()))});
 $("photo4").addEventListener("load",()=>{if(currentPage===4)requestAnimationFrame(()=>paginateComplete(completeAnchor()))});
 
+
+let usefulRows=[],usefulPages=[],usefulPage=0,usefulScale=1;
+function renderUseful(lines){
+ const list=$("usefulList");list.replaceChildren();usefulRows=[];usefulPages=[];usefulPage=0;usefulScale=1;list.style.setProperty("--useful-scale","1");
+ // Select actual bilingual replies, not invented phrases or translations.
+ const seen=new Set();
+ const candidates=lines.map((l,i)=>({...l,i})).filter(l=>{
+  const key=norm(l.de);if(!key||seen.has(key)||!l.sr.trim())return false;seen.add(key);return true;
+ });
+ const score=l=> (/\?/.test(l.de)?4:0)+(/\b(kann|können|möchte|möchten|brauche|habe|haben|suche|kostet|bitte|danke|gerne|gern|muss|mögen|würde|darf|dürfen|nehme)\b/i.test(l.de)?3:0)+(l.de.length>20?2:0)-(l.de.length>180?3:0);
+ const picked=candidates.slice().sort((a,b)=>score(b)-score(a)||a.i-b.i).slice(0,12).sort((a,b)=>a.i-b.i);
+ picked.forEach((l,i)=>{
+  const row=document.createElement("article");row.className="sentence useful-row";
+  add(row,"useful-number",String(i+1));const copy=document.createElement("div");add(copy,"useful-de",l.de);add(copy,"useful-sr",l.sr);row.append(copy);
+  const listen=document.createElement("button");listen.type="button";listen.className="useful-play";listen.textContent="▶";listen.setAttribute("aria-label","Poslušaj rečenicu "+(i+1));
+  listen.onclick=()=>{if(readingMode==="useful"&&readingIndex===i)stopSpeech();else playRows("useful",i,false)};
+  row.append(listen);list.append(row);usefulRows.push({de:l.de,element:row,listen});
+ });
+ if(!picked.length)add(list,"useful-sub","Nema dostupnih rečenica iz dijaloga.");
+}
+function showUseful(page){
+ if(!usefulPages.length){$("usefulPager").hidden=true;return}
+ usefulPage=Math.max(0,Math.min(page,usefulPages.length-1));const visible=new Set(usefulPages[usefulPage]);
+ usefulRows.forEach((r,i)=>r.element.hidden=!visible.has(i));
+ $("usefulPager").hidden=usefulPages.length<=1;
+ $("usefulLabel").textContent="Strana "+(usefulPage+1)+" / "+usefulPages.length;
+ $("usefulPrev").disabled=usefulPage===0;$("usefulNext").disabled=usefulPage===usefulPages.length-1;
+ $("restart").textContent=usefulPage<usefulPages.length-1?"Sledeće ❯":"Nova slika ↻";
+}
+function paginateUseful(anchor=0){
+ if(currentPage!==8)return;
+ const list=$("usefulList");$("usefulPager").hidden=false;usefulRows.forEach(r=>r.element.hidden=false);
+ const available=Math.max(50,list.clientHeight-3);let groups=[],group=[],height=0;
+ usefulRows.forEach((r,i)=>{const h=r.element.getBoundingClientRect().height+3;if(group.length&&height+h>available){groups.push(group);group=[];height=0}group.push(i);height+=h});
+ if(group.length)groups.push(group);usefulPages=groups;showUseful(Math.max(0,groups.findIndex(g=>g.includes(anchor))));
+}
+function revealUseful(i){const p=usefulPages.findIndex(g=>g.includes(i));if(p>=0&&p!==usefulPage)showUseful(p)}
+function updateUsefulAudioUI(){
+ usefulRows.forEach((r,i)=>{const active=readingMode==="useful"&&readingIndex===i;r.listen.textContent=active?"■":"▶";r.listen.setAttribute("aria-pressed",String(active))});
+ $("usefulAuto").setAttribute("aria-pressed",String(readingMode==="useful"));
+}
+$("usefulAuto").onclick=()=>{if(readingMode==="useful")stopSpeech();else if(usefulRows.length)playRows("useful",usefulPages[usefulPage]?.[0]||0,true)};
+$("usefulStop").onclick=()=>stopSpeech();
+$("usefulPrev").onclick=()=>{stopSpeech();showUseful(usefulPage-1)};
+$("usefulNext").onclick=()=>{stopSpeech();showUseful(usefulPage+1)};
+function changeUsefulFont(delta){usefulScale=Math.max(.8,Math.min(1.5,Math.round((usefulScale+delta)*10)/10));$("usefulList").style.setProperty("--useful-scale",String(usefulScale));requestAnimationFrame(()=>paginateUseful(readingMode==="useful"?readingIndex:usefulPages[usefulPage]?.[0]||0))}
+$("usefulMinus").onclick=()=>changeUsefulFont(-.1);$("usefulPlus").onclick=()=>changeUsefulFont(.1);
+$("goUseful").onclick=()=>{stopSpeech();if(dialoguePageIndex<dialoguePages.length-1)showDialoguePage(dialoguePageIndex+1);else view(8)};
+$("usefulBack").onclick=()=>view(3);
+window.addEventListener("resize",()=>{if(currentPage===8)requestAnimationFrame(()=>paginateUseful(usefulPages[usefulPage]?.[0]||0))});
+
 $("restart").onclick=()=>{
+ if(usefulPage<usefulPages.length-1){stopSpeech();showUseful(usefulPage+1);return}
  if(!reachedDialogue){return}
  generatedLocked=false;reachedDialogue=false;
  stopSpeech();view(0);$("file").value="";$("analyze").disabled=true;imageData="";for(let i=0;i<8;i++){$("photo"+i).style.display="none"}$("photoReveal").classList.remove("ready");document.querySelector(".upload").classList.remove("has-photo");$("screen0").classList.remove("photo-added");document.querySelector(".upload-title").textContent="Izaberi fotografiju";$("uploadHeading").textContent="Ubaci sliku za opis";setStatus("Izaberi novu sliku.");};
