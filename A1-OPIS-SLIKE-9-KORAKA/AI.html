@@ -1641,16 +1641,16 @@ try{
   try{
    const body=attempt===1?baseRequest:{...baseRequest,bankExamples:sampleBank(true).slice(0,25),scenes:baseRequest.scenes.map(({n,sr,de,roles})=>({n,sr,de,roles}))};
    const controller=new AbortController();
-   const timeout=setTimeout(()=>controller.abort(),45000);
+   const timeout=setTimeout(()=>controller.abort(),90000);
    let res;
    try{res=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body),signal:controller.signal})}
    finally{clearTimeout(timeout)}
    const raw=await res.json().catch(()=>null);
-   if(!res.ok){lastError=String(raw?.error||"HTTP "+res.status);if(res.status>=400&&res.status<500&&res.status!==408&&res.status!==429)break;continue}
+   if(!res.ok){lastError=String(raw?.error||"HTTP "+res.status);if(raw?.error || (res.status>=400&&res.status<500&&res.status!==408&&res.status!==429))break;continue}
    data=normalizeAIResponse(raw);
    if(data)break;
    lastError="Cloudflare AI nije vratio nijedan upotrebljiv opis.";
-  }catch(e){lastError=e?.name==="AbortError"?"Cloudflare AI nije odgovorio na vreme.":String(e?.message||e)}
+  }catch(e){lastError=e?.name==="AbortError"?"Cloudflare AI nije odgovorio na vreme.":String(e?.message||e);if(e?.name==="AbortError")break}
  }
  if(!data)throw Error(lastError+" Proveri Cloudflare Worker.");
 
