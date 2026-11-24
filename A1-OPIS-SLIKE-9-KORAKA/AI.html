@@ -1651,6 +1651,102 @@ function sampleBank(compact=false){
   closingIndoor:!!x.closingIndoor,closingEnding:!!x.closingEnding}));
 }
 
+
+/* V45: A/B dialogue voices; use explicit AI metadata when supplied and local
+   German voice names when available. No external TTS service or API key. */
+let dialogueVoiceKinds={A:"unknown",B:"unknown"};
+function dialogueGender(value){
+ const v=String(value??"").toLowerCase().trim();
+ if(/^(female|woman|f|frau|weiblich|ženski|zenski|žena|zena|girl|mädchen)$/.test(v))return /^(girl|mädchen)$/.test(v)?"child":"female";
+ if(/^(male|man|m|mann|männlich|muški|muski|muškarac|muskarac|boy|junge)$/.test(v))return /^(boy|junge)$/.test(v)?"child":"male";
+ if(/^(child|kid|kind|dijete|dete|dečji|decji)$/.test(v))return "child";
+ if(v==="unknown"||!v)return "unknown";
+ const female=/\b(female|frau|verkäuferin|kundin|ärztin|patientin|mutter|lehrerin|kellnerin|mitarbeiterin|rezeptionistin|kollegin|freundin|schülerin|mechanikerin|apothekerin)\b/u;
+ const male=/\b(male|mann|verkäufer|kunde|arzt|patient|vater|lehrer|kellner|mitarbeiter|rezeptionist|kollege|freund|schüler|mechaniker|apotheker)\b/u;
+ if(/\b(kind|junge|mädchen|child|boy|girl)\b/u.test(v))return "child";
+ if(female.test(v)&&!male.test(v))return "female";
+ if(male.test(v)&&!female.test(v))return "male";
+ return "unknown";
+}
+function inferDialogueVoiceKinds(data,lines){
+ const info=data.dialogueSpeakers||data.speakers||data.dialogueRoles||{};
+ const out={A:"unknown",B:"unknown"};
+ for(const role of ["A","B"]){
+  const d=Array.isArray(info)?info.find(x=>String(x?.speaker||x?.id||x?.role||"").toUpperCase()===role):info?.[role]??info?.[role.toLowerCase()];
+  const row=lines.find(x=>x.speaker===role&&x.voiceKind!=="unknown");
+  for(const candidate of [d?.gender,d?.voiceGender,d?.voice,d?.description,d?.role,typeof d==="string"?d:"",row?.voiceKind]){
+   const k=dialogueGender(candidate);if(k!=="unknown"){out[role]=k;break}
+  }
+ }
+ // Old Workers may not return speaker metadata. Infer only from the
+ // photo-specific description; the dialogue remains a role-play simulation.
+ const description=String(data.steps?.[9]?.de||"");
+ const first=description.split(/[.!?]/)[0]||"";
+ const found=[];
+ for(const m of first.matchAll(/\b(zwei|drei|einen|eine|ein|einem|einer|der|die|das)\s+(Männer|Frauen|Kinder|Mann|Frau|Jungen|Junge|Mädchen|Kind)\b/gi)){
+  const k=/^(männer|mann)$/i.test(m[2])?"male":/^(frauen|frau)$/i.test(m[2])?"female":"child";
+  const n=m[1].toLowerCase()==="zwei"?2:m[1].toLowerCase()==="drei"?3:1;
+  for(let i=0;i<n;i++)found.push(k);
+ }
+ if(found.length===2){
+  if(out.A==="unknown"&&out.B==="unknown"){
+   // When the description explicitly identifies service roles, match
+   // the person offering assistance to the corresponding dialogue speaker.
+   const providers=[...description.matchAll(/\b(?:der\s+Mann|die\s+Frau)\s+ist\s+(?:(?:der|die|ein|eine)\s+)?(?:Verkäufer(?:in)?|Arzt|Ärztin|Kellner(?:in)?|Mechaniker(?:in)?|Rezeptionist(?:in)?|Apotheker(?:in)?|Mitarbeiter(?:in)?)\b/gi)];
+   const service=lines.slice(0,4).find(x=>/\b(wie kann ich Ihnen helfen|was kann ich für Sie tun|was möchten Sie|was darf es sein|wie kann ich dir helfen)\b/i.test(x.de));
+   if(service&&providers.length===1&&found[0]!==found[1]){
+    const k=dialogueGender(providers[0][0]);
+    if(k!=="unknown"&&found.includes(k)){out[service.speaker]=k;out[service.speaker==="A"?"B":"A"]=found.find(v=>v!==k);}
+   }
+   if(out.A==="unknown"&&out.B==="unknown"){out.A=found[0];out.B=found[1]}
+  }else if(out.A==="unknown"&&found.includes(out.B)){const copy=found.slice();copy.splice(copy.indexOf(out.B),1);out.A=copy[0]}
+  else if(out.B==="unknown"&&found.includes(out.A)){const copy=found.slice();copy.splice(copy.indexOf(out.A),1);out.B=copy[0]}
+ }
+ return out;
+}
+function localGermanVoiceKind(voice){
+ const n=String(voice.name||"").toLowerCase();
+ if(/\b(child|kid|kind|junior)\b/.test(n))return "child";
+ if(/\b(female|weiblich|anna|petra|katja|amala|hedda|vicki|marlene|elke|siri female|lisa|lea|franziska|birgit|claudia|sabine|katrin|karlotta)\b/.test(n))return "female";
+ if(/\b(male|männlich|markus|yannick|conrad|stefan|killian|hans|daniel|ralf|martin|matthias|alexander|michael|thomas|siri male)\b/.test(n))return "male";
+ return "unknown";
+}
+function selectDialogueVoices(voices,kinds){
+ const german=voices.filter(v=>/^de(?:[-_]|$)/i.test(v.lang||""));
+ const preferred=german.slice().sort((a,b)=>Number(/^de[-_]DE$/i.test(b.lang))-Number(/^de[-_]DE$/i.test(a.lang)));
+ const result={};
+ // Reserve a known matching voice for each role before using unknown voices.
+ for(const role of ["A","B"]){
+  const k=kinds[role];
+  if(k==="unknown")continue;
+  const candidates=preferred.filter(v=>localGermanVoiceKind(v)===k);
+  result[role]=candidates.find(v=>!Object.values(result).includes(v))||candidates[0];
+ }
+ for(const role of ["A","B"]){
+  if(result[role])continue;
+  const k=kinds[role], other=result[role==="A"?"B":"A"];
+  result[role]=preferred.find(v=>localGermanVoiceKind(v)==="unknown"&&v!==other)
+    ||preferred.find(v=>v!==other&&(k==="unknown"||k==="child"||localGermanVoiceKind(v)===k))
+    ||preferred.find(v=>localGermanVoiceKind(v)==="unknown")||other||preferred[0];
+ }
+ return result;
+}
+function setDialogueVoice(utterance,role){
+ const voices=synth?.getVoices?.()||[];
+ const pair=selectDialogueVoices(voices,dialogueVoiceKinds);
+ const voice=pair[role],kind=dialogueVoiceKinds[role];
+ if(voice){utterance.voice=voice;utterance.lang=voice.lang}
+ const known=voice?localGermanVoiceKind(voice):"unknown";
+ const same=!pair.A||!pair.B||pair.A===pair.B;
+ // A pitch difference is a fallback, not a real second recorded voice.
+ if(kind==="child"&&known!=="child"){utterance.pitch=1.22;utterance.rate=.80}
+ else if(same||known!==kind&&kind!=="unknown"){
+  const base=kind==="male"?.88:kind==="female"?1.12:1;
+  utterance.pitch=Math.max(.75,Math.min(1.35,base+(same?(role==="A"?-.05:.05):0)));
+ }
+}
+if(synth?.getVoices)synth.getVoices();
+
 function pageRows(mode){return mode==="desc"?descRows:mode==="dialog"?dialogRows:[]}
 function cleanHighlight(){document.querySelectorAll(".sentence.playing").forEach(el=>el.classList.remove("playing"))}
 function stopSpeech(){resumeSpeechAction=null;voiceToken++;paused=false;readingMode="";readingIndex=0;fullAudioIndex=-1;fullAudioAuto=false;dialogueAuto=false;if(synth)synth.cancel();cleanHighlight();clearSummaryHighlight();updateFullAudioUI();updateDialogueAudioUI();updateSummaryAudioUI();updateCompleteAudioUI()}
@@ -1667,6 +1763,7 @@ function playRows(mode,index=0,auto=true){
   if(r.element)r.element.classList.add("playing");
   updateDialogueAudioUI();
   let u=new SpeechSynthesisUtterance(germanSpeechText(r.de));u.lang="de-DE";u.rate=.83;u.pitch=1;
+  if(mode==="dialog")setDialogueVoice(u,r.role);
   u.onend=()=>{if(token!==voiceToken)return;readingIndex++;next()};
   u.onerror=e=>{if(token!==voiceToken)return;if(e.error==="canceled"||e.error==="interrupted")return;readingIndex++;next()};
   synth.speak(u)
@@ -1760,7 +1857,7 @@ try{
   bankExamples:sampleBank(true).slice(0,65),
   expectedSteps:10,
   visualAccuracyInstructions:"OBAVEZNA STRUKTURA A1 OPISA SLIKE (V25). Prvo pažljivo pregledaj fotografiju: tačan broj i vrsta osoba, položaj svake osobe, radnja, mesto, izgled, odeća, predmeti i pozadina. Koristi gramatički ispravan, prirodan i jednostavan nemački A1 sa srpskim prevodom, uključujući umlaut (Verkäufer, über, ungefähr, trägt). Primeri ispod pokazuju samo strukturu, nikako ne prepisuj nevidljive činjenice.\n1. UVOD: uvek počni sa Auf diesem Bild sehe ich ... i navedi tačan broj osoba: npr. Auf diesem Bild sehe ich zwei Personen, einen Mann und eine Frau. Ako je jedna osoba, tri osobe, dve žene, dva muškarca ili dete, prilagodi broj i imenice.\n2. ULOGE: odmah posle uvoda, ako ih kontekst opravdava, jedna povezana rečenica: Ich denke, der Mann ist der Verkäufer und die Frau ist die Kundin. Ili Ich denke, die Frau ist die Ärztin und der Mann ist der Patient. Prilagodi uloge, rod i broj, i uključi dete ako je uloga jasna. Ako uloge nisu pouzdano prepoznatljive, ne izmišljaj ih. Ne ponavljaj istu pretpostavku kasnije.\n3. POLOŽAJ, MESTO, RADNJA I TEMA: navedi šta osobe stvarno rade. Primeri: Die Personen stehen. / Die Personen sitzen. / Die Personen fahren Fahrrad. / Die Personen laufen. / Die Personen knien. Ako su položaji različiti, navedi odvojeno, npr. Der Mann sitzt und die Frau steht. Ako fotografija sugeriše razgovor, Die Personen stehen und sprechen über etwas, vielleicht über den Preis. Ili Die Personen sitzen und sprechen über etwas, vielleicht über ihre Arbeit. Tema mora biti prirodna i povezana sa konkretnim kontekstom; možda (vielleicht) označava pretpostavku. Ako nema naznake razgovora, ne tvrdi da razgovaraju i ne dodaj temu. Navedi mesto u ovoj celini, npr. Die Personen sind in einer Bäckerei, samo ako je prepoznatljivo; možeš povezati mesto sa radnjom bez ponavljanja. Ako je samo jedna osoba, koristi jedninu.\n4. DETALJAN OPIS SVAKE OSOBE ZASEBNO: opiši prvog muškarca pa ženu ili obrnuto ako je prirodnije prema slici, ali NIKADA ne mešaj rečenice različitih osoba. Prvu rečenicu bloka započni sa Der Mann, Die Frau, Der Junge, Das Mädchen ili Das Kind; sledeće rečenice sa Er, Sie ili Es kada je referent jasan. Kod dve osobe istog pola koristi links/rechts ili drugu jasno vidljivu razliku pri prelasku na drugu osobu. Ako ima i dete ili više osoba, opiši svaku zasebno pre pozadine. Za svaku osobu navedi, ako je vidljivo: položaj ili strana bez nepotrebnog ponavljanja zajedničkog uvoda, izgled lica, izraz lica (lacht samo ako se zaista smeje), naočare, brada, boja i dužina kose, odeća i boje po komadima, obuća, torba ili predmet u ruci, radnja i približne godine (Ich denke, der Mann ist ungefähr ... Jahre alt). Pretpostavke o nameri, kupovini i ulozi označi sa Ich denke ili vielleicht i samo ako su opravdane. Ako se vidi da jedna osoba uslužuje drugu, navedi precizno ko koga uslužuje; bez izmišljanja. Ne vraćaj se na prethodnu osobu nakon početka narednog bloka.\n5. DODATNI PREDMETI I POZADINA: tek kada su sve osobe opisane, navedi vidljive stvari: Im Hintergrund sehe ich ... . Außerdem sehe ich ... . Koristi Im Hintergrund samo jednom. Razlikuj jedninu, množinu i nebrojive imenice: ein Brot / viele Brote, ein Regal / viele Regale, viele Äpfel, viel Obst und Gemüse, viele Lebensmittel, anderes Gebäck; nikad jednu stvar ako se jasno vidi više njih. Ne izmišljaj pozadinu, predmete, boje, količine ili detalje.\n6. ZAVRŠETAK: dodaj jednu kratku prirodnu završnu rečenicu koja odgovara situaciji, npr. Ich denke, die Kundin möchte etwas kaufen. / Ich denke, die Personen verbringen Zeit zusammen. / Ich denke, das Kind hat Spaß. / Ich denke, die Personen warten auf den Arzt. Upotrebi samo odgovarajuću, ne ponavljaj raniji sadržaj i ne izmišljaj. Ako nema opravdane situacione pretpostavke, koristi neutralan zaključak. Poslednja rečenica može biti Das war meine Bildbeschreibung.\nFORMAT: zadrži postojeći JSON sa svih 10 koraka, steps[9] (korak 10) je kompletan opis, uvek po ovom redosledu 1–6. steps[9].de je kompletan nemački tekst, steps[9].sr odgovarajući srpski prevod; steps[9].lines mora sadržati svaku rečenicu iz steps[9].de tačno istim redom, jednu rečenicu po elementu, sa odgovarajućim prevodom sr. Nema dodatnih, preskočenih, ponovljenih ili izmešanih rečenica. Ne razdvajaj jednu osobu na više nepovezanih blokova. Ova struktura ima prednost nad svim starijim primerima i bankExamples u zahtevu.",
-  dialogueAccuracyInstructions:"NAPRAVI PRIRODAN STVARNI A1 DIJALOG A i B PREMA KONKRETNOJ FOTOGRAFIJI. Pre pisanja proveri ko je gde, ko sedi ili stoji, ko sta drzi, sta osoba gleda i sta je oko nje. Izaberi situaciju samo prema vidljivom kontekstu. Ako fotografija jasno prikazuje supermarket i kupovinu, razgovor moze biti prirodan dijalog o tacno prepoznatljivim namirnicama, ceni ili izboru; ako prikazuje recepciju, razgovor na recepciji; ako auto-radionicu, razgovor o popravci. To su samo primeri, ne preslikavaj ih na neodgovarajucu fotografiju. Dve osobe razgovaraju smisleno, odgovaraju jedna drugoj i zadrzavaju iste uloge tokom celog dijaloga. Ne ubacuj nevidljive predmete, proizvode ili izmisljene potvrde da su nesto uradili; prirodne replike mogu biti hipoteticki scenario za vezbu i ne smeju se predstavljati kao cinjenica da se razgovor zaista desio na slici. Ako namera ili kontekst nisu jasni, koristi jednostavan neutralan dijalog o vidljivim predmetima i okruzenju. Bez mesanja jakne i haljine, sedenja i stajanja, pogresne odece ili pogresne strane. Svaka replika mora biti jednostavna, realisticna, gramaticki tacna i sa odgovarajucim srpskim prevodom."
+  dialogueAccuracyInstructions:"NAPRAVI PRIRODAN STVARNI A1 DIJALOG A i B PREMA KONKRETNOJ FOTOGRAFIJI. Pre pisanja proveri ko je gde, ko sedi ili stoji, ko sta drzi, sta osoba gleda i sta je oko nje. Izaberi situaciju samo prema vidljivom kontekstu. Ako fotografija jasno prikazuje supermarket i kupovinu, razgovor moze biti prirodan dijalog o tacno prepoznatljivim namirnicama, ceni ili izboru; ako prikazuje recepciju, razgovor na recepciji; ako auto-radionicu, razgovor o popravci. To su samo primeri, ne preslikavaj ih na neodgovarajucu fotografiju. Dve osobe razgovaraju smisleno, odgovaraju jedna drugoj i zadrzavaju iste uloge tokom celog dijaloga. Ne ubacuj nevidljive predmete, proizvode ili izmisljene potvrde da su nesto uradili; prirodne replike mogu biti hipoteticki scenario za vezbu i ne smeju se predstavljati kao cinjenica da se razgovor zaista desio na slici. Ako namera ili kontekst nisu jasni, koristi jednostavan neutralan dijalog o vidljivim predmetima i okruzenju. Bez mesanja jakne i haljine, sedenja i stajanja, pogresne odece ili pogresne strane. Svaka replika mora biti jednostavna, realisticna, gramaticki tacna i sa odgovarajucim srpskim prevodom. Zadrzi oznake speaker A i B. Ako izlazni JSON dozvoljava, dodaj za svaki red dialogue polje voiceGender (male, female, child ili unknown) prema stvarnoj ulozi govornika na fotografiji i isto polje zadrzi kroz ceo dijalog. Ako je dozvoljeno, vrati i dialogueSpeakers: {A:{gender:male/female/child/unknown},B:{gender:male/female/child/unknown}}. Ne menjaj obavezna postojeca polja."
  };
   const normalizeAIResponse=(raw)=>{
   let d=raw;
@@ -1825,9 +1922,10 @@ dialogueFontScale=1;$("dialogue").style.setProperty("--dialogue-font-scale","1")
 const generatedDialogue=(Array.isArray(data.dialogue)?data.dialogue:[])
  .filter(x=>x&&typeof x.de==="string"&&x.de.trim()&&typeof x.sr==="string"&&x.sr.trim())
  .slice(0,18)
- .map((x,i)=>({speaker:i%2?"B":"A",de:String(x.de),sr:String(x.sr)}));
+ .map((x,i)=>({speaker:i%2?"B":"A",de:String(x.de),sr:String(x.sr),voiceKind:dialogueGender(x.voiceGender??x.gender??x.voice??x.speakerGender??x.speakerRole??x.speaker)}));
 // Never invent a product via fallback to an unrelated original dialogue.
 const activeDialogue=generatedDialogue.length>=10?generatedDialogue:[];
+dialogueVoiceKinds=inferDialogueVoiceKinds(data,activeDialogue);
 if(!activeDialogue.length){
  $("scene").textContent="Dijalog nije pouzdano generisan prema fotografiji. Pokušaj ponovo nakon ažuriranja Cloudflare Worker-a.";
 }
@@ -1849,7 +1947,7 @@ activeDialogue.forEach((l,i)=>{
   else playRows("dialog",i,false)
  };
  el.append(listen);$("dialogue").append(el);
- dialogRows.push({de,element:el,listen})
+ dialogRows.push({de,role,element:el,listen})
 });
 dialoguePages=[];dialoguePageIndex=0;
 let scene=scenes.find(s=>s.n===Number(data.sceneNumber));
