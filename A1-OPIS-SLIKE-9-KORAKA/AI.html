@@ -1383,6 +1383,19 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
 #screen2 #fullDescription.detail-compact-v23 .full-line{padding:2px 3px!important;min-height:28px!important}
 #screen2 #fullDescription.detail-compact-v23 .full-line-play{height:24px!important;min-height:24px!important}
 #screen2 #fullDescription.detail-compact-v23 .full-step-sr{margin-top:1px!important}
+/* DE-MAX v24 – same slim pagination as the dialogue; four sentences retained */
+#screen2 .desc-page-nav,#screen3 .dialogue-page-nav{
+ flex:0 0 27px!important;height:27px!important;min-height:27px!important;max-height:27px!important;
+ padding:1px 5px!important;margin:1px 0!important;gap:5px!important;border-radius:7px!important;
+}
+#screen2 .desc-page-nav button,#screen3 .dialogue-page-nav button{
+ flex:0 0 44px!important;width:44px!important;min-width:44px!important;max-width:44px!important;
+ height:23px!important;min-height:23px!important;max-height:23px!important;
+ padding:0!important;border-radius:5px!important;font:900 15px/1 system-ui,Arial!important;
+}
+#screen2 #descPageLabel,#screen3 #dialoguePageLabel{font:800 10px/1.1 system-ui,Arial!important}
+#screen2 .full-description-panel{gap:2px!important}
+#screen3 .dialogue-page-nav.single-page{display:none!important;min-height:0!important;max-height:0!important;flex:0 0 0!important}
 </style></head><body><main class="app">
 <header class="header"><h1>Opis slike</h1></header>
 <section class="screen active" id="screen0"><div class="scroll"><div class="panel"><h2 class="title" id="uploadHeading">Ubaci sliku za opis</h2><label class="upload"><span class="upload-icon">📷</span><span class="upload-title">Izaberi fotografiju</span><span class="upload-sub">Dodirni ovde za galeriju ili kameru</span><input id="file" type="file" accept="image/*"></label><div class="photo-reveal" id="photoReveal"><span class="photo-glow" aria-hidden="true"></span><img class="picture" id="photo0" alt="Izabrana slika"><span class="photo-success" aria-hidden="true">✓</span><span class="sparkle sp1" aria-hidden="true">✦</span><span class="sparkle sp2" aria-hidden="true">✧</span><span class="sparkle sp3" aria-hidden="true">✦</span></div><p class="status" id="status">Prvo izaberi sliku.</p></div><div id="aiWait" hidden role="status" aria-live="polite"><div class="wait-card"><div class="wait-ring" aria-hidden="true"></div><h2>Molimo, sačekajte…</h2><p>AI analizira fotografiju.</p><p class="wait-sub">Pripremamo opis slike i dijalog na nemačkom jeziku.</p></div></div><div class="demax-text-brand" aria-label="De-Max A1"><span>De-Max</span><strong>A1</strong></div><input id="endpoint" type="hidden" value="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev"></div><div class="footer upload-footer"><button class="action pale" id="resumeAfterGeneration" type="button" hidden>Nastavi opis ❯</button><button class="action green" id="analyze" disabled>Automatski opiši sliku</button></div></section>
@@ -1779,7 +1792,7 @@ function showDescriptionPage(page,stopAudio=true){
  if(range)range.textContent=arr.length?"Rečenice "+(arr[0]+1)+"–"+(arr[arr.length-1]+1)+" / "+fullAudioLines.length:"Nema rečenica";
  $("descPrev").disabled=next===0;
  $("descNext").disabled=next===total-1;
- $("descPageLabel").textContent="Str. "+(next+1)+"/"+total+(arr.length?" · "+(arr[0]+1)+"–"+(arr[arr.length-1]+1)+"/"+fullAudioLines.length:"");
+ $("descPageLabel").textContent=arr.length?"Rečenice "+(arr[0]+1)+"–"+(arr[arr.length-1]+1)+" / "+fullAudioLines.length:"Stranica "+(next+1)+"/"+total;
  $("goDialogue").textContent=next===total-1?"Dijalog ❯":"Sledeće ❯";
  const field=$("fullDescription");field.scrollTop=0;
  fitFullDescription();
