@@ -1570,6 +1570,8 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
 #screen4 #completeList{gap:4px}
 #screen4 .complete-row{padding:5px 4px}
 @media(max-height:650px){#screen4 .complete-photo,#screen4 .complete-photo #photo4{max-height:27dvh!important}#screen4 .complete-row{padding:3px 4px}}
+/* V54: redundant detailed-description views are disabled; keep legacy DOM for shared helpers. */
+#screen2,#screen5{display:none!important}
 </style></head><body><main class="app">
 <header class="header"><h1>Opis slike</h1></header>
 <section class="screen active" id="screen0"><div class="scroll"><div class="panel"><h2 class="title" id="uploadHeading">Ubaci sliku za opis</h2><label class="upload"><span class="upload-icon">📷</span><span class="upload-title">Izaberi fotografiju</span><span class="upload-sub">Dodirni ovde za galeriju ili kameru</span><input id="file" type="file" accept="image/*"></label><div class="photo-reveal" id="photoReveal"><span class="photo-glow" aria-hidden="true"></span><img class="picture" id="photo0" alt="Izabrana slika"><span class="photo-success" aria-hidden="true">✓</span><span class="sparkle sp1" aria-hidden="true">✦</span><span class="sparkle sp2" aria-hidden="true">✧</span><span class="sparkle sp3" aria-hidden="true">✦</span></div><p class="status" id="status">Prvo izaberi sliku.</p></div><div id="aiWait" hidden role="status" aria-live="polite"><div class="wait-card"><div class="wait-ring" aria-hidden="true"></div><h2>Molimo, sačekajte…</h2><p>Fotografija se analizira.</p><p class="wait-sub">Pripremamo opis slike i dijalog na nemačkom jeziku.</p></div></div><div class="demax-text-brand" aria-label="De-Max A1"><span>De-Max</span><strong>A1</strong></div><input id="endpoint" type="hidden" value="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev"></div><div class="footer upload-footer"><button class="action green" id="resumeAfterGeneration" type="button" hidden>Nastavi opis ❯</button><button class="action green" id="analyze" disabled>Automatski opiši sliku</button></div></section>
@@ -1588,7 +1590,7 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
  <label class="summary-label" for="summaryGerman">Moj kompletan opis na nemačkom</label>
  <div class="summary-editor-wrap"><textarea id="summaryGerman" class="summary-editor" lang="de" spellcheck="false" aria-label="Kompletan opis slike na nemačkom koji možeš uređivati"></textarea><div id="summaryReading" class="summary-reading" lang="de" role="status" aria-label="Označavanje nemačkog teksta tokom izgovora" hidden></div><div id="summarySerbian" class="summary-serbian" lang="sr" hidden aria-label="Srpski prevod kompletnog opisa"></div></div>
  <p id="summaryStatus" class="summary-status" role="status" aria-live="polite" aria-atomic="true"></p>
-</div></div><div class="footer"><button class="action red" type="button" id="summaryBack" aria-label="Nazad" title="Nazad">❮</button><button class="action green" type="button" id="summaryDetail">Detaljan opis ❯</button></div></section>
+</div></div><div class="footer"><button class="action red" type="button" id="summaryBack" aria-label="Nazad" title="Nazad">❮</button><button class="action green" type="button" id="summaryDetail">Kompletan opis ❯</button></div></section>
 <section class="screen lesson-intro" id="screen5" aria-labelledby="introTitle5">
 <div class="intro-body"><div class="intro-brand">De-Max <strong>A1</strong></div><h2 class="intro-title" id="introTitle5">Detaljan opis slike</h2><div class="intro-picture-wrap"><img class="intro-picture" id="photo5" alt="Fotografija za detaljan opis slike"></div></div>
 <div class="footer intro-footer"><button class="action red" type="button" id="introBack5">❮ Nazad</button><button class="action green" type="button" id="introStart5">Započni ❯</button></div></section>
@@ -1644,6 +1646,19 @@ const synth=window.speechSynthesis;
 function germanSpeechText(value){
  return String(value);
 }
+// Prefer a native German (Germany) voice, keeping the original German orthography
+// and inflected forms such as beige, beigen and beigefarben unchanged.
+function germanUtterance(value){
+ const u=new SpeechSynthesisUtterance(germanSpeechText(value));
+ u.lang="de-DE";
+ const voices=synth?.getVoices?.()||[];
+ const native=voices.filter(v=>/^de[-_]DE$/i.test(v.lang));
+ const german=native.length?native:voices.filter(v=>/^de(?:[-_]|$)/i.test(v.lang));
+ const score=v=> (/premium|enhanced|natural|neural|online|google/i.test(v.name)?10:0)+(v.default?1:0);
+ const voice=german.slice().sort((a,b)=>score(b)-score(a))[0];
+ if(voice){u.voice=voice;u.lang=voice.lang.replace(/_/g,"-")}
+ return u;
+}
 
 $("endpoint").value=DEFAULT_WORKER_URL;
 fetch("./shared.js").then(r=>r.text()).then(t=>{let p=t.indexOf("const BANK=");if(p<0)return;let a=p+11,b=t.indexOf("];",a);if(b<0)return;let data=JSON.parse(t.slice(a,b+1));if(Array.isArray(data))bank=data.filter(x=>x?.de&&x?.sr)}).catch(()=>{});
@@ -1657,10 +1672,10 @@ function stopAIWait(){$("aiWait").hidden=true;$("screen0").classList.remove("ai-
 function startAIWait(){initAIWaitAudio();$("file").disabled=true;$("aiWait").hidden=false;$("screen0").classList.add("ai-waiting");}
 function setStatus(t,bad=false){$("status").textContent=t;$("status").className="status"+(bad?" error":"")}
 function updateJourneyProgress(){
- const amount=[0,11,33,78,56,22,44,67,100,89][currentPage]??0;
+ const amount=[0,15,0,70,45,0,30,55,100,85][currentPage]??0;
  $("journeyFill").style.width=amount+"%";
  $("journeyProgress").setAttribute("aria-valuenow",String(amount));
- $("journeyProgress").setAttribute("aria-valuetext",["Slika","Moj opis","Detaljan opis","Dijalog","Kompletan opis","Uvod u detaljan opis","Uvod u kompletan opis","Uvod u dijalog","Važne rečenice","Uvod u važne rečenice"][currentPage]);
+ $("journeyProgress").setAttribute("aria-valuetext",["Slika","Moj opis","","Dijalog","Kompletan opis","","Uvod u kompletan opis","Uvod u dijalog","Važne rečenice","Uvod u važne rečenice"][currentPage]);
 }
 function syncGenerationGate(){
  const locked=generatedLocked&&!reachedDialogue;
@@ -1671,6 +1686,8 @@ function syncGenerationGate(){
  if(locked&&currentPage===0)setStatus("Nova slika je dostupna tek kada dođeš do dijaloga.");
 }
 function view(n){
+ // V54: the redundant detailed-description screens are no longer part of the learning flow.
+ if(n===2||n===5)n=6;
  
  stopSpeech();currentPage=n;
  if(n===8&&generatedLocked)reachedDialogue=true;
@@ -1716,7 +1733,7 @@ function playRows(mode,index=0,auto=true){
   const r=rows[readingIndex];if(mode==="dialog")revealDialogueIndex(readingIndex);if(mode==="useful")revealUseful(readingIndex);cleanHighlight();
   if(r.element)r.element.classList.add("playing");
   updateDialogueAudioUI();updateUsefulAudioUI();
-  let u=new SpeechSynthesisUtterance(germanSpeechText(r.de));u.lang="de-DE";u.rate=.83;u.pitch=1;
+  let u=germanUtterance(r.de);u.rate=.83;u.pitch=1;
   u.onend=()=>{if(token!==voiceToken)return;readingIndex++;next()};
   u.onerror=e=>{if(token!==voiceToken)return;if(e.error==="canceled"||e.error==="interrupted")return;readingIndex++;next()};
   synth.speak(u)
@@ -1922,7 +1939,7 @@ $("summaryTranslate").textContent="Prevod";
 $("summaryTranslate").setAttribute("aria-pressed","false");
 $("summaryStatus").textContent="";
 summaryFontScale=.8;summaryEdited=false;updateSummaryFont();
-fullTranslated=false;renderFullDescription();$("translateFull").textContent="Prevod";$("translateFull").setAttribute("aria-pressed","false");
+fullTranslated=false;
 generatedLocked=true;reachedDialogue=false;
 setStatus("Moj opis i dijalog su spremni.");if(activeDialogue.length)aiWaitReadySound();view(1);
 }catch(e){setStatus("Greška: "+e.message,true)}finally{stopAIWait();syncGenerationGate()}};
@@ -2056,7 +2073,7 @@ function startFullLine(index,auto=false){
  const ticket=voiceToken;
  updateFullAudioUI();
  fitFullDescription();
- const u=new SpeechSynthesisUtterance(germanSpeechText(text));u.lang="de-DE";u.rate=.83;
+ const u=germanUtterance(text);u.rate=.83;
  u.onend=()=>{if(ticket!==voiceToken)return;if(auto)startFullLine(index+1,true);else stopSpeech()};
  u.onerror=e=>{if(ticket!==voiceToken)return;if(e.error==="canceled"||e.error==="interrupted")return;if(auto)startFullLine(index+1,true);else stopSpeech()};
  synth.speak(u);
@@ -2182,7 +2199,7 @@ function playSummary(startIndex=0){
   const part=phrases[i];
   $("summaryStatus").textContent="Izgovor: rečenica "+(i+1)+" / "+phrases.length;
   markSummarySpeechRange(part.start,part.end,false);
-  const u=new SpeechSynthesisUtterance(germanSpeechText(part.de));u.lang="de-DE";u.rate=.83;u.pitch=1;
+  const u=germanUtterance(part.de);u.rate=.83;u.pitch=1;
   let seenBoundary=false;
   u.onboundary=e=>{
    if(token!==voiceToken||readingMode!=="summary"||paused)return;
@@ -2253,7 +2270,7 @@ $("summaryGerman").addEventListener("input",()=>{
 });
 $("resumeAfterGeneration").onclick=()=>{if(generatedLocked&&!reachedDialogue)view(1)};
 $("summaryBack").onclick=()=>view(0);
-$("summaryDetail").onclick=()=>{if(detailSourceText!==$("summaryGerman").value.trim()){rebuildDetail($("summaryGerman").value,detailOriginalLines);renderFullDescription()}view(5)};
+$("summaryDetail").onclick=()=>{if(detailSourceText!==$("summaryGerman").value.trim()){rebuildDetail($("summaryGerman").value,detailOriginalLines)}view(6)};
 $("backFromFull").onclick=()=>view(5);
 $("goDialogue").onclick=()=>{if(descriptionPage<detailPages.length-1){showDescriptionPage(descriptionPage+1);return}view(6)};
 $("backToDescription").onclick=()=>view(7);
@@ -2375,7 +2392,7 @@ function playComplete(index,auto){
   updateCompleteAudioUI();
   const field=$("completeList"),row=completeRows[i].row,b=field.getBoundingClientRect(),r=row.getBoundingClientRect();
   if(r.bottom>b.bottom)field.scrollTop+=r.bottom-b.bottom;else if(r.top<b.top)field.scrollTop+=r.top-b.top;
-  const u=new SpeechSynthesisUtterance(germanSpeechText(completeRows[i].de));u.lang="de-DE";u.rate=.83;
+  const u=germanUtterance(completeRows[i].de);u.rate=.83;
   u.onend=()=>{if(token!==voiceToken)return;if(auto)next(i+1);else stopSpeech()};
   u.onerror=e=>{if(token!==voiceToken||e.error==="canceled"||e.error==="interrupted")return;if(auto)next(i+1);else stopSpeech()};
   synth.speak(u);
@@ -2387,7 +2404,7 @@ $("completeBack").onclick=()=>view(6);
 $("completeDialogue").onclick=()=>{stopSpeech();if(completePage<completePages.length-1)showCompletePage(completePage+1);else view(7)};
 $("introBack5").onclick=()=>view(1);
 $("introStart5").onclick=()=>view(2);
-$("introBack6").onclick=()=>view(2);
+$("introBack6").onclick=()=>view(1);
 $("introStart6").onclick=()=>{renderComplete();view(4)};
 $("introBack7").onclick=()=>view(4);
 $("introStart7").onclick=()=>{view(3);if(dialogRows.length)playRows("dialog")};
