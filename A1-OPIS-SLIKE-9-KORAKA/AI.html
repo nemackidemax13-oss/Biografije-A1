@@ -2269,18 +2269,33 @@ function completePerson(de){
  return {type,side};
 }
 function completeSections(rows){
- const result=[];const intro=rows.slice(0,4).map((_,i)=>i);
+ const result=[];
+ // V53: four sentences is a maximum, not a reason to move individual descriptions into the introduction.
+ const firstIndividual=rows.findIndex((r,i)=>{
+  if(i===0)return false;
+  const de=String(r.de).trim();
+  if(/^(?:Im Hintergrund|Im Vordergrund|Außerdem|Zum Schluss|Das war meine Bildbeschreibung)\b/i.test(de))return true;
+  const p=completePerson(de);
+  if(!p)return /^(?:Er|Es|Ich denke,?\s+(?:er|sie|es))\b/i.test(de);
+  // Shared actions and combined role introductions belong to the introduction.
+  const combined=/\b(?:und|während)\s+(?:(?:ich denke,?\s+)?(?:der|die|das|ein|eine)\s+(?:Mann|Frau|Kind|Junge|Mädchen|Person|Kunde|Kundin|Arzt|Ärztin|Verkäufer|Verkäuferin)\b)/i.test(de);
+  if(combined&&!/\b(?:links|rechts|Jahre alt|trägt|Haare|Augen|Bart|Brille|groß|klein|Gesicht)\b/i.test(de))return false;
+  const role=/^(?:Ich denke,?\s+|Ich glaube,?\s+)?(?:der|die|das)\s+(?:Mann|Frau|Kind|Junge|Mädchen|Person)\s+ist\s+(?:(?:ein|eine|der|die|das)\s+)?(?:Verkäufer(?:in)?|Kund(?:e|in)|Arzt|Ärztin|Patient(?:in)?|Mechaniker(?:in)?|Kellner(?:in)?|Lehrer(?:in)?|Mutter|Vater|Schüler(?:in)?)\s*[.!?]?$/i.test(de);
+  return !role;
+ });
+ const introEnd=firstIndividual<0?Math.min(4,rows.length):Math.min(4,firstIndividual);
+ const intro=rows.slice(0,introEnd).map((_,i)=>i);
  if(intro.length)result.push({title:"Uvod",items:intro});
  let active=null,part=null,background=false,previous=null;
  const counts={mann:0,frau:0,kind:0,person:0};
  const base={mann:"Opis muškarca",frau:"Opis žene",kind:"Opis deteta",person:"Opis osobe"};
  function start(title){part={title,items:[]};result.push(part)}
  function startPerson(p){counts[p.type]++;active=p;start(base[p.type]+(p.side==="links"?" – levo":p.side==="rechts"?" – desno":counts[p.type]>1?" "+counts[p.type]:""))}
- for(let j=0;j<Math.min(4,rows.length);j++){
+ for(let j=0;j<introEnd;j++){
   const p=completePerson(rows[j].de);
   if(p)previous=p;
  }
- for(let i=4;i<rows.length;i++){
+ for(let i=introEnd;i<rows.length;i++){
   const de=rows[i].de;
   if(!background&&/^(?:Im Hintergrund|Im Vordergrund|Außerdem|Auf dem Tisch|Neben den Personen|Hinter den Personen|Das war meine Bildbeschreibung|Zum Schluss|Abschließend|Insgesamt)\b/i.test(de)){
    background=true;start("Detalji i kraj");
