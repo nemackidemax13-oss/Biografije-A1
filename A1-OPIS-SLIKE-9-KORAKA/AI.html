@@ -1402,19 +1402,15 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
 #screen4 .complete-photo{flex:none;display:flex;justify-content:center;align-items:center;min-height:0}
 #screen4 #photo4{display:block;width:auto;height:auto;max-width:100%;max-height:34dvh;object-fit:contain;margin:0 auto;border-radius:10px}
 #screen4 .complete-title{font:850 15px/1.2 system-ui,Arial;text-align:center;margin:0;color:#174576}
-#screen4 .complete-tools{display:grid;grid-template-columns:1.25fr 1.2fr .6fr .6fr .85fr;gap:4px;flex:none}
-#screen4 .complete-tools button,#screen4 .complete-pager button{border:1px solid #b9d2f0;border-radius:8px;background:#edf5ff;color:#225f9e;font:800 12px system-ui,Arial;min-height:32px;padding:2px}
-#screen4 .complete-tools #completeAuto{background:#168447;color:white;border-color:#168447}
-#screen4 .complete-tools #completeAuto[aria-pressed=true]{background:#c52a41;border-color:#c52a41}
-#screen4 .complete-tools #completeTranslate[aria-pressed=true],#screen4 .complete-tools #completeAll[aria-pressed=true]{background:#ffe5a3;color:#684500;border-color:#e7bd4f}
+#screen4 .complete-pager button{border:1px solid #b9d2f0;border-radius:8px;background:#edf5ff;color:#225f9e;font:800 12px system-ui,Arial;min-height:32px;padding:2px}
 #screen4 #completeList{display:flex;flex:1 1 0;min-height:0;flex-direction:column;gap:4px;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding:1px 0}
-#screen4 .complete-row{display:grid;grid-template-columns:22px minmax(0,1fr) 29px;gap:5px;align-items:start;flex:none;padding:5px;border:1px solid #d8e7dc;background:#f5fbf7;border-radius:8px}
+#screen4 .complete-row{display:grid;grid-template-columns:22px minmax(0,1fr) 34px;gap:5px;align-items:center;flex:none;padding:5px;border:1px solid #d8e7dc;background:#f5fbf7;border-radius:8px}
 #screen4 .complete-row[hidden],#screen4 .complete-pager[hidden]{display:none!important}
 #screen4 .complete-number{display:grid;place-items:center;width:21px;height:21px;border-radius:50%;background:#168447;color:white;font:800 11px system-ui}
-#screen4 .complete-de{font-size:calc(15px * var(--complete-scale,1));line-height:1.27;font-weight:750;color:#126339;overflow-wrap:anywhere}
-#screen4 .complete-sr{font-size:calc(12px * var(--complete-scale,1));line-height:1.25;color:#b5273c;margin-top:3px;overflow-wrap:anywhere}
-#screen4 #completeList.hide-sr .complete-sr{display:none}
-#screen4 .complete-play{border:0;background:#e4efe8;color:#126339;border-radius:7px;width:29px;height:29px;padding:0;font:800 13px system-ui}
+#screen4 .complete-de{font-size:15px;line-height:1.27;font-weight:750;color:#126339;overflow-wrap:anywhere}
+#screen4 .complete-sr{font-size:12px;line-height:1.25;color:#b5273c;margin-top:3px;overflow-wrap:anywhere}
+
+#screen4 .complete-play{border:0;background:#e4efe8;color:#126339;border-radius:7px;width:34px;height:34px;padding:0;font:800 14px system-ui}
 #screen4 .complete-row.playing{background:#fff2bf;border-color:#dfb527}
 #screen4 .complete-pager{display:flex;align-items:center;justify-content:space-between;gap:4px;flex:none;background:#f0f6fc;border-radius:7px;padding:1px 5px}
 #screen4 .complete-pager button{min-height:25px;width:44px;font-size:15px}
@@ -1422,7 +1418,7 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
 #screen4 #completePageLabel{font:800 11px system-ui;color:#9d2435;text-align:center}
 #screen4 .footer{padding:4px 5px calc(4px + env(safe-area-inset-bottom))}
 #screen4 .footer .action{min-height:36px;font-size:12px;padding:4px}
-@media(max-height:650px){#screen4 #photo4{max-height:27dvh}#screen4 .complete-body{gap:3px}#screen4 .complete-tools button{min-height:29px}}
+@media(max-height:650px){#screen4 #photo4{max-height:27dvh}#screen4 .complete-body{gap:3px}}
 </style></head><body><main class="app">
 <header class="header"><h1>Opis slike</h1></header>
 <section class="screen active" id="screen0"><div class="scroll"><div class="panel"><h2 class="title" id="uploadHeading">Ubaci sliku za opis</h2><label class="upload"><span class="upload-icon">📷</span><span class="upload-title">Izaberi fotografiju</span><span class="upload-sub">Dodirni ovde za galeriju ili kameru</span><input id="file" type="file" accept="image/*"></label><div class="photo-reveal" id="photoReveal"><span class="photo-glow" aria-hidden="true"></span><img class="picture" id="photo0" alt="Izabrana slika"><span class="photo-success" aria-hidden="true">✓</span><span class="sparkle sp1" aria-hidden="true">✦</span><span class="sparkle sp2" aria-hidden="true">✧</span><span class="sparkle sp3" aria-hidden="true">✦</span></div><p class="status" id="status">Prvo izaberi sliku.</p></div><div id="aiWait" hidden role="status" aria-live="polite"><div class="wait-card"><div class="wait-ring" aria-hidden="true"></div><h2>Molimo, sačekajte…</h2><p>AI analizira fotografiju.</p><p class="wait-sub">Pripremamo opis slike i dijalog na nemačkom jeziku.</p></div></div><div class="demax-text-brand" aria-label="De-Max A1"><span>De-Max</span><strong>A1</strong></div><input id="endpoint" type="hidden" value="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev"></div><div class="footer upload-footer"><button class="action pale" id="resumeAfterGeneration" type="button" hidden>Nastavi opis ❯</button><button class="action green" id="analyze" disabled>Automatski opiši sliku</button></div></section>
@@ -1452,7 +1448,7 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
 <div class="complete-body">
 <div class="complete-photo"><img id="photo4" class="picture small" alt="Slika za kompletan opis"></div>
 <h2 class="complete-title">Kompletan opis slike</h2>
-<div class="complete-tools" role="group" aria-label="Slušanje, prevod, veličina teksta i prikaz"><button type="button" id="completeAuto" aria-pressed="false">▶ Auto</button><button type="button" id="completeTranslate" aria-pressed="true">Prevod</button><button type="button" id="completeMinus" aria-label="Smanji tekst">−</button><button type="button" id="completePlus" aria-label="Uvećaj tekst">+</button><button type="button" id="completeAll" aria-pressed="false" title="Prikaži sve rečenice">Sve</button></div>
+
 <div id="completeList" role="region" aria-label="Kompletan opis, rečenice i prevodi"></div>
 <nav id="completePager" class="complete-pager" aria-label="Stranice kompletnog opisa"><button id="completePrev" type="button" aria-label="Prethodna strana">❮</button><span id="completePageLabel" aria-live="polite"></span><button id="completeNext" type="button" aria-label="Sledeća strana">❯</button></nav>
 </div><div class="footer"><button class="action pale" type="button" id="completeBack">❮ Detaljan opis</button><button class="action green" type="button" id="completeDialogue">Dijalog ❯</button></div>
@@ -2090,11 +2086,10 @@ $("backFromFull").onclick=()=>view(1);
 $("goDialogue").onclick=()=>{if(descriptionPage<detailPages.length-1){showDescriptionPage(descriptionPage+1);return}renderComplete();view(4)};
 $("backToDescription").onclick=()=>view(4);
 
-let completeRows=[],completePages=[],completePage=0,completeScale=1,completeShowAll=false,completeTranslated=true,completeAuto=false,completeIndex=-1;
+let completeRows=[],completePages=[],completePage=0,completeIndex=-1;
 function renderComplete(){
- const field=$("completeList");field.replaceChildren();completeRows=[];completePages=[];completePage=0;completeScale=1;completeShowAll=false;completeTranslated=true;
- field.classList.remove("hide-sr");field.style.setProperty("--complete-scale","1");
- $("completeTranslate").setAttribute("aria-pressed","true");$("completeAll").setAttribute("aria-pressed","false");$("completeAll").textContent="Sve";$("completePager").hidden=false;
+ const field=$("completeList");field.replaceChildren();completeRows=[];completePages=[];completePage=0;
+ $("completePager").hidden=false;
  for(const sentence of fullSteps.flatMap(step=>step.lines)){
   const i=completeRows.length,row=document.createElement("div");row.className="complete-row";
   const number=document.createElement("span");number.className="complete-number";number.textContent=i+1;
@@ -2108,17 +2103,17 @@ function renderComplete(){
 function showCompletePage(page,resetScroll=true){
  completePage=Math.max(0,Math.min(page,Math.max(0,completePages.length-1)));
  const arr=completePages[completePage]||[],visible=new Set(arr);
- completeRows.forEach((r,i)=>{r.row.hidden=!completeShowAll&&!visible.has(i)});
- $("completePager").hidden=completeShowAll;
+ completeRows.forEach((r,i)=>{r.row.hidden=!visible.has(i)});
+ $("completePager").hidden=completePages.length<=1;
  $("completePrev").disabled=completePage===0;$("completeNext").disabled=completePage>=completePages.length-1;
  $("completePageLabel").textContent="Strana "+(completePage+1)+" / "+Math.max(1,completePages.length);
  if(resetScroll)$("completeList").scrollTop=0;
 }
 function paginateComplete(anchor=0){
  if(currentPage!==4)return;
- const field=$("completeList");$("completePager").hidden=completeShowAll;
+ const field=$("completeList");$("completePager").hidden=false;
  completeRows.forEach(r=>r.row.hidden=false);
- if(completeShowAll)return;
+
  const gap=parseFloat(getComputedStyle(field).rowGap)||4,available=Math.max(30,field.clientHeight-3);
  let arr=[],height=0;completePages=[];
  completeRows.forEach((r,i)=>{const h=r.row.getBoundingClientRect().height;if(arr.length&&height+gap+h>available){completePages.push(arr);arr=[];height=0}height+=h+(arr.length?gap:0);arr.push(i)});
@@ -2129,16 +2124,15 @@ function completeAnchor(){return readingMode==="complete"&&completeIndex>=0?comp
 function updateCompleteAudioUI(){
  const active=readingMode==="complete";
  completeRows.forEach((r,i)=>{const on=active&&i===completeIndex;r.row.classList.toggle("playing",on);r.play.textContent=on?"■":"▶";r.play.setAttribute("aria-pressed",String(on))});
- $("completeAuto").textContent=active&&completeAuto?"■ Stop":"▶ Auto";$("completeAuto").setAttribute("aria-pressed",String(active&&completeAuto));
 }
 function playComplete(index,auto){
  if(!synth){alert("Ovaj pregledač ne podržava izgovor.");return}
  stopSpeech();if(!completeRows[index])return;
- readingMode="complete";completeAuto=auto;completeIndex=index;const token=voiceToken;
+ readingMode="complete";completeIndex=index;const token=voiceToken;
  function next(i){
   if(token!==voiceToken)return;if(!completeRows[i]){stopSpeech();return}
   completeIndex=i;
-  if(!completeShowAll){const page=completePages.findIndex(x=>x.includes(i));if(page>=0&&page!==completePage)showCompletePage(page)}
+  const page=completePages.findIndex(x=>x.includes(i));if(page>=0&&page!==completePage)showCompletePage(page)
   updateCompleteAudioUI();
   const field=$("completeList"),row=completeRows[i].row,b=field.getBoundingClientRect(),r=row.getBoundingClientRect();
   if(r.bottom>b.bottom)field.scrollTop+=r.bottom-b.bottom;else if(r.top<b.top)field.scrollTop+=r.top-b.top;
@@ -2149,11 +2143,6 @@ function playComplete(index,auto){
  }
  next(index);
 }
-$("completeAuto").onclick=()=>{if(readingMode==="complete"&&completeAuto)stopSpeech();else playComplete(completeShowAll?0:completeAnchor(),true)};
-$("completeTranslate").onclick=()=>{const anchor=completeAnchor();completeTranslated=!completeTranslated;$("completeList").classList.toggle("hide-sr",!completeTranslated);$("completeTranslate").setAttribute("aria-pressed",String(completeTranslated));requestAnimationFrame(()=>paginateComplete(anchor))};
-function changeCompleteFont(delta){const anchor=completeAnchor();completeScale=Math.max(.8,Math.min(1.5,Math.round((completeScale+delta)*10)/10));$("completeList").style.setProperty("--complete-scale",String(completeScale));requestAnimationFrame(()=>paginateComplete(anchor))}
-$("completePlus").onclick=()=>changeCompleteFont(.1);$("completeMinus").onclick=()=>changeCompleteFont(-.1);
-$("completeAll").onclick=()=>{const anchor=completeAnchor();completeShowAll=!completeShowAll;$("completeAll").setAttribute("aria-pressed",String(completeShowAll));$("completeAll").textContent=completeShowAll?"Strane":"Sve";paginateComplete(anchor);if(completeShowAll){$("completeList").scrollTop=0}};
 $("completePrev").onclick=()=>{stopSpeech();showCompletePage(completePage-1)};$("completeNext").onclick=()=>{stopSpeech();showCompletePage(completePage+1)};
 $("completeBack").onclick=()=>view(2);
 $("completeDialogue").onclick=()=>{view(3);if(dialogRows.length)playRows("dialog")};
