@@ -1496,6 +1496,16 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
  .app *::-webkit-scrollbar-button:vertical:single-button:increment{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M1 3L5 7L9 3' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
  .app *::-webkit-scrollbar-button:vertical:double-button{display:none}
 }
+
+/* DE-MAX v40 — compact initial summary and explicit scroll buttons on overflow */
+#screen1 .summary-editor-wrap #summaryGerman,#screen1 .summary-editor-wrap #summaryReading,#screen1 .summary-editor-wrap #summarySerbian{overflow-y:auto!important}
+#screen1 .summary-editor-wrap #summaryGerman,#screen1 .summary-editor-wrap #summaryReading{line-height:1.34!important}
+#screen1 .summary-editor-wrap.with-translation #summarySerbian{line-height:1.34!important}
+#screen1 .summary-editor-wrap.summary-overflow #summaryGerman,#screen1 .summary-editor-wrap.summary-overflow #summaryReading,#screen1 .summary-editor-wrap.summary-overflow #summarySerbian{width:calc(100% - 28px)!important;right:28px!important}
+#screen1 .summary-scroll-arrows{position:absolute;right:1px;top:0;bottom:0;width:25px;display:flex;flex-direction:column;justify-content:space-between;z-index:9;pointer-events:none;padding:1px 0}
+#screen1 .summary-scroll-arrows[hidden]{display:none!important}
+#screen1 .summary-scroll-arrows button{pointer-events:auto;display:grid;place-items:center;background:#d32e47;color:#fff;border:1px solid #b9253c;border-radius:6px;width:25px;height:30px;font:900 17px/1 system-ui,Arial;padding:0;touch-action:manipulation}
+#screen1 .summary-scroll-arrows button:disabled{opacity:.35}
 </style></head><body><main class="app">
 <header class="header"><h1>Opis slike</h1></header>
 <section class="screen active" id="screen0"><div class="scroll"><div class="panel"><h2 class="title" id="uploadHeading">Ubaci sliku za opis</h2><label class="upload"><span class="upload-icon">📷</span><span class="upload-title">Izaberi fotografiju</span><span class="upload-sub">Dodirni ovde za galeriju ili kameru</span><input id="file" type="file" accept="image/*"></label><div class="photo-reveal" id="photoReveal"><span class="photo-glow" aria-hidden="true"></span><img class="picture" id="photo0" alt="Izabrana slika"><span class="photo-success" aria-hidden="true">✓</span><span class="sparkle sp1" aria-hidden="true">✦</span><span class="sparkle sp2" aria-hidden="true">✧</span><span class="sparkle sp3" aria-hidden="true">✦</span></div><p class="status" id="status">Prvo izaberi sliku.</p></div><div id="aiWait" hidden role="status" aria-live="polite"><div class="wait-card"><div class="wait-ring" aria-hidden="true"></div><h2>Molimo, sačekajte…</h2><p>Fotografija se analizira.</p><p class="wait-sub">Pripremamo opis slike i dijalog na nemačkom jeziku.</p></div></div><div class="demax-text-brand" aria-label="De-Max A1"><span>De-Max</span><strong>A1</strong></div><input id="endpoint" type="hidden" value="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev"></div><div class="footer upload-footer"><button class="action green" id="resumeAfterGeneration" type="button" hidden>Nastavi opis ❯</button><button class="action green" id="analyze" disabled>Automatski opiši sliku</button></div></section>
@@ -1512,7 +1522,7 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
   <button type="button" id="summaryPlus" class="summary-size" title="Uvećaj tekst" aria-label="Uvećaj veličinu teksta">+</button>
  </div>
  <label class="summary-label" for="summaryGerman">Moj kompletan opis na nemačkom</label>
- <div class="summary-editor-wrap"><textarea id="summaryGerman" class="summary-editor" lang="de" spellcheck="false" aria-label="Kompletan opis slike na nemačkom koji možeš uređivati"></textarea><div id="summaryReading" class="summary-reading" lang="de" role="status" aria-label="Označavanje nemačkog teksta tokom izgovora" hidden></div><div id="summarySerbian" class="summary-serbian" lang="sr" hidden aria-label="Srpski prevod kompletnog opisa"></div></div>
+ <div class="summary-editor-wrap"><textarea id="summaryGerman" class="summary-editor" lang="de" spellcheck="false" aria-label="Kompletan opis slike na nemačkom koji možeš uređivati"></textarea><div id="summaryReading" class="summary-reading" lang="de" role="status" aria-label="Označavanje nemačkog teksta tokom izgovora" hidden></div><div id="summarySerbian" class="summary-serbian" lang="sr" hidden aria-label="Srpski prevod kompletnog opisa"></div><div class="summary-scroll-arrows" id="summaryScrollArrows" hidden><button type="button" id="summaryScrollUp" aria-label="Pomeri tekst nagore">▲</button><button type="button" id="summaryScrollDown" aria-label="Pomeri tekst nadole">▼</button></div></div>
  <p id="summaryStatus" class="summary-status" role="status" aria-live="polite" aria-atomic="true"></p>
 </div></div><div class="footer"><button class="action red" type="button" id="summaryBack" aria-label="Nazad" title="Nazad">❮</button><button class="action green" type="button" id="summaryDetail">Detaljan opis ❯</button></div></section>
 <section class="screen lesson-intro" id="screen5" aria-labelledby="introTitle5">
@@ -1552,7 +1562,7 @@ const DEFAULT_WORKER_URL="https://automatskiopisslikeidijalozi.nemackidemax13.wo
 const $=id=>document.getElementById(id);
 const labels=["Opis osoba na slici","Razgovor osoba","Mesto osoba na slici","Izgled osoba na slici","Odeća osoba na slici","Kosa osoba na slici","Godine osoba na slici","Detalji na slici","Završni deo","Moj opis slike"];
 const scenes=[...(window.DEMAX_SCENES||[]),...(window.DEMAX_NEW_SCENES||[])].sort((a,b)=>a.n-b.n);
-let summarySpeechTokens=[],fullFontScale=1,fullSteps=[],fullTranslated=false,fullAudioIndex=-1,fullAudioAuto=false,fullAudioLines=[],summaryFontScale=1,summaryEdited=false,dialogueFontScale=1,dialogueAuto=false,dialoguePages=[],dialoguePageIndex=0,descriptionPage=0;let imageData="",bank=[],descRows=[],dialogRows=[],currentPage=0,voiceToken=0,paused=false,readingMode="",readingIndex=0,generatedLocked=false,reachedDialogue=false;
+let summarySpeechTokens=[],fullFontScale=1,fullSteps=[],fullTranslated=false,fullAudioIndex=-1,fullAudioAuto=false,fullAudioLines=[],summaryFontScale=.8,summaryEdited=false,dialogueFontScale=1,dialogueAuto=false,dialoguePages=[],dialoguePageIndex=0,descriptionPage=0;let imageData="",bank=[],descRows=[],dialogRows=[],currentPage=0,voiceToken=0,paused=false,readingMode="",readingIndex=0,generatedLocked=false,reachedDialogue=false;
 const synth=window.speechSynthesis;
 // Audio-only pronunciation aid for the colour beige; keep visible German spelling.
 // Preserve UTF-16 offsets so that word highlighting remains aligned.
@@ -1599,6 +1609,7 @@ function view(n){
  for(let i=0;i<8;i++)$("screen"+i).classList.toggle("active",i===n);
  updateJourneyProgress();
  if(n===3)requestAnimationFrame(()=>paginateDialogue());
+ if(n===1)queueSummaryArrows();
  if(n===2)requestAnimationFrame(fitFullDescription);
  if(n===4)requestAnimationFrame(()=>paginateComplete(completeAnchor()));
 }
@@ -1838,7 +1849,7 @@ document.querySelector("#screen1 .summary-editor-wrap").classList.remove("with-t
 $("summaryTranslate").textContent="Prevod";
 $("summaryTranslate").setAttribute("aria-pressed","false");
 $("summaryStatus").textContent="";
-summaryFontScale=1;summaryEdited=false;updateSummaryFont();
+summaryFontScale=.8;summaryEdited=false;updateSummaryFont();
 fullTranslated=false;renderFullDescription();$("translateFull").textContent="Prevod";$("translateFull").setAttribute("aria-pressed","false");
 generatedLocked=true;reachedDialogue=false;
 setStatus("Moj opis i dijalog su spremni.");if(activeDialogue.length)aiWaitReadySound();view(1);
@@ -2014,10 +2025,41 @@ function updateSummaryAudioUI(){
   pause.setAttribute("aria-pressed",String(playing&&paused))
  }
 }
+
+function summaryScrollTarget(){
+ if(!$("summarySerbian").hidden)return $("summarySerbian");
+ if(!$("summaryReading").hidden)return $("summaryReading");
+ return $("summaryGerman");
+}
+function updateSummaryArrowState(){
+ const el=summaryScrollTarget();
+ $("summaryScrollUp").disabled=el.scrollTop<=1;
+ $("summaryScrollDown").disabled=el.scrollTop+el.clientHeight>=el.scrollHeight-1;
+}
+function refreshSummaryArrows(){
+ if(currentPage!==1)return;
+ const wrap=document.querySelector("#screen1 .summary-editor-wrap"),el=summaryScrollTarget();
+ if(!el.clientHeight)return;
+ wrap.classList.remove("summary-overflow");
+ const overflow=el.scrollHeight>el.clientHeight+2;
+ wrap.classList.toggle("summary-overflow",overflow);
+ $("summaryScrollArrows").hidden=!overflow;
+ updateSummaryArrowState();
+}
+function queueSummaryArrows(){requestAnimationFrame(refreshSummaryArrows)}
+for(const id of ["summaryGerman","summaryReading","summarySerbian"]){$(id).addEventListener("scroll",updateSummaryArrowState,{passive:true})}
+for(const [id,direction] of [["summaryScrollUp",-1],["summaryScrollDown",1]]){
+ $(id).addEventListener("mousedown",e=>e.preventDefault());
+ $(id).onclick=()=>{const el=summaryScrollTarget();el.scrollBy({top:direction*Math.max(35,Math.round(el.clientHeight*.65)),behavior:"smooth"});};
+}
+window.addEventListener("resize",queueSummaryArrows);
+if(window.ResizeObserver)new ResizeObserver(queueSummaryArrows).observe(document.querySelector("#screen1 .summary-editor-wrap"));
+$("photo1").addEventListener("load",queueSummaryArrows);
+
 function updateSummaryFont(){
  const wrap=document.querySelector("#screen1 .summary-editor-wrap");
- const de=(Math.round(12*summaryFontScale*10)/10)+"px";
- const sr=(Math.round(10*summaryFontScale*10)/10)+"px";
+ const de=Math.max(10,Math.round(12*summaryFontScale*10)/10)+"px";
+ const sr=Math.max(9,Math.round(10*summaryFontScale*10)/10)+"px";
  wrap.style.setProperty("--summary-de-size",de);
  wrap.style.setProperty("--summary-sr-size",sr);
  $("screen1").style.setProperty("--summary-scale",String(summaryFontScale));
@@ -2025,6 +2067,7 @@ function updateSummaryFont(){
  $("summaryReading").style.setProperty("font-size",de,"important");
  $("summarySerbian").style.setProperty("font-size",sr,"important");
  $("summarySerbian").querySelectorAll(".bilingual-de,.bilingual-sr").forEach(el=>el.style.setProperty("font-size",el.classList.contains("bilingual-de")?de:sr,"important"));
+ queueSummaryArrows();
 }
 
 /* Highlight the exact spoken word when the browser supplies speech onboundary
@@ -2045,7 +2088,7 @@ function renderSummarySpeechText(){
 function clearSummaryHighlight(){
  const editor=$("summaryGerman"),area=$("summaryReading");
  if(!editor||!area)return;
- editor.classList.remove("reading-mode");area.hidden=true;
+ editor.classList.remove("reading-mode");area.hidden=true;queueSummaryArrows();
  for(const t of summarySpeechTokens)t.span.classList.remove("speech-active");
 }
 function markSummarySpeechRange(start,end,word=false){
@@ -2083,7 +2126,7 @@ function playSummary(startIndex=0){
  if(!phrases.length){$("summaryStatus").textContent="Nema rečenica za slušanje.";return}
  stopSpeech();renderSummarySpeechText();
  $("summaryGerman").classList.add("reading-mode");
- $("summaryReading").hidden=false;
+ $("summaryReading").hidden=false;queueSummaryArrows();
  $("summaryReading").scrollTop=$("summaryGerman").scrollTop;
  readingMode="summary";paused=false;
  const token=voiceToken;let i=Math.max(0,Math.min(startIndex,phrases.length-1));
@@ -2162,6 +2205,7 @@ $("summaryPlus").onclick=()=>{summaryFontScale=Math.min(1.5,Math.round((summaryF
 $("summaryMinus").onclick=()=>{summaryFontScale=Math.max(.8,Math.round((summaryFontScale-.1)*10)/10);updateSummaryFont()};
 $("summaryGerman").addEventListener("input",()=>{
  summaryEdited=true;
+ queueSummaryArrows();
  if(readingMode==="summary")stopSpeech();
  $("summaryStatus").textContent="Tekst se može uređivati. Prevod odgovara originalnom tekstu.";
 });
