@@ -2007,7 +2007,7 @@ activeDialogue.forEach((l,i)=>{
 dialoguePages=[];dialoguePageIndex=0;
 let scene=scenes.find(s=>s.n===Number(data.sceneNumber));
  renderUseful(activeDialogue,data,scene);
-if(activeDialogue.length)$("scene").textContent="Dijalog prema slici (simulacija): "+String(data.sceneName||scene?.sr||"situacija");
+if(activeDialogue.length)$("scene").textContent=data.dialogueNote?String(data.dialogueNote):"Dijalog prema slici (simulacija): "+String(data.sceneName||scene?.sr||"situacija");
 // Druga stranica uvek koristi iste AI recenice kao koraci 1–9.
 const summarySource=data.steps[9]||{};
 // V97: Detaljan opis = samo proverene recenice iz celog opisa, bez naziva kategorija.
