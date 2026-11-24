@@ -1443,6 +1443,14 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
 .lesson-intro .intro-footer .red{background:#d32e47!important;color:white!important}
 .lesson-intro .intro-footer .green{background:#168447!important;color:white!important}
 @media(max-height:500px){.lesson-intro .intro-body{padding-top:4px;gap:4px}.lesson-intro .intro-title{font-size:18px}.lesson-intro .intro-footer .action{min-height:34px!important;font-size:12px!important}}
+
+/* DE-MAX v33 — center title and photograph together on every lesson introduction */
+.lesson-intro .intro-body{justify-content:center;gap:8px;padding:8px 10px 12px}
+.lesson-intro .intro-brand{margin:0}
+.lesson-intro .intro-title{margin:0 0 4px}
+.lesson-intro .intro-picture-wrap{flex:0 1 auto;height:auto;max-height:min(68dvh,calc(100dvh - 160px))}
+.lesson-intro .intro-picture-wrap .intro-picture{max-height:min(68dvh,calc(100dvh - 160px))}
+@media(max-height:500px){.lesson-intro .intro-body{gap:4px;padding:4px 8px}.lesson-intro .intro-title{margin-bottom:2px}.lesson-intro .intro-picture-wrap,.lesson-intro .intro-picture-wrap .intro-picture{max-height:min(62dvh,calc(100dvh - 105px))}}
 </style></head><body><main class="app">
 <header class="header"><h1>Opis slike</h1></header>
 <section class="screen active" id="screen0"><div class="scroll"><div class="panel"><h2 class="title" id="uploadHeading">Ubaci sliku za opis</h2><label class="upload"><span class="upload-icon">📷</span><span class="upload-title">Izaberi fotografiju</span><span class="upload-sub">Dodirni ovde za galeriju ili kameru</span><input id="file" type="file" accept="image/*"></label><div class="photo-reveal" id="photoReveal"><span class="photo-glow" aria-hidden="true"></span><img class="picture" id="photo0" alt="Izabrana slika"><span class="photo-success" aria-hidden="true">✓</span><span class="sparkle sp1" aria-hidden="true">✦</span><span class="sparkle sp2" aria-hidden="true">✧</span><span class="sparkle sp3" aria-hidden="true">✦</span></div><p class="status" id="status">Prvo izaberi sliku.</p></div><div id="aiWait" hidden role="status" aria-live="polite"><div class="wait-card"><div class="wait-ring" aria-hidden="true"></div><h2>Molimo, sačekajte…</h2><p>AI analizira fotografiju.</p><p class="wait-sub">Pripremamo opis slike i dijalog na nemačkom jeziku.</p></div></div><div class="demax-text-brand" aria-label="De-Max A1"><span>De-Max</span><strong>A1</strong></div><input id="endpoint" type="hidden" value="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev"></div><div class="footer upload-footer"><button class="action pale" id="resumeAfterGeneration" type="button" hidden>Nastavi opis ❯</button><button class="action green" id="analyze" disabled>Automatski opiši sliku</button></div></section>
