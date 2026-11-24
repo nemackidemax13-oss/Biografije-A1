@@ -1655,24 +1655,23 @@ const labels=["Opis osoba na slici","Razgovor osoba","Mesto osoba na slici","Izg
 const scenes=[...(window.DEMAX_SCENES||[]),...(window.DEMAX_NEW_SCENES||[])].sort((a,b)=>a.n-b.n);
 let summarySpeechTokens=[],fullFontScale=1,fullSteps=[],fullTranslated=false,fullAudioIndex=-1,fullAudioAuto=false,fullAudioLines=[],summaryFontScale=.8,summaryEdited=false,dialogueFontScale=1,dialogueAuto=false,dialoguePages=[],dialoguePageIndex=0,descriptionPage=0;let imageData="",bank=[],descRows=[],dialogRows=[],currentPage=0,voiceToken=0,paused=false,readingMode="",readingIndex=0,generatedLocked=false,reachedDialogue=false;
 const synth=window.speechSynthesis;
-// V51: use the native German pronunciation of beige (French loanword, final voiced zh).
-// Do not replace it with the artificial "beež", which German voices can mispronounce.
-// Preserve original word forms (beige, beigen, beigefarben) and highlighting offsets.
+// V62: speech-only pronunciation hint for inflected beige, with voiced zh.
+// The spelling in the lesson and the saved AI text remains unchanged.
+// Equal-length substitutions preserve the spoken-word highlight offsets.
 function germanSpeechText(value){
- // V60: the valid alternative spelling "beig" is easily misread by TTS.
- // Use the standard full spelling for an isolated colour, with unchanged
- // correctly declined forms (beige, beigen, beigem, beiger, beiges).
- return String(value).replace(/\bbei(g)\b/gi,word=>word+"e");
+ return String(value).replace(/\bbei(?:g|ge(?:n|m|r|s)?)\b/gi,word=>{
+  if(/^beig$/i.test(word))return word[0]==="B"?"Beež":"beež";
+  return word.slice(0,1)+"eež"+word.slice(4);
+ });
 }
-// Prefer a native German (Germany) voice, keeping the original German orthography
-// and inflected forms such as beige, beigen and beigefarben unchanged.
 function germanUtterance(value){
- const u=new SpeechSynthesisUtterance(germanSpeechText(value));
+ const original=String(value);
+ const u=new SpeechSynthesisUtterance(germanSpeechText(original));
  u.lang="de-DE";
  const voices=synth?.getVoices?.()||[];
  const native=voices.filter(v=>/^de[-_]DE$/i.test(v.lang));
  const german=native.length?native:voices.filter(v=>/^de(?:[-_]|$)/i.test(v.lang));
- const colour=/\bbei(?:g|ge|gem|gen|ger|ges|gefarben\w*)\b/i.test(u.text);
+ const colour=/\bbei(?:g|ge|gem|gen|ger|ges|gefarben\w*)\b/i.test(original);
  const score=v=> (/premium|enhanced|natural|neural|online|google/i.test(v.name)?10:0)+(v.default?1:0)+(colour&&/google deutsch|microsoft.*(?:katja|conrad|amala|killian)|anna|petra/i.test(v.name)?4:0);
  const voice=german.slice().sort((a,b)=>score(b)-score(a))[0];
  if(voice){u.voice=voice;u.lang=voice.lang.replace(/_/g,"-")}
