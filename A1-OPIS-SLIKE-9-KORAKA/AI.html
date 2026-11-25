@@ -2624,7 +2624,7 @@ function renderUseful(lines,data={},scene=null){
   const roleLabel=String(group.role||("Osoba "+group.speaker))+" ("+group.speaker+")";
   group.sentences.forEach(l=>{
    const de=String(l?.de||"").trim(),sr=String(l?.sr||"").trim(),key=norm(de);
-   if(!key||!sr||seen.has(key)||de.length>240||page.length>=14)return;seen.add(key);
+   if(!key||!sr||seen.has(key)||de.length>240||page.length>=22)return;seen.add(key);
    const i=usefulRows.length;
    const row=document.createElement("article");row.className="sentence useful-row";
    add(row,"useful-number",String(page.length+1));const copy=document.createElement("div");add(copy,"useful-de",de);add(copy,"useful-sr",sr);row.append(copy);
