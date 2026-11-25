@@ -1670,7 +1670,7 @@ function germanSpeechForm(value){
  for(const match of source.matchAll(pattern)){
   const start=match.index,word=match[0];
   append(source.slice(cursor,start),cursor,start-cursor);
-  let spoken=word.replace(/^bei(?:ge(?=farben)|g)/i,"bež");
+  let spoken=/^beige?$/i.test(word)?"bež":word.replace(/^bei(?:ge(?=farben)|g)/i,"bež");
   if(/^B/.test(word))spoken=spoken[0].toUpperCase()+spoken.slice(1);
   append(spoken,start,word.length);
   cursor=start+word.length;
