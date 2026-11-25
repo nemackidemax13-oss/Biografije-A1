@@ -1655,13 +1655,35 @@ const labels=["Opis osoba na slici","Razgovor osoba","Mesto osoba na slici","Izg
 const scenes=[...(window.DEMAX_SCENES||[]),...(window.DEMAX_NEW_SCENES||[])].sort((a,b)=>a.n-b.n);
 let summarySpeechTokens=[],fullFontScale=1,fullSteps=[],fullTranslated=false,fullAudioIndex=-1,fullAudioAuto=false,fullAudioLines=[],summaryFontScale=.8,summaryEdited=false,dialogueFontScale=1,dialogueAuto=false,dialoguePages=[],dialoguePageIndex=0,descriptionPage=0;let imageData="",bank=[],descRows=[],dialogRows=[],currentPage=0,voiceToken=0,paused=false,readingMode="",readingIndex=0,generatedLocked=false,reachedDialogue=false;
 const synth=window.speechSynthesis;
-// V64: pass standard German spelling to the German speech engine.
-// The foreign character ž is not reliably supported by German TTS voices.
+// V102: speech-only pronunciation override for beige and its inflections.
+// Keep the original German spelling on screen and map TTS boundaries back to it.
+function germanSpeechForm(value){
+ const source=String(value), offsets=[0];
+ const pattern=/\bbei(?:gefarben(?:em|en|er|es|e)?|gem|gen|ger|ges|ge|g)\b/gi;
+ let text="",cursor=0;
+ function append(part,start,length){
+  for(let j=0;j<part.length;j++){
+   text+=part[j];
+   offsets.push(start+Math.round((j+1)*length/part.length));
+  }
+ }
+ for(const match of source.matchAll(pattern)){
+  const start=match.index,word=match[0];
+  append(source.slice(cursor,start),cursor,start-cursor);
+  let spoken=word.replace(/^bei(?:ge(?=farben)|g)/i,"bež");
+  if(/^B/.test(word))spoken=spoken[0].toUpperCase()+spoken.slice(1);
+  append(spoken,start,word.length);
+  cursor=start+word.length;
+ }
+ append(source.slice(cursor),cursor,source.length-cursor);
+ return {text,offsets};
+}
 function germanSpeechText(value){
- return String(value);
+ return germanSpeechForm(value).text;
 }
 function germanSpeechOffset(value,index){
- return Math.min(String(value).length,Math.max(0,index));
+ const {offsets}=germanSpeechForm(value);
+ return offsets[Math.min(offsets.length-1,Math.max(0,Math.floor(index)))];
 }
 function germanUtterance(value){
  const original=String(value);
