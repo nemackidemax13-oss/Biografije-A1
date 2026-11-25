@@ -1973,10 +1973,10 @@ try{
   return {...d,steps};
  };
  let data=null,lastError="";
- // V157: 55-second browser deadline, including transfer; Worker AI budget is 50 seconds.
- const deadline=performance.now()+55000;
+ // V197: browser allows the 105-second Worker budget plus transfer and response processing.
+ const deadline=performance.now()+120000;
  for(let attempt=1;attempt<=2;attempt++){
-  if(attempt===2&&deadline-performance.now()<12000)break;
+  if(attempt===2&&deadline-performance.now()<65000)break;
   if(attempt===2)setStatus("Pokušavam kraći AI zahtev…");
   try{
    const body=attempt===1?baseRequest:{...baseRequest,bankExamples:sampleBank(true).slice(0,25),scenes:baseRequest.scenes.map(({n,sr,de,roles})=>({n,sr,de,roles}))};
