@@ -1630,12 +1630,12 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
 <section class="screen lesson-intro" id="screen7" aria-labelledby="introTitle7">
 <div class="intro-body"><div class="intro-brand">De-Max <strong>A1</strong></div><h2 class="intro-title" id="introTitle7">Dijalog prema slici</h2><div class="intro-picture-wrap"><img class="intro-picture" id="photo7" alt="Fotografija za dijalog prema slici"></div></div>
 <div class="footer intro-footer"><button class="action red" type="button" id="introBack7">❮ Nazad</button><button class="action green" type="button" id="introStart7">Započni ❯</button></div></section>
-<section class="screen" id="screen3"><div class="scroll" id="dialogueScroll"><div class="panel dialogue-top"><div class="dialogue-wide-photo"><img class="picture small" id="photo3" alt="Fotografija za vežbu dijaloga"></div><div class="dialogue-head-row"><div class="dialogue-head-copy"><h2 class="title">3. Dijalog A i B · Učenici</h2><div id="scene" class="pill">Situacija prema slici</div></div></div><div class="dialogue-toolbar" role="group" aria-label="Slušanje, prevod i veličina teksta"><button class="dialogue-auto" id="readDialogue" type="button" aria-pressed="false">▶ Auto</button><button class="dialogue-pause" id="pauseDialogue" type="button" aria-label="Pauziraj ili nastavi slušanje">⏸</button><button class="dialogue-stop" id="stopDialogue" type="button">■ Stop</button><button class="dialogue-translate" id="translationDialogue" type="button" aria-pressed="false">Prevod</button><button class="dialogue-size" id="dialogueFontMinus" type="button" aria-label="Smanji tekst dijaloga">−</button><button class="dialogue-size" id="dialogueFontPlus" type="button" aria-label="Uvećaj tekst dijaloga">+</button></div><p class="muted" id="dialogueStatus" style="text-align:center">Dodirni ▶ uz rečenicu ili uključi Auto.</p></div><div id="dialogue" class="hide-translation" aria-label="Dijalog učenika A i B bez skrolovanja"></div><div class="dialogue-page-nav" id="dialoguePager"><button type="button" id="dialoguePrev" aria-label="Prethodna strana">❮</button><span id="dialoguePageLabel" aria-live="polite"></span><button type="button" id="dialogueNext" aria-label="Sledeća strana">❯</button></div></div><div class="footer"><button class="action red" id="backToDescription">❮ Nazad</button><button class="action green" id="goUseful">Važne rečenice dijalog ❯</button></div></section>
+<section class="screen" id="screen3"><div class="scroll" id="dialogueScroll"><div class="panel dialogue-top"><div class="dialogue-wide-photo"><img class="picture small" id="photo3" alt="Fotografija za vežbu dijaloga"></div><div class="dialogue-head-row"><div class="dialogue-head-copy"><h2 class="title">3. Dijalog A i B · Učenici</h2><div id="scene" class="pill">Situacija prema slici</div></div></div><div class="dialogue-toolbar" role="group" aria-label="Slušanje, prevod i veličina teksta"><button class="dialogue-auto" id="readDialogue" type="button" aria-pressed="false">▶ Auto</button><button class="dialogue-pause" id="pauseDialogue" type="button" aria-label="Pauziraj ili nastavi slušanje">⏸</button><button class="dialogue-stop" id="stopDialogue" type="button">■ Stop</button><button class="dialogue-translate" id="translationDialogue" type="button" aria-pressed="false">Prevod</button><button class="dialogue-size" id="dialogueFontMinus" type="button" aria-label="Smanji tekst dijaloga">−</button><button class="dialogue-size" id="dialogueFontPlus" type="button" aria-label="Uvećaj tekst dijaloga">+</button></div><p class="muted" id="dialogueStatus" style="text-align:center">Dodirni ▶ uz rečenicu ili uključi Auto.</p></div><div id="dialogue" class="hide-translation" aria-label="Dijalog učenika A i B bez skrolovanja"></div><div class="dialogue-page-nav" id="dialoguePager"><button type="button" id="dialoguePrev" aria-label="Prethodna strana">❮</button><span id="dialoguePageLabel" aria-live="polite"></span><button type="button" id="dialogueNext" aria-label="Sledeća strana">❯</button></div></div><div class="footer"><button class="action red" id="backToDescription">❮ Nazad</button><button class="action green" id="goUseful">Važne rečenice kod dijaloga ❯</button></div></section>
 <section class="screen lesson-intro" id="screen9" aria-labelledby="introTitle9">
 <div class="intro-body"><div class="intro-brand">De-Max <strong>A1</strong></div><h2 class="intro-title" id="introTitle9">Važne rečenice kod dijaloga</h2><div class="intro-picture-wrap"><img class="intro-picture" id="photo9" alt="Fotografija za važne rečenice"></div></div>
 <div class="footer intro-footer"><button class="action red" type="button" id="introBack9">❮ Nazad</button><button class="action green" type="button" id="introStart9">Započni ❯</button></div></section>
 <section class="screen" id="screen8"><div class="useful-body">
-<div class="useful-brand">De-Max <strong>A1</strong></div><h2 class="useful-title">Važne rečenice</h2>
+<div class="useful-brand">De-Max <strong>A1</strong></div><h2 class="useful-title">Važne rečenice</h2><div id="usefulRole" aria-live="polite" style="text-align:center;color:#117740;font:800 14px system-ui;line-height:1.2"></div>
 <p class="useful-sub">A1 rečenice koje možeš koristiti u ovoj situaciji</p>
 <div class="useful-tools"><button type="button" id="usefulAuto">▶ Auto</button><button type="button" id="usefulStop">■ Stop</button><button type="button" id="usefulMinus" aria-label="Smanji slova">−</button><button type="button" id="usefulPlus" aria-label="Uvećaj slova">+</button></div>
 <div id="usefulList" aria-label="Važne rečenice sa prevodom"></div>
@@ -1807,7 +1807,7 @@ function playRows(mode,index=0,auto=true){
  const token=voiceToken,rows=pageRows(mode);
  function next(){
   if(token!==voiceToken||paused)return;
-  if(readingIndex>=rows.length||(!auto&&readingIndex>index)){
+  if(readingIndex>=rows.length||(!auto&&readingIndex>index)||(mode==="useful"&&rows[readingIndex]?.roleIndex!==rows[index]?.roleIndex)){
    cleanHighlight();readingMode="";dialogueAuto=false;updateDialogueAudioUI();updateUsefulAudioUI();return
   }
   const r=rows[readingIndex];if(mode==="dialog")revealDialogueIndex(readingIndex);if(mode==="useful")revealUseful(readingIndex);cleanHighlight();
@@ -2578,7 +2578,7 @@ window.addEventListener("resize",()=>{if(currentPage===4)requestAnimationFrame((
 $("photo4").addEventListener("load",()=>{if(currentPage===4)requestAnimationFrame(()=>paginateComplete(completeAnchor()))});
 
 
-let usefulRows=[],usefulPages=[],usefulPage=0,usefulScale=1;
+let usefulRows=[],usefulPages=[],usefulPage=0,usefulScale=1,usefulRoleLabels=[];
 function situationalPhrases(data,scene,lines){
  const context=[data?.sceneName,scene?.sr,scene?.de,scene?.roles].filter(Boolean).join(" ").toLowerCase();
  const speech=lines.map(l=>l.de).join(" ");
@@ -2600,44 +2600,48 @@ function situationalPhrases(data,scene,lines){
  ];
  return {general,extra:rules.find(([re])=>re.test(context))?.[1]||[]};
 }
+// V190: always keep the phrasebook separated by the dialogue's two speakers.
+function legacyRoleGroups(lines,data,scene){
+ const context=[data?.sceneName,scene?.sr,scene?.de,scene?.roles].filter(Boolean).join(" ").toLowerCase();
+ const b=lines.filter(l=>l.speaker==="B").map(l=>l.de).join(" ");
+ let aRole="Osoba A",bRole="Osoba B",order=["A","B"];
+ const set=(a,b)=>{aRole=a;bRole=b;order=["B","A"]};
+ if(/\b(?:Kann ich Ihnen helfen|Was möchten Sie kaufen|Ihr Kassenbon|Ich scanne|Ihre Karte|Was darf es sein)\b/u.test(b)&&/pekar|bäck|mesar|metzg|piljar|obst|butik|kleid|kasse|kasa|supermark|prodav|geschäft|cveć|cvec|blumen|obuć|obuc|schuh|knjiž|knjiz|buchhand|pijac|markt/.test(context))set("Kupac",/kasa|kasse/.test(context)?"Kasir / kasirka":"Prodavac / prodavačica");
+ else if(/\b(?:Was fehlt Ihnen|Wo haben Sie Schmerzen|Haben Sie Fieber|Seit wann haben Sie)\b/u.test(b)){
+  if(/apotek|apothek/.test(context))set("Kupac / pacijent","Farmaceut");else set("Pacijent","Lekar / lekarka");
+ }else if(/\b(?:Was möchten Sie essen|Was möchten Sie trinken|Was möchten Sie bestellen|Was hätten Sie gern)\b/u.test(b))set("Gost","Konobar / konobarica");
+ else if(/hotel|rezeption|recepc/.test(context)&&/\b(?:Zimmer|Nächte|Personen)\b/u.test(b))set("Gost","Recepcioner / recepcionerka");
+ else if(/radionic|werkstatt|mehani|reparatur/.test(context)&&/\b(?:prüfen|reparieren|Reparatur)\b/u.test(b))set("Mušterija","Majstor");
+ else if(/supermark|pijac|markt|kupovin|einkauf/.test(context)&&/\b(?:du|dir|dich)\b/u.test(b)){aRole="Kupac 1";bRole="Kupac 2";}
+ return order.map(speaker=>({speaker,role:speaker==="A"?aRole:bRole,sentences:lines.filter(l=>l.speaker===speaker)}));
+}
 function renderUseful(lines,data={},scene=null){
- const list=$("usefulList");list.replaceChildren();usefulRows=[];usefulPages=[];usefulPage=0;usefulScale=1;list.style.setProperty("--useful-scale","1");
- const seen=new Set(),picked=[];
- const append=(l,limit=22)=>{
-  if(picked.length>=limit)return;
-  const de=String(Array.isArray(l)?l[0]||"":l?.de||"").trim(),sr=String(Array.isArray(l)?l[1]||"":l?.sr||"").trim();
-  const key=norm(de);if(!key||!sr||seen.has(key)||de.length>180)return;
-  seen.add(key);picked.push({de,sr});
- };
- const ai=[data.importantSentences,data.important_sentences,data.usefulSentences,data.useful_sentences].find(a=>Array.isArray(a)&&a.length)||[];
- const {general,extra}=situationalPhrases(data,scene,lines);
- const reusable=l=>{
-  const de=String(Array.isArray(l)?l[0]:l?.de||"").trim();
-  return de.length<=120&&!/\d|\b(?:Euro|Cent)\b.*\b(?:kostet|kosten)\b/i.test(de)&&!/^(?:Auf diesem Bild|Im Hintergrund|Außerdem sehe ich|Ich denke, die Personen)/i.test(de);
- };
- const addReusable=(l,limit)=>{if(reusable(l))append(l,limit)};
- // Dedicated AI phrasebook from V133 has priority. Older Workers still get relevant local phrases.
- ai.forEach(l=>addReusable(l,16));
- if(picked.length<12){
-  extra.forEach(l=>addReusable(l,16));
-  const score=l=>(/\?/.test(l.de)?5:0)+(/\b(kann|können|möchte|möchten|brauche|haben|suche|bitte|gern|muss|darf)\b/i.test(l.de)?4:0);
-  const candidates=lines.filter(l=>reusable(l)&&(/\?/.test(l.de)||/\b(kann|können|möchte|brauche|bitte|gern|muss|darf)\b/i.test(l.de))).sort((a,b)=>score(b)-score(a));
-  candidates.forEach(l=>addReusable(l,12));
- }
- general.forEach(l=>addReusable(l,16));
- picked.forEach((l,i)=>{
-  const row=document.createElement("article");row.className="sentence useful-row";
-  add(row,"useful-number",String(i+1));const copy=document.createElement("div");add(copy,"useful-de",l.de);add(copy,"useful-sr",l.sr);row.append(copy);
-  const listen=document.createElement("button");listen.type="button";listen.className="useful-play";listen.textContent="▶";listen.setAttribute("aria-label","Poslušaj rečenicu "+(i+1));
-  listen.onclick=()=>{if(readingMode==="useful"&&readingIndex===i)stopSpeech();else playRows("useful",i,false)};
-  row.append(listen);list.append(row);usefulRows.push({de:l.de,element:row,listen});
+ const list=$("usefulList");list.replaceChildren();usefulRows=[];usefulPages=[];usefulRoleLabels=[];usefulPage=0;usefulScale=1;list.style.setProperty("--useful-scale","1");
+ const provided=Array.isArray(data.importantSentenceGroups)?data.importantSentenceGroups.filter(g=>g&&["A","B"].includes(g.speaker)&&Array.isArray(g.sentences)&&g.sentences.length):[];
+ const groups=provided.length===2&&new Set(provided.map(g=>g.speaker)).size===2?provided:legacyRoleGroups(lines,data,scene);
+ groups.forEach((group,groupIndex)=>{
+  const seen=new Set(),page=[];
+  usefulRoleLabels.push(String(group.role||("Osoba "+group.speaker))+" ("+group.speaker+")");
+  group.sentences.forEach(l=>{
+   const de=String(l?.de||"").trim(),sr=String(l?.sr||"").trim(),key=norm(de);
+   if(!key||!sr||seen.has(key)||de.length>240||page.length>=9)return;seen.add(key);
+   const i=usefulRows.length;
+   const row=document.createElement("article");row.className="sentence useful-row";
+   add(row,"useful-number",String(page.length+1));const copy=document.createElement("div");add(copy,"useful-de",de);add(copy,"useful-sr",sr);row.append(copy);
+   const listen=document.createElement("button");listen.type="button";listen.className="useful-play";listen.textContent="▶";listen.setAttribute("aria-label","Poslušaj rečenicu "+(page.length+1));
+   listen.onclick=()=>{if(readingMode==="useful"&&readingIndex===i)stopSpeech();else playRows("useful",i,false)};
+   row.append(listen);list.append(row);usefulRows.push({de,element:row,listen,roleIndex:groupIndex});page.push(i);
+  });
+  usefulPages.push(page);
  });
- if(!picked.length)add(list,"useful-sub","Nema dostupnih važnih rečenica.");
+ if(!usefulRows.length)add(list,"useful-sub","Nema dostupnih važnih rečenica.");
 }
 function showUseful(page){
  if(!usefulPages.length){$("usefulPager").hidden=true;return}
  usefulPage=Math.max(0,Math.min(page,usefulPages.length-1));const visible=new Set(usefulPages[usefulPage]);
  usefulRows.forEach((r,i)=>r.element.hidden=!visible.has(i));
+ $("usefulRole").textContent=usefulRoleLabels[usefulPage]||"";
+ $("usefulList").scrollTop=0;
  $("usefulPager").hidden=usefulPages.length<=1;
  $("usefulLabel").textContent="Strana "+(usefulPage+1)+" / "+usefulPages.length;
  $("usefulPrev").disabled=usefulPage===0;$("usefulNext").disabled=usefulPage===usefulPages.length-1;
@@ -2645,10 +2649,7 @@ function showUseful(page){
 }
 function paginateUseful(anchor=0){
  if(currentPage!==8)return;
- const list=$("usefulList");$("usefulPager").hidden=false;usefulRows.forEach(r=>r.element.hidden=false);
- const available=Math.max(50,list.clientHeight-3);let groups=[],group=[],height=0;
- usefulRows.forEach((r,i)=>{const h=r.element.getBoundingClientRect().height+3;if(group.length&&height+h>available){groups.push(group);group=[];height=0}group.push(i);height+=h});
- if(group.length)groups.push(group);usefulPages=groups;showUseful(Math.max(0,groups.findIndex(g=>g.includes(anchor))));
+ const page=usefulPages.findIndex(g=>g.includes(anchor));showUseful(page<0?usefulPage:page);
 }
 function revealUseful(i){const p=usefulPages.findIndex(g=>g.includes(i));if(p>=0&&p!==usefulPage)showUseful(p)}
 function updateUsefulAudioUI(){
