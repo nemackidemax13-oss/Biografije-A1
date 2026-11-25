@@ -2621,10 +2621,10 @@ function renderUseful(lines,data={},scene=null){
  const groups=provided.length===2&&new Set(provided.map(g=>g.speaker)).size===2?provided:legacyRoleGroups(lines,data,scene);
  groups.forEach((group,groupIndex)=>{
   const seen=new Set(),page=[];
-  usefulRoleLabels.push(String(group.role||("Osoba "+group.speaker))+" ("+group.speaker+")");
+  const roleLabel=String(group.role||("Osoba "+group.speaker))+" ("+group.speaker+")";
   group.sentences.forEach(l=>{
    const de=String(l?.de||"").trim(),sr=String(l?.sr||"").trim(),key=norm(de);
-   if(!key||!sr||seen.has(key)||de.length>240||page.length>=9)return;seen.add(key);
+   if(!key||!sr||seen.has(key)||de.length>240||page.length>=14)return;seen.add(key);
    const i=usefulRows.length;
    const row=document.createElement("article");row.className="sentence useful-row";
    add(row,"useful-number",String(page.length+1));const copy=document.createElement("div");add(copy,"useful-de",de);add(copy,"useful-sr",sr);row.append(copy);
@@ -2632,7 +2632,8 @@ function renderUseful(lines,data={},scene=null){
    listen.onclick=()=>{if(readingMode==="useful"&&readingIndex===i)stopSpeech();else playRows("useful",i,false)};
    row.append(listen);list.append(row);usefulRows.push({de,element:row,listen,roleIndex:groupIndex});page.push(i);
   });
-  usefulPages.push(page);
+  // V210: keep all phrases, with separate pages per role and at most nine rows per page.
+  for(let offset=0;offset<page.length;offset+=9){usefulPages.push(page.slice(offset,offset+9));usefulRoleLabels.push(roleLabel);}
  });
  if(!usefulRows.length)add(list,"useful-sub","Nema dostupnih važnih rečenica.");
 }
