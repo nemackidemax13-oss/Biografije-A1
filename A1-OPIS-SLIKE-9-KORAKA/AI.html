@@ -1655,27 +1655,13 @@ const labels=["Opis osoba na slici","Razgovor osoba","Mesto osoba na slici","Izg
 const scenes=[...(window.DEMAX_SCENES||[]),...(window.DEMAX_NEW_SCENES||[])].sort((a,b)=>a.n-b.n);
 let summarySpeechTokens=[],fullFontScale=1,fullSteps=[],fullTranslated=false,fullAudioIndex=-1,fullAudioAuto=false,fullAudioLines=[],summaryFontScale=.8,summaryEdited=false,dialogueFontScale=1,dialogueAuto=false,dialoguePages=[],dialoguePageIndex=0,descriptionPage=0;let imageData="",bank=[],descRows=[],dialogRows=[],currentPage=0,voiceToken=0,paused=false,readingMode="",readingIndex=0,generatedLocked=false,reachedDialogue=false;
 const synth=window.speechSynthesis;
-// V63: speech-only De-Max pronunciation for beige and its inflections.
-// Original German spelling remains unchanged in the lesson and saved text.
-function beigeSpeechWord(word){
- const ending=word.slice(5).toLowerCase();
- const spoken="bež"+(ending==="n"||ending==="m"||ending==="r"||ending==="s"?"e"+ending:"");
- return word[0]==="B"?spoken[0].toUpperCase()+spoken.slice(1):spoken;
-}
+// V64: pass standard German spelling to the German speech engine.
+// The foreign character ž is not reliably supported by German TTS voices.
 function germanSpeechText(value){
- return String(value).replace(/\bbei(?:ge(?:n|m|r|s)?|g)\b/gi,beigeSpeechWord);
+ return String(value);
 }
-// Convert speech-engine character offsets back to the original written text.
 function germanSpeechOffset(value,index){
- const original=String(value);
- let delta=0;
- for(const match of original.matchAll(/\bbei(?:ge(?:n|m|r|s)?|g)\b/gi)){
-  const start=match.index-delta, spoken=beigeSpeechWord(match[0]);
-  if(index<start)break;
-  if(index<start+spoken.length)return match.index+Math.floor((index-start)*match[0].length/spoken.length);
-  delta+=match[0].length-spoken.length;
- }
- return Math.min(original.length,Math.max(0,index+delta));
+ return Math.min(String(value).length,Math.max(0,index));
 }
 function germanUtterance(value){
  const original=String(value);
