@@ -1655,95 +1655,20 @@ const labels=["Opis osoba na slici","Razgovor osoba","Mesto osoba na slici","Izg
 const scenes=[...(window.DEMAX_SCENES||[]),...(window.DEMAX_NEW_SCENES||[])].sort((a,b)=>a.n-b.n);
 let summarySpeechTokens=[],fullFontScale=1,fullSteps=[],fullTranslated=false,fullAudioIndex=-1,fullAudioAuto=false,fullAudioLines=[],summaryFontScale=.8,summaryEdited=false,dialogueFontScale=1,dialogueAuto=false,dialoguePages=[],dialoguePageIndex=0,descriptionPage=0;let imageData="",bank=[],descRows=[],dialogRows=[],currentPage=0,voiceToken=0,paused=false,readingMode="",readingIndex=0,generatedLocked=false,reachedDialogue=false;
 const synth=window.speechSynthesis;
+// V104: one natural German voice per complete sentence; no separate colour audio.
 function germanSpeechOffset(value,index){return Math.min(String(value).length,Math.max(0,index));}
 function germanUtterance(value){
- const original=String(value);
- const u=new SpeechSynthesisUtterance(original);
+ const u=new SpeechSynthesisUtterance(String(value));
  u.lang="de-DE";
  const voices=synth?.getVoices?.()||[];
- const native=voices.filter(v=>/^de[-_]DE$/i.test(v.lang));
- const german=native.length?native:voices.filter(v=>/^de(?:[-_]|$)/i.test(v.lang));
- const colour=/\bbei(?:g|ge|gem|gen|ger|ges|gefarben\w*)\b/i.test(original);
- const score=v=> (/premium|enhanced|natural|neural|online|google/i.test(v.name)?10:0)+(v.default?1:0)+(colour&&/google deutsch|microsoft.*(?:katja|conrad|amala|killian)|anna|petra/i.test(v.name)?4:0);
+ const german=voices.filter(v=>/^de(?:[-_]|$)/i.test(v.lang));
+ const score=v=>(/^de[-_]DE$/i.test(v.lang)?20:0)+(/natural|neural|premium|enhanced/i.test(v.name)?60:0)+(/google deutsch|google german/i.test(v.name)?50:0)+(/online/i.test(v.name)?25:0)+(v.default?1:0);
  const voice=german.slice().sort((a,b)=>score(b)-score(a))[0];
  if(voice){u.voice=voice;u.lang=voice.lang.replace(/_/g,"-")}
  return u;
 }
-
-// V103: embedded, phoneme-based speech clips for beige.
-const BEIGE_CLIPS={"base":"//MYxAAFCAbVuUEAAoC4ALIABvsggifW//wQDHlAQOYIKo21//MYxAIFWGboAYMQAGErRY4IuoBC+fCf/P5760/l+Ik1+QxW//MYxAMFkE7wAYIAAHkElMCCgc+j//qR2Vt1H6RfAHrV675m//MYxAMF6Er8AYUQAGEmERISCbi0x//681mdJrDDMW9/Ur31//MYxAIFqE8EAYIIAHck4MgQEcGc2r//7c7hp1WsMvlPRRCS//MYxAIFqFr+QcUQACwAcV1aqVFR9RRyhJr///+Lzf9M0iJA//MYxAIFGFrxAAFGEAPjWxXCg3AW9Gs///5S2/yM9dU5TABO//MYxAQE4E71gACKCA2xWFBuHkW7///4jnf2XLUjwHjeOwo2//MYxAcFAFro4ABKAAo+Na////kXhRf5RxMIh3iQAAAHCwfH//MYxAoFGDtbGABEAmhmiIOt/////70KEDgAAqpqOSCzjL3l//MYxAwE0ErRoACMAJ1H/////opqBrwDl1HYQeNNQVa///////MYxA8E0E7JgUUQAP3UoWOqvzG1mRf///////7f+9H+C1BO//MYxBIFiVrQAYEQAL2AZ8rV//////0//84UqNQsPf/5yHR5//MYxBIEcYpYAYA4AExBTUUzLjEwMFVVVVVVVVVVVVVVVVVV//MYxBcAAANIAcAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV","e":"//MYxAAEqDKkAUYAALtjAQABCB4AABBwP///wx/+XPqNtsJI//MYxAQGGFrsAYMQABimRMGIDM2Ds//+VY+sZKaxLJmi1e1q//MYxAIFQEr8AYIQALGsDUEQOZ2////4u+ttYnMxn+v5czNE//MYxAQFsEcEAYMQACoQGBoAGtX///1o0mIwWd8s3jG/ZTGZ//MYxAQGIEcAAYIIAJwMKIBARC1P///4KOrO0gZs8/T5tRdJ//MYxAIFUFdGecUQAmIAAAgHLuOa2N0FQM4o8l////rVFhc2//MYxAMF0FbuQAFQCAABsaOxtiQ2owTtlPK////0yX7LlRGn//MYxAIFcErqUACGBPgAAQJwo2ATbDxgCQ/////0xZxpG0ui//MYxAMD2F8qYACSDwAAfB9sJ6Rg1YXN1OqGAZvPghGBiKi///MYxAoEMFrsKABEBP/xrykl/7IwPA769nouw2jbf///KGow//MYxBAFKOb8UUI4AWCyim0tVo7FTOXCgpwguNFN///MG7B///MYxBIF4N7wAYUQAIG6V/3ZlUAgIU6l/+oUSdI//4mBp/////MYxBEEkFY0AcIAAIiVTEFNRTMuMTAwVVVVVVVVVVVVVVVV//MYxBUAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV","en":"//MYxAAEqDKkAUYAALtjAQABCB4AABBwP///wx/+XPqNtsJI//MYxAQGGFrsAYMQABimRMGIDM2Ds//+VY+sZKaxLJmi1e1q//MYxAIFQEr8AYIQALGsDUEQOZ2////4u+ttYnMxn+v5czNE//MYxAQFsEcEAYMQACoQGBoAGtX///1o0mIwWd8s3jG/ZTGZ//MYxAQGIEcAAYIIAJwMKIBARC1P///4KOrO0gZs8/T5tRdJ//MYxAIFUFdGecUQAmIAAAgHLuOa2N0FQM4o8l////rVFhc2//MYxAMF0FbuQAFQCAABsaOxtiQ2owTtlPK////0yX7LlQ0V//MYxAIFaEriSACGBLAACE4UbAJth4wBIf////dpizjSDaM2//MYxAME6FrmWACSDABgAB8HxsJs4JGrC7a3//9V8DwO2r59//MYxAYEkPL4UCgE6RsPikaD6fU7w74h5NXj69ngi4ANU2xU//MYxAoEKObsABAGzCiOgL//7lL1RndG1KtFUCj96I6Jf/5W//MYxBAEgErYAUkAABqeIaKqAAIAAqfNXxxUVrESa1rslbci//MYxBUGGErpkYkQAO///TWBgdVQEBAQEBYGgaBoGg1///qB//MYxBMFKCrAMcMAAJDSH1MrLMlZQQMEMDCStMMQ/+1MQU1F//MYxBUEKEFgwAjCDTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVV//MYxBsAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV","em":"//MYxAAEqDKkAUYAALtjAQABCB4AABBwP///wx/+XPqNtsJI//MYxAQGGFrsAYMQABimRMGIDM2Ds//+VY+sZKaxLJmi1e1q//MYxAIFQEr8AYIQALGsDUEQOZ2////4u+ttYnMxn+v5czNE//MYxAQFsEcEAYMQACoQGBoAGtX///1o0mIwWd8s3jG/ZTGZ//MYxAQGIEcAAYIIAJwMKIBARC1P///4KOrO0gZs8/T5tRdJ//MYxAIFUFdGecUQAmIAAAgHLuOa2N0FQM4o8l////rVFhc2//MYxAMF0FbuQAFQCAABsaOxtiQ2owTtlPK////0yX7LlQ0V//MYxAIFaEriSACGBLAACE4UbAJth4wBIf////dpizjSDaM2//MYxAME6FrmWACSDABgAB8HxsJs4JGrC7a3//9Vhjk1fPgh//MYxAYD2ObwKBAEzBgYiDF+d4d4ZWrj69ngi4ANU2xUKI1E//MYxA0EKObsABAGzL//7lUDuOwvi2MM8SLUsj1DcH9BYvil//MYxBMEoKLcQCgExangXEh4Pg0MYF6fKDf///FOoURyXJSU//MYxBcFAKbAAUoQATawxBkqYh7Dfriz6JXX/wYWkukZuMqb//MYxBoGGLa4AY8QACsgEBMGAgJxKCpUFfKwaGA1KuXVTEFN//MYxBgFCDogAcIYAEUzLjEwMFVVVVVVVVVVVVVVVVVVVVVV//MYxBoAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV","er":"//MYxAAEqDKkAUYAALtjAQABCB4AABBwP///wx/+XPqNtsJI//MYxAQGGFrsAYMQABimRMGIDM2Ds//+VY+sZKaxLJmi1e1q//MYxAIFQEr8AYIQALGsDUEQOZ2////4u+ttYnMxn+v5czNE//MYxAQFsEcEAYMQACoQGBoAGtX///1o0mIwWd8s3jG/ZTGZ//MYxAQGIEcAAYIIAJwMKIBARC1P///4KOrO0gZs8/T5tRdJ//MYxAIFUFdGecUQAmIAAAgHLuOa2N0FQM4o8l////rVFhc2//MYxAMF0FbuQAFQCAABsaOxtiQ2owTtlPK////0yX7LlRGn//MYxAIFcErqUACGBPgAAQJwo2ATbDxgCQ/////0xZxpDYU2//MYxAMEuGrmQACSDcAPg12wXpGHpgHE/IyekE4Gbx5LO0aD//MYxAcD0GrkAABKDOAjTn/VD63lKiw769tOTUVh2y/9UoKG//MYxA4EINb4KBAFA4Uyau2vNpzYMZkAVo///lzjMgVb//9d//MYxBQE6Nr0AUIQALvSMiMjMzqg5CYQwk934FYhlZPUBUFQ//MYxBcE+G74AYEYAFQVBoGgaBoGagaPf6///+ltwf6RYWFk//MYxBoEwAbEAcAAADhYWFjdTEFNRTMuMTAwVVVVVVVVVVVV//MYxB4C6AV4YABGAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV//MYxCkAAANIAAAAAFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV","es":"//MYxAAEqDKkAUYAALtjAQABCB4AABBwP///wx/+XPqNtsJI//MYxAQGGFrsAYMQABimRMGIDM2Ds//+VY+sZKaxLJmi1e1q//MYxAIFQEr8AYIQALGsDUEQOZ2////4u+ttYnMxn+v5czNE//MYxAQFsEcEAYMQACoQGBoAGtX///1o0mIwWd8s3jG/ZTGZ//MYxAQGIEcAAYIIAJwMKIBARC1P///4KOrO0gZs8/T5tRdJ//MYxAIFUFdGecUQAmIAAAgHLuOa2N0FQM4o8l////rVFhc2//MYxAMF0FbuQAFQCAABsaOxtiQ2owTtlPK////0yX7LlQ0V//MYxAIFaEriSACGBLAACE4UbAJth4wBIf////dpizjSMHtA//MYxAMFEFrluACMDBUAB9e2EZyghbg6a3//8LLlKoY5NXz4//MYxAUEUObwKBAEzSGwMkGLneEEO4A4X2pEObVsuCFpASur//MYxAoECOLsKBAG6T/qxQOOWNURtpy2iACGjykkj0cBU9SL//MYxBAFIAb+WACEAhU3Z9alD+8M6Od1Ii/J/qMphBDQsx/6//MYxBIEkPa8UABE7FU3P/+fCbP0tZOHSNHtlXD/kwBF0rX///MYxBYFIAKoKUEQAKlp/myt/6lZZv/0MZSzf/6gIYUqTEFN//MYxBgFKYqMAYAQAEUzLjEwMKqqqqqqqqqqqqqqqqqqqqqq//MYxBoAAANIAcAAAKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq//MYxDEAAANIAAAAAKqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq"};
-
-const beigeClipCache=new Map();
-let beigeSpeechGeneration=0,beigeActiveSource=null,beigeActiveAudio=null;
-function cancelGermanSpeech(){
- beigeSpeechGeneration++;
- if(beigeActiveSource){try{beigeActiveSource.stop()}catch(e){}beigeActiveSource=null}
- if(beigeActiveAudio){beigeActiveAudio.pause();beigeActiveAudio=null}
- synth?.cancel();
-}
-function beigeSpeechSegments(value){
- const text=String(value),segments=[];
- let cursor=0;
- for(const match of text.matchAll(/\b(?:beige(?=farben\w*\b)|beig(?:en|em|er|es|e)?\b)/gi)){
-  const start=match.index,end=start+match[0].length;
-  if(start>cursor)segments.push({text:text.slice(cursor,start),start:cursor});
-  let key=match[0].toLowerCase().slice(4)||"base";
-  if(key==="e"&&!/^\s+[A-ZÄÖÜ]/.test(text.slice(end)))key="base";
-  segments.push({clip:key,text:match[0],start});
-  cursor=end;
- }
- if(cursor<text.length)segments.push({text:text.slice(cursor),start:cursor});
- return segments;
-}
-function speakGerman(u){
- const parts=beigeSpeechSegments(u.text);
- if(!parts.some(p=>p.clip)){synth.speak(u);return}
- const ticket=++beigeSpeechGeneration;
- initAIWaitAudio();
- const ctx=aiWaitAudio;
- const current=()=>ticket===beigeSpeechGeneration;
- let i=0;
- function next(){
-  if(!current())return;
-  if(i>=parts.length){u.onend?.({charIndex:u.text.length});return}
-  const p=parts[i++];
-  if(!/[\p{L}\p{N}]/u.test(p.text)){next();return}
-  if(p.clip){
-   u.onboundary?.({charIndex:p.start,charLength:p.text.length,name:"word"});
-   let advanced=false,failing=false;
-   const done=()=>{if(advanced||!current())return;advanced=true;beigeActiveSource=null;beigeActiveAudio=null;next()};
-   function fallback(){
-    if(!current()||advanced)return;
-    try{
-     const audio=new Audio("data:audio/mpeg;base64,"+BEIGE_CLIPS[p.clip]);
-     beigeActiveAudio=audio;audio.playbackRate=Math.max(.5,Math.min(1.5,u.rate/.83));
-     audio.onended=done;
-     const fail=()=>{if(!current()||advanced||failing)return;failing=true;audio.pause();beigeActiveAudio=null;const alt=new SpeechSynthesisUtterance("bež"+(p.clip==="base"?"":p.clip));alt.lang=u.lang;alt.voice=u.voice;alt.rate=u.rate;alt.onend=done;alt.onerror=done;synth.speak(alt)};
-     audio.onerror=fail;audio.play().catch(fail);
-    }catch(e){done()}
-   }
-   if(!ctx||ctx.state!=="running"){fallback();return}
-   let job=beigeClipCache.get(p.clip);
-   if(!job){
-    const raw=Uint8Array.from(atob(BEIGE_CLIPS[p.clip]),c=>c.charCodeAt(0));
-    job=ctx.decodeAudioData(raw.buffer);beigeClipCache.set(p.clip,job);
-   }
-   job.then(buffer=>{
-    if(!current()||advanced)return;
-    const source=ctx.createBufferSource();source.buffer=buffer;source.playbackRate.value=Math.max(.5,Math.min(1.5,u.rate/.83));source.connect(ctx.destination);beigeActiveSource=source;source.onended=done;source.start();
-   }).catch(fallback);
-   return;
-  }
-  const spoken=new SpeechSynthesisUtterance(p.text.trim());
-  const offset=p.start+(p.text.length-p.text.trimStart().length);
-  spoken.lang=u.lang;spoken.voice=u.voice;spoken.rate=u.rate;spoken.pitch=u.pitch;spoken.volume=u.volume;
-  spoken.onboundary=e=>{if(current())u.onboundary?.({charIndex:offset+e.charIndex,charLength:e.charLength,name:e.name})};
-  spoken.onend=next;
-  spoken.onerror=e=>{if(!current())return;if(e.error==="canceled"||e.error==="interrupted")return;next()};
-  synth.speak(spoken);
- }
- next();
-}
+function speakGerman(u){synth.speak(u);}
+function cancelGermanSpeech(){synth?.cancel();}
 
 $("endpoint").value=DEFAULT_WORKER_URL;
 fetch("./shared.js").then(r=>r.text()).then(t=>{let p=t.indexOf("const BANK=");if(p<0)return;let a=p+11,b=t.indexOf("];",a);if(b<0)return;let data=JSON.parse(t.slice(a,b+1));if(Array.isArray(data))bank=data.filter(x=>x?.de&&x?.sr)}).catch(()=>{});
