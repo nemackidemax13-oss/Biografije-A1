@@ -1973,10 +1973,10 @@ try{
   return {...d,steps};
  };
  let data=null,lastError="";
- // V197: browser allows the 105-second Worker budget plus transfer and response processing.
- const deadline=performance.now()+120000;
+ // V229: 270-second browser deadline for the 240-second Worker budget plus transfer.
+ const deadline=performance.now()+270000;
  for(let attempt=1;attempt<=2;attempt++){
-  if(attempt===2&&deadline-performance.now()<65000)break;
+  if(attempt===2&&deadline-performance.now()<245000)break;
   if(attempt===2)setStatus("Pokušavam kraći AI zahtev…");
   try{
    const body=attempt===1?baseRequest:{...baseRequest,bankExamples:sampleBank(true).slice(0,25),scenes:baseRequest.scenes.map(({n,sr,de,roles})=>({n,sr,de,roles}))};
