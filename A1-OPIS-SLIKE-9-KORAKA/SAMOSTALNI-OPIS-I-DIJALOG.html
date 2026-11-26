@@ -2288,8 +2288,8 @@ try{
   return {...d,steps};
  };
  let data=null,lastError="";
- // V232: one browser request, maximum 60 seconds; Worker AI budget 55 seconds.
- const deadline=performance.now()+60000;
+ // Standalone V5: one generation request; allow additional network/response overhead beyond the Worker AI budget.
+ const deadline=performance.now()+90000;
  for(let attempt=1;attempt<=2;attempt++){
   if(attempt===2)break;
   if(attempt===2)setStatus("Pokušavam kraći AI zahtev…");
@@ -2298,15 +2298,16 @@ try{
    const controller=new AbortController();
    const timeout=setTimeout(()=>controller.abort(),Math.max(1,deadline-performance.now()));
    let res,raw;
+   const delayed=setTimeout(()=>{if(currentPage===0){setStatus("AI još priprema vežbe. Molimo, sačekajte…");const note=document.querySelector("#aiWait .wait-sub");if(note)note.textContent="AI još obrađuje fotografiju i priprema razgovor."}},55000);
    try{
     res=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body),signal:controller.signal});
     raw=await res.json();
-   }finally{clearTimeout(timeout)}
-   if(!res.ok){lastError=String(raw?.error||"HTTP "+res.status);if(raw?.error || (res.status>=400&&res.status<500&&res.status!==408&&res.status!==429))break;continue}
+   }finally{clearTimeout(timeout);clearTimeout(delayed);const note=document.querySelector("#aiWait .wait-sub");if(note)note.textContent="Pripremamo tvoje dve usmene vežbe prema fotografiji."}
+   if(!res.ok){lastError="Worker: "+String(raw?.error||"HTTP "+res.status)+(raw?.stage?" (faza: "+raw.stage+")":"");break;}
    data=normalizeAIResponse(raw);
    if(data)break;
    lastError="Cloudflare AI nije vratio nijedan upotrebljiv opis.";
-  }catch(e){lastError=e?.name==="AbortError"?"AI nije završio opis i dijalog u predviđenom roku. Pokušaj ponovo.":String(e?.message||e);if(e?.name==="AbortError")break}
+  }catch(e){lastError=e?.name==="AbortError"?"Stranica nije primila odgovor Workera ni posle 90 sekundi. Pokušaj ponovo.":String(e?.message||e);if(e?.name==="AbortError")break}
  }
  if(!data)throw Error(lastError+" Proveri Cloudflare Worker.");
 
@@ -3010,7 +3011,7 @@ function pMicIssue2(){
 }
 function pMicHelp2(status,message){
  status.replaceChildren(document.createTextNode(message+" "));
- const a=document.createElement("a");a.className="mic-external2";a.href="https://nemackidemax13-oss.github.io/Biografije-A1/A1-OPIS-SLIKE-9-KORAKA/SAMOSTALNI-OPIS-I-DIJALOG.html?v=4";a.target="_blank";a.rel="noopener noreferrer";a.textContent="Otvori vežbu u pregledaču ↗";status.append(a);
+ const a=document.createElement("a");a.className="mic-external2";a.href="https://nemackidemax13-oss.github.io/Biografije-A1/A1-OPIS-SLIKE-9-KORAKA/SAMOSTALNI-OPIS-I-DIJALOG.html?v=5";a.target="_blank";a.rel="noopener noreferrer";a.textContent="Otvori vežbu u pregledaču ↗";status.append(a);
 }
 function pMicError2(e){
  if(!pMicPolicy2())return "Replit iframe blokira mikrofon. Potrebna je dozvola microphone.";
