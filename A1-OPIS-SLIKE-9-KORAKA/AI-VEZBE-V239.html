@@ -1794,6 +1794,10 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
 @media(prefers-reduced-motion:reduce){#practiceAdvance:not([hidden]):not(:disabled),#practiceAdvance::after{animation:none!important}}
 </style><style id="practice-v257">
 #screen11 #practicePromptSR,#screen11 #practiceDialogueFeedback .practice-note,#screen11 #practiceDialogueFeedback .practice-translation,#screen11 #practiceDialogueFeedback .practice-correction-translation253{font-size:calc(var(--dialogue-text-size,14px) * .88);line-height:1.3}
+</style><style id="practice-v259">
+#screen11 #practiceSend.check-ready259:not(:disabled){position:relative;outline:2px solid #e02237;outline-offset:1px;animation:checkPulse259 1.65s ease-in-out infinite!important}
+@keyframes checkPulse259{0%,100%{box-shadow:0 0 0 1px #ef334455}50%{box-shadow:0 0 0 3px #ff667788,0 0 11px #ed293c66}}
+@media(prefers-reduced-motion:reduce){#screen11 #practiceSend.check-ready259:not(:disabled){animation:none!important}}
 </style></head><body><main class="app">
 <header class="header"><h1>Opis slike</h1></header>
 <section class="screen active" id="screen0"><div class="scroll"><div class="panel"><h2 class="title" id="uploadHeading">Ubaci sliku za opis</h2><label class="upload"><span class="upload-icon">📷</span><span class="upload-title">Izaberi fotografiju</span><span class="upload-sub">Dodirni ovde za galeriju ili kameru</span><input id="file" type="file" accept="image/*"></label><div class="photo-reveal" id="photoReveal"><span class="photo-glow" aria-hidden="true"></span><img class="picture" id="photo0" alt="Izabrana slika"><span class="photo-success" aria-hidden="true">✓</span><span class="sparkle sp1" aria-hidden="true">✦</span><span class="sparkle sp2" aria-hidden="true">✧</span><span class="sparkle sp3" aria-hidden="true">✦</span></div><p class="status" id="status">Prvo izaberi sliku.</p></div><div id="aiWait" hidden role="status" aria-live="polite"><div class="wait-card"><div class="wait-ring" aria-hidden="true"></div><h2>Molimo, sačekajte…</h2><p>Fotografija se analizira.</p><p class="wait-sub">Pripremamo opis slike i dijalog na nemačkom jeziku.</p></div></div><div class="demax-text-brand" aria-label="De-Max A1"><span>De-Max</span><strong>A1</strong></div><input id="endpoint" type="hidden" value="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev"></div><div class="footer upload-footer"><button class="action green" id="resumeAfterGeneration" type="button" hidden>Nastavi opis ❯</button><button class="action green" id="analyze" disabled>Automatski opiši sliku</button></div></section>
@@ -1857,7 +1861,7 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
 <section class="screen practice-screen" id="screen10"><div class="practice-transition" aria-hidden="true"><div class="practice-transition-inner"><img class="practice-intro-photo" id="practiceIntroPhoto" alt=""><span class="practice-photo-shine" aria-hidden="true"></span><span class="sparkle practice-star ps1" aria-hidden="true">✦</span><span class="sparkle practice-star ps2" aria-hidden="true">✧</span><span class="sparkle practice-star ps3" aria-hidden="true">✦</span><span class="sparkle practice-star ps4" aria-hidden="true">✧</span></div></div>
 <div class="scroll">
 <div class="practice-photo-frame"><img class="practice-photo" id="photo10" alt="Ista fotografija za samostalni opis"><span class="practice-photo-shine" aria-hidden="true"></span><span class="sparkle practice-star ps1" aria-hidden="true">✦</span><span class="sparkle practice-star ps2" aria-hidden="true">✧</span><span class="sparkle practice-star ps3" aria-hidden="true">✦</span><span class="sparkle practice-star ps4" aria-hidden="true">✧</span></div>
-<div class="practice-card practice-editor"><div class="controls"><button class="action pale" id="practiceMic1" title="Snimak se šalje AI servisu radi transkripcije">🎙 Govori</button><button class="action green" id="practiceCheck" aria-label="Proveri opis">✓ Proveri</button><button type="button" class="action practice-font" id="practiceMinus" aria-label="Smanji veličinu teksta">−</button><button type="button" class="action practice-font" id="practicePlus" aria-label="Povećaj veličinu teksta">+</button></div><div class="practice-live-bar"><span class="practice-live-dot"></span><span id="practiceLive1">Slušam te …</span></div><div class="status" id="practiceStatus1" role="status"></div><textarea id="practiceDescription" aria-label="Tvoj opis na nemačkom" lang="de" maxlength="6000" placeholder="Auf diesem Bild sehe ich …" spellcheck="false" autocorrect="off" autocapitalize="sentences"></textarea></div><div id="practiceDescriptionResult" aria-live="polite"></div></div>
+<div class="practice-card practice-editor"><div class="controls"><button class="action pale" id="practiceMic1" title="Snimak se šalje AI servisu radi transkripcije">🎙 Govori</button><button class="action green" id="practiceCheck" aria-label="Proveri opis">✓ Proveri</button><button type="button" class="action practice-font" id="practiceMinus" aria-label="Smanji veličinu teksta">−</button><button type="button" class="action practice-font" id="practicePlus" aria-label="Povećaj veličinu teksta">+</button></div><div class="practice-live-bar"><span class="practice-live-dot"></span><span id="practiceLive1">Slušam te …</span></div><div class="status" id="practiceStatus1" role="status"></div><textarea id="practiceDescription" readonly inputmode="none" tabindex="-1" aria-label="Tvoj opis na nemačkom" lang="de" maxlength="6000" placeholder="Auf diesem Bild sehe ich …" spellcheck="false" autocorrect="off" autocapitalize="sentences"></textarea></div><div id="practiceDescriptionResult" aria-live="polite"></div></div>
 <div class="footer"><button class="action red" id="practiceBack1">❮ Nazad</button><button class="action green" id="practiceNext" disabled>Vežba dijaloga ❯</button></div></section>
 <section class="screen practice-screen" id="screen11"><div class="practice-transition" aria-hidden="true"><div class="practice-transition-inner"><img class="practice-intro-photo" id="practiceDialogueIntroPhoto" alt=""><span class="practice-photo-shine" aria-hidden="true"></span><span class="sparkle practice-star ps1" aria-hidden="true">✦</span><span class="sparkle practice-star ps2" aria-hidden="true">✧</span><span class="sparkle practice-star ps3" aria-hidden="true">✦</span><span class="sparkle practice-star ps4" aria-hidden="true">✧</span></div></div><div class="scroll">
 <div class="practice-photo-frame"><img class="practice-photo" id="photo11" alt="Ista fotografija za dijalog"><span class="practice-photo-shine" aria-hidden="true"></span><span class="sparkle practice-star ps1" aria-hidden="true">✦</span><span class="sparkle practice-star ps2" aria-hidden="true">✧</span><span class="sparkle practice-star ps3" aria-hidden="true">✦</span><span class="sparkle practice-star ps4" aria-hidden="true">✧</span></div><div class="practice-count-row"><div class="practice-label" id="practiceCount"></div><div class="practice-meter"><div id="practiceMeter" style="width:0%"></div></div></div>
@@ -2992,7 +2996,7 @@ function pCloseAudio(x){
 function pStopMic(){
  const x=practiceMicSession;if(!x)return;
  practiceMicSession=null;x.cancelled=true;x.previewController?.abort();x.finalController?.abort();pCloseAudio(x);
- x.button.textContent="🎙 Govori";x.button.disabled=false;x.field.readOnly=x.n===2;x.chunks=[];
+ x.button.textContent="🎙 Govori";x.button.disabled=false;x.field.readOnly=true;x.chunks=[];
 }
 function pCancel(){practiceEpoch++;if(practiceAbort)practiceAbort.abort();practiceAbort=null;practiceBusy=false;pStopMic();pGet("practiceCheck").disabled=false;pGet("practiceSend").disabled=practicePassed;}
 async function pAudioRequest(x,final){
@@ -3043,14 +3047,14 @@ async function pFreezeMic(n){
   return false;
  }finally{
   x.finalizing=false;
-  if(!x.cancelled){x.button.textContent=practiceMicSession===x?"↻ Ponovi transkripciju":"🎙 Govori";if(!practiceBusy){x.button.disabled=false;x.field.readOnly=x.n===2}}
+  if(!x.cancelled){x.button.textContent=practiceMicSession===x?"↻ Ponovi transkripciju":"🎙 Govori";if(!practiceBusy){x.button.disabled=false;x.field.readOnly=true}}
  }
 }
 async function pMic(n){
  const field=pGet(n===1?"practiceDescription":"practiceReply"),button=pGet("practiceMic"+n),status=pGet("practiceStatus"+n);
  if(practiceBusy||n===2&&practicePassed)return;
  if(practiceMicSession){if(practiceMicSession.n===n&&!practiceMicSession.finalizing)await pFreezeMic(n);return}
- if(!navigator.mediaDevices?.getUserMedia||!(window.AudioContext||window.webkitAudioContext)){status.textContent=n===2?"Mikrofon nije podržan. Otvori vežbu u pregledaču koji podržava mikrofon.":"Mikrofon nije podržan. Možeš napisati odgovor.";return}
+ if(!navigator.mediaDevices?.getUserMedia||!(window.AudioContext||window.webkitAudioContext)){status.textContent="Mikrofon nije podržan. Otvori vežbu u pregledaču koji podržava mikrofon.";return}
  stopSpeech();
  const x={n,field,button,status,old:field.value.trim(),samples:0,chunks:[],lastPreview:0,recording:false,finalizing:false,cancelled:false,phase:0,resampleSum:0,resampleWeight:0,lastAudioAt:Date.now()};
  practiceMicSession=x;button.disabled=true;field.readOnly=true;status.textContent="Pokretanje mikrofona · zvuk se šalje AI servisu za prepis …";
@@ -3072,13 +3076,14 @@ async function pMic(n){
   x.source.connect(x.processor);x.processor.connect(x.silent);x.silent.connect(x.ctx.destination);x.recording=true;pGet("screen"+(n===1?10:11)).classList.add("practice-recording");pGet("practiceLive"+n).textContent="Slušam te …";x.timer=setInterval(()=>{if(practiceMicSession!==x||x.finalizing)return;if(Date.now()-x.lastAudioAt>2200&&x.ctx.state!=="running"){x.status.textContent="Mikrofon je privremeno prekinut. Vrati se u aplikaciju.";void x.ctx.resume().catch(()=>{})}void pPreviewAudio(x)},200);
   practiceVoice[n]=true;button.textContent="■ Zaustavi";button.disabled=false;status.textContent="Slušam te · AI prikazuje tekst u intervalima";
   if(n===1){practiceDescriptionScore=null;pGet("practiceNext").disabled=true;pGet("practiceDescriptionResult").replaceChildren()}
- }catch(e){if(practiceMicSession===x){pStopMic();status.textContent=n===2?"Mikrofon nije dostupan. Dozvoli pristup mikrofonu i pokušaj ponovo.":"Mikrofon nije dostupan. Dozvoli mikrofon ili upiši odgovor."}}
+ }catch(e){if(practiceMicSession===x){pStopMic();status.textContent="Mikrofon nije dostupan. Dozvoli pristup mikrofonu i pokušaj ponovo."}}
 }
 async function pRequest(mode,body){const controller=new AbortController();practiceAbort=controller;const timeout=setTimeout(()=>controller.abort(),mode==="practice_description"?50000:25000);try{const res=await fetch(pGet("endpoint").value,{method:"POST",headers:{"Content-Type":"application/json"},signal:controller.signal,body:JSON.stringify({mode,...body})});const data=await res.json();if(!res.ok){if(res.status===422&&String(data.error||"").includes("originalna DE-MAX baza"))throw Error("Aktivni Worker ne prepoznaje režim vežbe. Objavi V238.47 ili noviji Worker.");throw Error(data.error||"Provera nije uspela.");}if(data.mode!==mode)throw Error("Worker još ne podržava vežbe. Potrebno je dodati novi režim provere.");return data}finally{clearTimeout(timeout);if(practiceAbort===controller)practiceAbort=null}}
-function pReset(){pCancel();practicePhotoKey="";practicePos=0;practiceAttempts=0;practiceFirstCorrect=0;practiceErrors=0;practicePassed=false;practiceDescriptionScore=null;practiceTranscript=[];practicePairs=[];practiceVoice={1:false,2:false};["practiceDescription","practiceReply"].forEach(id=>pGet(id).value="");["practiceDescriptionResult","practiceDialogueFeedback","practiceDialogueHistory"].forEach(id=>pGet(id).replaceChildren());["practiceStatus1","practiceStatus2"].forEach(id=>pGet(id).textContent="");pGet("practiceNext").disabled=true;pGet("practiceFinish").disabled=true;pGet("practiceFinish").hidden=true;pGet("practiceAdvance").hidden=true;practiceClosing="";practiceSelected=null;practiceTranslateOn=false;pSetPromptTranslation("");pGet("practiceRoleChoices").hidden=true;pGet("practiceReplyCard").hidden=false;pGet("practicePromptCard").hidden=false;pGet("practiceSend").disabled=false;pGet("practiceReply").disabled=false;pGet("practiceMic2").disabled=false;}
+function pReset(){pCancel();pMarkCheck259(false);practicePhotoKey="";practicePos=0;practiceAttempts=0;practiceFirstCorrect=0;practiceErrors=0;practicePassed=false;practiceDescriptionScore=null;practiceTranscript=[];practicePairs=[];practiceVoice={1:false,2:false};["practiceDescription","practiceReply"].forEach(id=>pGet(id).value="");["practiceDescriptionResult","practiceDialogueFeedback","practiceDialogueHistory"].forEach(id=>pGet(id).replaceChildren());["practiceStatus1","practiceStatus2"].forEach(id=>pGet(id).textContent="");pGet("practiceNext").disabled=true;pGet("practiceFinish").disabled=true;pGet("practiceFinish").hidden=true;pGet("practiceAdvance").hidden=true;practiceClosing="";practiceSelected=null;practiceTranslateOn=false;pSetPromptTranslation("");pGet("practiceRoleChoices").hidden=true;pGet("practiceReplyCard").hidden=false;pGet("practicePromptCard").hidden=false;pGet("practiceSend").disabled=false;pGet("practiceReply").disabled=false;pGet("practiceMic2").disabled=false;}
 function pEnter(){if(practicePhotoKey!==imageData){pReset();practicePhotoKey=imageData;pGet("photo10").src=imageData;pGet("photo11").src=imageData;}pGet("practiceIntroPhoto").src=imageData;view(10);void sectionTransitionSound(10);const screen=pGet("screen10");if(window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;void screen.offsetWidth;screen.classList.add("practice-arrival");}
 pGet("practiceMic1").onclick=()=>pMic(1);pGet("practiceMic2").onclick=()=>pMic(2);
 pGet("practiceReply").addEventListener("focus",()=>pGet("practiceReply").blur());
+pGet("practiceDescription").addEventListener("focus",()=>pGet("practiceDescription").blur());
 let practiceTextSize=14;
 function pAdjustText(delta){practiceTextSize=Math.max(12,Math.min(28,practiceTextSize+delta));pGet("practiceDescription").style.setProperty("--practice-text-size",practiceTextSize+"px");pGet("practiceMinus").disabled=practiceTextSize<=12;pGet("practicePlus").disabled=practiceTextSize>=28;}
 pGet("practiceMinus").onclick=()=>pAdjustText(-1);pGet("practicePlus").onclick=()=>pAdjustText(1);
@@ -3090,9 +3095,24 @@ pGet("practiceTranslate").onclick=()=>{practiceTranslateOn=!practiceTranslateOn;
 function pPlayDialoguePrompt(){if(currentPage===11&&!practiceBusy&&!practiceMicSession)pSpeak(pGet("practicePrompt").textContent)}
 
 pGet("practiceDescription").oninput=()=>{practiceDescriptionScore=null;pGet("practiceNext").disabled=true;pGet("practiceDescriptionResult").replaceChildren()};
-pGet("practiceCheck").onclick=async()=>{const status=pGet("practiceStatus1"),out=pGet("practiceDescriptionResult");if(practiceBusy)return;practiceBusy=true;pGet("practiceCheck").disabled=true;pGet("practiceMic1").disabled=true;pGet("practiceDescription").readOnly=true;const freezeEpoch=practiceEpoch;const transcriptionOK=await pFreezeMic(1);if(freezeEpoch!==practiceEpoch)return;if(!transcriptionOK){practiceBusy=false;pGet("practiceCheck").disabled=false;pGet("practiceMic1").disabled=false;pGet("practiceDescription").readOnly=false;return;}const answer=pGet("practiceDescription").value.trim();if(!answer){status.textContent="Prvo opiši sliku na nemačkom.";practiceBusy=false;pGet("practiceCheck").disabled=false;pGet("practiceMic1").disabled=false;pGet("practiceDescription").readOnly=false;return}practiceDescriptionScore=null;pGet("practiceNext").disabled=true;const token=++practiceEpoch;pGet("practiceCheck").disabled=true;pGet("practiceDescription").readOnly=true;pGet("practiceMic1").disabled=true;status.textContent="AI proverava svaku rečenicu i fotografiju …";out.replaceChildren();try{const reference=detailOriginalLines.map(l=>l.de).join(" ");const d=await pRequest("practice_description",{answer,image:imageData,reference,inputMode:practiceVoice[1]?"speech":"text"});if(token!==practiceEpoch)return;if(!Array.isArray(d.sentences)||!d.sentences.length||typeof d.score!=="number"||!Number.isFinite(d.score))throw Error("Nepotpuna provera.");practiceDescriptionScore=d.score;const score=pCard(out,"");pText(score,"practice-label","Rezultat samostalnog opisa");pText(score,"practice-score",d.score+" / 100");pText(score,"",d.feedback);d.sentences.forEach(x=>{const card=pCard(out,x.ok?"practice-good":"practice-bad");pText(card,"practice-label",x.ok?"✓ Tačno":"✗ Ispravi");pText(card,x.ok?"practice-correct":"practice-bad-text",x.original);if(!x.ok){pText(card,"practice-correct","✓ "+x.corrected);pListenButton(card,x.corrected)}pText(card,"practice-note",x.explanation)});if(d.missing?.length){const card=pCard(out,"");pText(card,"practice-label","Šta još možeš opisati");d.missing.forEach(x=>pText(card,"practice-note","• "+x))}const model=pCard(out,"");pText(model,"practice-label","Predlog ispravljenog opisa");pText(model,"practice-correct",d.modelAnswer);pListenButton(model,d.modelAnswer);status.textContent="Provera završena.";pGet("practiceNext").disabled=false;out.scrollIntoView({behavior:"smooth",block:"start"})}catch(e){if(token===practiceEpoch)status.textContent=e.name==="AbortError"?"Provera je prekinuta. Pokušaj ponovo.":e.message}finally{if(token===practiceEpoch){practiceBusy=false;pGet("practiceCheck").disabled=false;pGet("practiceDescription").readOnly=false;pGet("practiceMic1").disabled=false}}};
+pGet("practiceCheck").onclick=async()=>{const status=pGet("practiceStatus1"),out=pGet("practiceDescriptionResult");if(practiceBusy)return;practiceBusy=true;pGet("practiceCheck").disabled=true;pGet("practiceMic1").disabled=true;pGet("practiceDescription").readOnly=true;const freezeEpoch=practiceEpoch;const transcriptionOK=await pFreezeMic(1);if(freezeEpoch!==practiceEpoch)return;if(!transcriptionOK){practiceBusy=false;pGet("practiceCheck").disabled=false;pGet("practiceMic1").disabled=false;pGet("practiceDescription").readOnly=true;return;}const answer=pGet("practiceDescription").value.trim();if(!answer){status.textContent="Prvo opiši sliku na nemačkom.";practiceBusy=false;pGet("practiceCheck").disabled=false;pGet("practiceMic1").disabled=false;pGet("practiceDescription").readOnly=true;return}practiceDescriptionScore=null;pGet("practiceNext").disabled=true;const token=++practiceEpoch;pGet("practiceCheck").disabled=true;pGet("practiceDescription").readOnly=true;pGet("practiceMic1").disabled=true;status.textContent="AI proverava svaku rečenicu i fotografiju …";out.replaceChildren();try{const reference=detailOriginalLines.map(l=>l.de).join(" ");const d=await pRequest("practice_description",{answer,image:imageData,reference,inputMode:practiceVoice[1]?"speech":"text"});if(token!==practiceEpoch)return;if(!Array.isArray(d.sentences)||!d.sentences.length||typeof d.score!=="number"||!Number.isFinite(d.score))throw Error("Nepotpuna provera.");practiceDescriptionScore=d.score;const score=pCard(out,"");pText(score,"practice-label","Rezultat samostalnog opisa");pText(score,"practice-score",d.score+" / 100");pText(score,"",d.feedback);d.sentences.forEach(x=>{const card=pCard(out,x.ok?"practice-good":"practice-bad");pText(card,"practice-label",x.ok?"✓ Tačno":"✗ Ispravi");pText(card,x.ok?"practice-correct":"practice-bad-text",x.original);if(!x.ok){pText(card,"practice-correct","✓ "+x.corrected);pListenButton(card,x.corrected)}pText(card,"practice-note",x.explanation)});if(d.missing?.length){const card=pCard(out,"");pText(card,"practice-label","Šta još možeš opisati");d.missing.forEach(x=>pText(card,"practice-note","• "+x))}const model=pCard(out,"");pText(model,"practice-label","Predlog ispravljenog opisa");pText(model,"practice-correct",d.modelAnswer);pListenButton(model,d.modelAnswer);status.textContent="Provera završena.";pGet("practiceNext").disabled=false;out.scrollIntoView({behavior:"smooth",block:"start"})}catch(e){if(token===practiceEpoch)status.textContent=e.name==="AbortError"?"Provera je prekinuta. Pokušaj ponovo.":e.message}finally{if(token===practiceEpoch){practiceBusy=false;pGet("practiceCheck").disabled=false;pGet("practiceDescription").readOnly=true;pGet("practiceMic1").disabled=false}}};
+function pGreeting259(value,first=false,sr=false){
+ const original=String(value||"").trim();
+ const greeting=sr?/^(?:dobar dan|dobro jutro|dobro veče|zdravo|ćao|pozdrav)(?=$|[\s,.!;:–-])/iu:/^(?:guten tag|guten morgen|guten abend|hallo|hi|grüß gott|servus|moin)(?=$|[\s,.!;:–-])/iu;
+ let rest=original,initial="",count=0;
+ while(count<8){
+  const m=rest.match(greeting);if(!m)break;
+  if(!count)initial=m[0];
+  rest=rest.slice(m[0].length).replace(/^[\s,.!;:–-]+/u,"");count++;
+ }
+ if(!count)return original;
+ if(!rest)return initial+"!";
+ if(first)return initial+"! "+rest.charAt(0).toUpperCase()+rest.slice(1);
+ return rest.charAt(0).toUpperCase()+rest.slice(1);
+}
+function pMarkCheck259(on){pGet("practiceSend").classList.toggle("check-ready259",Boolean(on));}
 function pShowTurn(){
- const pair=practicePairs[practicePos];pGet("practiceDialogueFeedback").replaceChildren();pGet("practiceAdvance").hidden=true;pGet("practiceFinish").hidden=true;pGet("practiceReply").value="";pGet("practiceStatus2").textContent="";practicePassed=false;practiceAttempts=0;practiceVoice[2]=false;pGet("practiceSend").disabled=false;pGet("practiceMic2").disabled=false;pGet("practiceReply").disabled=false;pGet("practiceReply").readOnly=true;pGet("practiceCount").textContent="Odgovor "+(practicePos+1)+"/"+practicePairs.length;pGet("practiceMeter").style.width=(practicePos/practicePairs.length*100)+"%";if(pair){pGet("practicePrompt").textContent=pair.question;pSetPromptTranslation(pair.sr);}
+ const pair=practicePairs[practicePos];pGet("practiceDialogueFeedback").replaceChildren();pGet("practiceAdvance").hidden=true;pGet("practiceFinish").hidden=true;pGet("practiceReply").value="";pGet("practiceStatus2").textContent="";practicePassed=false;practiceAttempts=0;practiceVoice[2]=false;pGet("practiceSend").disabled=false;pGet("practiceMic2").disabled=false;pGet("practiceReply").disabled=false;pGet("practiceReply").readOnly=true;pGet("practiceCount").textContent="Odgovor "+(practicePos+1)+"/"+practicePairs.length;pGet("practiceMeter").style.width=(practicePos/practicePairs.length*100)+"%";if(pair){pGet("practicePrompt").textContent=pair.question;pSetPromptTranslation(pair.sr);}pMarkCheck259(!!pair);
 }
 function pRoleOptions(){
  const roles=["A","B"].map(s=>practiceRoles.find(g=>g.speaker===s)||{speaker:s,role:"Osoba "+s,roleDE:"Person "+s});
@@ -3106,6 +3126,7 @@ function pRoleOptions(){
  });
 }
 function pShowRoleChoice(){
+ pMarkCheck259(false);
  pGet("screen11").classList.remove("role-selected253");
  practiceSelected=null;practicePairs=[];practicePos=0;practicePassed=false;practiceAttempts=0;practiceVoice[2]=false;
  pGet("practicePrompt").textContent="Welche Person wählen Sie?";pSetPromptTranslation("Koju osobu birate?");pGet("practiceCount").textContent="Izbor osobe";pGet("practiceMeter").style.width="0%";
@@ -3143,7 +3164,7 @@ async function pBeginRole(g,spokenSelection=""){
   const [d]=await Promise.all([pRequest("practice_dialogue_start",{image:imageData,reference:detailOriginalLines.map(l=>l.de).join(" "),context:rows.map(r=>r.role+": "+r.de).join("\n"),learnerRole:g,aiRole:pRoleOptions().find(x=>x.speaker===other),totalTurns:20,turnNumber:1}),selectionSpeech]);
   if(token!==practiceEpoch||currentPage!==11)return;
   if(![16,18,20].includes(d.totalTurns)||typeof d.nextPromptSR!=="string"||!d.nextPromptSR.trim()||typeof d.nextPrompt!=="string"||!d.nextPrompt.includes("?")||typeof d.nextExpected!=="string"||!d.nextExpected.trim())throw Error("Prvo pitanje nije pripremljeno.");
-  practicePairs.length=d.totalTurns;practicePairs[0]={question:d.nextPrompt,sr:d.nextPromptSR,expected:d.nextExpected};practiceBusy=false;pShowTurn();pPlayDialoguePrompt();
+  practicePairs.length=d.totalTurns;practicePairs[0]={question:pGreeting259(d.nextPrompt,true),sr:pGreeting259(d.nextPromptSR,true,true),expected:d.nextExpected};practiceBusy=false;pShowTurn();pPlayDialoguePrompt();
  }catch(e){
   if(token!==practiceEpoch||currentPage!==11)return;
   stopSpeech();practiceBusy=false;pShowRoleChoice();pGet("practiceStatus2").textContent="Prvo pitanje nije učitano. Pokušaj ponovo. Proveri Worker V238.58.";
@@ -3171,12 +3192,12 @@ function pFarewell256(value){
 pGet("practiceSend").onclick=async()=>{
  if(practiceBusy||practicePassed)return;
  const pair=practicePairs[practicePos],status=pGet("practiceStatus2"),out=pGet("practiceDialogueFeedback");
- practiceBusy=true;stopSpeech();pGet("practiceSend").disabled=true;pGet("practiceMic2").disabled=true;pGet("practiceReply").disabled=true;
+ practiceBusy=true;pMarkCheck259(false);stopSpeech();pGet("practiceSend").disabled=true;pGet("practiceMic2").disabled=true;pGet("practiceReply").disabled=true;
  const freezeEpoch=practiceEpoch,transcriptionOK=await pFreezeMic(2);
  if(freezeEpoch!==practiceEpoch)return;
- if(!transcriptionOK){practiceBusy=false;pGet("practiceSend").disabled=false;pGet("practiceMic2").disabled=false;pGet("practiceReply").disabled=false;pGet("practiceReply").readOnly=true;return}
+ if(!transcriptionOK){practiceBusy=false;pMarkCheck259(!!practiceSelected);pGet("practiceSend").disabled=false;pGet("practiceMic2").disabled=false;pGet("practiceReply").disabled=false;pGet("practiceReply").readOnly=true;return}
  const answer=pGet("practiceReply").value.trim();
- if(!answer||(!pair&&practiceSelected)){status.textContent="Odgovori na nemačkom.";practiceBusy=false;pGet("practiceSend").disabled=false;pGet("practiceMic2").disabled=false;pGet("practiceReply").disabled=false;return}
+ if(!answer||(!pair&&practiceSelected)){status.textContent="Odgovori na nemačkom.";practiceBusy=false;pMarkCheck259(!!practiceSelected);pGet("practiceSend").disabled=false;pGet("practiceMic2").disabled=false;pGet("practiceReply").disabled=false;return}
  if(!practiceSelected){
   const chosen=pPickRole(answer);practiceBusy=false;pGet("practiceSend").disabled=false;pGet("practiceMic2").disabled=false;pGet("practiceReply").disabled=false;pGet("practiceReply").readOnly=true;
   if(chosen){await pBeginRole(chosen);return}
@@ -3198,7 +3219,7 @@ pGet("practiceSend").onclick=async()=>{
   pText(card,clarification?"practice-label practice-repeat253":"practice-label",clarification?"Ponovljeno pitanje":d.ok?"✓ TAČNO":"✗ NETAČNO");
   if(!d.ok){
    if(typeof d.retryQuestion==="string"&&d.retryQuestion.trim()&&typeof d.retryQuestionSR==="string"&&d.retryQuestionSR.trim()){
-    pair.question=d.retryQuestion;pair.sr=d.retryQuestionSR;if(typeof d.retryExpected==="string"&&d.retryExpected.trim())pair.expected=d.retryExpected;
+    pair.question=pGreeting259(d.retryQuestion);pair.sr=pGreeting259(d.retryQuestionSR,false,true);if(typeof d.retryExpected==="string"&&d.retryExpected.trim())pair.expected=d.retryExpected;
    }
    pGet("practicePrompt").textContent=pair.question;pSetPromptTranslation(pair.sr);
    if(clarification){pText(card,"practice-note practice-repeat253","Poslušaj pitanje ponovo i odgovori.");correctionToSpeak=pair.question;}
@@ -3208,13 +3229,14 @@ pGet("practiceSend").onclick=async()=>{
    if(practiceAttempts===1)practiceFirstCorrect++;practicePassed=true;
    practiceTranscript.push({question:pair.question,answer,attempts:practiceAttempts});
    pText(card,"practice-correct",d.corrected);pText(card,"practice-note practice-translation",d.translation);
-   if(next){next.question=d.nextPrompt;next.sr=d.nextPromptSR;next.expected=d.nextExpected}else{practiceClosing=d.closing}
+   if(next){next.question=pGreeting259(d.nextPrompt);next.sr=pGreeting259(d.nextPromptSR,false,true);next.expected=d.nextExpected}else{practiceClosing=d.closing}
    pGet("practiceAdvance").hidden=false;pGet("practiceAdvance").textContent=next?"Nastavi ❯":"Završi ✓";status.textContent="";
   }
  }catch(e){if(token===practiceEpoch)status.textContent=e.name==="AbortError"?"Provera je prekinuta. Pokušaj ponovo.":e.message}
- finally{if(token===practiceEpoch){practiceBusy=false;pGet("practiceSend").disabled=practicePassed;pGet("practiceMic2").disabled=practicePassed;pGet("practiceReply").disabled=practicePassed;pGet("practiceReply").readOnly=true;if(correctionToSpeak&&currentPage===11)pSpeak(correctionToSpeak)}}
+ finally{if(token===practiceEpoch){practiceBusy=false;pMarkCheck259(!!practiceSelected&&!practicePassed);pGet("practiceSend").disabled=practicePassed;pGet("practiceMic2").disabled=practicePassed;pGet("practiceReply").disabled=practicePassed;pGet("practiceReply").readOnly=true;if(correctionToSpeak&&currentPage===11)pSpeak(correctionToSpeak)}}
 };
 function pFinishDialogue256(early=false,farewell=""){
+ pMarkCheck259(false);
  const planned=practicePairs.length,completed=practiceTranscript.length;
  practicePassed=true;pGet("practiceSend").disabled=true;pGet("practiceMic2").disabled=true;pGet("practiceReply").disabled=true;
  const out=pGet("practiceDialogueFeedback");out.replaceChildren();pGet("practiceAdvance").hidden=true;pGet("practiceReplyCard").hidden=true;pGet("practicePromptCard").hidden=true;pGet("practiceMeter").style.width="100%";pGet("practiceCount").textContent="Dijalog završen";
@@ -3234,7 +3256,7 @@ pGet("practiceAdvance").onclick=()=>{
  if(practicePos<practicePairs.length){pShowTurn();pPlayDialoguePrompt();return}
  pFinishDialogue256();
 };
-pGet("practiceBack1").onclick=()=>{pCancel();pGet("practiceDescription").readOnly=false;pGet("practiceMic1").disabled=false;view(8)};
+pGet("practiceBack1").onclick=()=>{pCancel();pGet("practiceDescription").readOnly=true;pGet("practiceMic1").disabled=false;view(8)};
 pGet("practiceBack2").onclick=()=>{pCancel();pGet("practiceMic2").disabled=practicePassed;pGet("practiceReply").disabled=practicePassed;view(10)};
 pGet("practiceFinish").onclick=()=>{pReset();generatedLocked=false;reachedDialogue=false;stopSpeech();view(0);pGet("file").value="";pGet("analyze").disabled=true;imageData="";for(let i=0;i<12;i++){const img=pGet("photo"+i);if(img){img.removeAttribute("src");if(i<10)img.style.display="none"}}pGet("photoReveal").classList.remove("ready");document.querySelector(".upload").classList.remove("has-photo");pGet("screen0").classList.remove("photo-added");document.querySelector(".upload-title").textContent="Izaberi fotografiju";pGet("uploadHeading").textContent="Ubaci sliku za opis";setStatus("Izaberi novu sliku.");};
 
