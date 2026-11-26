@@ -1736,7 +1736,15 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
 #screen11.practice-recording #practiceMic2{background:#d5f1df;color:#13663c;border-color:#71bb92}
 #practiceRoleChoices{flex:none;display:flex;gap:4px}
 #practiceRoleChoices[hidden]{display:none!important}
-#practiceRoleChoices button{flex:1;min-width:0;white-space:normal;line-height:1.2;border:1px solid #a2cbb3;background:#effbf3;color:#146338;border-radius:8px;padding:5px;font-size:12px;font-weight:750}
+#practiceRoleChoices button{flex:1;min-width:0;min-height:43px;position:relative;isolation:isolate;overflow:hidden;white-space:normal;line-height:1.2;border:1px solid #175eae;background:linear-gradient(115deg,#1559ac,#339af1,#1559ac);background-size:220% 100%;color:#fff;border-radius:10px;padding:7px 5px;font-size:clamp(12px,3.6vw,15px);font-weight:850;cursor:pointer;animation:roleGlow248 2s ease-in-out infinite;transition:transform .15s ease}
+#practiceRoleChoices button::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(110deg,transparent 25%,#ffffff45 50%,transparent 75%);transform:translateX(-110%);animation:practiceSweep239 2.8s ease-in-out infinite}
+#practiceRoleChoices button:nth-child(2),#practiceRoleChoices button:nth-child(2)::after{animation-delay:.35s}
+#practiceRoleChoices button:active{transform:scale(.96)}
+#practiceRoleChoices button:focus-visible{outline:2px solid #1559ac;outline-offset:2px}
+#practiceRoleChoices button:disabled{animation:none;opacity:.7;cursor:default}
+#practiceRoleChoices button:disabled::after{animation:none}
+@keyframes roleGlow248{0%,100%{background-position:0% 50%;box-shadow:0 0 0 1px #3283db44,0 0 4px #287ac64a}50%{background-position:100% 50%;box-shadow:0 0 0 2px #85c7ff77,0 0 10px #248eea77}}
+@media(prefers-reduced-motion:reduce){#practiceRoleChoices button,#practiceRoleChoices button::after{animation:none!important}}
 #screen11 #practiceDialogueFeedback{max-height:25dvh}
 @media(prefers-reduced-motion:reduce){#practiceNext:not(:disabled),#practiceNext::after,.practice-transition-inner::after{animation:none!important}}
 </style><style id="practice-v243">
@@ -3032,7 +3040,7 @@ function pShowRoleChoice(){
  pGet("practicePrompt").textContent="Welche Person wählen Sie?";pSetPromptTranslation("Koju osobu birate?");pGet("practiceCount").textContent="Izbor osobe";pGet("practiceMeter").style.width="0%";
  pGet("practiceReply").value="";pGet("practiceReply").disabled=false;pGet("practiceReply").readOnly=false;pGet("practiceSend").disabled=false;pGet("practiceMic2").disabled=false;pGet("practiceAdvance").hidden=true;pGet("practiceFinish").hidden=true;pGet("practiceDialogueFeedback").replaceChildren();pGet("practiceStatus2").textContent="";
  const choices=pGet("practiceRoleChoices");choices.replaceChildren();choices.hidden=false;
- pRoleOptions().forEach(g=>{const b=document.createElement("button");b.type="button";b.textContent=g.names.join(" / ")+" · "+g.speaker;b.onclick=()=>{if(practiceBusy||practiceMicSession)return;pGet("practiceReply").value=g.phrases[0];practiceVoice[2]=false};choices.append(b)});
+ pRoleOptions().forEach(g=>{const b=document.createElement("button");b.type="button";b.textContent=g.names.join(" / ")+" · "+g.speaker;b.onclick=()=>{if(practiceBusy||practiceMicSession||currentPage!==11)return;stopSpeech();choices.querySelectorAll("button").forEach(x=>x.disabled=true);pGet("practiceReply").value=g.phrases[0];practiceVoice[2]=false;void pBeginRole(g)};choices.append(b)});
 }
 function pPickRole(answer){
  const clean=t=>String(t).toLowerCase().normalize("NFC").replace(/[^\p{L}\p{N} ]/gu," ").replace(/\s+/g," ").trim();
