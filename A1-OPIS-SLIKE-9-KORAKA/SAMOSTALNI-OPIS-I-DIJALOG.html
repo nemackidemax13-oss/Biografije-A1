@@ -3003,25 +3003,23 @@ function pMicPolicy2(){
  return true;
 }
 function pMicInFrame7(){try{return window.self!==window.top}catch{return true}}
-const PRACTICE_DIRECT7="https://nemackidemax13-oss.github.io/Biografije-A1/A1-OPIS-SLIKE-9-KORAKA/SAMOSTALNI-OPIS-I-DIJALOG.html?v=7";
 function pMicIssue2(){
  if(!window.isSecureContext)return "Mikrofon zahteva HTTPS vezu.";
- if(!pMicPolicy2())return pMicInFrame7()?"Ugrađena stranica blokira mikrofon. Otvori vežbu direktno u pregledaču.":"Pristup mikrofonu je blokiran pravilima pregledača.";
+ 
  if(window.SpeechRecognition||window.webkitSpeechRecognition)return "";
  if(!navigator.mediaDevices?.getUserMedia)return "Ovaj ugrađeni pregledač ne podržava pristup mikrofonu.";
  if(!(window.AudioContext||window.webkitAudioContext))return "Ovaj pregledač ne podržava obradu zvuka.";
  return "";
 }
 function pMicHelp2(status,message){
- status.replaceChildren(document.createTextNode(message+" "));
- const a=document.createElement("a");a.className="mic-external2";a.href=PRACTICE_DIRECT7;a.target="_blank";a.rel="noopener noreferrer";a.textContent="Otvori direktno (mikrofon) ↗";status.append(a);
+ status.textContent=message;
 }
 function pMicError2(e){
- if(!pMicPolicy2())return "Ugrađena stranica blokira mikrofon. Otvori direktnu vežbu ili dozvoli microphone u iframe-u.";
+ if(!pMicPolicy2())return "Dozvoli pristup mikrofonu u aplikaciji.";
  if(e?.name==="NotAllowedError"||e?.name==="PermissionDeniedError"||e?.name==="SecurityError")return "Pristup mikrofonu je odbijen. Dozvoli mikrofon u podešavanjima telefona i aplikacije/pregledača.";
  if(e?.name==="NotFoundError"||e?.name==="DevicesNotFoundError")return "Mikrofon nije pronađen.";
  if(e?.name==="NotReadableError"||e?.name==="TrackStartError")return "Mikrofon je zauzet ili nedostupan. Zatvori druge aplikacije koje ga koriste i pokušaj ponovo.";
- return "Mikrofon nije pokrenut ("+(e?.name||"greška") +"). Pokušaj ponovo ili otvori vežbu u pregledaču.";
+ return "Mikrofon nije pokrenut ("+(e?.name||"greška") +" ). Pokušaj ponovo.";
 }
 async function pOpenMic(){
  const md=navigator.mediaDevices;
@@ -3151,7 +3149,7 @@ function pStartNative4(x){
  rec.onstart=()=>{if(practiceMicSession!==x||x.cancelled)return;clearTimeout(x.nativeTimer4);x.recording=true;pGet("screen"+(x.n===1?10:11)).classList.add("practice-recording");x.button.textContent="■ Zaustavi";x.button.disabled=false;x.status.textContent="Slušam te · nemački (de-DE)";pGet("practiceLive"+x.n).textContent="Slušam te …";if(x.n===1){pGet("screen10").classList.remove("description-reviewed263");practiceDescriptionScore=null;pGet("practiceNext").disabled=true;pGet("practiceDescriptionResult").replaceChildren()}};
  rec.onresult=ev=>{if(practiceMicSession!==x||x.cancelled)return;const t=pNativeResult4(ev.results);x.nativeText4=t.text;x.nativeFinal4=t.final;if(t.text){practiceVoice[x.n]=true;pAudioRender(x,t.text)}};
  rec.onerror=ev=>{x.nativeError4=ev.error||"unknown";if(["not-allowed","service-not-allowed","network","audio-capture","language-not-supported"].includes(x.nativeError4))pNativeFailed4=true;};
- rec.onend=()=>{if(practiceMicSession!==x||x.cancelled)return;clearTimeout(x.nativeTimer4);x.nativeEnded4=true;x.recording=false;if(x.finalizing){x.nativeResolve4?.();return}const text=x.nativeText4;if(text){pAudioRender(x,text);practiceVoice[x.n]=true;practiceMicSession=null;pCloseAudio(x);x.button.textContent="🎙 Govori";x.button.disabled=false;x.status.textContent="Govor je prepoznat. Proveri ili nastavi govor.";if(x.n===2)pMarkCheck259(true);else pGuideDescription262()}else{const err=x.nativeError4;pStopMic();if(pNativeFailed4)pMicHelp2(x.status,"SpeechRecognition nije dostupan ("+err+"). Pritisni Govori za rezervno snimanje ili otvori vežbu u pregledaču.");else x.status.textContent="Govor nije prepoznat. Pritisni Govori ponovo."}};
+ rec.onend=()=>{if(practiceMicSession!==x||x.cancelled)return;clearTimeout(x.nativeTimer4);x.nativeEnded4=true;x.recording=false;if(x.finalizing){x.nativeResolve4?.();return}const text=x.nativeText4;if(text){pAudioRender(x,text);practiceVoice[x.n]=true;practiceMicSession=null;pCloseAudio(x);x.button.textContent="🎙 Govori";x.button.disabled=false;x.status.textContent="Govor je prepoznat. Proveri ili nastavi govor.";if(x.n===2)pMarkCheck259(true);else pGuideDescription262()}else{const err=x.nativeError4;pStopMic();if(pNativeFailed4)pMicHelp2(x.status,"SpeechRecognition nije dostupan ("+err+"). Pritisni Govori za rezervno snimanje.");else x.status.textContent="Govor nije prepoznat. Pritisni Govori ponovo."}};
  try{rec.start();x.nativeTimer4=setTimeout(()=>{if(practiceMicSession!==x||x.cancelled||x.recording)return;pNativeFailed4=true;pStopMic();pMicHelp2(x.status,"SpeechRecognition nije pokrenut. Pritisni Govori za rezervno snimanje.")},10000);return true}catch{rec.onstart=rec.onresult=rec.onerror=rec.onend=null;x.native4=null;pNativeFailed4=true;return false}
 }
 async function pFreezeNative4(x){
@@ -3201,7 +3199,7 @@ async function pMic(n){
  const captureAvailable=!!(navigator.mediaDevices?.getUserMedia&&(window.AudioContext||window.webkitAudioContext));
  // Native live text is preferred in the direct page. In permitted cross-origin
  // frames, use explicit getUserMedia and the existing AI transcription route.
- if(nativeAvailable&&(!captureAvailable||(!pMicInFrame7()&&!pNativeFailed4))){if(pStartNative4(x))return}
+ if(nativeAvailable&&(!captureAvailable||(!pMicInFrame7()&&!pNativeFailed4)||!pMicPolicy2())){if(pStartNative4(x))return}
  if(!captureAvailable){pStopMic();pMicHelp2(status,"Snimanje nije podržano u ovom prikazu.");return}
  try{
   const AC=window.AudioContext||window.webkitAudioContext;const capture=pOpenMic();capture.catch(()=>{});x.ctx=new AC();const resume=x.ctx.resume().catch(()=>{});
@@ -3432,6 +3430,6 @@ pGet("practiceBack2").onclick=()=>{pCancel();pGet("practiceMic2").disabled=pract
 pGet("practiceFinish").onclick=()=>{pReset();generatedLocked=false;reachedDialogue=false;stopSpeech();view(0);pGet("file").value="";pGet("analyze").disabled=true;imageData="";for(let i=0;i<12;i++){const img=pGet("photo"+i);if(img){img.removeAttribute("src");if(i<10)img.style.display="none"}}pGet("photoReveal").classList.remove("ready");document.querySelector(".upload").classList.remove("has-photo");pGet("screen0").classList.remove("photo-added");document.querySelector(".upload-title").textContent="Izaberi fotografiju";pGet("uploadHeading").textContent="Samostalni opis i dijalog";setStatus("Izaberi novu sliku.");};
 
 </script><script>
-(()=>{const issue=pMicIssue2(),notice=document.getElementById("micEmbedNotice2");if(!notice)return;if(issue||pMicInFrame7()){notice.hidden=false;pMicHelp2(notice,issue||"Ako mikrofon ne radi u Replitu, otvori vežbu direktno pre izbora fotografije.");}})();
+
 window.addEventListener("pagehide",()=>{if(practiceMicSession)pStopMic()});
 </script></body></html>
