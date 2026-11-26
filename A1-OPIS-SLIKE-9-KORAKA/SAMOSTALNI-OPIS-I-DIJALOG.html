@@ -3003,13 +3003,14 @@ function pMicPolicy2(){
 }
 function pMicIssue2(){
  if(!window.isSecureContext)return "Mikrofon zahteva HTTPS vezu.";
+ if(window.SpeechRecognition||window.webkitSpeechRecognition)return "";
  if(!navigator.mediaDevices?.getUserMedia)return "Ovaj ugrađeni pregledač ne podržava pristup mikrofonu.";
  if(!(window.AudioContext||window.webkitAudioContext))return "Ovaj pregledač ne podržava obradu zvuka.";
  return "";
 }
 function pMicHelp2(status,message){
  status.replaceChildren(document.createTextNode(message+" "));
- const a=document.createElement("a");a.className="mic-external2";a.href="https://nemackidemax13-oss.github.io/Biografije-A1/A1-OPIS-SLIKE-9-KORAKA/SAMOSTALNI-OPIS-I-DIJALOG.html?v=3";a.target="_blank";a.rel="noopener noreferrer";a.textContent="Otvori vežbu u pregledaču ↗";status.append(a);
+ const a=document.createElement("a");a.className="mic-external2";a.href="https://nemackidemax13-oss.github.io/Biografije-A1/A1-OPIS-SLIKE-9-KORAKA/SAMOSTALNI-OPIS-I-DIJALOG.html?v=4";a.target="_blank";a.rel="noopener noreferrer";a.textContent="Otvori vežbu u pregledaču ↗";status.append(a);
 }
 function pMicError2(e){
  if(!pMicPolicy2())return "Replit iframe blokira mikrofon. Potrebna je dozvola microphone.";
@@ -3060,6 +3061,8 @@ function pAudioWav(session){
  return new Blob([buffer],{type:"audio/wav"});
 }
 function pCloseAudio(x){
+ if(x.native4){const rec=x.native4;x.native4=null;rec.onstart=rec.onresult=rec.onerror=rec.onend=null;try{rec.abort()}catch{};x.nativeResolve4?.();x.nativeResolve4=null;}
+ clearTimeout(x.nativeTimer4);
  if(x.media3){try{x.media3.ondataavailable=x.media3.onstop=x.media3.onerror=null;if(x.media3.state!=="inactive")x.media3.stop()}catch{}x.media3=null}
 
  clearInterval(x.timer);x.timer=null;x.recording=false;
@@ -3129,9 +3132,37 @@ async function pRecorderWav3(x){
   x.chunks=[pcm];x.samples=len;x.media3=null;x.mediaParts3=[];
  }finally{try{await ctx.close()}catch{}}
 }
+let pNativeFailed4=false;
+function pNativeResult4(results){
+ let final="",interim="";
+ for(let i=0;i<results.length;i++){const word=String(results[i]?.[0]?.transcript||"").trim();if(!word)continue;if(results[i].isFinal)final+=(final?" ":"")+word;else interim+=(interim?" ":"")+word}
+ return {final,interim,text:[final,interim].filter(Boolean).join(" ")};
+}
+function pStartNative4(x){
+ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!SR)return false;
+ let rec;try{rec=new SR()}catch{return false}
+ x.native4=rec;x.nativeText4="";x.nativeFinal4="";x.nativeEnded4=false;x.nativeError4="";
+ rec.lang="de-DE";rec.continuous=true;rec.interimResults=true;rec.maxAlternatives=1;
+ rec.onstart=()=>{if(practiceMicSession!==x||x.cancelled)return;clearTimeout(x.nativeTimer4);x.recording=true;pGet("screen"+(x.n===1?10:11)).classList.add("practice-recording");x.button.textContent="■ Zaustavi";x.button.disabled=false;x.status.textContent="Slušam te · SpeechRecognition (Deutsch)";pGet("practiceLive"+x.n).textContent="Slušam te …";if(x.n===1){pGet("screen10").classList.remove("description-reviewed263");practiceDescriptionScore=null;pGet("practiceNext").disabled=true;pGet("practiceDescriptionResult").replaceChildren()}};
+ rec.onresult=ev=>{if(practiceMicSession!==x||x.cancelled)return;const t=pNativeResult4(ev.results);x.nativeText4=t.text;x.nativeFinal4=t.final;if(t.text){practiceVoice[x.n]=true;pAudioRender(x,t.text)}};
+ rec.onerror=ev=>{x.nativeError4=ev.error||"unknown";if(["not-allowed","service-not-allowed","network","audio-capture","language-not-supported"].includes(x.nativeError4))pNativeFailed4=true;};
+ rec.onend=()=>{if(practiceMicSession!==x||x.cancelled)return;clearTimeout(x.nativeTimer4);x.nativeEnded4=true;x.recording=false;if(x.finalizing){x.nativeResolve4?.();return}const text=x.nativeText4;if(text){pAudioRender(x,text);practiceVoice[x.n]=true;practiceMicSession=null;pCloseAudio(x);x.button.textContent="🎙 Govori";x.button.disabled=false;x.status.textContent="Govor je prepoznat. Proveri ili nastavi govor.";if(x.n===2)pMarkCheck259(true);else pGuideDescription262()}else{const err=x.nativeError4;pStopMic();if(pNativeFailed4)pMicHelp2(x.status,"SpeechRecognition nije dostupan ("+err+"). Pritisni Govori za rezervno snimanje ili otvori vežbu u pregledaču.");else x.status.textContent="Govor nije prepoznat. Pritisni Govori ponovo."}};
+ try{rec.start();x.nativeTimer4=setTimeout(()=>{if(practiceMicSession!==x||x.cancelled||x.recording)return;pNativeFailed4=true;pStopMic();pMicHelp2(x.status,"SpeechRecognition nije pokrenut. Pritisni Govori za rezervno snimanje.")},10000);return true}catch{rec.onstart=rec.onresult=rec.onerror=rec.onend=null;x.native4=null;pNativeFailed4=true;return false}
+}
+async function pFreezeNative4(x){
+ x.finalizing=true;x.button.disabled=true;clearTimeout(x.nativeTimer4);
+ if(!x.nativeEnded4)await new Promise(resolve=>{let done=false;const finish=()=>{if(done)return;done=true;clearTimeout(timer);x.nativeResolve4=null;resolve()};const timer=setTimeout(finish,1800);x.nativeResolve4=finish;try{x.native4.stop()}catch{finish()}});
+ if(practiceMicSession!==x||x.cancelled)return false;
+ const text=x.nativeText4||"";if(text){pAudioRender(x,text);practiceVoice[x.n]=true}else x.field.value=x.old;
+ practiceMicSession=null;pCloseAudio(x);x.finalizing=false;x.button.textContent="🎙 Govori";x.button.disabled=practiceBusy;x.status.textContent=text?"Govor je prepoznat.":"Govor nije prepoznat. Pokušaj ponovo.";
+ if(!practiceBusy){if(x.n===2)pMarkCheck259(true);else pGuideDescription262()}
+ return !!text;
+}
 async function pFreezeMic(n){
  const x=practiceMicSession;if(!x||x.n!==n)return true;
  if(x.finalizing)return false;
+ if(x.native4)return pFreezeNative4(x);
  x.finalizing=true;x.button.disabled=true;x.button.textContent="■ Zaustavljeno";x.previewController?.abort();
  try{if(x.media3)await pRecorderWav3(x);else await pDrainAudio(x)}catch(e){if(practiceMicSession===x){pStopMic();pMicHelp2(x.status,"Snimak nije mogao biti obrađen. "+e.message)}return false}
  if(practiceMicSession!==x||x.cancelled)return false;pCloseAudio(x);
@@ -3162,6 +3193,9 @@ async function pMic(n){
  stopSpeech();
  const x={n,field,button,status,old:field.value.trim(),samples:0,chunks:[],lastPreview:0,recording:false,finalizing:false,cancelled:false,phase:0,resampleSum:0,resampleWeight:0,lastAudioAt:Date.now()};
  practiceMicSession=x;if(n===2){practiceGuideSpeech261++;pMarkCheck259(false)}else pGuideDescription262(false);button.disabled=true;field.readOnly=true;status.textContent="Pokretanje mikrofona · zvuk se šalje AI servisu za prepis …";
+ const nativeAvailable=!!(window.SpeechRecognition||window.webkitSpeechRecognition);
+ if(nativeAvailable&&(!pNativeFailed4||!navigator.mediaDevices?.getUserMedia||!pMicPolicy2())){if(pStartNative4(x))return}
+ if(!navigator.mediaDevices?.getUserMedia||!(window.AudioContext||window.webkitAudioContext)){pStopMic();pMicHelp2(status,"Snimanje nije podržano u ovom prikazu.");return}
  try{
   const AC=window.AudioContext||window.webkitAudioContext;const capture=pOpenMic();capture.catch(()=>{});x.ctx=new AC();const resume=x.ctx.resume().catch(()=>{});
   const stream=await capture;
