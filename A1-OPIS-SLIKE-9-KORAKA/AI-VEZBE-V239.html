@@ -3057,7 +3057,7 @@ async function pAudioRequest(x,final){
  try{
   const form=new FormData();form.append("mode","practice_transcribe");form.append("file",pAudioWav(x),"de-max.wav");
   const res=await fetch(pGet("endpoint").value,{method:"POST",body:form,signal:c.signal});const data=await res.json();
-  if(!res.ok||data.mode!=="practice_transcribe"||typeof data.text!=="string")throw Error(data.error||"Worker ne podržava AI transkripciju. Objavi V238.58 ili noviji.");
+  if(!res.ok||data.mode!=="practice_transcribe"||typeof data.text!=="string")throw Error(data.error||"Worker ne podržava AI transkripciju. Objavi V238.62 ili noviji.");
   return data.text.trim();
  }finally{clearTimeout(timeout);if(final&&x.finalController===c)x.finalController=null;if(!final&&x.previewController===c)x.previewController=null}
 }
@@ -3245,7 +3245,7 @@ async function pBeginRole(g,spokenSelection=""){
   practicePairs.length=d.totalTurns;practicePairs[0]={question:pGreeting259(d.nextPrompt,true),sr:pGreeting259(d.nextPromptSR,true,true),expected:d.nextExpected};practiceBusy=false;pShowTurn();pPlayDialoguePrompt();
  }catch(e){
   if(token!==practiceEpoch||currentPage!==11)return;
-  stopSpeech();practiceBusy=false;pShowRoleChoice();pGet("practiceStatus2").textContent="Prvo pitanje nije učitano. Pokušaj ponovo. Proveri Worker V238.58.";
+  stopSpeech();practiceBusy=false;pShowRoleChoice();pGet("practiceStatus2").textContent="Prvo pitanje nije učitano. Pokušaj ponovo. Proveri Worker V238.62.";
  }finally{if(token===practiceEpoch)practiceBusy=false}
 }
 pGet("practiceNext").onclick=()=>{
@@ -3291,7 +3291,7 @@ pGet("practiceSend").onclick=async()=>{
  try{
   const d=await pRequest("practice_dialogue",{answer,question:pair.question,questionSR:pair.sr||"",expected:pair.expected,context:dialogRows.map(r=>r.role+": "+r.de).join("\n"),reference:detailOriginalLines.map(l=>l.de).join(" "),learnerRole:practiceSelected,aiRole:pRoleOptions().find(g=>g.speaker!==practiceSelected.speaker),turnNumber:practicePos+1,totalTurns:practicePairs.length,history:practiceTranscript.map(t=>({question:t.question,answer:t.answer})),nextQuestion:next?.question||"",nextExpected:next?.expected||"",lastTurn:!next,inputMode:practiceVoice[2]?"speech":"text"});
   if(token!==practiceEpoch)return;
-  if(typeof d.ok!=="boolean"||typeof d.corrected!=="string"||typeof d.translation!=="string"||!d.translation.trim()||typeof d.nextPrompt!=="string"||typeof d.nextExpected!=="string"||typeof d.closing!=="string"||(d.ok&&next&&(!d.nextPrompt.trim()||!d.nextExpected.trim()||typeof d.nextPromptSR!=="string"||!d.nextPromptSR.trim())))throw Error("Za prevod i prirodan nastavak dijaloga objavi Worker V238.58.");
+  if(typeof d.ok!=="boolean"||typeof d.corrected!=="string"||typeof d.translation!=="string"||!d.translation.trim()||typeof d.nextPrompt!=="string"||typeof d.nextExpected!=="string"||typeof d.closing!=="string"||(d.ok&&next&&(!d.nextPrompt.trim()||!d.nextExpected.trim()||typeof d.nextPromptSR!=="string"||!d.nextPromptSR.trim())))throw Error("Za prevod i prirodan nastavak dijaloga objavi Worker V238.62.");
   const clarification=!d.ok&&d.retryKind==="clarification";
   if(!clarification)practiceAttempts++;out.replaceChildren();const card=pCard(out,clarification?"":d.ok?"practice-good":"practice-bad");
   pText(card,clarification?"practice-label practice-repeat253":"practice-label",clarification?"Ponovljeno pitanje":d.ok?"✓ TAČNO":"✗ NETAČNO");
@@ -3300,8 +3300,8 @@ pGet("practiceSend").onclick=async()=>{
     pair.question=pGreeting259(d.retryQuestion);pair.sr=pGreeting259(d.retryQuestionSR,false,true);if(typeof d.retryExpected==="string"&&d.retryExpected.trim())pair.expected=d.retryExpected;
    }
    pGet("practicePrompt").textContent=pair.question;pSetPromptTranslation(pair.sr);
-   if(clarification){pText(card,"practice-note practice-repeat253","Poslušaj pitanje ponovo i odgovori.");correctionToSpeak=pair.question;}
-   else{practiceErrors++;pText(card,"practice-correct",d.corrected);pText(card,"practice-note practice-correction-translation253",d.translation);pText(card,"practice-note practice-repeat253","Ponovi ispravan odgovor.");pText(card,"practice-note","Poslušaj pitanje ponovo.");correctionToSpeak=d.corrected+" "+pair.question;}
+   if(clarification){pText(card,"practice-correct",d.corrected);pText(card,"practice-note practice-correction-translation253",d.translation);pText(card,"practice-note practice-repeat253","Ponovi ispravan odgovor.");correctionToSpeak=pair.question+" "+d.corrected;}
+   else{practiceErrors++;pText(card,"practice-correct",d.corrected);pText(card,"practice-note practice-correction-translation253",d.translation);pText(card,"practice-note practice-repeat253","Ponovi ispravan odgovor.");pText(card,"practice-note","Poslušaj pitanje ponovo.");correctionToSpeak=pair.question+" "+d.corrected;}
    pGet("practiceReply").value="";status.textContent="Pritisni Govori i odgovori ponovo.";practiceVoice[2]=false;
   }else{
    if(practiceAttempts===1)practiceFirstCorrect++;practicePassed=true;
