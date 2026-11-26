@@ -1851,9 +1851,9 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
 </style><style id="standalone-practice-v1">
 #screen1,#screen2,#screen3,#screen4,#screen5,#screen6,#screen7,#screen8,#screen9{display:none!important}
 #screen0 .standalone-caption{font-size:13px;line-height:1.35;color:#27577a;text-align:center;margin:4px 0 10px;font-weight:650}
-</style></head><body><main class="app">
+</style><style id="mic-compat-v2">.mic-external2{color:#155db0;font-weight:750;text-decoration:underline;display:inline-block;padding:3px 0}#micEmbedNotice2{font-size:12px;line-height:1.4;color:#874b0b;background:#fff4de;padding:7px;border-radius:7px;margin:5px 0}#micEmbedNotice2[hidden]{display:none!important}</style></head><body><main class="app">
 <header class="header"><h1>Opis slike</h1></header>
-<section class="screen active" id="screen0"><div class="scroll"><div class="panel"><h2 class="title" id="uploadHeading">Samostalni opis i dijalog</h2><p class="standalone-caption">1. Samostalni opis slike &nbsp; · &nbsp; 2. Samostalni dijalog</p><label class="upload"><span class="upload-icon">📷</span><span class="upload-title">Izaberi fotografiju</span><span class="upload-sub">Dodirni ovde za galeriju ili kameru</span><input id="file" type="file" accept="image/*"></label><div class="photo-reveal" id="photoReveal"><span class="photo-glow" aria-hidden="true"></span><img class="picture" id="photo0" alt="Izabrana slika"><span class="photo-success" aria-hidden="true">✓</span><span class="sparkle sp1" aria-hidden="true">✦</span><span class="sparkle sp2" aria-hidden="true">✧</span><span class="sparkle sp3" aria-hidden="true">✦</span></div><p class="status" id="status">Prvo izaberi sliku.</p></div><div id="aiWait" hidden role="status" aria-live="polite"><div class="wait-card"><div class="wait-ring" aria-hidden="true"></div><h2>Molimo, sačekajte…</h2><p>Fotografija se analizira.</p><p class="wait-sub">Pripremamo tvoje dve usmene vežbe prema fotografiji.</p></div></div><div class="demax-text-brand" aria-label="De-Max A1"><span>De-Max</span><strong>A1</strong></div><input id="endpoint" type="hidden" value="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev"></div><div class="footer upload-footer"><button class="action green" id="resumeAfterGeneration" type="button" hidden>Nastavi vežbu ❯</button><button class="action green" id="analyze" disabled>Započni vežbu ❯</button></div></section>
+<section class="screen active" id="screen0"><div class="scroll"><div class="panel"><h2 class="title" id="uploadHeading">Samostalni opis i dijalog</h2><p class="standalone-caption">1. Samostalni opis slike &nbsp; · &nbsp; 2. Samostalni dijalog</p><div id="micEmbedNotice2" role="status" hidden></div><label class="upload"><span class="upload-icon">📷</span><span class="upload-title">Izaberi fotografiju</span><span class="upload-sub">Dodirni ovde za galeriju ili kameru</span><input id="file" type="file" accept="image/*"></label><div class="photo-reveal" id="photoReveal"><span class="photo-glow" aria-hidden="true"></span><img class="picture" id="photo0" alt="Izabrana slika"><span class="photo-success" aria-hidden="true">✓</span><span class="sparkle sp1" aria-hidden="true">✦</span><span class="sparkle sp2" aria-hidden="true">✧</span><span class="sparkle sp3" aria-hidden="true">✦</span></div><p class="status" id="status">Prvo izaberi sliku.</p></div><div id="aiWait" hidden role="status" aria-live="polite"><div class="wait-card"><div class="wait-ring" aria-hidden="true"></div><h2>Molimo, sačekajte…</h2><p>Fotografija se analizira.</p><p class="wait-sub">Pripremamo tvoje dve usmene vežbe prema fotografiji.</p></div></div><div class="demax-text-brand" aria-label="De-Max A1"><span>De-Max</span><strong>A1</strong></div><input id="endpoint" type="hidden" value="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev"></div><div class="footer upload-footer"><button class="action green" id="resumeAfterGeneration" type="button" hidden>Nastavi vežbu ❯</button><button class="action green" id="analyze" disabled>Započni vežbu ❯</button></div></section>
 
 <section class="screen" id="screen1"><div class="scroll summary-scroll"><div class="panel summary-panel">
  <div class="summary-image-wrap"><img class="picture small" id="photo1" alt="Fotografija koju učenik opisuje"><span class="summary-shine260" aria-hidden="true"></span><span class="sparkle summary-star260 ss1" aria-hidden="true">✦</span><span class="sparkle summary-star260 ss2" aria-hidden="true">✧</span><span class="sparkle summary-star260 ss3" aria-hidden="true">✦</span><span class="sparkle summary-star260 ss4" aria-hidden="true">✧</span></div>
@@ -2997,10 +2997,32 @@ function pListenButton(parent,value){if(!value)return;const b=document.createEle
 // V238: capture actual audio; the browser does not recognize or grade words.
 let practiceMicSession=null;
 const PRACTICE_AUDIO_RATE=16000,PRACTICE_AUDIO_MAX=180*PRACTICE_AUDIO_RATE;
+function pMicPolicy2(){
+ try{const policy=document.permissionsPolicy||document.featurePolicy;if(policy?.allowsFeature&&policy.allowsFeature("microphone")===false)return false}catch{}
+ return true;
+}
+function pMicIssue2(){
+ if(!window.isSecureContext)return "Mikrofon zahteva HTTPS vezu.";
+ if(!pMicPolicy2())return "Ugrađeni prozor ne dozvoljava mikrofon. Replit mora omogućiti microphone dozvolu za iframe.";
+ if(!navigator.mediaDevices?.getUserMedia)return "Ovaj ugrađeni pregledač ne podržava pristup mikrofonu.";
+ if(!(window.AudioContext||window.webkitAudioContext))return "Ovaj pregledač ne podržava obradu zvuka.";
+ return "";
+}
+function pMicHelp2(status,message){
+ status.replaceChildren(document.createTextNode(message+" "));
+ const a=document.createElement("a");a.className="mic-external2";a.href="https://nemackidemax13-oss.github.io/Biografije-A1/A1-OPIS-SLIKE-9-KORAKA/SAMOSTALNI-OPIS-I-DIJALOG.html?v=2";a.target="_blank";a.rel="noopener noreferrer";a.textContent="Otvori vežbu u pregledaču ↗";status.append(a);
+}
+function pMicError2(e){
+ if(!pMicPolicy2())return "Replit iframe blokira mikrofon. Potrebna je dozvola microphone.";
+ if(e?.name==="NotAllowedError"||e?.name==="PermissionDeniedError"||e?.name==="SecurityError")return "Pristup mikrofonu je odbijen. Dozvoli mikrofon u podešavanjima telefona i aplikacije/pregledača.";
+ if(e?.name==="NotFoundError"||e?.name==="DevicesNotFoundError")return "Mikrofon nije pronađen.";
+ if(e?.name==="NotReadableError"||e?.name==="TrackStartError")return "Mikrofon je zauzet ili nedostupan. Zatvori druge aplikacije koje ga koriste i pokušaj ponovo.";
+ return "Mikrofon nije pokrenut ("+(e?.name||"greška") +"). Pokušaj ponovo ili otvori vežbu u pregledaču.";
+}
 async function pOpenMic(){
  const md=navigator.mediaDevices;
- try{return await md.getUserMedia({audio:{channelCount:{ideal:1},echoCancellation:{ideal:true},noiseSuppression:{ideal:true},autoGainControl:{ideal:true}},video:false})}
- catch(e){if(!["OverconstrainedError","ConstraintNotSatisfiedError","NotSupportedError","TypeError"].includes(e.name))throw e;return await md.getUserMedia({audio:true,video:false})}
+ try{return await md.getUserMedia({audio:true,video:false})}
+ catch(e){if(!["OverconstrainedError","ConstraintNotSatisfiedError","NotSupportedError","TypeError"].includes(e.name))throw e;return await md.getUserMedia({audio:{channelCount:{ideal:1}},video:false})}
 }
 function pCapturePCM(x,input){
  if(!x.recording||x.cancelled)return;
@@ -3107,15 +3129,15 @@ async function pMic(n){
  const field=pGet(n===1?"practiceDescription":"practiceReply"),button=pGet("practiceMic"+n),status=pGet("practiceStatus"+n);
  if(practiceBusy||n===2&&practicePassed)return;
  if(practiceMicSession){if(practiceMicSession.n===n&&!practiceMicSession.finalizing)await pFreezeMic(n);return}
- if(!navigator.mediaDevices?.getUserMedia||!(window.AudioContext||window.webkitAudioContext)){status.textContent="Mikrofon nije podržan. Otvori vežbu u pregledaču koji podržava mikrofon.";return}
+ const issue=pMicIssue2();if(issue){pMicHelp2(status,issue);return}
  stopSpeech();
  const x={n,field,button,status,old:field.value.trim(),samples:0,chunks:[],lastPreview:0,recording:false,finalizing:false,cancelled:false,phase:0,resampleSum:0,resampleWeight:0,lastAudioAt:Date.now()};
  practiceMicSession=x;if(n===2){practiceGuideSpeech261++;pMarkCheck259(false)}else pGuideDescription262(false);button.disabled=true;field.readOnly=true;status.textContent="Pokretanje mikrofona · zvuk se šalje AI servisu za prepis …";
  try{
-  const AC=window.AudioContext||window.webkitAudioContext;x.ctx=new AC();const resume=x.ctx.resume().catch(()=>{});
-  const stream=await pOpenMic();
+  const AC=window.AudioContext||window.webkitAudioContext;x.ctx=new AC();const capture=pOpenMic();const resume=x.ctx.resume().catch(()=>{});
+  const stream=await capture;
   if(practiceMicSession!==x||x.cancelled||x.finalizing){stream.getTracks().forEach(t=>t.stop());pCloseAudio(x);return}
-  x.stream=stream;await resume;if(x.ctx.state==="suspended")await x.ctx.resume();
+  x.stream=stream;await Promise.race([resume,new Promise(resolve=>setTimeout(resolve,1800))]);if(x.ctx.state==="suspended")await Promise.race([x.ctx.resume(),new Promise(resolve=>setTimeout(resolve,1800))]);if(x.ctx.state!=="running"){const error=new Error("AudioContext nije pokrenut");error.name="AudioContextError";throw error;}
   if(practiceMicSession!==x||x.cancelled||x.finalizing){pCloseAudio(x);return}
   x.source=x.ctx.createMediaStreamSource(stream);
   try{x.processor=x.ctx.createScriptProcessor(2048,1,1)}catch(e){x.processor=x.ctx.createScriptProcessor(4096,1,1)}
@@ -3129,7 +3151,7 @@ async function pMic(n){
   x.source.connect(x.processor);x.processor.connect(x.silent);x.silent.connect(x.ctx.destination);x.recording=true;pGet("screen"+(n===1?10:11)).classList.add("practice-recording");pGet("practiceLive"+n).textContent="Slušam te …";x.timer=setInterval(()=>{if(practiceMicSession!==x||x.finalizing)return;if(Date.now()-x.lastAudioAt>2200&&x.ctx.state!=="running"){x.status.textContent="Mikrofon je privremeno prekinut. Vrati se u aplikaciju.";void x.ctx.resume().catch(()=>{})}void pPreviewAudio(x)},200);
   practiceVoice[n]=true;button.textContent="■ Zaustavi";button.disabled=false;status.textContent="Slušam te · AI prikazuje tekst u intervalima";
   if(n===1){pGet("screen10").classList.remove("description-reviewed263");practiceDescriptionScore=null;pGet("practiceNext").disabled=true;pGet("practiceDescriptionResult").replaceChildren()}
- }catch(e){if(practiceMicSession===x){pStopMic();status.textContent="Mikrofon nije dostupan. Dozvoli pristup mikrofonu i pokušaj ponovo."}}
+ }catch(e){if(practiceMicSession===x){pStopMic();pMicHelp2(status,pMicError2(e))}}
 }
 async function pRequest(mode,body){const controller=new AbortController();practiceAbort=controller;const timeout=setTimeout(()=>controller.abort(),mode==="practice_description"?50000:25000);try{const res=await fetch(pGet("endpoint").value,{method:"POST",headers:{"Content-Type":"application/json"},signal:controller.signal,body:JSON.stringify({mode,...body})});const data=await res.json();if(!res.ok){if(res.status===422&&String(data.error||"").includes("originalna DE-MAX baza"))throw Error("Aktivni Worker ne prepoznaje režim vežbe. Objavi V238.47 ili noviji Worker.");throw Error(data.error||"Provera nije uspela.");}if(data.mode!==mode)throw Error("Worker još ne podržava vežbe. Potrebno je dodati novi režim provere.");return data}finally{clearTimeout(timeout);if(practiceAbort===controller)practiceAbort=null}}
 function pReset(){pCancel();pMarkCheck259(false);pGet("screen10").classList.remove("description-reviewed263");pGet("screen11").classList.remove("dialogue-finished263");practicePhotoKey="";practicePos=0;practiceAttempts=0;practiceFirstCorrect=0;practiceErrors=0;practicePassed=false;practiceDescriptionScore=null;practiceTranscript=[];practicePairs=[];practiceVoice={1:false,2:false};["practiceDescription","practiceReply"].forEach(id=>pGet(id).value="");["practiceDescriptionResult","practiceDialogueFeedback","practiceDialogueHistory"].forEach(id=>pGet(id).replaceChildren());["practiceStatus1","practiceStatus2"].forEach(id=>pGet(id).textContent="");pGet("practiceNext").disabled=true;pGet("practiceFinish").disabled=true;pGet("practiceFinish").hidden=true;pGet("practiceAdvance").hidden=true;practiceClosing="";practiceSelected=null;practiceTranslateOn=false;pSetPromptTranslation("");pGet("practiceRoleChoices").hidden=true;pGet("practiceReplyCard").hidden=false;pGet("practicePromptCard").hidden=false;pGet("practiceSend").disabled=false;pGet("practiceReply").disabled=false;pGet("practiceMic2").disabled=false;}
@@ -3339,4 +3361,6 @@ pGet("practiceBack1").onclick=()=>{pCancel();pGet("practiceDescription").readOnl
 pGet("practiceBack2").onclick=()=>{pCancel();pGet("practiceMic2").disabled=practicePassed;pGet("practiceReply").disabled=practicePassed;view(10);pGuideDescription262()};
 pGet("practiceFinish").onclick=()=>{pReset();generatedLocked=false;reachedDialogue=false;stopSpeech();view(0);pGet("file").value="";pGet("analyze").disabled=true;imageData="";for(let i=0;i<12;i++){const img=pGet("photo"+i);if(img){img.removeAttribute("src");if(i<10)img.style.display="none"}}pGet("photoReveal").classList.remove("ready");document.querySelector(".upload").classList.remove("has-photo");pGet("screen0").classList.remove("photo-added");document.querySelector(".upload-title").textContent="Izaberi fotografiju";pGet("uploadHeading").textContent="Samostalni opis i dijalog";setStatus("Izaberi novu sliku.");};
 
+</script><script>
+(()=>{const issue=pMicIssue2(),notice=document.getElementById("micEmbedNotice2");if(issue&&notice){notice.hidden=false;pMicHelp2(notice,issue)}})();
 </script></body></html>
