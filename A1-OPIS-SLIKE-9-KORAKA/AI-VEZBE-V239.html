@@ -3040,28 +3040,41 @@ function pShowRoleChoice(){
  pGet("practicePrompt").textContent="Welche Person wählen Sie?";pSetPromptTranslation("Koju osobu birate?");pGet("practiceCount").textContent="Izbor osobe";pGet("practiceMeter").style.width="0%";
  pGet("practiceReply").value="";pGet("practiceReply").disabled=false;pGet("practiceReply").readOnly=false;pGet("practiceSend").disabled=false;pGet("practiceMic2").disabled=false;pGet("practiceAdvance").hidden=true;pGet("practiceFinish").hidden=true;pGet("practiceDialogueFeedback").replaceChildren();pGet("practiceStatus2").textContent="";
  const choices=pGet("practiceRoleChoices");choices.replaceChildren();choices.hidden=false;
- pRoleOptions().forEach(g=>{const b=document.createElement("button");b.type="button";b.textContent=g.names.join(" / ")+" · "+g.speaker;b.onclick=()=>{if(practiceBusy||practiceMicSession||currentPage!==11)return;stopSpeech();choices.querySelectorAll("button").forEach(x=>x.disabled=true);pGet("practiceReply").value=g.phrases[0];practiceVoice[2]=false;void pBeginRole(g)};choices.append(b)});
+ pRoleOptions().forEach(g=>{const b=document.createElement("button");b.type="button";b.textContent=g.names.join(" / ")+" · "+g.speaker;b.onclick=()=>{if(practiceBusy||practiceMicSession||currentPage!==11)return;stopSpeech();choices.querySelectorAll("button").forEach(x=>x.disabled=true);pGet("practiceReply").value=g.phrases[0];practiceVoice[2]=false;void pBeginRole(g,g.phrases[0])};choices.append(b)});
 }
 function pPickRole(answer){
  const clean=t=>String(t).toLowerCase().normalize("NFC").replace(/[^\p{L}\p{N} ]/gu," ").replace(/\s+/g," ").trim();
  const a=clean(answer);return pRoleOptions().find(g=>g.phrases.some(t=>clean(t)===a)||g.names.some(n=>a===clean("Ich möchte "+n+" sein.")||a===clean("Ich bin "+n+".")));
 }
-async function pBeginRole(g){
+function pSpeakRoleSelection(value,epoch){
+ if(!value||!synth)return Promise.resolve();
+ return new Promise(resolve=>{
+  let timer,finished=false;
+  const done=()=>{if(finished)return;finished=true;clearTimeout(timer);resolve()};
+  try{
+   const u=germanUtterance(value);u.rate=.83;u.onend=done;u.onerror=done;
+   timer=setTimeout(()=>{if(practiceEpoch===epoch&&currentPage===11)cancelGermanSpeech();done()},6500);
+   speakGerman(u);
+  }catch(e){done()}
+ });
+}
+async function pBeginRole(g,spokenSelection=""){
  practiceSelected=g;practicePairs=[];practicePos=0;pGet("practiceRoleChoices").hidden=true;
  const other=g.speaker==="A"?"B":"A",rows=dialogRows;
  if(rows[0]?.role===g.speaker){const first=rows[0].de;const formal=rows.some(r=>/\b(?:Ihnen|Ihre|Sie)\b/.test(r.de));practicePairs.push({question:formal?"Guten Tag!":"Hallo!",expected:first})}
  for(let i=0;i<rows.length-1&&practicePairs.length<20;i++)if(rows[i].role===other&&rows[i+1].role===g.speaker)practicePairs.push({question:rows[i].de,expected:rows[i+1].de});
  while(practicePairs.length<20)practicePairs.push({question:"[Nächster passender Gesprächsschritt]",expected:"[Kurze passende Antwort oder Frage]"});
  practiceBusy=true;const token=++practiceEpoch;
+ const selectionSpeech=pSpeakRoleSelection(spokenSelection,token);
  pGet("practiceMic2").disabled=true;pGet("practiceSend").disabled=true;pGet("practiceReply").disabled=true;pGet("practiceStatus2").textContent="AI priprema prvo pitanje prema fotografiji …";
  try{
-  const d=await pRequest("practice_dialogue_start",{image:imageData,reference:detailOriginalLines.map(l=>l.de).join(" "),context:rows.map(r=>r.role+": "+r.de).join("\n"),learnerRole:g,aiRole:pRoleOptions().find(x=>x.speaker===other),totalTurns:20,turnNumber:1});
+  const [d]=await Promise.all([pRequest("practice_dialogue_start",{image:imageData,reference:detailOriginalLines.map(l=>l.de).join(" "),context:rows.map(r=>r.role+": "+r.de).join("\n"),learnerRole:g,aiRole:pRoleOptions().find(x=>x.speaker===other),totalTurns:20,turnNumber:1}),selectionSpeech]);
   if(token!==practiceEpoch||currentPage!==11)return;
   if(![16,18,20].includes(d.totalTurns)||typeof d.nextPromptSR!=="string"||!d.nextPromptSR.trim()||typeof d.nextPrompt!=="string"||!d.nextPrompt.includes("?")||typeof d.nextExpected!=="string"||!d.nextExpected.trim())throw Error("Prvo pitanje nije pripremljeno.");
   practicePairs.length=d.totalTurns;practicePairs[0]={question:d.nextPrompt,sr:d.nextPromptSR,expected:d.nextExpected};practiceBusy=false;pShowTurn();pPlayDialoguePrompt();
  }catch(e){
   if(token!==practiceEpoch||currentPage!==11)return;
-  practiceBusy=false;pShowRoleChoice();pGet("practiceStatus2").textContent="Prvo pitanje nije učitano. Pokušaj ponovo. Proveri Worker V238.56.";
+  stopSpeech();practiceBusy=false;pShowRoleChoice();pGet("practiceStatus2").textContent="Prvo pitanje nije učitano. Pokušaj ponovo. Proveri Worker V238.56.";
  }finally{if(token===practiceEpoch)practiceBusy=false}
 }
 pGet("practiceNext").onclick=()=>{
