@@ -2988,11 +2988,11 @@ function pShowTurn(){
 function pRoleOptions(){
  const roles=["A","B"].map(s=>practiceRoles.find(g=>g.speaker===s)||{speaker:s,role:"Osoba "+s,roleDE:"Person "+s});
  const shared=roles[0].roleDE.toLowerCase()===roles[1].roleDE.toLowerCase();
- const weak=/^(Kunde|Patient|Kollege|Junge|Schüler|Student|Tourist|Passant|Herr|Mensch|Nachbar|Zeuge)$/i;
+ const accusative={Kunde:"Kunden",Patient:"Patienten",Kollege:"Kollegen",Junge:"Jungen",Student:"Studenten",Tourist:"Touristen",Passant:"Passanten",Herr:"Herrn",Mensch:"Menschen",Nachbar:"Nachbarn",Zeuge:"Zeugen",Assistent:"Assistenten",Rezeptionist:"Rezeptionisten",Polizist:"Polizisten",Gast:"Gast"};
  return roles.map(g=>{
   let names=g.roleDE.split(/\s*\/\s*/).map(x=>x.trim().replace(/^(der|die|das)\s+/i,"")).filter(Boolean);
   if(shared||!names.length||names.some(x=>/\bPerson\s*[AB]\b/i.test(x)))names=["Person "+g.speaker];
-  const phrases=names.map(name=>{const female=/(?:in|frau|mutter|tochter|schwester|person [ab])$/i.test(name)&&!/^Kamin$/i.test(name);const neuter=/^(Kind|Mädchen)$/i.test(name);return "Ich wähle "+(female?"die ":neuter?"das ":"den ")+name+(!female&&!neuter&&weak.test(name)?(/e$/i.test(name)?"n":"en"):"")+"."});
+  const phrases=names.map(name=>{const female=/(?:in|frau|mutter|tochter|schwester)$/i.test(name)||/^Person\b/i.test(name);const neuter=/^(Kind|Mädchen)$/i.test(name);return "Ich wähle "+(female?"die ":neuter?"das ":"den ")+(female||neuter?name:(accusative[name]||name))+"."});
   return {...g,names,phrases};
  });
 }
