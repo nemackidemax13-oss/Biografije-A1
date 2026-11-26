@@ -1853,7 +1853,7 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
 #screen0 .standalone-caption{font-size:13px;line-height:1.35;color:#27577a;text-align:center;margin:4px 0 10px;font-weight:650}
 </style><style id="mic-compat-v2">.mic-external2{color:#155db0;font-weight:750;text-decoration:underline;display:inline-block;padding:3px 0}#micEmbedNotice2{font-size:12px;line-height:1.4;color:#874b0b;background:#fff4de;padding:7px;border-radius:7px;margin:5px 0}#micEmbedNotice2[hidden]{display:none!important}</style></head><body><main class="app">
 <header class="header"><h1>Opis slike</h1></header>
-<section class="screen active" id="screen0"><div class="scroll"><div class="panel"><h2 class="title" id="uploadHeading">Samostalni opis i dijalog</h2><p class="standalone-caption">1. Samostalni opis slike &nbsp; · &nbsp; 2. Samostalni dijalog</p><div id="micEmbedNotice2" role="status" hidden></div><label class="upload"><span class="upload-icon">📷</span><span class="upload-title">Izaberi fotografiju</span><span class="upload-sub">Dodirni ovde za galeriju ili kameru</span><input id="file" type="file" accept="image/*"></label><div class="photo-reveal" id="photoReveal"><span class="photo-glow" aria-hidden="true"></span><img class="picture" id="photo0" alt="Izabrana slika"><span class="photo-success" aria-hidden="true">✓</span><span class="sparkle sp1" aria-hidden="true">✦</span><span class="sparkle sp2" aria-hidden="true">✧</span><span class="sparkle sp3" aria-hidden="true">✦</span></div><p class="status" id="status">Prvo izaberi sliku.</p></div><div id="aiWait" hidden role="status" aria-live="polite"><div class="wait-card"><div class="wait-ring" aria-hidden="true"></div><h2>Molimo, sačekajte…</h2><p>Fotografija se analizira.</p><p class="wait-sub">Pripremamo tvoje dve usmene vežbe prema fotografiji.</p></div></div><div class="demax-text-brand" aria-label="De-Max A1"><span>De-Max</span><strong>A1</strong></div><input id="endpoint" type="hidden" value="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev"></div><div class="footer upload-footer"><button class="action green" id="resumeAfterGeneration" type="button" hidden>Nastavi vežbu ❯</button><button class="action green" id="analyze" disabled>Započni vežbu ❯</button></div></section>
+<section class="screen active" id="screen0"><div class="scroll"><div class="panel"><h2 class="title" id="uploadHeading">Samostalni opis i dijalog</h2><div id="micEmbedNotice2" role="status" hidden></div><label class="upload"><span class="upload-icon">📷</span><span class="upload-title">Izaberi fotografiju</span><span class="upload-sub">Dodirni ovde za galeriju ili kameru</span><input id="file" type="file" accept="image/*"></label><div class="photo-reveal" id="photoReveal"><span class="photo-glow" aria-hidden="true"></span><img class="picture" id="photo0" alt="Izabrana slika"><span class="photo-success" aria-hidden="true">✓</span><span class="sparkle sp1" aria-hidden="true">✦</span><span class="sparkle sp2" aria-hidden="true">✧</span><span class="sparkle sp3" aria-hidden="true">✦</span></div><p class="status" id="status">Prvo izaberi sliku.</p></div><div id="aiWait" hidden role="status" aria-live="polite"><div class="wait-card"><div class="wait-ring" aria-hidden="true"></div><h2>Molimo, sačekajte…</h2><p>Fotografija se analizira.</p><p class="wait-sub">Pripremamo tvoje dve usmene vežbe prema fotografiji.</p></div></div><div class="demax-text-brand" aria-label="De-Max A1"><span>De-Max</span><strong>A1</strong></div><input id="endpoint" type="hidden" value="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev"></div><div class="footer upload-footer"><button class="action green" id="resumeAfterGeneration" type="button" hidden>Nastavi vežbu ❯</button><button class="action green" id="analyze" disabled>Započni vežbu ❯</button></div></section>
 
 <section class="screen" id="screen1"><div class="scroll summary-scroll"><div class="panel summary-panel">
  <div class="summary-image-wrap"><img class="picture small" id="photo1" alt="Fotografija koju učenik opisuje"><span class="summary-shine260" aria-hidden="true"></span><span class="sparkle summary-star260 ss1" aria-hidden="true">✦</span><span class="sparkle summary-star260 ss2" aria-hidden="true">✧</span><span class="sparkle summary-star260 ss3" aria-hidden="true">✦</span><span class="sparkle summary-star260 ss4" aria-hidden="true">✧</span></div>
@@ -2320,7 +2320,7 @@ dialogueFontScale=1;$("dialogue").style.setProperty("--dialogue-font-scale","1")
 // V81 — A dialogue must describe the photographed item, not a generic scene script.
 const generatedDialogue=(Array.isArray(data.dialogue)?data.dialogue:[])
  .filter(x=>x&&typeof x.de==="string"&&x.de.trim()&&typeof x.sr==="string"&&x.sr.trim())
- .map((x,i)=>({speaker:i%2?"B":"A",de:String(x.de),sr:String(x.sr)}));
+ .map((x,i)=>({speaker:/^[AB]$/i.test(String(x.speaker||x.role||""))?String(x.speaker||x.role).toUpperCase():(i%2?"B":"A"),de:String(x.de),sr:String(x.sr)}));
 // Never invent a product via fallback to an unrelated original dialogue.
 const activeDialogue=generatedDialogue.length>=10?generatedDialogue:[];
 if(!activeDialogue.length)throw Error("Dijalog nije pripremljen prema fotografiji. Pokušaj ponovo.");
@@ -3283,16 +3283,40 @@ function pMarkCheck259(on){
 function pShowTurn(){
  pGet("screen11").classList.remove("dialogue-finished263");const pair=practicePairs[practicePos];pGet("practiceDialogueFeedback").replaceChildren();pGet("practiceAdvance").hidden=true;pGet("practiceFinish").hidden=true;pGet("practiceReply").value="";pGet("practiceStatus2").textContent="";practicePassed=false;practiceAttempts=0;practiceVoice[2]=false;pGet("practiceSend").disabled=false;pGet("practiceMic2").disabled=false;pGet("practiceReply").disabled=false;pGet("practiceReply").readOnly=true;pGet("practiceCount").textContent="Odgovor "+(practicePos+1)+"/"+practicePairs.length;pGet("practiceMeter").style.width=(practicePos/practicePairs.length*100)+"%";if(pair){pGet("practicePrompt").textContent=pair.question;pSetPromptTranslation(pair.sr);}pMarkCheck259(false);
 }
+// V9: canonical role names and unambiguous role selection from the photographed dialogue.
+function pRoleClean9(t){
+ return String(t||"").normalize("NFKD").replace(/\p{M}/gu,"").toLowerCase().replace(/ß/g,"ss").replace(/[^\p{L}\p{N}]+/gu," ").trim();
+}
+function pCanonicalRole9(t){
+ const raw=String(t||"").trim().replace(/^(der|die|das|den|dem|einen|eine|ein)\s+/i,"");
+ const key=pRoleClean9(raw);
+ const aliases={kunde:"Kunde",kunden:"Kunde",kundin:"Kundin",kundinnen:"Kundin",verkaufer:"Verkäufer",verkaeufer:"Verkäufer",verkufer:"Verkäufer",verkauferin:"Verkäuferin",verkaeuferin:"Verkäuferin",verkuferin:"Verkäuferin",kupac:"Kunde",kupkinja:"Kundin",prodavac:"Verkäufer",prodavacica:"Verkäuferin",kassierer:"Kassierer",kassiererin:"Kassiererin",kasir:"Kassierer",kasirka:"Kassiererin"};
+ return aliases[key]||raw;
+}
 function pRoleOptions(){
  const roles=["A","B"].map(s=>practiceRoles.find(g=>g.speaker===s)||{speaker:s,role:"Osoba "+s,roleDE:"Person "+s});
- const shared=roles[0].roleDE.toLowerCase()===roles[1].roleDE.toLowerCase();
  const accusative={Kunde:"Kunden",Patient:"Patienten",Kollege:"Kollegen",Junge:"Jungen",Student:"Studenten",Tourist:"Touristen",Passant:"Passanten",Herr:"Herrn",Mensch:"Menschen",Nachbar:"Nachbarn",Zeuge:"Zeugen",Assistent:"Assistenten",Rezeptionist:"Rezeptionisten",Polizist:"Polizisten",Gast:"Gast"};
  return roles.map(g=>{
-  let names=g.roleDE.split(/\s*\/\s*/).map(x=>x.trim().replace(/^(der|die|das)\s+/i,"")).filter(Boolean);
-  if(shared||!names.length||names.some(x=>/\bPerson\s*[AB]\b/i.test(x)))names=["Person "+g.speaker];
+  let names=[...new Set(String(g.roleDE||"").split(/\s*(?:\/|\||;|\boder\b)\s*/i).map(pCanonicalRole9).filter(Boolean))];
+  const sr=pRoleClean9(g.role);
+  // Only narrow gender when the original role metadata explicitly identifies it.
+  const explicit={kupkinja:"Kundin",prodavacica:"Verkäuferin",prodavac:"Verkäufer",kasirka:"Kassiererin",kasir:"Kassierer"}[sr];
+  if(explicit&&(names.includes(explicit)||names.every(n=>/^Person [AB]$/i.test(n))))names=[explicit];
+  if(!names.length||names.every(n=>/^Person [AB]$/i.test(n))){
+   const fallback={kupac:"Kunde",musterija:"Kunde",kupkinja:"Kundin",prodavac:"Verkäufer",prodavacica:"Verkäuferin",kasir:"Kassierer",kasirka:"Kassiererin"}[sr];
+   names=[fallback||"Person "+g.speaker];
+  }
   const phrases=names.map(name=>{const female=/(?:in|frau|mutter|tochter|schwester)$/i.test(name)||/^Person\b/i.test(name);const neuter=/^(Kind|Mädchen)$/i.test(name);return "Ich wähle "+(female?"die ":neuter?"das ":"den ")+(female||neuter?name:(accusative[name]||name))+"."});
-  return {...g,names,phrases};
+  return {...g,roleDE:names.join(" / "),names,phrases};
  });
+}
+function pExactRole9(g,i){
+ const name=g.names[i], labels={Kunde:"Kupac",Kundin:"Kupkinja",Verkäufer:"Prodavac",Verkäuferin:"Prodavačica",Kassierer:"Kasir",Kassiererin:"Kasirka"};
+ return {...g,role:labels[name]||g.role,roleDE:name,names:[name],phrases:[g.phrases[i]]};
+}
+function pRoleContext9(rows,learner,other){
+ const counterpart=pRoleOptions().find(g=>g.speaker===other);
+ return "Feste Rollen laut Bilddialog: Lernende Person "+learner.speaker+" = "+learner.roleDE+"; KI-Person "+other+" = "+(counterpart?.roleDE||"Person "+other)+". Rollen nicht vertauschen. Fragen und Antworten müssen zu dieser Rolle und zum Foto passen.\n"+rows.map(r=>r.role+": "+r.de).join("\n");
 }
 function pShowRoleChoice(){
  pGet("screen11").classList.remove("dialogue-finished263");pMarkCheck259(false);
@@ -3301,11 +3325,19 @@ function pShowRoleChoice(){
  pGet("practicePrompt").textContent="Welche Person wählen Sie?";pSetPromptTranslation("Koju osobu birate?");pGet("practiceCount").textContent="Izbor osobe";pGet("practiceMeter").style.width="0%";
  pGet("practiceReply").value="";pGet("practiceReply").disabled=false;pGet("practiceReply").readOnly=true;pGet("practiceSend").disabled=false;pGet("practiceMic2").disabled=false;pGet("practiceAdvance").hidden=true;pGet("practiceFinish").hidden=true;pGet("practiceDialogueFeedback").replaceChildren();pGet("practiceStatus2").textContent="";
  const choices=pGet("practiceRoleChoices");choices.replaceChildren();choices.hidden=false;
- pRoleOptions().forEach(g=>{const b=document.createElement("button");b.type="button";b.textContent=g.names.join(" / ")+" · "+g.speaker;b.onclick=()=>{if(practiceBusy||practiceMicSession||currentPage!==11)return;stopSpeech();choices.querySelectorAll("button").forEach(x=>x.disabled=true);pGet("practiceReply").value=g.phrases[0];practiceVoice[2]=false;void pBeginRole(g,g.phrases[0])};choices.append(b)});
+ pRoleOptions().forEach(g=>g.names.forEach((name,i)=>{const chosen=pExactRole9(g,i);const b=document.createElement("button");b.type="button";b.textContent=name+" · "+g.speaker;b.onclick=()=>{if(practiceBusy||practiceMicSession||currentPage!==11)return;stopSpeech();choices.querySelectorAll("button").forEach(x=>x.disabled=true);pGet("practiceReply").value=chosen.phrases[0];practiceVoice[2]=false;void pBeginRole(chosen,chosen.phrases[0])};choices.append(b)}));
 }
 function pPickRole(answer){
- const clean=t=>String(t).toLowerCase().normalize("NFC").replace(/[^\p{L}\p{N} ]/gu," ").replace(/\s+/g," ").trim();
- const a=clean(answer);return pRoleOptions().find(g=>g.phrases.some(t=>clean(t)===a)||g.names.some(n=>a===clean("Ich möchte "+n+" sein.")||a===clean("Ich bin "+n+".")));
+ const a=pRoleClean9(answer);
+ const candidates=pRoleOptions().flatMap(g=>g.names.map((name,i)=>pExactRole9(g,i)));
+ const matches=candidates.filter(g=>{
+  const name=g.roleDE, n=pRoleClean9(name);
+  if(a===pRoleClean9(g.phrases[0])||a===pRoleClean9("Ich möchte "+name+" sein.")||a===pRoleClean9("Ich bin "+name+"."))return true;
+  if(a===pRoleClean9("Person "+g.speaker)||a===g.speaker.toLowerCase())return true;
+  const cleaned=a.replace(/^(?:ich (?:wahle|waehle|nehme|bin|mochte|moechte|will|spiele)\s+)?(?:(?:der|die|das|den|dem|ein|eine|einen|als)\s+)?/,"").replace(/\s+(?:sein|spielen)$/,"");
+  return cleaned===n||pRoleClean9(pCanonicalRole9(cleaned))===n;
+ });
+ return matches.length===1?matches[0]:undefined;
 }
 function pSpeakRoleSelection(value,epoch){
  if(!value||!synth)return Promise.resolve();
@@ -3330,7 +3362,7 @@ async function pBeginRole(g,spokenSelection=""){
  const selectionSpeech=pSpeakRoleSelection(spokenSelection,token);
  pGet("practiceMic2").disabled=true;pGet("practiceSend").disabled=true;pGet("practiceReply").disabled=true;pGet("practiceStatus2").textContent="AI priprema prvo pitanje prema fotografiji …";
  try{
-  const [d]=await Promise.all([pRequest("practice_dialogue_start",{image:imageData,reference:detailOriginalLines.map(l=>l.de).join(" "),context:rows.map(r=>r.role+": "+r.de).join("\n"),learnerRole:g,aiRole:pRoleOptions().find(x=>x.speaker===other),totalTurns:20,turnNumber:1}),selectionSpeech]);
+  const [d]=await Promise.all([pRequest("practice_dialogue_start",{image:imageData,reference:detailOriginalLines.map(l=>l.de).join(" "),context:pRoleContext9(rows,g,other),learnerRole:g,aiRole:pRoleOptions().find(x=>x.speaker===other),totalTurns:20,turnNumber:1}),selectionSpeech]);
   if(token!==practiceEpoch||currentPage!==11)return;
   if(![16,18,20].includes(d.totalTurns)||typeof d.nextPromptSR!=="string"||!d.nextPromptSR.trim()||typeof d.nextPrompt!=="string"||!d.nextPrompt.includes("?")||typeof d.nextExpected!=="string"||!d.nextExpected.trim())throw Error("Prvo pitanje nije pripremljeno.");
   practicePairs.length=d.totalTurns;practicePairs[0]={question:pGreeting259(d.nextPrompt,true),sr:pGreeting259(d.nextPromptSR,true,true),expected:d.nextExpected};practiceBusy=false;pShowTurn();pPlayDialoguePrompt();
@@ -3380,7 +3412,7 @@ pGet("practiceSend").onclick=async()=>{
  const token=++practiceEpoch,next=practicePairs[practicePos+1];let correctionToSpeak="";
  status.textContent="Proveravam tvoj odgovor …";
  try{
-  const d=await pRequest("practice_dialogue",{answer,question:pair.question,questionSR:pair.sr||"",expected:pair.expected,context:dialogRows.map(r=>r.role+": "+r.de).join("\n"),reference:detailOriginalLines.map(l=>l.de).join(" "),learnerRole:practiceSelected,aiRole:pRoleOptions().find(g=>g.speaker!==practiceSelected.speaker),turnNumber:practicePos+1,totalTurns:practicePairs.length,history:practiceTranscript.map(t=>({question:t.question,answer:t.answer})),nextQuestion:next?.question||"",nextExpected:next?.expected||"",lastTurn:!next,inputMode:practiceVoice[2]?"speech":"text"});
+  const d=await pRequest("practice_dialogue",{answer,question:pair.question,questionSR:pair.sr||"",expected:pair.expected,context:pRoleContext9(dialogRows,practiceSelected,practiceSelected.speaker==="A"?"B":"A"),reference:detailOriginalLines.map(l=>l.de).join(" "),learnerRole:practiceSelected,aiRole:pRoleOptions().find(g=>g.speaker!==practiceSelected.speaker),turnNumber:practicePos+1,totalTurns:practicePairs.length,history:practiceTranscript.map(t=>({question:t.question,answer:t.answer})),nextQuestion:next?.question||"",nextExpected:next?.expected||"",lastTurn:!next,inputMode:practiceVoice[2]?"speech":"text"});
   if(token!==practiceEpoch)return;
   if(typeof d.ok!=="boolean"||typeof d.corrected!=="string"||typeof d.translation!=="string"||!d.translation.trim()||typeof d.nextPrompt!=="string"||typeof d.nextExpected!=="string"||typeof d.closing!=="string"||(d.ok&&next&&(!d.nextPrompt.trim()||!d.nextExpected.trim()||typeof d.nextPromptSR!=="string"||!d.nextPromptSR.trim())))throw Error("Za prevod i prirodan nastavak dijaloga objavi Worker V238.62.");
   const clarification=!d.ok&&d.retryKind==="clarification";
