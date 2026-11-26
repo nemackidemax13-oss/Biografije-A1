@@ -1798,12 +1798,26 @@ html,body{overflow-x:hidden;max-width:100%;overscroll-behavior-x:none}
 #screen11 #practiceSend.check-ready259:not(:disabled){position:relative;outline:2px solid #e02237;outline-offset:1px;animation:checkPulse259 1.65s ease-in-out infinite!important}
 @keyframes checkPulse259{0%,100%{box-shadow:0 0 0 1px #ef334455}50%{box-shadow:0 0 0 3px #ff667788,0 0 11px #ed293c66}}
 @media(prefers-reduced-motion:reduce){#screen11 #practiceSend.check-ready259:not(:disabled){animation:none!important}}
+</style><style id="summary-wow-v260">
+#screen1 .summary-image-wrap{position:relative;isolation:isolate;overflow:hidden}
+#screen1 .summary-shine260{position:absolute;inset:0;z-index:3;border-radius:inherit;opacity:0;pointer-events:none;background:linear-gradient(115deg,transparent 24%,#ffffffb8 48%,transparent 72%);background-size:220% 100%}
+#screen1 .summary-star260{z-index:5;color:#ffd04a;text-shadow:0 0 7px #fff5bc,0 0 11px #f4b52e;font-size:27px;pointer-events:none;opacity:0}
+#screen1 .ss1{top:9%;left:7%}#screen1 .ss2{bottom:12%;right:6%}#screen1 .ss3{bottom:4%;left:24%;font-size:21px}#screen1 .ss4{top:7%;right:20%;font-size:21px}
+#screen1.summary-arrival260 .summary-image-wrap{animation:summaryFrame260 1.45s ease-out both}
+#screen1.summary-arrival260 #photo1{animation:picture-arrives .7s cubic-bezier(.2,.7,.2,1) both}
+#screen1.summary-arrival260 .summary-shine260{animation:photo-shine 1.1s ease .15s both}
+#screen1.summary-arrival260 .summary-star260{animation:sparkle-burst .85s ease-out .25s both}
+#screen1.summary-arrival260 .ss2{animation-delay:.4s}#screen1.summary-arrival260 .ss3{animation-delay:.55s}#screen1.summary-arrival260 .ss4{animation-delay:.65s}
+#screen1.summary-arrival260 .summary-editor-wrap{animation:summaryText260 .5s .2s ease-out both}
+@keyframes summaryFrame260{0%,100%{box-shadow:0 0 0 0 #ffd04a00}45%{box-shadow:0 0 0 2px #ffd04a99,0 0 16px #ffcf5777}}
+@keyframes summaryText260{0%{opacity:0;transform:translateY(5px)}100%{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){#screen1.summary-arrival260 .summary-image-wrap,#screen1.summary-arrival260 #photo1,#screen1.summary-arrival260 .summary-shine260,#screen1.summary-arrival260 .summary-star260,#screen1.summary-arrival260 .summary-editor-wrap{animation:none!important}}
 </style></head><body><main class="app">
 <header class="header"><h1>Opis slike</h1></header>
 <section class="screen active" id="screen0"><div class="scroll"><div class="panel"><h2 class="title" id="uploadHeading">Ubaci sliku za opis</h2><label class="upload"><span class="upload-icon">📷</span><span class="upload-title">Izaberi fotografiju</span><span class="upload-sub">Dodirni ovde za galeriju ili kameru</span><input id="file" type="file" accept="image/*"></label><div class="photo-reveal" id="photoReveal"><span class="photo-glow" aria-hidden="true"></span><img class="picture" id="photo0" alt="Izabrana slika"><span class="photo-success" aria-hidden="true">✓</span><span class="sparkle sp1" aria-hidden="true">✦</span><span class="sparkle sp2" aria-hidden="true">✧</span><span class="sparkle sp3" aria-hidden="true">✦</span></div><p class="status" id="status">Prvo izaberi sliku.</p></div><div id="aiWait" hidden role="status" aria-live="polite"><div class="wait-card"><div class="wait-ring" aria-hidden="true"></div><h2>Molimo, sačekajte…</h2><p>Fotografija se analizira.</p><p class="wait-sub">Pripremamo opis slike i dijalog na nemačkom jeziku.</p></div></div><div class="demax-text-brand" aria-label="De-Max A1"><span>De-Max</span><strong>A1</strong></div><input id="endpoint" type="hidden" value="https://automatskiopisslikeidijalozi.nemackidemax13.workers.dev"></div><div class="footer upload-footer"><button class="action green" id="resumeAfterGeneration" type="button" hidden>Nastavi opis ❯</button><button class="action green" id="analyze" disabled>Automatski opiši sliku</button></div></section>
 
 <section class="screen" id="screen1"><div class="scroll summary-scroll"><div class="panel summary-panel">
- <div class="summary-image-wrap"><img class="picture small" id="photo1" alt="Fotografija koju učenik opisuje"></div>
+ <div class="summary-image-wrap"><img class="picture small" id="photo1" alt="Fotografija koju učenik opisuje"><span class="summary-shine260" aria-hidden="true"></span><span class="sparkle summary-star260 ss1" aria-hidden="true">✦</span><span class="sparkle summary-star260 ss2" aria-hidden="true">✧</span><span class="sparkle summary-star260 ss3" aria-hidden="true">✦</span><span class="sparkle summary-star260 ss4" aria-hidden="true">✧</span></div>
  
  <div class="summary-controls" role="group" aria-label="Slušanje, prevod i veličina celog opisa">
   <button type="button" id="summaryAuto" class="summary-auto" aria-pressed="false" title="Slušaj kompletan opis">▶ Auto</button>
@@ -2035,6 +2049,7 @@ function view(n){
  document.querySelector(".app").classList.toggle("study-page",n!==0);
  for(let i=0;i<12;i++)$("screen"+i).classList.toggle("active",i===n);
  $("screen10").classList.remove("practice-arrival");$("screen11").classList.remove("practice-arrival");
+ const summaryScreen=$("screen1");summaryScreen.classList.remove("summary-arrival260");if(n===1&&previousPage===0&&imageData){void summaryScreen.offsetWidth;summaryScreen.classList.add("summary-arrival260");}
  updateJourneyProgress();
  if(n===3)requestAnimationFrame(()=>paginateDialogue(dialoguePages[dialoguePageIndex]?.[0]||0));
  if(n===8)requestAnimationFrame(()=>paginateUseful(usefulPages[usefulPage]?.[0]||0));
