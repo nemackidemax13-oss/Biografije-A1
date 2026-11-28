@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="sr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DE-MAX Slide Viewer FAST</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;font:15px system-ui,Segoe UI,sans-serif;background:#fff;color:#173453}
+body{display:flex;flex-direction:column}#bar{display:flex;align-items:center;gap:5px;padding:7px 20px 7px 8px;background:#eaf2ff;border-bottom:1px solid #cfddf1;flex:none}#url{flex:1;min-width:0;padding:9px;border:1px solid #a6bad8;border-radius:6px;font:inherit}button{cursor:pointer;border:0;border-radius:6px;background:#e0e8f3;color:#153b6b;padding:9px;font-weight:650;white-space:nowrap}button:hover{filter:brightness(.95)}#go{background:#155cbd;color:white}#stage{position:relative;flex:1;min-height:0}iframe{border:0;width:100%;height:100%;display:block;background:white}#welcome{position:absolute;inset:0;display:grid;place-content:center;text-align:center;padding:22px;background:white}h1{font-size:clamp(17px,4vw,32px);margin:0;color:#155cbd}p{margin:10px 0;color:#60748f}#mini{position:absolute;top:3px;left:3px;padding:4px 8px;z-index:2;opacity:.32;font-size:13px}#mini:hover,#mini:focus{opacity:1}#msg{font-size:12px;padding:4px 9px;background:#f5f8fc;color:#405a75} [hidden]{display:none!important}
+</style></head><body>
+<form id="bar"><input id="url" type="text" inputmode="url" placeholder="Nalepi GitHub Pages HTTPS link" aria-label="Adresa aplikacije" autocomplete="off" spellcheck="false"><button id="go" type="submit">Otvori</button><button id="reload" type="button" title="Ponovo učitaj">↻</button><button id="external" type="button" title="Otvori u pregledaču">↗</button><button id="hide" type="button" title="Sakrij traku i uvećaj prikaz">⛶</button></form>
+<div id="msg" role="status" hidden></div><main id="stage"><iframe id="view" title="GitHub aplikacija" allow="fullscreen; autoplay; microphone" allowfullscreen sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-downloads allow-modals" hidden></iframe><section id="welcome"><h1>DE-MAX SLIDE VIEWER FAST</h1><p>Nalepi HTTPS link i klikni Otvori.</p><p>GitHub Pages · interaktivne vežbe · PowerPoint</p></section><button id="mini" type="button" title="Prikaži kontrole" hidden>☰</button></main>
+<script>
+(function(){
+const $=id=>document.getElementById(id), bar=$('bar'), field=$('url'), frame=$('view'), mini=$('mini'), msg=$('msg');
+let current='',settings=null,edited=false,hidden=false;
+function notice(s){msg.textContent=s;msg.hidden=!s}
+function valid(raw){let t=raw.trim();if(!t)return '';if(!/^[a-z][a-z0-9+.-]*:/i.test(t))t='https://'+t;try{let u=new URL(t);if(u.protocol!=='https:'||u.username||u.password)return '';return u.href}catch(e){return ''}}
+function layout(v){hidden=v;bar.hidden=v;mini.hidden=!v; if(v)notice('')}
+function save(){if(!settings)return;try{settings.set('demaxSlideViewerUrl',current);settings.saveAsync(r=>{if(r.status!=='succeeded')notice('Link je otvoren, ali čuvanje nije uspelo.');})}catch(e){notice('Link je otvoren; čuvanje nije dostupno.')}}
+function launch(raw,persist){const u=valid(raw);if(!u){notice('Unesi ispravan HTTPS link.');return}current=u;field.value=u;$('welcome').hidden=true;frame.hidden=false;if(frame.getAttribute('src')!==u)frame.src=u;notice('');layout(true);if(persist){edited=true;save()}}
+bar.addEventListener('submit',e=>{e.preventDefault();launch(field.value,true)});
+$('reload').onclick=()=>{if(current){frame.src=current;notice('')}};
+$('external').onclick=()=>{const u=valid(field.value)||current;if(u)window.open(u,'_blank','noopener,noreferrer')};
+$('hide').onclick=()=>layout(true);mini.onclick=()=>{layout(false);field.focus()};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&hidden){layout(false)}});
+const query=new URLSearchParams(location.search).get('url');if(query)launch(query,false);
+const officeScript=document.createElement('script');officeScript.src='https://appsforoffice.microsoft.com/lib/1/hosted/office.js';officeScript.onload=()=>{if(!window.Office)return;Office.onReady(info=>{if(!info.host)return;try{settings=Office.context.document.settings;let saved=settings.get('demaxSlideViewerUrl');if(!edited&&saved)launch(saved,false);else if(edited&&current)save()}catch(e){}})};document.head.appendChild(officeScript);
+})();
+</script></body></html>
