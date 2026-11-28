@@ -48,6 +48,10 @@ const categories=[
 {id:'b1-ecl',name:'B1 pripreme ECL',color:'#9a397e'}];
 if(!Array.isArray(items))items=defaults;
 items.forEach(item=>{if(!categories.some(c=>c.id===item.category))item.category='a1-lessons'});
+const presenterLink={id:'presenter-link-slide-2',name:'DE-MAX Presenter',kind:'link',url:'https://nemackidemax13-oss.github.io/Biografije-A1/DEMAX-PRESENTER.html?v=10&utm_source=chatgpt.com',category:'a1-lessons'};
+const migrationKey=key+'-presenter-slide-2';
+try{if(!localStorage.getItem(migrationKey)){if(!items.some(i=>i.id===presenterLink.id)){const first=items.findIndex(i=>i.category==='a1-lessons');items.splice(first<0?items.length:first+1,0,presenterLink)}localStorage.setItem(migrationKey,'1')}}catch{if(!items.some(i=>i.id===presenterLink.id)){const first=items.findIndex(i=>i.category==='a1-lessons');items.splice(first<0?items.length:first+1,0,presenterLink)}}
+function isPresenterLink(item){try{const u=new URL(item.url);return u.origin===location.origin&&u.pathname===location.pathname}catch{return false}}
 let activeCategory=null, pendingCategory=null;
 let current=null, generation=0, previewReady=false, lastTarget='', busy=false, staticSlides=null;
 const nextPicture=$('nextPicture');
@@ -93,7 +97,7 @@ function makePreview(html,base){const p=new DOMParser().parseFromString(html,'te
 function extractStaticSlides(html,base){try{const m=html.match(/\bconst\s+slides\s*=\s*(\[[\s\S]*?\])\s*;/);if(!m)return null;const list=JSON.parse(m[1]);if(!Array.isArray(list)||!list.length||!list.every(s=>s&&typeof s.image==='string'))return null;return list.map(s=>{if(/^data:image\//i.test(s.image))return s.image;if(!base)return null;const u=new URL(s.image,base);return /^https?:$/.test(u.protocol)?u.href:null})}catch{return null}}
 async function openItem(item){const token=++generation;current=item;activeCategory=item.category;busy=false;render();$('status').textContent='Učitavanje…';$('empty').classList.add('hidden');main.classList.remove('hidden');clearPreview('Učitavanje pregleda…');main.removeAttribute('srcdoc');let html=null;
 if(item.kind==='file'){html=await read(item.id);if(token!==generation)return;if(html==null){$('status').textContent='Ponovo dodaj HTML fajl.';main.src='about:blank';message('Fajl nije dostupan.');return}main.srcdoc=html}
-else{main.src=item.url;if(new URL(item.url).origin===location.origin&&!isGame(item)){try{const r=await fetch(item.url);if(r.ok)html=await r.text()}catch{}}}
+else{if(isPresenterLink(item)&&window.self!==window.top){main.src='about:blank';$('status').textContent='Presenter je već otvoren u okviru drugog Presentera.';message('Povratak na prethodnu stavku.');updateNavigation(null);return}main.src=item.url;if(new URL(item.url).origin===location.origin&&!isGame(item)&&!isPresenterLink(item)){try{const r=await fetch(item.url);if(r.ok)html=await r.text()}catch{}}}
 if(token!==generation)return;$('status').textContent='';if(!html){sync();return}
 if(isGame(item)){sync();return}staticSlides=extractStaticSlides(html,item.kind==='link'?item.url:null);if(staticSlides&&staticSlides.every(Boolean)){sync();return}staticSlides=null;
 scaled();peek.onload=()=>{if(token!==generation||!peek.hasAttribute('srcdoc'))return;previewReady=true;scaled();sync()};peek.srcdoc=makePreview(html,item.kind==='link'?item.url:null)}
@@ -101,14 +105,14 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
 function sequence(){return current?items.filter(i=>i.category===current.category):[]}
 function adjacent(dir){const seq=sequence(),i=seq.findIndex(x=>x.id===current?.id);return i<0?null:seq[i+dir]||null}
 function isGame(item){if(!item)return false;let leaf='';try{leaf=new URL(item.url).pathname.split('/').filter(Boolean).pop()||''}catch{}return /quiz|spiel|igra|game|kviz/i.test(leaf+' '+item.name)}
-function slideCounter(){if(!current||isGame(current))return null;if(current.kind==='link'){try{if(new URL(current.url).origin!==location.origin)return null;const actual=new URL(main.contentWindow.location.href);const expected=new URL(current.url);if(actual.pathname.replace(/index\.html$/,'')!==expected.pathname.replace(/index\.html$/,''))return null}catch{return null}}return counter(doc(main))}
+function slideCounter(){if(!current||isGame(current)||isPresenterLink(current))return null;if(current.kind==='link'){try{if(new URL(current.url).origin!==location.origin)return null;const actual=new URL(main.contentWindow.location.href);const expected=new URL(current.url);if(actual.pathname.replace(/index\.html$/,'')!==expected.pathname.replace(/index\.html$/,''))return null}catch{return null}}return counter(doc(main))}
 function updateNavigation(c){const seq=sequence(),i=seq.findIndex(x=>x.id===current?.id);$('count').textContent=c?c[0]+' / '+c[1]:(i>=0?(i+1)+' / '+seq.length:'— / —');$('count').title=c?'Slajd u prezentaciji':'Stavka u kategoriji';$('slideBack').disabled=!(c&&c[0]>1)&&!adjacent(-1);$('slideForward').disabled=!(c&&c[0]<c[1])&&!adjacent(1)}
 async function showNextItem(){
  const item=adjacent(1),g=generation,marker=g+':item:'+(item?.id||'end');
  if(lastTarget===marker)return;lastTarget=marker;
  if(!item){message('Poslednja stavka.');return}
  message('Sledeće: '+item.name);
- if(isGame(item))return;
+ if(isGame(item)||isPresenterLink(item))return;
  try{let html=null;if(item.kind==='file'){html=await read(item.id)}else if(new URL(item.url).origin===location.origin){const res=await fetch(item.url);if(res.ok)html=await res.text()}
  if(g!==generation||lastTarget!==marker||!html)return;
  const slides=extractStaticSlides(html,item.kind==='link'?item.url:null);
