@@ -1,4 +1,4 @@
-/* DE-MAX TUTIN — ÖSD A1 Worker, 35 mejlova — 10.11.2026. v7: pouzdanija provera prirodnih A1 odgovora.
+/* DE-MAX TUTIN — ÖSD A1 Worker, 51 mejl — 10.11.2026. v7: pouzdanija provera prirodnih A1 odgovora.
  * Dva obavezna podatka (dan + sat), perspektiva ICH/DU/WIR,
  * obrada SITUATION / primljenog mejla, nula bodova za skroz
  * promašenu temu, tri prihvaćena završna pozdrava.
@@ -13,7 +13,7 @@ var __name = (target, value) => __defProp(target, "name", { value, configurable:
 
 // src/email-worker.js
 var SITE_ORIGINS = /* @__PURE__ */ new Set(["https://nemackidemax13-oss.github.io", "https://biografije-a1.pages.dev", "https://biografije-a1.nemackidemax13.workers.dev", "https://a1nivo.nemackidemax13.workers.dev"]);
-var TASKS_URL = "https://raw.githubusercontent.com/nemackidemax13-oss/Biografije-A1/main/OSD-A1-Schreiben-AI/tasks.json";
+var TASKS_URL = "https://raw.githubusercontent.com/nemackidemax13-oss/Biografije-A1/main/OSD-A1-Schreiben-AI/tasks-51.json";
 var MODEL_DEFAULT = "gpt-4.1-mini";
 var TIMEOUT_MS = 38e3;
 var MAX_BODY_BYTES = 6e3;
@@ -45,8 +45,8 @@ async function tasks() {
   const resp = await fetch(TASKS_URL, { headers: { "Accept": "application/json" } });
   if (!resp.ok) throw Error("Zadaci nisu dostupni.");
   const body = await resp.json();
-  if (!Array.isArray(body) || body.length !== 35 || body.some((t) => !Array.isArray(t.questions) || t.questions.length !== 3)) {
-    throw Error("Baza 35 zadataka nije ispravna.");
+  if (!Array.isArray(body) || body.length !== 51 || body.some((t) => !Array.isArray(t.questions) || t.questions.length !== 3)) {
+    throw Error("Baza 51 zadatka nije ispravna.");
   }
   tasksCache = body;
   cacheExpiry = Date.now() + 3e5;
@@ -614,7 +614,7 @@ function a1HasHelperPhrase(text) {
 
 async function grade(body, env) {
   const index = body && body.mailIndex, answer = body && body.answer;
-  if (!Number.isInteger(index) || index < 0 || index > 34 || typeof answer !== "string" || !answer.trim() || answer.length > MAX_ANSWER_CHARS) {
+  if (!Number.isInteger(index) || index < 0 || index > 50 || typeof answer !== "string" || !answer.trim() || answer.length > MAX_ANSWER_CHARS) {
     return { status: 400, data: { error: "Izaberi mejl i napisi odgovor (do 2200 znakova)." } };
   }
   const wordCount = (answer.match(/[\p{L}\p{N}]+(?:['’\-][\p{L}\p{N}]+)*/gu) || []).length;
@@ -638,7 +638,7 @@ async function grade(body, env) {
     "TACNO TRI PITANJA:\n" + task.questions.map((x, i) => i + 1 + ". " + x).join("\n"),
     "PROVERI SVA TRI PITANJA REDOM, SA KONKRETNIM USLOVIMA:\n" + questionRequirements(task),
     "STROGO: questionEvidence treba da bude doslovan kratak citat odgovora kandidata za SVAKO pojedinacno pitanje. Prazan dokaz i 0 poena kada nema odgovora. Ne koristi citate iz postavke.",
-    "OBAVEZNE CINJENICE I OGRANICENJA ZA OVAJ ZADATAK (ne predstavljaju kandidatov odgovor):\n" + TASK_GUIDANCE[index],
+    "OBAVEZNE CINJENICE I OGRANICENJA ZA OVAJ ZADATAK (ne predstavljaju kandidatov odgovor):\n" + (TASK_GUIDANCE[index] || task.guidance || "Poštuj situaciju i sva tri pitanja."),
     "NAPOMENA ZA ODGOVOR: feedback i svaki od tri questionFeedback napi\u0161i isklju\u010Divo na srpskom latinicom. correctedText mora ostati na nema\u010Dkom. U nema\u010Dkom tekstu navedi samo nema\u010Dki ispravljeni mejl. Ne dodaj oslovljavanje ni ime osobe iz postavke: bez ucenikovog Hallo nema automatskog Hallo Melanie; ako je napisao samo Hallo, ne dopisuj ime.",
     "PODSETNIK: vrati translationSr - potpun prevod SVAKOG DELA ispravljenog mejla na srpski latinicom; sentenceFeedback - objasni po stvarnoj gresci bez izmisljanja; osnova je ovaj zadatak, sva tri pitanja i ucenikov stvarni odgovor.",
     "VRATI correctedEvidence[0..2] doslovno iz correctedText, sa konjugovanim glagolom i perspektivom iz checkingRules za dato pitanje. Ako questionEvidence[i] nije prisutan u stvarnom u\u010Denikovom tekstu, correctedEvidence[i] mora biti prazan. U prevodu translationSr koristi isklju\u010Divo zavr\u0161ne, ve\u0107 ispravljene re\u010Denice.",
@@ -1256,7 +1256,7 @@ var email_worker_default = {
   async fetch(request, env) {
     const url = new URL(request.url), origin = request.headers.get("Origin");
     if (request.method === "GET" && url.pathname === "/health")
-      return json({ status: "ok", openaiConfigured: Boolean(env.OPENAI_API_KEY), tasks: 35, provider: "OpenAI", verificationVersion: "a1-osd-schreiben-v6-20261101", workerBuild: "20261110-a1-prirodni-odgovori-v7", attemptsLimitedByWorker: false }, 200, origin);
+      return json({ status: "ok", openaiConfigured: Boolean(env.OPENAI_API_KEY), tasks: 51, provider: "OpenAI", verificationVersion: "a1-osd-schreiben-v6-20261101", workerBuild: "20261128-a1-51-mejlova-v17", attemptsLimitedByWorker: false }, 200, origin);
     if (url.pathname !== "/api/check-email" && url.pathname !== "/api/rafaela-review" && url.pathname !== "/api/check-a2-email")
       return json({ error: "Nepoznata putanja. Koristi /health, /api/check-email ili /api/rafaela-review." }, 404, origin);
     if (!SITE_ORIGINS.has(origin))
