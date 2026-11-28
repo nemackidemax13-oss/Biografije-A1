@@ -276,6 +276,16 @@ button{touch-action:manipulation}
 .correction-shake{animation:sentenceShake .5s ease-in-out}
 @keyframes sentenceShake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
 @media(prefers-reduced-motion:reduce){.correction-shake{animation:none}}
+
+/* V4 sequential animated word exchange */
+.build-sorting{background:linear-gradient(145deg,#fff8df,#fffaf0);border:2px solid #e8b74d;overflow:visible}
+.build-sorting .build-label{color:#ad6a13}.build-sorting .chosen-words{overflow:visible;isolation:isolate;min-height:clamp(40px,7vmin,85px);padding:clamp(4px,1.4vmin,12px) 0}
+.build-sorting .chosen-tile{position:relative;opacity:1!important;background:linear-gradient(145deg,#fff2cc,#f7d580);border:1px solid #e1a73b;border-bottom:4px solid #c88c21;color:#70450d;box-shadow:0 4px 10px #a56c1c22;will-change:transform}
+.build-sorting .chosen-tile.tile-swapping{background:linear-gradient(145deg,#ffdf72,#f5ad27);border-color:#c98713;color:#62390a;box-shadow:0 8px 24px #dc9b3e70,0 0 0 3px #f9cf6c70}
+.build-sorting .chosen-tile.tile-settled:not(.tile-swapping){background:linear-gradient(145deg,#35ba72,#16864b);border-color:#15803d;color:white;box-shadow:0 4px 10px #15803d25}
+.sorting-text{color:#b77913}.correction-finish{animation:correctionFinish .65s ease-out}
+@keyframes correctionFinish{0%{box-shadow:0 0 0 0 #4ade8070}45%{box-shadow:0 0 0 9px #4ade8040}100%{box-shadow:0 0 0 0 #4ade8000}}
+@media(prefers-reduced-motion:reduce){.correction-finish{animation:none}}
 </style></head><body><main id="app" tabindex="-1"></main><canvas id="fx" aria-hidden="true"></canvas><script>
 'use strict';const Q=[["Bilde Sätze im Präsens",["in","lebt","Anna","Wien","."],1,"Anna lebt in Wien.",[]],["Bilde Sätze im Präsens",["Tennis","am","Martin","spielt","Samstag","."],1,"Martin spielt am Samstag Tennis.",["Martin spielt Tennis am Samstag."]],["Bilde Sätze im Präsens",["jeden","Deutsch","lernen","Wir","Tag","."],1,"Wir lernen jeden Tag Deutsch.",["Wir lernen Deutsch jeden Tag."]],["Bilde Sätze im Präsens",["ist","schwarz","Katze","Meine","."],1,"Meine Katze ist schwarz.",[]],["Bilde Sätze im Präsens",["zur","fährt","Schule","Er","mit","dem","Rad","."],1,"Er fährt mit dem Rad zur Schule.",["Er fährt zur Schule mit dem Rad."]],["Bilde Sätze im Präsens",["kocht","Abend","Meine","jeden","Mutter","."],1,"Meine Mutter kocht jeden Abend.",[]],["Bilde Sätze im Präsens",["Buch","im","Garten","Wir","lesen","ein","."],1,"Wir lesen ein Buch im Garten.",["Wir lesen im Garten ein Buch."]],["Bilde Sätze im Präsens",["gern","und","Sie","viel","arbeiten","."],1,"Sie arbeiten viel und gern.",["Sie arbeiten gern und viel."]],["Bilde Sätze im Präsens",["Anna",".","heiße","Ich"],1,"Ich heiße Anna.",[]],["Bilde Sätze im Präsens",["bist","sehr","nett",".","Du"],1,"Du bist sehr nett.",[]],["Bilde Sätze im Präsens",[".","Deutschland","aus","kommt","Er"],1,"Er kommt aus Deutschland.",[]],["Bilde Sätze im Präsens",["wohnt","Berlin",".","in","Sie"],1,"Sie wohnt in Berlin.",[]],["Bilde Sätze im Präsens",["sind","Wir","eine","Familie","."],1,"Wir sind eine Familie.",[]],["Bilde Sätze im Präsens",["seid","aus","Serbien","Ihr","."],1,"Ihr seid aus Serbien.",[]],["Bilde Sätze im Präsens",[".","Sie","sprechen","Deutsch"],1,"Sie sprechen Deutsch.",[]],["Bilde Sätze im Präsens",["habe",".","Ich","zwei","Kinder"],1,"Ich habe zwei Kinder.",[]],["Bilde Sätze im Präsens",["Mein","Vater","ist",".","Lehrer"],1,"Mein Vater ist Lehrer.",[]],["Bilde Sätze im Präsens",["Mutter","ist",".","Meine","Ärztin"],1,"Meine Mutter ist Ärztin.",[]],["Bilde Sätze im Präsens",["Mein","Paul",".","Bruder","heißt"],1,"Mein Bruder heißt Paul.",[]],["Bilde Sätze im Präsens",["alt","zwölf","ist",".","Schwester","Jahre","Meine"],1,"Meine Schwester ist zwölf Jahre alt.",[]],["Bilde Sätze im Präsens",["Eltern",".","Meine","wohnen","in","Tutin"],1,"Meine Eltern wohnen in Tutin.",[]],["Bilde Sätze im Präsens",["Opa","alt",".","Jahre","ist","Mein","siebzig"],1,"Mein Opa ist siebzig Jahre alt.",[]],["Bilde Sätze im Präsens",["Meine","Maria","heißt",".","Oma"],1,"Meine Oma heißt Maria.",[]],["Bilde Sätze im Präsens",["Ich",".","zwanzig","bin","alt","Jahre"],1,"Ich bin zwanzig Jahre alt.",[]],["Bilde Sätze im Präsens",[".","einen","hast","Bruder","Du"],1,"Du hast einen Bruder.",[]],["Bilde Sätze im Präsens",["hat","eine","Schwester",".","Er"],1,"Er hat eine Schwester.",[]],["Bilde Sätze im Präsens",[".","eine","Tochter","hat","Sie"],1,"Sie hat eine Tochter.",[]],["Bilde Sätze im Präsens",["haben","Sohn",".","einen","Wir"],1,"Wir haben einen Sohn.",[]],["Bilde Sätze im Präsens",["Ihr","eine","habt","Katze","."],1,"Ihr habt eine Katze.",[]],["Bilde Sätze im Präsens",["nett",".","Meine","sehr","sind","Großeltern"],1,"Meine Großeltern sind sehr nett.",[]],["Bilde Sätze im Präsens",["Mein","Jahre",".","fünf","alt","Enkel","ist"],1,"Mein Enkel ist fünf Jahre alt.",[]],["Bilde Sätze im Präsens",["Enkelin",".","Meine","heißt","Emma"],1,"Meine Enkelin heißt Emma.",[]],["Bilde Sätze im Präsens",["spreche",".","Deutsch","ein","bisschen","Ich"],1,"Ich spreche ein bisschen Deutsch.",[]],["Bilde Sätze im Präsens",["Deutsch",".","Du","lernst"],1,"Du lernst Deutsch.",[]],["Bilde Sätze im Präsens",["spielt","Er",".","Fußball"],1,"Er spielt Fußball.",[]],["Bilde Sätze im Präsens",["hört","Sie","Musik","."],1,"Sie hört Musik.",[]],["Bilde Sätze im Präsens",["Wasser",".","trinken","Wir"],1,"Wir trinken Wasser.",[]],["Bilde Sätze im Präsens",["Ihr","Pizza",".","esst"],1,"Ihr esst Pizza.",[]],["Bilde Sätze im Präsens",[".","spielen","im","Meine","Kinder","Park"],1,"Meine Kinder spielen im Park.",[]],["Bilde Sätze im Präsens",["Wien","in","Mein","Mann","arbeitet","."],1,"Mein Mann arbeitet in Wien.",[]],["Bilde Sätze im Präsens",["Tante","Meine","in","Hamburg",".","wohnt"],1,"Meine Tante wohnt in Hamburg.",[]],["Bilde Sätze im Präsens",["Ich",".","Brot","kaufe"],1,"Ich kaufe Brot.",[]],["Bilde Sätze im Präsens",[".","ein","Buch","liest","Du"],1,"Du liest ein Buch.",[]],["Bilde Sätze im Präsens",["schreibt",".","E-Mail","eine","Er"],1,"Er schreibt eine E-Mail.",[]],["Bilde Sätze im Präsens",["macht","Hausaufgaben",".","Sie"],1,"Sie macht Hausaufgaben.",[]],["Bilde Sätze im Präsens",["gehen","Kino","ins","Wir","."],1,"Wir gehen ins Kino.",[]],["Bilde Sätze im Präsens",["Ihr","aus","Österreich","kommt","."],1,"Ihr kommt aus Österreich.",[]],["Bilde Sätze im Präsens",["Geschwister","Meine",".","sind","jung"],1,"Meine Geschwister sind jung.",[]],["Bilde Sätze im Präsens",["Pazar","Novi","Ich",".","wohne","in"],1,"Ich wohne in Novi Pazar.",[]],["Bilde Sätze im Präsens",["Du","kommst","Schweiz",".","aus","der"],1,"Du kommst aus der Schweiz.",[]],["Bilde Sätze im Präsens",["Er",".","Kaffee","trinkt","gern"],1,"Er trinkt gern Kaffee.",["Er trinkt Kaffee gern."]],["Bilde Sätze im Präsens",["spielt","Sie","Gitarre",".","gern"],1,"Sie spielt gern Gitarre.",["Sie spielt Gitarre gern."]],["Bilde Sätze im Präsens",["Wir",".","besuchen","Oma","unsere"],1,"Wir besuchen unsere Oma.",[]],["Bilde Sätze im Präsens",[".","Wörter","neue","Ihr","lernt"],1,"Ihr lernt neue Wörter.",[]],["Bilde Sätze im Präsens",["Mein","fährt","Auto",".","Vater"],1,"Mein Vater fährt Auto.",[]],["Bilde Sätze im Präsens",["arbeitet","im","Büro",".","Meine","Mutter"],1,"Meine Mutter arbeitet im Büro.",[]],["Bilde Sätze im Präsens",[".","mein","ist","Onkel","Das"],1,"Das ist mein Onkel.",[]],["Bilde Sätze im Präsens",["sind","Eltern","meine",".","Das"],1,"Das sind meine Eltern.",[]],["Bilde Sätze im Präsens",["heißt","Sara",".","Frau","Meine"],1,"Meine Frau heißt Sara.",[]],["Bilde Sätze im Präsens",[".","alt","drei","Jahre","Mein","ist","Kind"],1,"Mein Kind ist drei Jahre alt.",[]]];const app=document.querySelector('#app'),$=id=>document.getElementById(id),esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));let correcting=false,drafts=[],players=[],game=[],pos=0,stage='setup',answers=[],bonusRounds=new Set(),competitive=0,popup=null,showImage=true,finalTimers=[],volume=.2,muted=false,ctx=null,tones=[];const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
 function audio(){try{ctx=ctx||new (window.AudioContext||window.webkitAudioContext)();if(ctx.state==='suspended')ctx.resume().catch(()=>{});}catch{}}function note(f,t,d,v=.14,type='sine'){if(!ctx||muted||!volume)return;const o=ctx.createOscillator(),g=ctx.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v*volume,t+.025);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(ctx.destination);o.start(t);o.stop(t+d+.02);tones.push(o);o.onended=()=>{tones=tones.filter(x=>x!==o)}}function stopMusic(){tones.forEach(o=>{try{o.stop()}catch{}});tones=[]}function sound(kind){audio();if(!ctx)return;const t=ctx.currentTime+.02;if(kind==='right'){[523,659,784,1047].forEach((f,i)=>note(f,t+i*.095,.23))}if(kind==='wrong'){note(330,t,.23,.13);note(262,t+.12,.28,.12)}if(kind==='bonus'){[392,523,659,784,1047].forEach((f,i)=>note(f,t+i*.12,.3,.14,'triangle'))}if(kind==='win'){celebrationMusic()}}
@@ -351,32 +361,69 @@ function solutionOrder(q){
  const target=q[3].replace(/([.!?])$/,' $1').split(' '),used=new Set();
  return target.map(w=>{const i=q[1].findIndex((x,j)=>x===w&&!used.has(j));if(i<0)throw Error('Missing word');used.add(i);return i});
 }
-function checkSentence(){
- if(stage!=='game'||answers[pos]!==null)return;
+function pauseCorrection(ms){return new Promise(resolve=>setTimeout(resolve,ms))}
+function correctionTone(step){audio();if(ctx){const t=ctx.currentTime+.01;note(440+step*55,t,.13,.10,'sine');note(660+step*55,t+.075,.17,.07,'triangle')}}
+async function animateCorrection(q,d,questionPos){
+ const target=solutionOrder(q),active=()=>stage==='game'&&pos===questionPos&&drafts[pos]===d;
+ const zone=app.querySelector('.build-zone'),row=app.querySelector('.chosen-words'),feedback=app.querySelector('.feedback');
+ if(zone&&!reduced)zone.classList.add('correction-shake');
+ await pauseCorrection(reduced?0:650);
+ if(!active())return;
+ if(reduced||!row||typeof Element.prototype.animate!=='function'){d.splice(0,d.length,...target);return}
+ zone.classList.remove('correction-shake');zone.classList.add('build-sorting');
+ const label=zone.querySelector('.build-label');label.textContent='Die Wörter tauschen ihre Plätze …';
+ if(feedback)feedback.innerHTML='<strong class="sorting-text">↔ Die Wörter werden geordnet …</strong>';
+ const tiles=new Map([...row.querySelectorAll('[data-word-id]')].map(el=>[Number(el.dataset.wordId),el]));
+ let step=0;
+ for(let i=0;i<target.length;i++){
+   if(!active())return;
+   if(d[i]===target[i]){tiles.get(d[i])?.classList.add('tile-settled');continue}
+   const j=d.indexOf(target[i],i+1),left=d[i],right=d[j];
+   const old=new Map([...tiles].map(([id,el])=>[id,el.getBoundingClientRect()]));
+   [d[i],d[j]]=[d[j],d[i]];
+   d.forEach(id=>row.appendChild(tiles.get(id)));
+   const fresh=new Map([...tiles].map(([id,el])=>[id,el.getBoundingClientRect()]));
+   const anim=[];
+   for(const [id,el] of tiles){
+     const x=old.get(id).left-fresh.get(id).left,y=old.get(id).top-fresh.get(id).top;
+     const swapping=id===left||id===right,upper=id===right,arc=upper?-Math.min(36,innerHeight*.065):Math.min(29,innerHeight*.052);
+     if(swapping){
+       el.classList.add('tile-swapping');el.style.zIndex=upper?'6':'5';
+       anim.push(el.animate([
+         {transform:'translate('+x+'px,'+y+'px) scale(1)',offset:0},
+         {transform:'translate('+x+'px,'+(y+arc)+'px) scale(1.09)',offset:.2},
+         {transform:'translate('+(x*.5)+'px,'+(y*.5+arc)+'px) scale(1.09)',offset:.5},
+         {transform:'translate(0px,'+arc+'px) scale(1.06)',offset:.8},
+         {transform:'translate(0,0) scale(1)',offset:1}
+       ],{duration:780,easing:'ease-in-out'}));
+     }else if(Math.abs(x)+Math.abs(y)>1){
+       anim.push(el.animate([{transform:'translate('+x+'px,'+y+'px)'},{transform:'translate(0,0)'}],{duration:780,easing:'cubic-bezier(.22,.7,.2,1)'}))
+     }
+   }
+   correctionTone(step++);
+   await Promise.all(anim.map(x=>x.finished.catch(()=>{})));
+   for(const el of tiles.values()){el.classList.remove('tile-swapping');el.style.zIndex=''}
+   tiles.get(target[i])?.classList.add('tile-settled');
+   await pauseCorrection(150);
+ }
+}
+async function checkSentence(){
+ if(stage!=='game'||correcting||answers[pos]!==null)return;
  const q=Q[game[pos]],d=drafts[pos];if(d.length!==q[1].length)return;
  const text=assembled(q,d),good=[q[3],...q[4]].includes(text);
  answers[pos]=good?1:0;
  if(good){render();sound('right');burst(innerWidth*.5,innerHeight*.5,45);pronounce(text);return}
  correcting=true;render();sound('wrong');
- const zone=app.querySelector('.build-zone');if(zone&&!reduced)zone.classList.add('correction-shake');
- const questionPos=pos,originalDraft=d;
- setTimeout(()=>{
-   if(stage!=='game'||pos!==questionPos||drafts[pos]!==originalDraft){correcting=false;return}
-   const oldPositions=new Map([...app.querySelectorAll('[data-word-id]')].map(el=>[el.dataset.wordId,el.getBoundingClientRect()]));
-   const newOrder=solutionOrder(q);
-   d.splice(0,d.length,...newOrder);
-   render();
-   if(!reduced){
-     for(const tile of app.querySelectorAll('[data-word-id]')){
-       const before=oldPositions.get(tile.dataset.wordId),after=tile.getBoundingClientRect();
-       if(!before||typeof tile.animate!=='function')continue;
-       const dx=before.left-after.left,dy=before.top-after.top;
-       if(Math.abs(dx)+Math.abs(dy)>1)tile.animate([{transform:'translate('+dx+'px,'+dy+'px) scale(1.04)',zIndex:3},{transform:'translate(0,0) scale(1)',zIndex:1}],{duration:720,easing:'cubic-bezier(.2,.75,.2,1)',fill:'none'});
-       else tile.animate([{opacity:.7},{opacity:1}],{duration:720});
-     }
+ const questionPos=pos;
+ try{await animateCorrection(q,d,questionPos)}
+ finally{
+   correcting=false;
+   if(stage==='game'&&pos===questionPos&&drafts[pos]===d){
+     d.splice(0,d.length,...solutionOrder(q));render();
+     if(!reduced){const zone=app.querySelector('.build-zone');zone?.classList.add('correction-finish');burst(innerWidth*.5,innerHeight*.52,22)}
+     pronounce(q[3]);focusGame();
    }
-   setTimeout(()=>{correcting=false;if(stage==='game'&&pos===questionPos&&drafts[pos]===originalDraft){$('prev').disabled=pos===0;$('next').disabled=false;pronounce(q[3]);focusGame()}},reduced?0:740);
- },reduced?0:650);
+ }
 }
 function prev(){if(stage==='game'&&!correcting&&pos>0){pos--;render(false)}}function next(){if(stage!=='game'||correcting||answers[pos]===null)return;if(pos===game.length-1){finale();return}pos++;render(true)}
 function rankings(){const rows=players.map((name,i)=>({name,score:0,correct:0,wrong:0,total:0,bonus:0,entry:i}));for(let j=0;j<competitive;j++){const p=rows[j%players.length];p.total++;if(answers[j]===Q[game[j]][2]){p.score+=isBonus(j)?20:10;p.correct++;if(isBonus(j))p.bonus++}else if(answers[j]!==null)p.wrong++}rows.sort((a,b)=>b.score-a.score||b.correct-a.correct||a.entry-b.entry);rows.forEach((x,i)=>x.rank=i+1);return rows}
