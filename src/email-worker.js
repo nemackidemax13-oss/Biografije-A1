@@ -1,4 +1,4 @@
-/* DE-MAX TUTIN — ÖSD A1 Worker, 51 mejl — 10.11.2026. v7: pouzdanija provera prirodnih A1 odgovora.
+/* DE-MAX TUTIN — ÖSD A1 Worker, 50 mejlova — 10.11.2026. v7: pouzdanija provera prirodnih A1 odgovora.
  * Dva obavezna podatka (dan + sat), perspektiva ICH/DU/WIR,
  * obrada SITUATION / primljenog mejla, nula bodova za skroz
  * promašenu temu, tri prihvaćena završna pozdrava.
@@ -13,7 +13,7 @@ var __name = (target, value) => __defProp(target, "name", { value, configurable:
 
 // src/email-worker.js
 var SITE_ORIGINS = /* @__PURE__ */ new Set(["https://nemackidemax13-oss.github.io", "https://biografije-a1.pages.dev", "https://biografije-a1.nemackidemax13.workers.dev", "https://a1nivo.nemackidemax13.workers.dev"]);
-var TASKS_URL = "https://raw.githubusercontent.com/nemackidemax13-oss/Biografije-A1/main/OSD-A1-Schreiben-AI/tasks-51.json";
+var TASKS_URL = "https://raw.githubusercontent.com/nemackidemax13-oss/Biografije-A1/main/OSD-A1-Schreiben-AI/tasks-50.json";
 var MODEL_DEFAULT = "gpt-4.1-mini";
 var TIMEOUT_MS = 38e3;
 var MAX_BODY_BYTES = 6e3;
@@ -45,8 +45,8 @@ async function tasks() {
   const resp = await fetch(TASKS_URL, { headers: { "Accept": "application/json" } });
   if (!resp.ok) throw Error("Zadaci nisu dostupni.");
   const body = await resp.json();
-  if (!Array.isArray(body) || body.length !== 51 || body.some((t) => !Array.isArray(t.questions) || t.questions.length !== 3)) {
-    throw Error("Baza 51 zadatka nije ispravna.");
+  if (!Array.isArray(body) || body.length !== 50 || body.some((t) => !Array.isArray(t.questions) || t.questions.length !== 3)) {
+    throw Error("Baza 50 zadataka nije ispravna.");
   }
   tasksCache = body;
   cacheExpiry = Date.now() + 3e5;
@@ -614,7 +614,7 @@ function a1HasHelperPhrase(text) {
 
 async function grade(body, env) {
   const index = body && body.mailIndex, answer = body && body.answer;
-  if (!Number.isInteger(index) || index < 0 || index > 50 || typeof answer !== "string" || !answer.trim() || answer.length > MAX_ANSWER_CHARS) {
+  if (!Number.isInteger(index) || index < 0 || index > 49 || typeof answer !== "string" || !answer.trim() || answer.length > MAX_ANSWER_CHARS) {
     return { status: 400, data: { error: "Izaberi mejl i napisi odgovor (do 2200 znakova)." } };
   }
   const wordCount = (answer.match(/[\p{L}\p{N}]+(?:['’\-][\p{L}\p{N}]+)*/gu) || []).length;
@@ -1256,7 +1256,7 @@ var email_worker_default = {
   async fetch(request, env) {
     const url = new URL(request.url), origin = request.headers.get("Origin");
     if (request.method === "GET" && url.pathname === "/health")
-      return json({ status: "ok", openaiConfigured: Boolean(env.OPENAI_API_KEY), tasks: 51, provider: "OpenAI", verificationVersion: "a1-osd-schreiben-v6-20261101", workerBuild: "20261128-a1-51-mejlova-v17", attemptsLimitedByWorker: false }, 200, origin);
+      return json({ status: "ok", openaiConfigured: Boolean(env.OPENAI_API_KEY), tasks: 50, provider: "OpenAI", verificationVersion: "a1-osd-schreiben-v6-20261101", workerBuild: "20261128-a1-50-mejlova-v18", attemptsLimitedByWorker: false }, 200, origin);
     if (url.pathname !== "/api/check-email" && url.pathname !== "/api/rafaela-review" && url.pathname !== "/api/check-a2-email")
       return json({ error: "Nepoznata putanja. Koristi /health, /api/check-email ili /api/rafaela-review." }, 404, origin);
     if (!SITE_ORIGINS.has(origin))
