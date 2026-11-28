@@ -106,7 +106,7 @@ function sequence(){return current?items.filter(i=>i.category===current.category
 function adjacent(dir){const seq=sequence(),i=seq.findIndex(x=>x.id===current?.id);return i<0?null:seq[i+dir]||null}
 function isGame(item){if(!item)return false;let leaf='';try{leaf=new URL(item.url).pathname.split('/').filter(Boolean).pop()||''}catch{}return /quiz|spiel|igra|game|kviz/i.test(leaf+' '+item.name)}
 function slideCounter(){if(!current||isGame(current)||isPresenterLink(current))return null;if(current.kind==='link'){try{if(new URL(current.url).origin!==location.origin)return null;const actual=new URL(main.contentWindow.location.href);const expected=new URL(current.url);if(actual.pathname.replace(/index\.html$/,'')!==expected.pathname.replace(/index\.html$/,''))return null}catch{return null}}return counter(doc(main))}
-function updateNavigation(c){const seq=sequence(),i=seq.findIndex(x=>x.id===current?.id);$('count').textContent=c?c[0]+' / '+c[1]:(i>=0?(i+1)+' / '+seq.length:'— / —');$('count').title=c?'Slajd u prezentaciji':'Stavka u kategoriji';$('slideBack').disabled=!(c&&c[0]>1)&&!adjacent(-1);$('slideForward').disabled=!(c&&c[0]<c[1])&&!adjacent(1)}
+function updateNavigation(c){const seq=sequence(),i=seq.findIndex(x=>x.id===current?.id),game=isGame(current);$('count').textContent=game?'1 / 1':c?c[0]+' / '+c[1]:(i>=0?(i+1)+' / '+seq.length:'— / —');$('count').title=game?'Igra – jedna stavka':c?'Slajd u prezentaciji':'Stavka u kategoriji';$('slideBack').disabled=!(c&&c[0]>1)&&!adjacent(-1);$('slideForward').disabled=!(c&&c[0]<c[1])&&!adjacent(1)}
 async function showNextItem(){
  const item=adjacent(1),g=generation,marker=g+':item:'+(item?.id||'end');
  if(lastTarget===marker)return;lastTarget=marker;
