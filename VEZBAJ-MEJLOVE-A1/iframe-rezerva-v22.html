@@ -3303,6 +3303,20 @@ html body #answerPanel .editorarea #a1DraftFrame #answer::-webkit-scrollbar{disp
  }
 }
 </style>
+<style id="a1-prompt-fit-v28">
+@media(max-width:799px){
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.prompt #promptScroll.taskscroll>.bilingual.prompt-compact{padding:3px 4px 4px!important;}
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.prompt #promptScroll.taskscroll>.bilingual.prompt-compact .paired-card{padding:6px 8px!important;margin:0 0 5px!important;}
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.prompt #promptScroll.taskscroll>.bilingual.prompt-compact .paired-card:last-child{margin-bottom:0!important;}
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.prompt #promptScroll.taskscroll>.bilingual.prompt-compact .paired-heading{margin:0 0 4px!important;}
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.prompt #promptScroll.taskscroll>.bilingual.prompt-compact .paired-lines{gap:3px!important;}
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.prompt #promptScroll.taskscroll>.bilingual.prompt-compact .sentence-pair{padding:0 0 3px!important;margin:0!important;}
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.prompt #promptScroll.taskscroll>.bilingual.prompt-compact .sentence-pair:last-child{padding-bottom:0!important;}
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.prompt #promptScroll.taskscroll>.bilingual.prompt-compact .mail-meta{padding-bottom:4px!important;margin-bottom:5px!important;gap:2px!important;}
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.prompt #promptScroll.taskscroll>.bilingual.prompt-compact .sentence-de{line-height:1.3!important;}
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.prompt #promptScroll.taskscroll>.bilingual.prompt-compact .sentence-sr{line-height:1.3!important;padding-top:1px!important;margin-top:1px!important;}
+}
+</style>
 </head>
 <body class="view-intro a1-translation-off">
 <div class="app">
@@ -4318,6 +4332,7 @@ function closeMobileWriting(toResult=false){
  growMailEditor();
  window.scrollTo(0,0);
  if(toResult)requestAnimationFrame(()=>{fitMailReviewScreen();setTimeout(fitMailReviewScreen,140)});
+ else requestAnimationFrame(fitMailPromptScreen);
 }
 $('mobileStartTop').addEventListener('click',openMobileWriting);
 $('mobileStartBottom').addEventListener('click',openMobileWriting);
@@ -4459,15 +4474,16 @@ window.addEventListener('resize',()=>{
 /* Uklapanje obe jezičke verzije postavke u visinu ekrana bez skrolovanja.
    Ne skraćuje tekst: meri pune kartice i ravnomerno skalira samo prikaz. */
 function fitMailPromptScreen(){
- // Mobilna verzija koristi punu širinu i čitljiv tekst; više ne smanjuje čitavu postavku.
- const holder=document.getElementById('promptScroll');
- const content=holder?.querySelector('.bilingual');
+ const content=document.querySelector('#promptScroll>.bilingual');
  if(!content)return;
- for(const property of ['width','max-width','height','transform','transform-origin']){
-   content.style.removeProperty(property);
- }
- // Po promeni mejla, jezika ili rotaciji ostaje početak zadatka vidljiv.
- // Ne vraćati učenika na vrh dok lista postavku ili menja veličinu fonta.
+ for(const property of ['width','max-width','height','transform','transform-origin'])content.style.removeProperty(property);
+ if(!window.matchMedia('(max-width:799px)').matches||!document.body.classList.contains('view-mail')||document.body.classList.contains('mobile-writing')||document.body.classList.contains('mobile-review')||content.clientHeight<=0)return;
+ const previousScroll=content.scrollTop;
+ content.classList.remove('prompt-compact');
+ // Preserve chosen font. Reduce spacing only when normal layout overflows.
+ if(content.scrollHeight>content.clientHeight+1)content.classList.add('prompt-compact');
+ // overflow-y:auto shows scrolling only when content still exceeds the viewport.
+ content.scrollTop=Math.min(previousScroll,Math.max(0,content.scrollHeight-content.clientHeight));
 }
 window.addEventListener('resize',()=>requestAnimationFrame(fitMailPromptScreen));
 window.visualViewport?.addEventListener('resize',()=>requestAnimationFrame(fitMailPromptScreen));
