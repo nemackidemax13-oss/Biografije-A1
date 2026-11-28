@@ -3259,6 +3259,50 @@ html body #answerPanel .editorarea #a1DraftFrame #answer::-webkit-scrollbar{disp
 .a1-help-list small{display:block;color:#65738a;font-size:12px;margin-top:3px}
 .a1-help-list h3{margin:4px 0 8px;color:#1854a7;font-size:12px}
 </style>
+<style id="a1-prompt-scroll-v26">
+/* Postavka: sadržaj se lista nezavisno, komande su uvek ispod. */
+@media(max-width:799px){
+ html body.view-mail:not(.mobile-writing):not(.mobile-review),
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) .app,
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) main.workspace,
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.prompt,
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.prompt #promptScroll.taskscroll{
+   touch-action:pan-y!important;
+ }
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.prompt #promptScroll.taskscroll{
+   display:flex!important;flex-direction:column!important;flex:1 1 0%!important;
+   min-height:0!important;height:0!important;max-height:none!important;
+   position:relative!important;padding:0!important;overflow:hidden!important;
+ }
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.prompt #promptScroll.taskscroll>.bilingual{
+   display:block!important;position:relative!important;inset:auto!important;
+   flex:1 1 0%!important;height:0!important;min-height:0!important;max-height:none!important;
+   width:100%!important;max-width:100%!important;box-sizing:border-box!important;
+   margin:0!important;padding:4px 4px 12px!important;transform:none!important;
+   overflow-x:hidden!important;overflow-y:auto!important;
+   touch-action:pan-y!important;overscroll-behavior-y:contain!important;
+   -webkit-overflow-scrolling:touch!important;scrollbar-width:thin!important;
+ }
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.prompt #promptScroll.taskscroll>.bilingual :is(.paired-card,.paired-lines,.sentence-pair,.sentence-de,.sentence-sr){
+   touch-action:pan-y!important;max-height:none!important;height:auto!important;overflow-wrap:anywhere!important;
+ }
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.prompt #promptScroll.taskscroll>.bilingual :is(.paired-card,.paired-lines,.sentence-pair){
+   overflow:visible!important;flex-shrink:0!important;
+ }
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.prompt #promptScroll.taskscroll>.start-writing-wrap{
+   display:block!important;position:static!important;inset:auto!important;
+   flex:0 0 auto!important;width:100%!important;max-width:100%!important;height:auto!important;
+   margin:0!important;padding:3px 5px max(4px,env(safe-area-inset-bottom,0px))!important;
+   box-sizing:border-box!important;touch-action:manipulation!important;
+ }
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.prompt #promptScroll.taskscroll>.bilingual .sentence-de{
+   font-size:calc(clamp(15px,3.9vw,17px) + var(--a1-prompt-font-delta,0px))!important;line-height:1.46!important;
+ }
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.prompt #promptScroll.taskscroll>.bilingual .sentence-sr{
+   font-size:calc(clamp(13px,3.4vw,15px) + var(--a1-prompt-font-delta,0px))!important;line-height:1.42!important;
+ }
+}
+</style>
 </head>
 <body class="view-intro a1-translation-off">
 <div class="app">
@@ -3893,7 +3937,7 @@ function render(){
  $('questionsHead').textContent='PITANJA • '+(current+1)+'. MEJL';
  $('prev').disabled=current===0;
  $('next').disabled=current===MAILS.length-1;
- $('promptScroll').scrollTop=0;
+ $('promptScroll').scrollTop=0; $('promptScroll').querySelector('.bilingual').scrollTop=0;
  $('answerPanel').classList.remove('has-result');
  $('result').innerHTML='';
  // Raniji rezultat ne otvara automatski ekran provere: učenik uvek može opet pisati isti mejl.
@@ -3902,7 +3946,7 @@ function render(){
 }
 for(let i=0;i<MAILS.length;i++){const el=document.createElement('option');el.value=i;el.textContent=`${i+1}. mejl — ${FULL_TRANSLATIONS[i].subject}`;$('pick').appendChild(el)}
 $('total').textContent=MAILS.length;
-function jump(n){if(document.body.classList.contains('mobile-writing')||document.body.classList.contains('mobile-review'))closeMobileWriting(false);current=Math.max(0,Math.min(MAILS.length-1,n));render();a1ResetTimer();document.getElementById('promptScroll')?.scrollTo(0,0);window.scrollTo({top:0,behavior:'instant'}); }
+function jump(n){if(document.body.classList.contains('mobile-writing')||document.body.classList.contains('mobile-review'))closeMobileWriting(false);current=Math.max(0,Math.min(MAILS.length-1,n));render();a1ResetTimer();document.getElementById('promptScroll')?.scrollTo(0,0);document.querySelector('#promptScroll>.bilingual')?.scrollTo(0,0);window.scrollTo({top:0,behavior:'instant'}); }
 $('prev').onclick=()=>jump(current-1);$('next').onclick=()=>jump(current+1);$('pick').onchange=e=>jump(Number(e.target.value));
 $('answer').addEventListener('input',()=>{saved.drafts[current]=$('answer').value;delete saved.results[current];delete saved.completed[current];$('answerPanel').classList.remove('has-result');$('result').innerHTML='';updateCount();persist()});
 /* OpenAI provera radi preko privatnog Cloudflare Workera; API kljuc ostaje na serveru. */
@@ -4126,7 +4170,7 @@ $('a1ResetClock').addEventListener('click',a1ResetTimer);
 $('a1PromptTranslation').addEventListener('click',()=>a1SetTranslation(document.body.classList.contains('a1-translation-off')));
 $('a1WriterSr').addEventListener('click',()=>a1SetTranslation(document.body.classList.contains('a1-translation-off')));
 function a1AdjustPrompt(step){
- a1PromptFont=Math.max(-2,Math.min(5,a1PromptFont+step));
+ a1PromptFont=Math.max(-3,Math.min(9,a1PromptFont+step));
  document.documentElement.style.setProperty('--a1-prompt-font-delta',a1PromptFont+'px');
  requestAnimationFrame(fitMailPromptScreen);
 }
@@ -4455,7 +4499,7 @@ function openMailFromGrid(index,addHistory=true){
  if(document.body.classList.contains('mobile-writing')||document.body.classList.contains('mobile-review'))closeMobileWriting(false);
  document.body.classList.remove('view-home','view-intro');document.body.classList.add('view-mail');
  current=n;render();a1ResetTimer();
- document.getElementById('promptScroll')?.scrollTo(0,0);
+ document.getElementById('promptScroll')?.scrollTo(0,0);document.querySelector('#promptScroll>.bilingual')?.scrollTo(0,0);
  requestAnimationFrame(()=>{fitMailPromptScreen();setTimeout(fitMailPromptScreen,160);});
  if(addHistory)history.pushState({demaxMail:n,demaxReturnDepth:(history.state?.demaxReturnDepth||0)+1},'','#mejl-'+(n+1));
  window.scrollTo({top:0,behavior:'instant'});
