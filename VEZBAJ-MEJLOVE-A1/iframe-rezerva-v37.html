@@ -3417,6 +3417,12 @@ html body.view-intro #mailIntro #goMailList{margin-top:4px!important;min-height:
  html body.view-intro #mailIntro .a1-intro-content{--intro-title-size:16px;--intro-rule-size:10px}
 }
 </style>
+<style id="a1-prompt-readable-v38">
+@media(max-width:799px){
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.prompt #promptScroll.taskscroll>.bilingual #pairs-situation .sentence-de{font-size:calc(15px + var(--a1-prompt-font-delta,0px))!important}
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.prompt #promptScroll.taskscroll>.bilingual #pairs-situation .sentence-sr{font-size:calc(13px + var(--a1-prompt-font-delta,0px))!important}
+}
+</style>
 </head>
 <body class="view-intro a1-translation-off">
 <div class="app">
@@ -4192,7 +4198,7 @@ $('answer').addEventListener('input',growMailEditor);
 /* A1: uputstvo, 20 minuta i mobilne komande po A2/B1 (1. novembar 2026). */
 const A1_DURATION_SECONDS=1200;
 let a1StartTime=0,a1Running=false,a1ClockInterval=null,a1ForceFull=false;
-let a1WriteFont=16,a1PromptFont=-3;
+let a1WriteFont=16,a1PromptFont=0;
 document.documentElement.style.setProperty('--a1-prompt-font-delta',a1PromptFont+'px');
 try{const v=Number(localStorage.getItem('demax_a1_write_font_20261128_v19'));if(v>=12&&v<=28)a1WriteFont=v;}catch{}
 document.documentElement.style.setProperty('--a1-write-font',a1WriteFont+'px');
@@ -4236,7 +4242,7 @@ $('a1ResetClock').addEventListener('click',a1ResetTimer);
 $('a1PromptTranslation').addEventListener('click',()=>a1SetTranslation(document.body.classList.contains('a1-translation-off')));
 $('a1WriterSr').addEventListener('click',()=>a1SetTranslation(document.body.classList.contains('a1-translation-off')));
 function a1AdjustPrompt(step){
- a1PromptFont=Math.max(-3,Math.min(9,a1PromptFont+step));
+ a1PromptFont=Math.max(0,Math.min(9,a1PromptFont+step));
  document.documentElement.style.setProperty('--a1-prompt-font-delta',a1PromptFont+'px');
  requestAnimationFrame(fitMailPromptScreen);
 }
