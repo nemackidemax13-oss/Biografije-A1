@@ -37,8 +37,8 @@ body.clean nav,body.clean.quiz-mode nav{display:none}
 body.quiz-mode nav{opacity:0;pointer-events:none}
 body.quiz-mode #restore{display:none!important}
 
-/* V5 – raise both equally by 20% of slide height where there is room, never crop. */
-body{--stage-height:calc(100dvh - 6px - var(--nav-height));--slide-lift:clamp(0px,calc(var(--slide-height)*.20),calc(var(--stage-height) - var(--slide-height)))}
+/* V7 – lower both equally: remove the previous 20% lift; retain the common 16:9 size. */
+body{--stage-height:calc(100dvh - 6px - var(--nav-height));--slide-lift:0px}
 #slide,body.clean #slide,#quizFrame{margin-bottom:var(--slide-lift)}
 #picture{translate:none!important;object-position:center!important}
 
