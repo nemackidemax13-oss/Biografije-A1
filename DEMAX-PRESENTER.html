@@ -128,21 +128,24 @@ function alignSlideImage(){
  const d=doc(main);if(!d)return;
  const w=d.defaultView;
  const buttons=[...d.querySelectorAll('button,[role="button"],a,input[type="button"]')].filter(el=>el.getClientRects().length);
- const back=buttons.find(el=>/^zurück(?:\s|$)/i.test((el.textContent||el.value||el.getAttribute('aria-label')||'').trim()));
- const forward=buttons.find(el=>/^weiter(?:\s|$)/i.test((el.textContent||el.value||el.getAttribute('aria-label')||'').trim()));
+ const label=el=>[el.textContent,el.value,el.getAttribute('aria-label'),el.title].filter(Boolean).join(' ');
+ const back=buttons.find(el=>/zurück|zurueck|prethodni|previous/i.test(label(el)))||nav(d,-1);
+ const forward=buttons.find(el=>/weiter|sledeć|sledec|naredni|next/i.test(label(el)))||nav(d,1);
  if(!back||!forward)return;
  const br=back.getBoundingClientRect(),fr=forward.getBoundingClientRect();
  if(Math.abs(br.top-fr.top)>30)return;
  const line=Math.min(br.top,fr.top);
- const candidates=[...d.images].filter(img=>{const r=img.getBoundingClientRect();return img.naturalWidth&&r.width>150&&r.height>90&&r.top<line&&w.getComputedStyle(img).visibility!=='hidden'&&w.getComputedStyle(img).display!=='none'});
+ const candidates=[...d.images].filter(img=>{const r=img.getBoundingClientRect(),style=w.getComputedStyle(img);return img.naturalWidth&&r.width>150&&r.height>90&&r.top<line&&style.visibility!=='hidden'&&style.display!=='none'});
  const img=candidates.sort((a,b)=>b.clientWidth*b.clientHeight-a.clientWidth*a.clientHeight)[0];if(!img)return;
- if(alignedSlideImage&&alignedSlideImage!==img){alignedSlideImage.style.removeProperty('translate');alignedSlideImage.style.removeProperty('object-position')}
+ if(alignedSlideImage&&alignedSlideImage!==img){alignedSlideImage.style.removeProperty('translate');alignedSlideImage.style.removeProperty('object-position');delete alignedSlideImage.dataset.demaxShift}
  alignedSlideImage=img;
- img.style.objectPosition='center bottom';
- const prev=Number(img.dataset.demaxShift||0);
- const rect=img.getBoundingClientRect();
+ if(img.style.objectPosition!=='center bottom')img.style.objectPosition='center bottom';
+ const prev=Number(img.dataset.demaxShift||0),rect=img.getBoundingClientRect();
  const baseBottom=rect.bottom-prev;
- const shift=Math.max(0,Math.min(line-baseBottom-2,w.innerHeight-baseBottom-2));
+ // Keep the entire slide visible, immediately above the navigation row.
+ const shift=Math.max(0,Math.min(line-baseBottom-4,w.innerHeight-baseBottom-4));
+ // Prevent a slide wrapper from clipping the relocated image; don't alter the page or navigation.
+ if(shift>0){for(let p=img.parentElement;p&&p!==d.body&&p!==d.documentElement;p=p.parentElement){const pr=p.getBoundingClientRect(),ps=w.getComputedStyle(p);if(pr.bottom<baseBottom+shift-1&&/hidden|clip/.test(ps.overflowY)&&pr.top<=rect.top-prev+2&&pr.bottom<=line+4){p.style.overflow='visible'}}}
  if(Math.abs(shift-prev)>0.5||!img.dataset.demaxShift){img.style.translate='0 '+shift+'px';img.dataset.demaxShift=String(shift)}
 }
 
