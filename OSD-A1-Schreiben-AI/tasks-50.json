@@ -1412,99 +1412,21 @@
     ]
   },
   {
-    "subject": "Vikend u planinama",
-    "situation": "Sie bekommen folgende E-Mail von Anna.",
-    "originalEmail": "Hallo!\n\nIch plane ein Wochenende in den Bergen. Meine Freunde und ich möchten am Samstag wandern und am Sonntag eine Stadt besuchen. Hast du Lust, mitzukommen? Wir fahren mit dem Zug und suchen noch eine Unterkunft.\n\nSag mir bitte: Kannst du am Wochenende mitkommen? Hast du Zeit und was möchtest du machen? Was brauchen wir alles für die Wanderung?\n\nViele Grüße\nAnna",
-    "questions": [
-      "Kannst du am Wochenende mitkommen?",
-      "Was möchtest du machen?",
-      "Was brauchen wir alles für die Wanderung?"
-    ],
-    "recipient": "die E-Mail",
-    "checkingRules": [
-      {
-        "required": [],
-        "perspective": "ich",
-        "verbInfinitive": "können",
-        "answerVerb": "kann",
-        "verbType": "modal",
-        "actionVerbs": [
-          "mitkommen"
-        ]
-      },
-      {
-        "required": [],
-        "perspective": "ich",
-        "verbInfinitive": "möchten",
-        "answerVerb": "möchte",
-        "verbType": "modal",
-        "actionVerbs": [
-          "machen"
-        ]
-      },
-      {
-        "required": [],
-        "perspective": "wir",
-        "verbInfinitive": "brauchen",
-        "answerVerb": "brauchen",
-        "verbType": "simple"
-      }
-    ]
-  },
-  {
-    "subject": "Zajednički izlazak",
-    "situation": "Sie bekommen folgende E-Mail von Markus.",
-    "originalEmail": "Hallo!\n\nIch habe am Wochenende frei und möchte dich gerne sehen und mit dir in die Stadt gehen. Vielleicht können wir zusammen etwas essen gehen und danach im Kino einen Film anschauen. Leider kann ich am Samstag nicht, weil ich schon etwas vorhabe.\n\nSchreib mir bitte: Wann bist du am Wochenende frei für mich? Wo können wir zusammen essen gehen? Was machen wir nach dem Essen?\n\nLiebe Grüße\nMarkus",
-    "questions": [
-      "Wann bist du am Wochenende frei für mich?",
-      "Wo können wir zusammen essen gehen?",
-      "Was machen wir nach dem Essen?"
-    ],
-    "recipient": "die E-Mail",
-    "checkingRules": [
-      {
-        "required": [],
-        "perspective": "ich",
-        "verbInfinitive": "sein",
-        "answerVerb": "bin",
-        "verbType": "simple"
-      },
-      {
-        "required": [],
-        "perspective": "wir",
-        "verbInfinitive": "können",
-        "answerVerb": "können",
-        "verbType": "modal",
-        "actionVerbs": [
-          "essen",
-          "gehen"
-        ]
-      },
-      {
-        "required": [],
-        "perspective": "wir",
-        "verbInfinitive": "machen",
-        "answerVerb": "machen",
-        "verbType": "simple"
-      }
-    ]
-  },
-  {
     "subject": "Organizovanje izleta za vikend",
-    "situation": "Sie bekommen folgende E-Mail von Monika.",
+    "situation": "Ihre Kollegin Monika möchte am Wochenende mit Ihnen und anderen Kollegen einen Ausflug machen.",
     "originalEmail": "Hallo!\n\nIch habe dieses Wochenende frei und möchte gern mit meinen Kollegen von der Arbeit einen kleinen Ausflug machen. Wir möchten etwas Zeit in der Natur verbringen, vielleicht in den Bergen oder im Wald. Wir planen, am Vormittag loszufahren und am Abend zurückzukommen. Hast du Zeit mitzukommen?\n\nSchreib mir bitte: Kommst du mit? Was bringst du zum Essen und Trinken mit? An welchem Tag hast du Zeit?\n\nLiebe Grüße\nMonika",
     "questions": [
       "Kommst du mit?",
       "Was bringst du zum Essen und Trinken mit?",
       "An welchem Tag hast du Zeit?"
     ],
-    "recipient": "die E-Mail",
+    "recipient": "Monika",
     "checkingRules": [
       {
         "required": [],
         "perspective": "ich",
         "verbInfinitive": "mitkommen",
-        "answerVerb": "komme...mit",
+        "answerVerb": "komme ... mit",
         "verbType": "separable"
       },
       {
@@ -1514,7 +1436,7 @@
         ],
         "perspective": "ich",
         "verbInfinitive": "mitbringen",
-        "answerVerb": "bringe...mit",
+        "answerVerb": "bringe ... mit",
         "verbType": "separable"
       },
       {
@@ -1526,18 +1448,19 @@
         "answerVerb": "habe",
         "verbType": "simple"
       }
-    ]
+    ],
+    "guidance": "Izlet je ovog vikenda; hrana i piće su dva podatka. Polazak pre podne, povratak uveče."
   },
   {
-    "subject": "Večernji roštilj",
-    "situation": "Sie bekommen folgende E-Mail von Nina.",
+    "subject": "Roštilj u bašti",
+    "situation": "Ihre Freundin Nina lädt Sie am Samstagabend zum Grillen in ihren Garten ein.",
     "originalEmail": "Hallo!\n\nIch plane am Samstagabend einen kleinen Grillabend im Garten und wollte dich fragen, ob du auch kommen möchtest. Es wird mehrere verschiedene Salate geben, und ich kaufe Fleisch und Gemüse für den Grill. Wenn du möchtest, kannst du auch etwas mitbringen. Ich freue mich, wenn wir zusammen Zeit verbringen.\n\nSchreib mir bitte: Kannst du am Samstag kommen? Was möchtest du mitbringen? Mit wem kommst du?\n\nLiebe Grüße\nNina",
     "questions": [
       "Kannst du am Samstag kommen?",
       "Was möchtest du mitbringen?",
       "Mit wem kommst du?"
     ],
-    "recipient": "die E-Mail",
+    "recipient": "Nina",
     "checkingRules": [
       {
         "required": [],
@@ -1566,24 +1489,27 @@
         "answerVerb": "komme",
         "verbType": "simple"
       }
-    ]
+    ],
+    "guidance": "Roštilj je u subotu uveče. Donošenje bilo čega prikladnog je moguće; Nina već kupuje meso i povrće."
   },
   {
     "subject": "Poseta Minhenu",
-    "situation": "Sie bekommen folgende E-Mail von Anna.",
+    "situation": "Ihre Freundin Anna wohnt in München. Sie möchten sie bald besuchen und bekommen folgende E-Mail von ihr.",
     "originalEmail": "Hallo!\n\nDu schreibst, du möchtest mich bald in München besuchen. Das freut mich sehr! Du kannst auch gerne einen Freund oder eine Freundin mitbringen. Meine Familie freut sich auch darauf, dich kennenzulernen.\n\nSchreib mir bitte: Wann kommst du an? Wie lange möchtest du bleiben? Was möchtest du in München sehen? Welche Aktivitäten möchtest du zusammen machen?\n\nLiebe Grüße\nAnna",
     "questions": [
       "Wann kommst du an?",
       "Wie lange möchtest du bleiben?",
       "Was können wir zusammen in München machen?"
     ],
-    "recipient": "die E-Mail",
+    "recipient": "Anna",
     "checkingRules": [
       {
-        "required": [],
+        "required": [
+          "time"
+        ],
         "perspective": "ich",
         "verbInfinitive": "ankommen",
-        "answerVerb": "komme...an",
+        "answerVerb": "komme ... an",
         "verbType": "separable"
       },
       {
@@ -1606,18 +1532,19 @@
           "machen"
         ]
       }
-    ]
+    ],
+    "guidance": "Oceniti tri pitanja iz donjeg dela slike. Treće pitanje objedinjuje razgledanje Minhena i zajedničke aktivnosti."
   },
   {
-    "subject": "Zajednički izlet",
-    "situation": "Sie bekommen folgende E-Mail von Lisa.",
+    "subject": "Zajednički izlazak i sladoled",
+    "situation": "Ihre Freundin Lisa möchte nächste Woche etwas mit Ihnen unternehmen. Sie schreibt Ihnen eine E-Mail.",
     "originalEmail": "Hallo!\n\nIch möchte nächste Woche etwas unternehmen und dachte an einen kleinen Ausflug. Wir können zusammen in die Stadt gehen und shoppen oder Eis essen. Am Mittwoch habe ich leider keine Zeit, weil ich den ganzen Tag arbeiten muss. An den anderen Tagen passt es bei mir besser.\n\nSchreib mir bitte: An welchem Tag passt es für dich? Wo können wir zusammen spazieren gehen? Wo können wir Eis kaufen?\n\nLiebe Grüße\nLisa",
     "questions": [
       "An welchem Tag passt es für dich?",
       "Wo können wir zusammen spazieren gehen?",
       "Wo können wir Eis kaufen?"
     ],
-    "recipient": "die E-Mail",
+    "recipient": "Lisa",
     "checkingRules": [
       {
         "required": [
@@ -1635,7 +1562,7 @@
         "answerVerb": "können",
         "verbType": "modal",
         "actionVerbs": [
-          "gehen"
+          "spazieren gehen"
         ]
       },
       {
@@ -1648,100 +1575,23 @@
           "kaufen"
         ]
       }
-    ]
+    ],
+    "guidance": "Lisa ne može u sredu; ostali dani su mogući."
   },
   {
-    "subject": "Pomoć pri selidbi",
-    "situation": "Sie bekommen folgende E-Mail von Thomas.",
-    "originalEmail": "Hallo!\n\nAm Samstag ziehe ich in meine neue Wohnung. Ich habe viele Möbel und brauche Hilfe. Kannst du mir vielleicht helfen?\n\nSchreib mir bitte: Um wie viel Uhr hast du Zeit? Hast du ein Auto? Wen kannst du noch mitbringen?\n\nLiebe Grüße\nThomas",
+    "subject": "Piknik u parku",
+    "situation": "Ihre Freundin Sara möchte mit Ihnen am Sonntag ein Picknick machen. Sie bekommen eine E-Mail von ihr.",
+    "originalEmail": "Hallo!\n\nAm Sonntag soll das Wetter schön sein. Ich möchte im Park ein Picknick machen. Ich habe schon eine Decke und einen Ball.\n\nSchreib mir bitte: Um wie viel Uhr kannst du kommen? Was bringst du zum Essen und Trinken mit? Wen bringst du mit?\n\nLiebe Grüße\nSara",
     "questions": [
-      "Um wie viel Uhr hast du Zeit?",
-      "Hast du ein Auto?",
-      "Wen kannst du noch mitbringen?"
+      "Um wie viel Uhr kannst du kommen?",
+      "Was bringst du zum Essen und Trinken mit?",
+      "Wen bringst du mit?"
     ],
-    "recipient": "die E-Mail",
+    "recipient": "Sara",
     "checkingRules": [
       {
         "required": [
           "clock"
-        ],
-        "perspective": "ich",
-        "verbInfinitive": "haben",
-        "answerVerb": "habe",
-        "verbType": "simple"
-      },
-      {
-        "required": [],
-        "perspective": "ich",
-        "verbInfinitive": "haben",
-        "answerVerb": "habe",
-        "verbType": "simple"
-      },
-      {
-        "required": [],
-        "perspective": "ich",
-        "verbInfinitive": "können",
-        "answerVerb": "kann",
-        "verbType": "modal",
-        "actionVerbs": [
-          "mitbringen"
-        ]
-      }
-    ]
-  },
-  {
-    "subject": "Odlazak na bazen",
-    "situation": "Sie bekommen folgende E-Mail von Julia.",
-    "originalEmail": "Hallo!\n\nAm Sonntag soll das Wetter schön sein. Ich möchte mit dir ins Schwimmbad gehen. Dort können wir schwimmen und etwas essen. Ich kenne das Schwimmbad noch nicht.\n\nSchreib mir bitte: Um wie viel Uhr hast du Zeit? Wie fahren wir zum Schwimmbad? Was möchtest du mitbringen?\n\nLiebe Grüße\nJulia",
-    "questions": [
-      "Um wie viel Uhr hast du Zeit?",
-      "Wie fahren wir zum Schwimmbad?",
-      "Was möchtest du mitbringen?"
-    ],
-    "recipient": "die E-Mail",
-    "checkingRules": [
-      {
-        "required": [
-          "clock"
-        ],
-        "perspective": "ich",
-        "verbInfinitive": "haben",
-        "answerVerb": "habe",
-        "verbType": "simple"
-      },
-      {
-        "required": [],
-        "perspective": "wir",
-        "verbInfinitive": "fahren",
-        "answerVerb": "fahren",
-        "verbType": "simple"
-      },
-      {
-        "required": [],
-        "perspective": "ich",
-        "verbInfinitive": "möchten",
-        "answerVerb": "möchte",
-        "verbType": "modal",
-        "actionVerbs": [
-          "mitbringen"
-        ]
-      }
-    ]
-  },
-  {
-    "subject": "Zajednički doručak",
-    "situation": "Sie bekommen folgende E-Mail von Daniel.",
-    "originalEmail": "Hallo!\n\nAm Samstag möchte ich mit ein paar Freunden bei mir zu Hause frühstücken. Ich kaufe Brot und Käse. Wir können danach noch etwas zusammen machen. Hast du Lust?\n\nSchreib mir bitte: Wann kannst du kommen? Was möchtest du trinken? Was machen wir nach dem Frühstück?\n\nLiebe Grüße\nDaniel",
-    "questions": [
-      "Wann kannst du kommen?",
-      "Was möchtest du trinken?",
-      "Was machen wir nach dem Frühstück?"
-    ],
-    "recipient": "die E-Mail",
-    "checkingRules": [
-      {
-        "required": [
-          "time"
         ],
         "perspective": "ich",
         "verbInfinitive": "können",
@@ -1752,34 +1602,78 @@
         ]
       },
       {
+        "required": [
+          "food",
+          "drink"
+        ],
+        "perspective": "ich",
+        "verbInfinitive": "mitbringen",
+        "answerVerb": "bringe ... mit",
+        "verbType": "separable"
+      },
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "mitbringen",
+        "answerVerb": "bringe ... mit",
+        "verbType": "separable"
+      }
+    ],
+    "guidance": "Piknik je u nedelju; hrana i piće su oba potrebna."
+  },
+  {
+    "subject": "Pomoć pri selidbi",
+    "situation": "Ihr Freund Paul zieht am Samstag in eine neue Wohnung und braucht Hilfe. Er schreibt Ihnen.",
+    "originalEmail": "Hallo!\n\nAm Samstag ziehe ich in meine neue Wohnung. Ich habe viele Kisten und einen großen Tisch. Ich brauche noch Hilfe. Danach können wir zusammen essen.\n\nSchreib mir bitte: Kannst du mir am Samstag helfen? Um wie viel Uhr kommst du? Was möchtest du danach essen?\n\nLiebe Grüße\nPaul",
+    "questions": [
+      "Kannst du mir am Samstag helfen?",
+      "Um wie viel Uhr kommst du?",
+      "Was möchtest du danach essen?"
+    ],
+    "recipient": "Paul",
+    "checkingRules": [
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "können",
+        "answerVerb": "kann",
+        "verbType": "modal",
+        "actionVerbs": [
+          "helfen"
+        ]
+      },
+      {
+        "required": [
+          "clock"
+        ],
+        "perspective": "ich",
+        "verbInfinitive": "kommen",
+        "answerVerb": "komme",
+        "verbType": "simple"
+      },
+      {
         "required": [],
         "perspective": "ich",
         "verbInfinitive": "möchten",
         "answerVerb": "möchte",
         "verbType": "modal",
         "actionVerbs": [
-          "trinken"
+          "essen"
         ]
-      },
-      {
-        "required": [],
-        "perspective": "wir",
-        "verbInfinitive": "machen",
-        "answerVerb": "machen",
-        "verbType": "simple"
       }
-    ]
+    ],
+    "guidance": "Selidba je u subotu."
   },
   {
     "subject": "Poseta zoološkom vrtu",
-    "situation": "Sie bekommen folgende E-Mail von Sofia.",
-    "originalEmail": "Hallo!\n\nAm Wochenende möchte ich mit meiner kleinen Schwester in den Zoo gehen. Sie mag Tiere sehr. Der Zoo ist etwas weit weg. Vielleicht hast du auch Lust, mitzukommen.\n\nSchreib mir bitte: An welchem Tag hast du Zeit? Wie können wir zum Zoo fahren? Welche Tiere möchtest du sehen?\n\nLiebe Grüße\nSofia",
+    "situation": "Ihre Freundin Mia möchte mit Ihnen in den Zoo gehen. Sie bekommen folgende E-Mail.",
+    "originalEmail": "Hallo!\n\nIch möchte nächste Woche in den Zoo gehen. Am Montag ist der Zoo geschlossen. Meine kleine Schwester möchte auch mitkommen.\n\nSchreib mir bitte: An welchem Tag hast du Zeit? Wie fahren wir zum Zoo? Welche Tiere möchtest du sehen?\n\nLiebe Grüße\nMia",
     "questions": [
       "An welchem Tag hast du Zeit?",
-      "Wie können wir zum Zoo fahren?",
+      "Wie fahren wir zum Zoo?",
       "Welche Tiere möchtest du sehen?"
     ],
-    "recipient": "die E-Mail",
+    "recipient": "Mia",
     "checkingRules": [
       {
         "required": [
@@ -1793,12 +1687,9 @@
       {
         "required": [],
         "perspective": "wir",
-        "verbInfinitive": "können",
-        "answerVerb": "können",
-        "verbType": "modal",
-        "actionVerbs": [
-          "fahren"
-        ]
+        "verbInfinitive": "fahren",
+        "answerVerb": "fahren",
+        "verbType": "simple"
       },
       {
         "required": [],
@@ -1810,37 +1701,38 @@
           "sehen"
         ]
       }
-    ]
+    ],
+    "guidance": "Zoološki vrt je zatvoren ponedeljkom."
   },
   {
-    "subject": "Kupovina novog bicikla",
-    "situation": "Sie bekommen folgende E-Mail von Lukas.",
-    "originalEmail": "Hallo!\n\nMein altes Fahrrad ist kaputt. Ich möchte ein neues Fahrrad kaufen, aber ich kenne kein gutes Geschäft. Vielleicht kannst du mir helfen. Am Freitag muss ich arbeiten.\n\nSchreib mir bitte: Wo können wir ein Fahrrad kaufen? Wann hast du Zeit? Was können wir danach machen?\n\nLiebe Grüße\nLukas",
+    "subject": "Odlazak na bazen",
+    "situation": "Ihr Freund Lukas möchte mit Ihnen schwimmen gehen. Er schickt Ihnen eine E-Mail.",
+    "originalEmail": "Hallo!\n\nEs ist sehr warm. Ich möchte am Samstag ins Schwimmbad gehen. Es öffnet um neun Uhr. Danach können wir noch etwas machen.\n\nSchreib mir bitte: Um wie viel Uhr möchtest du kommen? Was bringst du mit? Was können wir danach machen?\n\nLiebe Grüße\nLukas",
     "questions": [
-      "Wo können wir ein Fahrrad kaufen?",
-      "Wann hast du Zeit?",
+      "Um wie viel Uhr möchtest du kommen?",
+      "Was bringst du mit?",
       "Was können wir danach machen?"
     ],
-    "recipient": "die E-Mail",
+    "recipient": "Lukas",
     "checkingRules": [
       {
-        "required": [],
-        "perspective": "wir",
-        "verbInfinitive": "können",
-        "answerVerb": "können",
+        "required": [
+          "clock"
+        ],
+        "perspective": "ich",
+        "verbInfinitive": "möchten",
+        "answerVerb": "möchte",
         "verbType": "modal",
         "actionVerbs": [
-          "kaufen"
+          "kommen"
         ]
       },
       {
-        "required": [
-          "time"
-        ],
+        "required": [],
         "perspective": "ich",
-        "verbInfinitive": "haben",
-        "answerVerb": "habe",
-        "verbType": "simple"
+        "verbInfinitive": "mitbringen",
+        "answerVerb": "bringe ... mit",
+        "verbType": "separable"
       },
       {
         "required": [],
@@ -1852,18 +1744,64 @@
           "machen"
         ]
       }
-    ]
+    ],
+    "guidance": "Bazen je u subotu otvoren od 9 sati."
   },
   {
-    "subject": "Poseta u bolnici",
-    "situation": "Sie bekommen folgende E-Mail von Marie.",
-    "originalEmail": "Hallo!\n\nUnser Freund Paul ist im Krankenhaus. Ich möchte ihn diese Woche besuchen. Wir können ihm etwas Schönes mitbringen. Das Krankenhaus liegt nicht weit vom Bahnhof.\n\nSchreib mir bitte: An welchem Tag hast du Zeit? Was können wir Paul mitbringen? Wo treffen wir uns?\n\nLiebe Grüße\nMarie",
+    "subject": "Zajednički doručak",
+    "situation": "Ihre Freundin Emma möchte mit Ihnen frühstücken. Sie bekommen eine E-Mail.",
+    "originalEmail": "Hallo!\n\nIch habe am Sonntag frei. Wir können zusammen frühstücken. Bei mir zu Hause ist genug Platz, aber wir können auch in ein Café gehen.\n\nSchreib mir bitte: Um wie viel Uhr hast du Zeit? Wo möchtest du frühstücken? Was möchtest du trinken?\n\nLiebe Grüße\nEmma",
+    "questions": [
+      "Um wie viel Uhr hast du Zeit?",
+      "Wo möchtest du frühstücken?",
+      "Was möchtest du trinken?"
+    ],
+    "recipient": "Emma",
+    "checkingRules": [
+      {
+        "required": [
+          "clock"
+        ],
+        "perspective": "ich",
+        "verbInfinitive": "haben",
+        "answerVerb": "habe",
+        "verbType": "simple"
+      },
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "möchten",
+        "answerVerb": "möchte",
+        "verbType": "modal",
+        "actionVerbs": [
+          "frühstücken"
+        ]
+      },
+      {
+        "required": [
+          "drink"
+        ],
+        "perspective": "ich",
+        "verbInfinitive": "möchten",
+        "answerVerb": "möchte",
+        "verbType": "modal",
+        "actionVerbs": [
+          "trinken"
+        ]
+      }
+    ],
+    "guidance": "Doručak je u nedelju; mesto je slobodan izbor."
+  },
+  {
+    "subject": "Vožnja bicikla",
+    "situation": "Ihr Freund Ben möchte mit Ihnen eine Fahrradtour machen. Er schreibt Ihnen.",
+    "originalEmail": "Hallo!\n\nIch habe ein neues Fahrrad und möchte am Wochenende eine kleine Tour machen. Wir können an einem See eine Pause machen. Ich kenne einen schönen Weg.\n\nSchreib mir bitte: An welchem Tag hast du Zeit? Wo treffen wir uns? Was bringst du zum Trinken mit?\n\nLiebe Grüße\nBen",
     "questions": [
       "An welchem Tag hast du Zeit?",
-      "Was können wir Paul mitbringen?",
-      "Wo treffen wir uns?"
+      "Wo treffen wir uns?",
+      "Was bringst du zum Trinken mit?"
     ],
-    "recipient": "die E-Mail",
+    "recipient": "Ben",
     "checkingRules": [
       {
         "required": [
@@ -1877,114 +1815,32 @@
       {
         "required": [],
         "perspective": "wir",
-        "verbInfinitive": "können",
-        "answerVerb": "können",
-        "verbType": "modal",
-        "actionVerbs": [
-          "mitbringen"
-        ]
-      },
-      {
-        "required": [],
-        "perspective": "wir",
         "verbInfinitive": "treffen",
         "answerVerb": "treffen",
         "verbType": "simple"
-      }
-    ]
-  },
-  {
-    "subject": "Poseta muzeju",
-    "situation": "Sie bekommen folgende E-Mail von Laura.",
-    "originalEmail": "Hallo!\n\nIn unserer Stadt gibt es ein neues Museum. Ich möchte es am Wochenende besuchen. Die Eintrittskarte kostet fünf Euro. Nach dem Besuch können wir noch etwas trinken.\n\nSchreib mir bitte: Kannst du am Wochenende mitkommen? Um wie viel Uhr treffen wir uns? Wo können wir danach etwas trinken?\n\nLiebe Grüße\nLaura",
-    "questions": [
-      "Kannst du am Wochenende mitkommen?",
-      "Um wie viel Uhr treffen wir uns?",
-      "Wo können wir danach etwas trinken?"
-    ],
-    "recipient": "die E-Mail",
-    "checkingRules": [
-      {
-        "required": [],
-        "perspective": "ich",
-        "verbInfinitive": "können",
-        "answerVerb": "kann",
-        "verbType": "modal",
-        "actionVerbs": [
-          "mitkommen"
-        ]
       },
       {
         "required": [
-          "clock"
+          "drink"
         ],
-        "perspective": "wir",
-        "verbInfinitive": "treffen",
-        "answerVerb": "treffen",
-        "verbType": "simple"
-      },
-      {
-        "required": [],
-        "perspective": "wir",
-        "verbInfinitive": "können",
-        "answerVerb": "können",
-        "verbType": "modal",
-        "actionVerbs": [
-          "trinken"
-        ]
-      }
-    ]
-  },
-  {
-    "subject": "Doček na železničkoj stanici",
-    "situation": "Sie bekommen folgende E-Mail von Felix.",
-    "originalEmail": "Hallo!\n\nIch besuche dich nächste Woche. Mein Zug kommt am Freitag um 15 Uhr an. Ich kenne deine Stadt noch nicht und habe einen großen Koffer. Kannst du mich am Bahnhof abholen?\n\nSchreib mir bitte: Kannst du mich am Freitag abholen? Wie fahren wir zu dir nach Hause? Was können wir am Abend machen?\n\nLiebe Grüße\nFelix",
-    "questions": [
-      "Kannst du mich am Freitag abholen?",
-      "Wie fahren wir zu dir nach Hause?",
-      "Was können wir am Abend machen?"
-    ],
-    "recipient": "die E-Mail",
-    "checkingRules": [
-      {
-        "required": [],
         "perspective": "ich",
-        "verbInfinitive": "können",
-        "answerVerb": "kann",
-        "verbType": "modal",
-        "actionVerbs": [
-          "abholen"
-        ]
-      },
-      {
-        "required": [],
-        "perspective": "wir",
-        "verbInfinitive": "fahren",
-        "answerVerb": "fahren",
-        "verbType": "simple"
-      },
-      {
-        "required": [],
-        "perspective": "wir",
-        "verbInfinitive": "können",
-        "answerVerb": "können",
-        "verbType": "modal",
-        "actionVerbs": [
-          "machen"
-        ]
+        "verbInfinitive": "mitbringen",
+        "answerVerb": "bringe ... mit",
+        "verbType": "separable"
       }
-    ]
+    ],
+    "guidance": "Tura je za vikend; pitanje tri traži piće."
   },
   {
     "subject": "Odlazak na koncert",
-    "situation": "Sie bekommen folgende E-Mail von Emma.",
-    "originalEmail": "Hallo!\n\nAm Samstag gibt es ein Konzert in der Stadt. Meine Lieblingsband spielt dort. Das Konzert beginnt um 19 Uhr. Ich habe noch keine Karten gekauft. Möchtest du mitkommen?\n\nSchreib mir bitte: Kannst du am Samstag kommen? Wo können wir Karten kaufen? Wo treffen wir uns vor dem Konzert?\n\nLiebe Grüße\nEmma",
+    "situation": "Ihre Freundin Laura möchte mit Ihnen ein Konzert besuchen. Sie schreibt Ihnen eine E-Mail.",
+    "originalEmail": "Hallo!\n\nAm Freitag gibt es ein Konzert im Stadtpark. Es beginnt um 19 Uhr. Ich möchte gerne mit dir hingehen. Die Karten kann man im Internet kaufen.\n\nSchreib mir bitte: Kannst du am Freitag kommen? Wo treffen wir uns? Wen möchtest du mitbringen?\n\nLiebe Grüße\nLaura",
     "questions": [
-      "Kannst du am Samstag kommen?",
-      "Wo können wir Karten kaufen?",
-      "Wo treffen wir uns vor dem Konzert?"
+      "Kannst du am Freitag kommen?",
+      "Wo treffen wir uns?",
+      "Wen möchtest du mitbringen?"
     ],
-    "recipient": "die E-Mail",
+    "recipient": "Laura",
     "checkingRules": [
       {
         "required": [],
@@ -1999,8 +1855,91 @@
       {
         "required": [],
         "perspective": "wir",
+        "verbInfinitive": "treffen",
+        "answerVerb": "treffen",
+        "verbType": "simple"
+      },
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "möchten",
+        "answerVerb": "möchte",
+        "verbType": "modal",
+        "actionVerbs": [
+          "mitbringen"
+        ]
+      }
+    ],
+    "guidance": "Koncert je u petak u 19 sati."
+  },
+  {
+    "subject": "Dan na jezeru",
+    "situation": "Ihr Freund David plant einen Ausflug an den See und lädt Sie ein.",
+    "originalEmail": "Hallo!\n\nAm Sonntag möchte ich an den See fahren. Dort können wir spazieren gehen und uns ausruhen. Ich habe kein Auto. Vielleicht können wir gemeinsam fahren.\n\nSchreib mir bitte: Um wie viel Uhr kannst du losfahren? Wie fahren wir zum See? Was möchtest du dort machen?\n\nLiebe Grüße\nDavid",
+    "questions": [
+      "Um wie viel Uhr kannst du losfahren?",
+      "Wie fahren wir zum See?",
+      "Was möchtest du dort machen?"
+    ],
+    "recipient": "David",
+    "checkingRules": [
+      {
+        "required": [
+          "clock"
+        ],
+        "perspective": "ich",
         "verbInfinitive": "können",
-        "answerVerb": "können",
+        "answerVerb": "kann",
+        "verbType": "modal",
+        "actionVerbs": [
+          "losfahren"
+        ]
+      },
+      {
+        "required": [],
+        "perspective": "wir",
+        "verbInfinitive": "fahren",
+        "answerVerb": "fahren",
+        "verbType": "simple"
+      },
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "möchten",
+        "answerVerb": "möchte",
+        "verbType": "modal",
+        "actionVerbs": [
+          "machen"
+        ]
+      }
+    ],
+    "guidance": "Izlet je u nedelju. David nema auto; kandidat može ponuditi svoj auto."
+  },
+  {
+    "subject": "Poseta buvljaku",
+    "situation": "Ihre Freundin Julia möchte mit Ihnen auf einen Flohmarkt gehen. Sie bekommen eine E-Mail.",
+    "originalEmail": "Hallo!\n\nAm Samstag ist ein Flohmarkt auf dem Marktplatz. Er ist von 8 bis 13 Uhr geöffnet. Ich suche eine kleine Lampe für meine Wohnung.\n\nSchreib mir bitte: Um wie viel Uhr hast du Zeit? Was möchtest du kaufen? Was machen wir danach?\n\nLiebe Grüße\nJulia",
+    "questions": [
+      "Um wie viel Uhr hast du Zeit?",
+      "Was möchtest du kaufen?",
+      "Was machen wir danach?"
+    ],
+    "recipient": "Julia",
+    "checkingRules": [
+      {
+        "required": [
+          "clock"
+        ],
+        "perspective": "ich",
+        "verbInfinitive": "haben",
+        "answerVerb": "habe",
+        "verbType": "simple"
+      },
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "möchten",
+        "answerVerb": "möchte",
         "verbType": "modal",
         "actionVerbs": [
           "kaufen"
@@ -2009,10 +1948,94 @@
       {
         "required": [],
         "perspective": "wir",
+        "verbInfinitive": "machen",
+        "answerVerb": "machen",
+        "verbType": "simple"
+      }
+    ],
+    "guidance": "Buvljak je u subotu od 8 do 13 sati."
+  },
+  {
+    "subject": "Jezički kafić",
+    "situation": "Ihr Freund Tim möchte mit Ihnen Deutsch üben. Er schreibt Ihnen eine E-Mail.",
+    "originalEmail": "Hallo!\n\nIm Sprachcafé können wir Deutsch sprechen und neue Leute kennenlernen. Es ist am Dienstag und Donnerstag geöffnet. Ich möchte gerne mit dir dorthin gehen.\n\nSchreib mir bitte: An welchem Tag hast du Zeit? Wie kommen wir dorthin? Was möchtest du dort trinken?\n\nLiebe Grüße\nTim",
+    "questions": [
+      "An welchem Tag hast du Zeit?",
+      "Wie kommen wir dorthin?",
+      "Was möchtest du dort trinken?"
+    ],
+    "recipient": "Tim",
+    "checkingRules": [
+      {
+        "required": [
+          "day"
+        ],
+        "perspective": "ich",
+        "verbInfinitive": "haben",
+        "answerVerb": "habe",
+        "verbType": "simple"
+      },
+      {
+        "required": [],
+        "perspective": "wir",
+        "verbInfinitive": "kommen",
+        "answerVerb": "kommen",
+        "verbType": "simple"
+      },
+      {
+        "required": [
+          "drink"
+        ],
+        "perspective": "ich",
+        "verbInfinitive": "möchten",
+        "answerVerb": "möchte",
+        "verbType": "modal",
+        "actionVerbs": [
+          "trinken"
+        ]
+      }
+    ],
+    "guidance": "Jezički kafić radi utorkom i četvrtkom."
+  },
+  {
+    "subject": "Poseta muzeju",
+    "situation": "Ihre Freundin Clara möchte mit Ihnen ein Museum besuchen. Sie bekommen folgende E-Mail.",
+    "originalEmail": "Hallo!\n\nIch möchte am Wochenende ins Museum gehen. Es gibt dort viele interessante Bilder. Am Samstag kann ich erst nach 14 Uhr kommen. Am Sonntag habe ich den ganzen Tag Zeit.\n\nSchreib mir bitte: An welchem Tag und um wie viel Uhr hast du Zeit? Wo treffen wir uns? Was möchtest du nach dem Besuch machen?\n\nLiebe Grüße\nClara",
+    "questions": [
+      "An welchem Tag und um wie viel Uhr hast du Zeit?",
+      "Wo treffen wir uns?",
+      "Was möchtest du nach dem Besuch machen?"
+    ],
+    "recipient": "Clara",
+    "checkingRules": [
+      {
+        "required": [
+          "day",
+          "clock"
+        ],
+        "perspective": "ich",
+        "verbInfinitive": "haben",
+        "answerVerb": "habe",
+        "verbType": "simple"
+      },
+      {
+        "required": [],
+        "perspective": "wir",
         "verbInfinitive": "treffen",
         "answerVerb": "treffen",
         "verbType": "simple"
+      },
+      {
+        "required": [],
+        "perspective": "ich",
+        "verbInfinitive": "möchten",
+        "answerVerb": "möchte",
+        "verbType": "modal",
+        "actionVerbs": [
+          "machen"
+        ]
       }
-    ]
+    ],
+    "guidance": "Subotom Clara može posle 14 sati; nedeljom ceo dan. Prvo pitanje zahteva dan i sat."
   }
 ]
