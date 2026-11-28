@@ -3371,6 +3371,18 @@ html body.view-intro #mailIntro #goMailList{margin-top:auto!important;flex:0 0 a
  html body.view-intro #mailIntro .a1-intro-rules{grid-template-columns:repeat(2,minmax(0,1fr))!important}
 }
 </style>
+<style id="a1-intro-lines-v35">
+html body.view-intro #mailIntro .a1-intro-rule .a1-intro-single{
+ display:block!important;min-width:0!important;white-space:nowrap!important;
+ font-size:clamp(8px,2.65vw,13px)!important;letter-spacing:-.15px!important;
+ line-height:1.2!important;
+}
+@media(max-width:360px){
+ html body.view-intro #mailIntro .a1-intro-rule .a1-intro-single{
+ font-size:clamp(7px,2.45vw,9px)!important;letter-spacing:-.2px!important;
+ }
+}
+</style>
 </head>
 <body class="view-intro a1-translation-off">
 <div class="app">
@@ -3381,11 +3393,11 @@ html body.view-intro #mailIntro #goMailList{margin-top:auto!important;flex:0 0 a
     <h1>Uputstvo za pisanje mejla</h1>
     <div class="a1-intro-rules">
       <div class="a1-intro-rule"><span>⏱</span><b>Formular i mejl rade se ukupno 20 minuta.</b></div>
-      <div class="a1-intro-rule"><span>✓</span><b>Odgovorite na sve tri tačke, odnosno pitanja mejla.</b></div>
+      <div class="a1-intro-rule"><span>✓</span><b class="a1-intro-single">Odgovorite na sve tri tačke, odnosno pitanja.</b></div>
       <div class="a1-intro-rule"><span>✎</span><b>Napišite oko 30 reči.</b></div>
-      <div class="a1-intro-rule warning"><span>!</span><b>Mejl sa manje od 15 reči se ne boduje (0 bodova).</b></div>
+      <div class="a1-intro-rule warning"><span>!</span><b class="a1-intro-single">Mejl sa manje od 15 reči se ne boduje (0 bodova).</b></div>
       <div class="a1-intro-rule"><span>▤</span><b>25 ili više reči: bez odbitka. 20–24 reči: −1 bod. 15–19 reči: −2 boda.</b></div>
-      <div class="a1-intro-rule"><span>✉</span><b>Na kraju mejla napišite završni pozdrav i svoje ime.</b></div>
+      <div class="a1-intro-rule"><span>✉</span><b class="a1-intro-single">Na kraju mejla napišite pozdrav i svoje ime.</b></div>
       <div class="a1-intro-rule"><span>💬</span><b>Pomoćne rečenice pri pisanju mejla možete koristiti ako vam zatrebaju.</b></div>
       <div class="a1-intro-rule"><span>★</span><b>Formular: 5 bodova. Mejl: 10 bodova. Ukupno: 15 bodova / prolaz 4 boda.</b></div>
     </div>
