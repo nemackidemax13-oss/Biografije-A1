@@ -1889,7 +1889,7 @@ body.a1-translation-off .prompt .sentence-sr,body.a1-translation-off #answerPane
  html body.view-mail.mobile-writing #answerPanel .task-paired #pairs-qs{gap:2px!important}
  html body.view-mail.mobile-writing #answerPanel .editorarea textarea#answer{
   order:1!important;flex:1 1 0%!important;min-height:37px!important;height:0!important;
-  width:100%!important;max-height:none!important;font-size:var(--a1-write-font,18px)!important;
+  width:100%!important;max-height:none!important;font-size:var(--a1-write-font,20px)!important;
   padding:5px 8px!important;margin:0!important;overflow-y:auto!important;touch-action:pan-y!important
  }
  html body.view-mail.mobile-writing #answerPanel .editorarea .mini-progress{display:none!important}
@@ -2270,7 +2270,7 @@ html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.promp
   width:100%!important;
   margin:0!important;
   padding:6px 8px!important;
-  font-size:var(--a1-write-font,18px)!important;
+  font-size:var(--a1-write-font,20px)!important;
   line-height:1.33!important;
   overflow-x:hidden!important;
   overflow-y:auto!important;
@@ -2353,7 +2353,7 @@ html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.promp
   overflow-y:auto!important;overflow-x:hidden!important;
   touch-action:pan-y!important;overscroll-behavior:contain!important;
   -webkit-overflow-scrolling:touch!important;
-  font-size:var(--a1-write-font,18px)!important;
+  font-size:var(--a1-write-font,20px)!important;
   resize:none!important;
  }
  html body.view-mail.mobile-writing #answerPanel .editorarea .task-paired{
@@ -2791,7 +2791,7 @@ html body.view-mail.mobile-writing #answerPanel .editorarea .foot button#check.c
    scrollbar-width:thin!important;
  }
  body.view-mail.mobile-writing #answerPanel #a1DraftFrame #answer{
-   font-size:var(--a1-write-font,18px)!important;
+   font-size:var(--a1-write-font,20px)!important;
    line-height:1.4!important;
    padding-left:10px!important;
  }
@@ -3020,7 +3020,7 @@ html body.view-mail.mobile-writing #answerPanel .editorarea .foot button#check.c
    height:100%!important;min-height:0!important;max-height:100%!important;
    flex:1 1 0%!important;overflow-x:hidden!important;overflow-y:auto!important;
    touch-action:pan-y!important;-webkit-overflow-scrolling:touch!important;
-   font-size:var(--a1-write-font,18px)!important;
+   font-size:var(--a1-write-font,20px)!important;
    line-height:1.48!important;padding:10px 27px 10px 12px!important;
    border-radius:10px!important;
  }
@@ -3115,7 +3115,7 @@ html body #answerPanel .editorarea #a1DraftFrame #answer,
 html body.view-mail.mobile-writing #answerPanel .editorarea #a1DraftFrame #answer,
 html body.view-mail.mobile-writing.keyboardOpen #answerPanel .editorarea #a1DraftFrame #answer,
 html body.view-mail.mobile-writing:not(.keyboardOpen) #answerPanel .editorarea #a1DraftFrame #answer{
- font-size:var(--a1-write-font,18px)!important;
+ font-size:var(--a1-write-font,20px)!important;
  padding:4px 8px!important;line-height:1.25!important;
  resize:none!important;overflow-x:hidden!important;overflow-y:auto!important;
  scrollbar-width:none!important;touch-action:pan-y!important;
@@ -4057,8 +4057,8 @@ $('answer').addEventListener('input',growMailEditor);
 /* A1: uputstvo, 20 minuta i mobilne komande po A2/B1 (1. novembar 2026). */
 const A1_DURATION_SECONDS=1200;
 let a1StartTime=0,a1Running=false,a1ClockInterval=null,a1ForceFull=false;
-let a1WriteFont=18,a1PromptFont=0;
-try{const v=Number(localStorage.getItem('demax_a1_write_font_20261128_v17'));if(v>=12&&v<=28)a1WriteFont=v;}catch{}
+let a1WriteFont=20,a1PromptFont=0;
+try{const v=Number(localStorage.getItem('demax_a1_write_font_20261128_v18'));if(v>=12&&v<=28)a1WriteFont=v;}catch{}
 document.documentElement.style.setProperty('--a1-write-font',a1WriteFont+'px');
 $('answer').style.setProperty('font-size',a1WriteFont+'px','important');
 function a1UpdateClock(){
@@ -4110,7 +4110,7 @@ function a1AdjustWriter(step){
  a1WriteFont=Math.max(12,Math.min(28,a1WriteFont+step));
  document.documentElement.style.setProperty('--a1-write-font',a1WriteFont+'px');
  $('answer').style.setProperty('font-size',a1WriteFont+'px','important');
- try{localStorage.setItem('demax_a1_write_font_20261128_v17',String(a1WriteFont));}catch{}
+ try{localStorage.setItem('demax_a1_write_font_20261128_v18',String(a1WriteFont));}catch{}
  requestAnimationFrame(updateA1DraftRail);
 }
 $('a1WriterMinus').onclick=()=>a1AdjustWriter(-1);
