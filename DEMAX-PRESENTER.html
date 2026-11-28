@@ -143,7 +143,7 @@ function alignSlideImage(){
  const prev=Number(img.dataset.demaxShift||0),rect=img.getBoundingClientRect();
  const baseBottom=rect.bottom-prev;
  // Keep the entire slide visible, immediately above the navigation row.
- const shift=Math.max(0,Math.min(line-baseBottom-4,w.innerHeight-baseBottom-4));
+ const shift=Math.max(0,Math.min(line-baseBottom-10,w.innerHeight-baseBottom-10));
  // Prevent a slide wrapper from clipping the relocated image; don't alter the page or navigation.
  if(shift>0){for(let p=img.parentElement;p&&p!==d.body&&p!==d.documentElement;p=p.parentElement){const pr=p.getBoundingClientRect(),ps=w.getComputedStyle(p);if(pr.bottom<baseBottom+shift-1&&/hidden|clip/.test(ps.overflowY)&&pr.top<=rect.top-prev+2&&pr.bottom<=line+4){p.style.overflow='visible'}}}
  if(Math.abs(shift-prev)>0.5||!img.dataset.demaxShift){img.style.translate='0 '+shift+'px';img.dataset.demaxShift=String(shift)}
