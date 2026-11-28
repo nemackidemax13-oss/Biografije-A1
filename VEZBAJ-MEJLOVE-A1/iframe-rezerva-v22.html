@@ -3339,6 +3339,17 @@ html body #answerPanel .editorarea .foot button#check.checkbtn:disabled{animatio
  html body #answerPanel .editorarea .foot button#check.checkbtn:enabled{animation:none!important;outline:2px solid #46a56d!important}
 }
 </style>
+<style id="a1-review-points-only-v33">
+html body #result .a1-a2-ai-review .a1-comparison-guide{
+ font-size:clamp(8px,2.5vw,11px)!important;
+ line-height:1.2!important;letter-spacing:-.15px!important;
+ white-space:nowrap!important;text-align:center!important;
+ padding:0!important;margin:3px 0 5px!important;
+}
+@media(max-width:360px){
+ html body #result .a1-a2-ai-review .a1-comparison-guide{font-size:8px!important;letter-spacing:-.2px!important}
+}
+</style>
 </head>
 <body class="view-intro a1-translation-off">
 <div class="app">
@@ -3742,27 +3753,6 @@ function renderResult(r){
  const score=Math.max(0,Number(r.score||0)-Math.max(0,existingK-correctedK));
  grade.append(a1ReviewNode('strong',(Number.isFinite(score)?Math.max(0,Math.min(10,Math.round(score))):0)+'/10 bodova'),
   a1ReviewNode('span','Napisano: '+words(original)+' reči'));
- const rubric=r.osdRubric?{...r.osdRubric,osdK:correctedK}:null;
- if(rubric&&rubric.criteriaVersion==='ÖSD A1 Schreiben v6.0'){
-  const box=a1ReviewNode('section',null,'a1-osd-rubric');
-  box.append(a1ReviewNode('h4','KRITERIJUM OCENJIVANJA'));
-  const items=a1ReviewNode('div',null,'a1-osd-metrics');
-  [
-   ['Komunikacija (K)',rubric.osdK+'/1'],
-   ['Povezanost (T)',rubric.osdT+'/1'],
-   ['Rečnik (L)',rubric.osdL+'/4'],
-   ['Jezička tačnost (F)',rubric.osdF+'/4'],
-   ['Dužina teksta','−'+rubric.textLengthDeduction],
-   ['Sadržaj zadatka','−'+rubric.taskDeduction]
-  ].forEach(pair=>{
-   const cell=a1ReviewNode('div',null,'a1-osd-metric');
-   cell.append(a1ReviewNode('span',pair[0]),a1ReviewNode('b',pair[1]));
-   items.append(cell);
-  });
-  box.append(items);
-  if(rubric.offTopic)box.append(a1ReviewNode('p','POTPUNO PROMAŠENA TEMA: mejl dobija 0 bodova.','a1-osd-warning'));
-  head.append(box);
- }
  head.append(grade);root.append(head);
  root.append(a1ReviewNode('p','Crveno označava greške u tvom tekstu, a zeleno ispravke.',
   'a1-comparison-guide'));
