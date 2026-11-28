@@ -3159,16 +3159,28 @@ html body #answerPanel .editorarea #a1DraftFrame #answer::-webkit-scrollbar{disp
  }
 }
 </style>
-<style id="a1-controls-v12">
+<style id="a1-controls-v13">
 @media(max-width:799px){
- html body.view-mail.mobile-writing #answerPanel .editorarea .foot{
+ html body.view-mail.mobile-writing #answerPanel .editorarea,
+ html body.view-mail.mobile-writing.keyboardOpen #answerPanel .editorarea{
+  gap:0!important;
+ }
+ html body.view-mail.mobile-writing #answerPanel .editorarea #a1DraftFrame.a1-draft-frame{
+  margin-top:5px!important;
+ }
+ html body.view-mail.mobile-writing #answerPanel .editorarea .task-paired{
+  margin-top:5px!important;
+ }
+ html body.view-mail.mobile-writing #answerPanel .editorarea .foot,
+ html body.view-mail.mobile-writing.keyboardOpen #answerPanel .editorarea .foot{
   grid-template-columns:minmax(0,1fr) 25px 25px minmax(0,.85fr) minmax(0,1.45fr)!important;
-  grid-template-rows:24px 13px!important;column-gap:2px!important;row-gap:6px!important;
-  flex:0 0 calc(45px + env(safe-area-inset-bottom,0px))!important;
-  height:calc(45px + env(safe-area-inset-bottom,0px))!important;
-  min-height:calc(45px + env(safe-area-inset-bottom,0px))!important;
-  max-height:calc(45px + env(safe-area-inset-bottom,0px))!important;
-  padding:1px 0 max(1px,env(safe-area-inset-bottom,0px))!important;
+  grid-template-rows:24px 13px!important;column-gap:2px!important;row-gap:8px!important;
+  flex:0 0 calc(54px + env(safe-area-inset-bottom,0px))!important;
+  height:calc(50px + env(safe-area-inset-bottom,0px))!important;
+  min-height:calc(50px + env(safe-area-inset-bottom,0px))!important;
+  max-height:calc(50px + env(safe-area-inset-bottom,0px))!important;
+  padding:8px 0 calc(1px + env(safe-area-inset-bottom,0px))!important;
+  margin:0!important;box-sizing:border-box!important;align-content:start!important;align-items:center!important;
  }
  html body.view-mail.mobile-writing #answerPanel .editorarea .foot #a1WriterSr,
  html body.view-mail.mobile-writing #answerPanel .editorarea .foot .a1-writer-font button,
