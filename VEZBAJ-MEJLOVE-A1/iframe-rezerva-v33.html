@@ -3350,6 +3350,27 @@ html body #result .a1-a2-ai-review .a1-comparison-guide{
  html body #result .a1-a2-ai-review .a1-comparison-guide{font-size:8px!important;letter-spacing:-.2px!important}
 }
 </style>
+<style id="a1-intro-v34">
+html body.view-intro .app{height:100vh!important;height:100dvh!important;max-height:100dvh!important;overflow:hidden!important}
+html body.view-intro #mailIntro{align-items:stretch!important;min-height:0!important;overflow:hidden!important;padding:8px max(9px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(9px,env(safe-area-inset-left))!important;box-sizing:border-box!important}
+html body.view-intro #mailIntro .a1-intro-content{height:100%!important;max-height:100%!important;min-height:0!important;margin:0!important;flex:0 1 560px!important;gap:clamp(3px,.7dvh,8px)!important;box-sizing:border-box!important}
+html body.view-intro #mailIntro .a1-brand-logo{width:clamp(36px,9dvh,90px)!important;height:clamp(36px,9dvh,90px)!important;flex-shrink:0!important;margin:0 auto!important}
+html body.view-intro #mailIntro .a1-intro-eyebrow{font-size:clamp(10px,1.7dvh,15px)!important;line-height:1.15!important}
+html body.view-intro #mailIntro h1{font-size:clamp(16px,2.7dvh,25px)!important;line-height:1.1!important}
+html body.view-intro #mailIntro .a1-intro-rules{gap:clamp(3px,.65dvh,7px)!important;min-height:0!important;flex:0 1 auto!important;overflow:auto!important}
+html body.view-intro #mailIntro .a1-intro-rule{font-size:clamp(10px,1.65dvh,14px)!important;line-height:1.2!important;padding:clamp(3px,.75dvh,8px) 8px!important;gap:6px!important}
+html body.view-intro #mailIntro .a1-intro-rule span{flex:0 0 19px!important;font-size:14px!important}
+html body.view-intro #mailIntro #goMailList{margin-top:auto!important;flex:0 0 auto!important;min-height:42px!important;width:100%!important;padding:9px!important}
+@media(max-height:500px){
+ html body.view-intro #mailIntro .a1-brand-logo{width:32px!important;height:32px!important}
+ html body.view-intro #mailIntro .a1-intro-rules{gap:2px!important}
+ html body.view-intro #mailIntro .a1-intro-rule{padding:2px 6px!important;font-size:10px!important}
+}
+@media(min-width:640px) and (max-height:500px){
+ html body.view-intro #mailIntro .a1-intro-content{width:min(900px,100%)!important;flex-basis:900px!important}
+ html body.view-intro #mailIntro .a1-intro-rules{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+</style>
 </head>
 <body class="view-intro a1-translation-off">
 <div class="app">
@@ -3365,6 +3386,7 @@ html body #result .a1-a2-ai-review .a1-comparison-guide{
       <div class="a1-intro-rule warning"><span>!</span><b>Mejl sa manje od 15 reči se ne boduje (0 bodova).</b></div>
       <div class="a1-intro-rule"><span>▤</span><b>25 ili više reči: bez odbitka. 20–24 reči: −1 bod. 15–19 reči: −2 boda.</b></div>
       <div class="a1-intro-rule"><span>✉</span><b>Na kraju mejla napišite završni pozdrav i svoje ime.</b></div>
+      <div class="a1-intro-rule"><span>💬</span><b>Pomoćne rečenice pri pisanju mejla možete koristiti ako vam zatrebaju.</b></div>
       <div class="a1-intro-rule"><span>★</span><b>Formular: 5 bodova. Mejl: 10 bodova. Ukupno: 15 bodova / prolaz 4 boda.</b></div>
     </div>
     <button id="goMailList" class="a1-intro-go" type="button">IZABERI MEJL <span>➜</span></button>
