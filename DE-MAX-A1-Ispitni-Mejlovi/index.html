@@ -363,6 +363,9 @@ body:not(.home-mode) .welcome{display:none}body.home-mode>.sitebar,body.home-mod
 
 /* V14: close X at the far right of the helper panel */
 @media(max-width:650px){.aside-head{position:relative;justify-content:flex-start!important;padding-right:8px!important;gap:8px!important}.aside-head .pill{min-width:0;flex:0 1 auto}.aside-head #helperClose{margin-left:auto!important;margin-right:0!important;flex:0 0 34px!important;width:34px!important;height:34px!important;align-self:center}}
+
+/* V15: smaller X glyph, preserve touch target */
+@media(max-width:650px){.aside-head #helperClose{font-size:15px!important}}
 </style></head>
 <body class="home-mode"><section class="welcome" id="welcome" aria-label="Početna stranica — ispitni mejlovi">
  <div class="welcome-art" aria-hidden="true"><span></span><span></span><span></span></div>
