@@ -3423,6 +3423,29 @@ html body.view-intro #mailIntro #goMailList{margin-top:4px!important;min-height:
  html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.prompt #promptScroll.taskscroll>.bilingual #pairs-situation .sentence-sr{font-size:calc(13px + var(--a1-prompt-font-delta,0px))!important}
 }
 </style>
+<style id="a1-intro-larger-v39">
+html body.view-intro #mailIntro .a1-intro-content{
+ --intro-title-size:clamp(22px,3.6dvh,30px);
+ --intro-rule-size:clamp(13px,2.1dvh,17px);
+}
+@media(min-width:800px) and (min-height:550px){
+ html body.view-intro #mailIntro .a1-intro-content{
+ --intro-title-size:clamp(28px,4.3dvh,40px);
+ --intro-rule-size:clamp(16px,2.5dvh,23px);
+ width:min(960px,100%)!important;flex-basis:960px!important;
+ }
+}
+@media(max-width:799px){
+ html body.view-intro #mailIntro .a1-intro-rule .a1-intro-single{white-space:normal!important}
+ html body.view-intro #mailIntro .a1-intro-rule{padding:4px 8px!important}
+ html body.view-intro #mailIntro .a1-intro-rules{gap:3px!important}
+}
+@media(max-height:600px){
+ html body.view-intro #mailIntro .a1-intro-content{--intro-title-size:clamp(18px,3.6dvh,24px);--intro-rule-size:clamp(11px,2.2dvh,14px)}
+ html body.view-intro #mailIntro .a1-brand-logo{width:clamp(30px,7dvh,48px)!important;height:clamp(30px,7dvh,48px)!important}
+ html body.view-intro #mailIntro .a1-intro-rule{padding:3px 7px!important}
+}
+</style>
 </head>
 <body class="view-intro a1-translation-off">
 <div class="app">
