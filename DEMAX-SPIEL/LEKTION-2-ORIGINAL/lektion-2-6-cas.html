@@ -129,12 +129,10 @@ body{background:#fff;color:#102b58;font:600 16px system-ui,Segoe UI,sans-serif;p
 #stage .five-audio.playing{color:#15803d}
 #stage .five-audio:focus-visible{outline:2px solid #2563eb;outline-offset:2px}
 @media(prefers-reduced-motion:reduce){#stage .five-mark,#stage .five-mark path{transition:none}}
-/* V7 – native audio controls below the slide number, only on slide 5. */
-body.five-player-active{--nav:84px}
-body.five-player-active #nav{grid-template-columns:minmax(0,1fr) minmax(0,290px) minmax(0,1fr)}
-body.five-player-active #center{display:flex;flex-direction:column;flex-wrap:nowrap;gap:3px;min-width:0;line-height:1.1}
-#center #listening{display:block;width:100%;max-width:290px;height:36px;flex:none}
-@media(max-width:600px){body.five-player-active{--nav:75px}body.five-player-active #nav{grid-template-columns:auto minmax(0,1fr) auto}#center #listening{height:32px}}
+/* Slide 5 – compact play/pause button instead of native audio controls. */
+#listening{display:none}
+#stage .five-audio{border-radius:9px;background:#edf3fc;border:1px solid #c7d8ee}
+#stage .five-audio.playing{background:#e8f6ed;color:#15803d}
 
 /* V8 – slide 11: one-screen bilingual dialogue, no pagination. */
 #dialog11{height:100%;width:100%;padding:1.15cqw 1.6cqw;display:grid;grid-template-rows:3.3cqw minmax(0,1fr) 4.4cqw;gap:.55cqw;background:linear-gradient(135deg,#f8faff,#fff 55%,#f4fbf7);font-family:system-ui,Segoe UI,sans-serif;color:#14233f;overflow:hidden}
@@ -220,14 +218,14 @@ function renderStableFive(){
  const d=SLIDES[5];
  document.getElementById('nav').classList.remove('game-active');
  prev.disabled=false;next.disabled=false;
- if(!center.querySelector('#fiveSlideNumber')){center.innerHTML='<span id="fiveSlideNumber">5 / 13</span>';audio.controls=true;audio.setAttribute('aria-label','Audio – slajd 5');center.append(audio);}
+ if(!center.querySelector('#fiveSlideNumber')){center.innerHTML='<span id="fiveSlideNumber">5 / 13</span>';audio.controls=false;}
  let im=stage.querySelector('img[data-stable-five]');
  if(!im){
   stage.replaceChildren();
   im=new Image();im.className='slide';im.alt='Slajd 5';im.dataset.stableFive='1';im.draggable=false;im.src=d.image;stage.append(im);
   im.onclick=()=>{if(step<d.steps.length){step++;render()}};
   // Centers measured on the 1600 × 900 source image; original solution order preserved.
-  const centers=[[725.5,144.5],[633.5,213],[725.5,281],[633.5,601],[725.5,669.5],[633.5,738],[1529.5,144.5],[1437,213],[1437,281],[1437,601],[1437,669.5],[1437,738]];
+  const centers=[[725.5,144.5],[633.5,213],[725.5,281],[633.5,601],[725.5,669.5],[633.5,738],[1529.5,144.5],[1437,213],[1529.5,281],[1437,601],[1437,669.5],[1437,738]];
   centers.forEach(([x,y],i)=>{
    const o=document.createElement('span');o.className='five-mark';o.dataset.answerIndex=String(i);o.setAttribute('aria-hidden','true');
    o.style.left=(x/16)+'%';o.style.top=(y/9)+'%';
@@ -236,7 +234,7 @@ function renderStableFive(){
   });
   if(d.audioPos){
    const b=document.createElement('button');b.type='button';b.className='five-audio';
-   const speaker='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M15 9a4 4 0 0 1 0 6M18 6a8 8 0 0 1 0 12"/></svg>';
+   const speaker='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 4.5 20 12 8 19.5Z"/></svg>';
    const pause='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M9 5v14M15 5v14"/></svg>';
    const sync=()=>{const playing=!audio.paused&&!audio.ended;b.classList.toggle('playing',playing);b.innerHTML=playing?pause:speaker;b.title=playing?'Pauza':'Pusti audio';b.setAttribute('aria-label',b.title);b.setAttribute('aria-pressed',String(playing))};
    audio.onplay=sync;audio.onpause=sync;audio.onended=sync;
