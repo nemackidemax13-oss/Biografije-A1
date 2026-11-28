@@ -491,7 +491,7 @@ byId('copy').addEventListener('click',async()=>{const text=byId('sampleText').te
 byId('jumpHelpers').addEventListener('click',()=>{if(compactMedia.matches){openHelpers()}else{byId('helpers').scrollIntoView({behavior:'smooth',block:'start'})}});
 
 const compactMedia=window.matchMedia('(max-width:650px)');
-function openHelpers(){uiSound('help');
+function openHelpers(){stop();uiSound('help');
  if(!compactMedia.matches){byId('helpers').scrollIntoView({behavior:'smooth',block:'start'});return}
  const overlay=byId('helperOverlay'), panel=byId('helpers');
  if(overlay){overlay.hidden=false;requestAnimationFrame(()=>overlay.classList.add('show'));}
