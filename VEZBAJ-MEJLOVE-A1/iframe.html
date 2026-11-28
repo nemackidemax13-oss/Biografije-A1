@@ -3159,6 +3159,46 @@ html body #answerPanel .editorarea #a1DraftFrame #answer::-webkit-scrollbar{disp
  }
 }
 </style>
+<style id="a1-controls-v11">
+@media(max-width:799px){
+ html body.view-mail.mobile-writing #answerPanel .editorarea .foot{
+  grid-template-columns:minmax(0,1fr) 25px 25px minmax(0,.85fr) minmax(0,1.45fr)!important;
+  grid-template-rows:24px 13px!important;gap:2px!important;
+  flex:0 0 calc(41px + env(safe-area-inset-bottom,0px))!important;
+  height:calc(41px + env(safe-area-inset-bottom,0px))!important;
+  min-height:calc(41px + env(safe-area-inset-bottom,0px))!important;
+  max-height:calc(41px + env(safe-area-inset-bottom,0px))!important;
+  padding:1px 0 max(1px,env(safe-area-inset-bottom,0px))!important;
+ }
+ html body.view-mail.mobile-writing #answerPanel .editorarea .foot #a1WriterSr,
+ html body.view-mail.mobile-writing #answerPanel .editorarea .foot .a1-writer-font button,
+ html body.view-mail.mobile-writing #answerPanel .editorarea .foot #a1FullScreen,
+ html body.view-mail.mobile-writing #answerPanel .editorarea .foot #check.checkbtn{
+  height:24px!important;min-height:24px!important;max-height:24px!important;
+  font-size:10px!important;padding:1px 2px!important;line-height:1.05!important;
+  white-space:nowrap!important;border-radius:5px!important;
+ }
+ html body.view-mail.mobile-writing #answerPanel .editorarea .foot #a1WordTracker{
+  height:13px!important;min-height:13px!important;max-height:13px!important;
+ }
+ html body.view-mail.mobile-writing #answerPanel .editorarea .a1-write-whitebar{
+  flex:0 0 26px!important;height:26px!important;min-height:26px!important;
+  max-height:26px!important;grid-template-rows:24px!important;
+ }
+ html body.view-mail.mobile-writing #answerPanel .editorarea .a1-write-whitebar #a1WriterBack,
+ html body.view-mail.mobile-writing #answerPanel .editorarea .a1-write-whitebar #a1WriterClock{
+  height:24px!important;min-height:24px!important;max-height:24px!important;
+  padding:1px 4px!important;font-size:10px!important;
+ }
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) #promptScroll .a1-prompt-tools{
+  grid-template-columns:minmax(0,1fr) 28px 28px minmax(0,1.3fr)!important;gap:3px!important;
+ }
+ html body.view-mail:not(.mobile-writing):not(.mobile-review) #promptScroll .a1-prompt-tools>button{
+  min-height:28px!important;height:28px!important;max-height:28px!important;
+  font-size:10px!important;padding:2px 3px!important;border-radius:5px!important;
+ }
+}
+</style>
 </head>
 <body class="view-intro a1-translation-off">
 <div class="app">
@@ -3206,7 +3246,7 @@ html body #answerPanel .editorarea #a1DraftFrame #answer::-webkit-scrollbar{disp
         </div>
       </div>
       <div class="start-writing-wrap"><div class="a1-prompt-tools">
- <button id="a1PromptTranslation" type="button" aria-pressed="false">🇷🇸 PREVOD SRPSKI</button>
+ <button id="a1PromptTranslation" type="button" aria-pressed="false">PREVOD</button>
  <button id="a1PromptMinus" type="button" aria-label="Smanji slova postavke">A−</button>
  <button id="a1PromptPlus" type="button" aria-label="Uvećaj slova postavke">A+</button>
  <button id="mobileStartBottom" type="button">PIŠI MEJL ➜</button>
@@ -3235,9 +3275,9 @@ html body #answerPanel .editorarea #a1DraftFrame #answer::-webkit-scrollbar{disp
         <div id="pairs-signoff" class="paired-lines"></div>
       </div>
       <div class="mini-progress" aria-hidden="true"><span id="progress"></span></div><div class="foot"><div class="counter" id="count">0 / 15 reči</div>
-<button id="a1WriterSr" type="button" aria-pressed="false">🇷🇸 PREVOD SRPSKI</button>
+<button id="a1WriterSr" type="button" aria-pressed="false">PREVOD</button>
 <div class="a1-writer-font" role="group" aria-label="Veličina teksta"><button id="a1WriterMinus" type="button">A−</button><button id="a1WriterPlus" type="button">A+</button></div>
-<button id="a1FullScreen" type="button">PUN EKRAN</button>
+<button id="a1FullScreen" type="button">EKRAN</button>
 <button id="check" class="checkbtn" disabled>PROVERI MEJL</button>
 <div id="a1WordTracker" class="a1-word-tracker" role="progressbar" aria-label="Napredak pisanja mejla, minimum 15 reči" aria-valuemin="0" aria-valuemax="15" aria-valuenow="0" aria-valuetext="Napisano 0 reči od najmanje 15">
  <div class="a1-word-tracker-copy"><strong id="a1WordsNow">NAPISANO: 0 / 15 REČI</strong><span id="a1WordsLeft">NEDOSTAJE JOŠ 15</span></div>
