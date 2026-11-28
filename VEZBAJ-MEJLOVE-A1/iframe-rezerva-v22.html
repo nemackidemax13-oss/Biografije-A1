@@ -3328,6 +3328,17 @@ html body #answerPanel .editorarea #a1DraftFrame #answer::-webkit-scrollbar{disp
  html body.view-mail:not(.mobile-writing):not(.mobile-review) section.panel.prompt #promptScroll.taskscroll>.bilingual #pairs-situation .sentence-sr{font-size:calc(13px + var(--a1-prompt-font-delta,-3px))!important;line-height:1.25!important;padding-top:1px!important;}
 }
 </style>
+<style id="a1-ready-pulse-v30">
+@keyframes a1ReadyPulseV30{0%,100%{opacity:1;filter:brightness(1)}50%{opacity:.62;filter:brightness(.86)}}
+html body #answerPanel .editorarea .foot button#check.checkbtn:enabled{
+ background:#168344!important;background-color:#168344!important;color:#fff!important;
+ animation:a1ReadyPulseV30 1.6s ease-in-out infinite!important;
+}
+html body #answerPanel .editorarea .foot button#check.checkbtn:disabled{animation:none!important}
+@media(prefers-reduced-motion:reduce){
+ html body #answerPanel .editorarea .foot button#check.checkbtn:enabled{animation:none!important;outline:2px solid #46a56d!important}
+}
+</style>
 </head>
 <body class="view-intro a1-translation-off">
 <div class="app">
