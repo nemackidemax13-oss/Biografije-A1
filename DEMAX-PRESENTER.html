@@ -36,10 +36,15 @@
 <aside class="right" aria-hidden="true"></aside>
 </div>
 <dialog id="dialog"><form id="linkForm"><h2 id="dialogTitle">Dodaj link</h2><label for="label">Naziv lekcije / igre</label><input id="label" placeholder="Lektion 1 ili Spiel"><label for="url">GitHub Pages ili drugi HTTPS link</label><input id="url" type="url" placeholder="https://..." required><footer><button type="button" id="cancel">Otkaži</button><button class="blue" type="submit">Dodaj</button></footer></form></dialog>
-<dialog id="urlDialog"><h2>URL link</h2><label for="visibleUrl">Adresa prezentacije</label><input id="visibleUrl" type="text" readonly><footer><button type="button" id="closeUrl">Zatvori</button><button type="button" class="blue" id="copyUrl">Kopiraj URL</button></footer></dialog>
+<dialog id="urlDialog"><form id="urlEditForm"><h2>URL link</h2><label for="visibleUrl">Adresa prezentacije (možeš je zameniti)</label><input id="visibleUrl" type="url" required spellcheck="false" autocomplete="off"><p id="urlEditError" class="note" role="alert" style="color:#b91c1c" hidden></p><footer><button type="button" id="closeUrl">Otkaži</button><button type="button" class="blue" id="copyUrl">Kopiraj URL</button><button type="submit" class="green" id="saveUrl">Sačuvaj link</button></footer></form></dialog>
 <script>
 const $=id=>document.getElementById(id), main=$('main'), peek=$('peek');
+let editingUrlId=null;
 $('closeUrl').onclick=()=>$('urlDialog').close();
+$('urlDialog').addEventListener('close',()=>{editingUrlId=null});
+$('visibleUrl').addEventListener('input',()=>{$('urlEditError').hidden=true;$('copyUrl').textContent='Kopiraj URL'});
+$('urlEditForm').onsubmit=e=>{e.preventDefault();const item=items.find(x=>x.id===editingUrlId&&x.kind==='link');if(!item)return;let url;try{url=new URL($('visibleUrl').value.trim());if(!['https:','http:'].includes(url.protocol))throw new Error('protocol')}catch{$('urlEditError').textContent='Unesi ispravan HTTP ili HTTPS link.';$('urlEditError').hidden=false;return}if(item.url===url.href){$('urlDialog').close();return}const previous=item.url;item.url=url.href;try{localStorage.setItem(key,JSON.stringify(items))}catch{item.url=previous;$('urlEditError').textContent='Link nije sačuvan. Pokušaj ponovo.';$('urlEditError').hidden=false;return}$('urlDialog').close();if(current?.id===item.id)openItem(item);else render()};
+
 $('copyUrl').onclick=async()=>{const input=$('visibleUrl');input.focus();input.select();try{await navigator.clipboard.writeText(input.value);$('copyUrl').textContent='Kopirano ✓'}catch{try{if(document.execCommand('copy'))$('copyUrl').textContent='Kopirano ✓';else $('copyUrl').textContent='Ctrl+C'}catch{$('copyUrl').textContent='Ctrl+C'}}};
 
 const key='demax-presenter-list-v1';
@@ -90,7 +95,7 @@ function render(){
    members.forEach(({item,i},position)=>{
     const row=document.createElement('div');row.className='item'+(current?.id===item.id?' active':'');
     const n=document.createElement('button');n.className='name';n.textContent=(position+1)+'. '+item.name;const s=document.createElement('small');s.textContent=item.kind==='file'?'HTML':'Web';n.append(s);n.onclick=()=>openItem(item);row.append(n);
-    if(item.kind==='link'&&item.url){const u=document.createElement('button');u.className='mini show-url';u.textContent='URL';u.title='Prikaži i kopiraj URL';u.setAttribute('aria-label','Prikaži URL za '+item.name);u.onclick=()=>{$('visibleUrl').value=item.url;$('copyUrl').textContent='Kopiraj URL';$('urlDialog').showModal();$('visibleUrl').focus();$('visibleUrl').select()};row.append(u)}
+    if(item.kind==='link'&&item.url){const u=document.createElement('button');u.className='mini show-url';u.textContent='URL';u.title='Prikaži, zameni ili kopiraj URL';u.setAttribute('aria-label','Prikaži URL za '+item.name);u.onclick=()=>{editingUrlId=item.id;$('visibleUrl').value=item.url;$('urlEditError').hidden=true;$('copyUrl').textContent='Kopiraj URL';$('urlDialog').showModal();$('visibleUrl').focus();$('visibleUrl').select()};row.append(u)}
     [['↑',()=>move(i,-1)],['↓',()=>move(i,1)],['×',()=>remove(i)]].forEach(([t,fn],j)=>{const b=document.createElement('button');b.className='mini '+['move-up','move-down','remove-item'][j];if(j<2){const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('viewBox','0 0 20 20');svg.setAttribute('aria-hidden','true');const p=document.createElementNS('http://www.w3.org/2000/svg','path');p.setAttribute('d',j===0?'M10 17V3M4 9L10 3L16 9':'M10 3V17M4 11L10 17L16 11');p.setAttribute('fill','none');p.setAttribute('stroke','currentColor');p.setAttribute('stroke-width','3.6');p.setAttribute('stroke-linecap','round');p.setAttribute('stroke-linejoin','round');svg.append(p);b.append(svg)}else b.textContent=t;b.title=['Pomeri gore','Pomeri dole','Ukloni'][j];b.setAttribute('aria-label',b.title);b.disabled=(j===0&&position===0)||(j===1&&position===members.length-1);b.onclick=fn;row.append(b)});body.append(row);
    });section.append(body)
   }box.append(section)
