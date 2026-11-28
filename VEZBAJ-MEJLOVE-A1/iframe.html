@@ -2791,7 +2791,7 @@ html body.view-mail.mobile-writing #answerPanel .editorarea .foot button#check.c
    scrollbar-width:thin!important;
  }
  body.view-mail.mobile-writing #answerPanel #a1DraftFrame #answer{
-   font-size:max(16px,var(--a1-write-font,16px))!important;
+   font-size:var(--a1-write-font,14px)!important;
    line-height:1.4!important;
    padding-left:10px!important;
  }
@@ -3020,7 +3020,7 @@ html body.view-mail.mobile-writing #answerPanel .editorarea .foot button#check.c
    height:100%!important;min-height:0!important;max-height:100%!important;
    flex:1 1 0%!important;overflow-x:hidden!important;overflow-y:auto!important;
    touch-action:pan-y!important;-webkit-overflow-scrolling:touch!important;
-   font-size:max(16px,var(--a1-write-font,16px))!important;
+   font-size:var(--a1-write-font,14px)!important;
    line-height:1.48!important;padding:10px 27px 10px 12px!important;
    border-radius:10px!important;
  }
@@ -3106,6 +3106,20 @@ html body.view-mail.mobile-writing #answerPanel .editorarea .foot button#check.c
    height:30px!important;min-height:30px!important;max-height:30px!important;
  }
 }
+</style>
+<style id="a1-writer-v8">
+/* Bez bocnih strelica: cela sirina za pisanje, normalan pregled dodirom. */
+html body #answerPanel .editorarea #a1ScrollRail{display:none!important;visibility:hidden!important;pointer-events:none!important}
+html body #answerPanel .editorarea #a1DraftFrame #answer,
+html body.view-mail.mobile-writing #answerPanel .editorarea #a1DraftFrame #answer,
+html body.view-mail.mobile-writing.keyboardOpen #answerPanel .editorarea #a1DraftFrame #answer,
+html body.view-mail.mobile-writing:not(.keyboardOpen) #answerPanel .editorarea #a1DraftFrame #answer{
+ font-size:var(--a1-write-font,14px)!important;
+ padding:8px 10px!important;line-height:1.4!important;
+ resize:none!important;overflow-x:hidden!important;overflow-y:auto!important;
+ scrollbar-width:none!important;touch-action:pan-y!important;
+}
+html body #answerPanel .editorarea #a1DraftFrame #answer::-webkit-scrollbar{display:none!important;width:0!important;height:0!important}
 </style>
 </head>
 <body class="view-intro a1-translation-off">
@@ -3925,9 +3939,10 @@ $('answer').addEventListener('input',growMailEditor);
 /* A1: uputstvo, 20 minuta i mobilne komande po A2/B1 (1. novembar 2026). */
 const A1_DURATION_SECONDS=1200;
 let a1StartTime=0,a1Running=false,a1ClockInterval=null,a1ForceFull=false;
-let a1WriteFont=16,a1PromptFont=0;
-try{const v=Number(localStorage.getItem('demax_a1_write_font_20261101'));if(v>=12&&v<=25)a1WriteFont=v;}catch{}
+let a1WriteFont=14,a1PromptFont=0;
+try{const v=Number(localStorage.getItem('demax_a1_write_font_20261128_v8'));if(v>=12&&v<=25)a1WriteFont=v;}catch{}
 document.documentElement.style.setProperty('--a1-write-font',a1WriteFont+'px');
+$('answer').style.setProperty('font-size',a1WriteFont+'px','important');
 function a1UpdateClock(){
  const remain=a1Running?Math.max(0,1200-Math.floor((Date.now()-a1StartTime)/1000)):1200;
  const str='⏱ '+String(Math.floor(remain/60)).padStart(2,'0')+':'+String(remain%60).padStart(2,'0');
@@ -3976,10 +3991,14 @@ $('a1PromptPlus').onclick=()=>a1AdjustPrompt(1);
 function a1AdjustWriter(step){
  a1WriteFont=Math.max(12,Math.min(25,a1WriteFont+step));
  document.documentElement.style.setProperty('--a1-write-font',a1WriteFont+'px');
- try{localStorage.setItem('demax_a1_write_font_20261101',String(a1WriteFont));}catch{}
+ $('answer').style.setProperty('font-size',a1WriteFont+'px','important');
+ try{localStorage.setItem('demax_a1_write_font_20261128_v8',String(a1WriteFont));}catch{}
 }
 $('a1WriterMinus').onclick=()=>a1AdjustWriter(-1);
 $('a1WriterPlus').onclick=()=>a1AdjustWriter(1);
+for(const id of ['a1WriterMinus','a1WriterPlus']){
+ $(id).addEventListener('pointerdown',event=>{if(document.activeElement===$('answer'))event.preventDefault();});
+}
 $('a1WriterBack').onclick=()=>closeMobileWriting(false);
 $('a1FullScreen').onclick=()=>{
  a1ForceFull=true;a1KeyboardRestored=true;$('answer').blur();
